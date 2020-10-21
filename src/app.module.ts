@@ -1,12 +1,12 @@
 import {Module} from '@nestjs/common';
 import {ChattingController} from './api/chattingController';
-import {ApiService} from './api/api.service';
 import {DeviceController} from "./api/device.controller";
+import {whatsappProvider, WhatsappService} from "./whatsapp.service";
 
 @Module({
     imports: [],
     controllers: [ChattingController, DeviceController],
-    providers: [ApiService],
+    providers: [whatsappProvider, WhatsappService],
 })
 export class AppModule {
 }

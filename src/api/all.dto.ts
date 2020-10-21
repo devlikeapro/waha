@@ -1,4 +1,4 @@
-export class Message {
+export class MessageOut {
     readonly chatId: string;
     readonly text: string;
 }

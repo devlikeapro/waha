@@ -4,6 +4,7 @@ import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+    app.enableShutdownHooks();
     const options = new DocumentBuilder()
         .setTitle('WhatsApp HTTP API')
         .setDescription('WhatsApp HTTP API that you can configure in a click')
