@@ -2,6 +2,12 @@
 WhatsApp HTTP API that you can configure in a click!
 
 # Environment variables
+## Webhooks
+https://github.com/orkestral/venom#events
+- `WHATSAPP_HOOK_ONMESSAGE=http://localhost/uri`
+- `WHATSAPP_HOOK_ONSTATECHANGE=http://localhost/uri`
+- `WHATSAPP_HOOK_ONACK=http://localhost/uri`
+- `WHATSAPP_HOOK_ONADDEDTOGROUP=http://localhost/uri`
 - `DEBUG=1` - show debug and verbose logs
 
 # Installation
