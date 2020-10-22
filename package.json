@@ -27,6 +27,8 @@
     "@nestjs/platform-express": "^7.0.0",
     "@nestjs/swagger": "^4.6.1",
     "class-validator": "^0.12.2",
+    "del": "^6.0.0",
+    "mime-types": "^2.1.27",
     "reflect-metadata": "^0.1.13",
     "requestretry": "^4.1.1",
     "rimraf": "^3.0.2",
