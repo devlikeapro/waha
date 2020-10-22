@@ -1,6 +1,9 @@
 # WhatsApp HTTP API
 WhatsApp HTTP API that you can configure in a click!
 
+# Environment variables
+- `DEBUG=1` - show debug and verbose logs
+
 # Installation
 ```bash
 docker pull ...

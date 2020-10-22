@@ -3,7 +3,11 @@ import {AppModule} from './app.module';
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+        logger: process.env.DEBUG != undefined ? ['log', 'debug', 'error', 'verbose', 'warn'] :
+            ['log', 'error', 'warn'],
+    });
+
     app.enableShutdownHooks();
     const options = new DocumentBuilder()
         .setTitle('WhatsApp HTTP API')
@@ -12,7 +16,7 @@ async function bootstrap() {
         .addTag('device', 'Device information')
         .addTag('chatting', 'Chat methods')
         .addApiKey({
-                type: 'apiKey',
+            type: 'apiKey',
                 description: 'Your secret key',
                 name: 'X-VENOM-TOKEN'
             }
@@ -22,7 +26,7 @@ async function bootstrap() {
     SwaggerModule.setup('', app, document);
 
     await app.listen(3000);
-    console.log(`Application is running on: ${await app.getUrl()}`);
+    console.log(`WhatsApp HTTP API is running on: ${await app.getUrl()}`);
 }
 
 bootstrap();
