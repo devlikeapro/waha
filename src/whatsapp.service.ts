@@ -2,7 +2,7 @@ import {create, Message, Whatsapp} from "venom-bot";
 import {Inject, Injectable, Logger, OnApplicationShutdown} from "@nestjs/common";
 import {ConfigService} from "@nestjs/config";
 import * as path from "path";
-
+import {WhatsappConfigService} from "./config.service";
 import request = require('requestretry');
 import mime = require('mime-types');
 import fs = require('fs');
@@ -57,16 +57,17 @@ export class WhatsappService implements OnApplicationShutdown {
     // TODO: Use environment variables
     private RETRY_DELAY = 15
     private RETRY_ATTEMPTS = 3;
-    private DOWNLOADS_FOLDER = "/tmp/whatsapp-files"
+    readonly FILES_FOLDER: string
 
     constructor(
         @Inject('WHATSAPP') private whatsapp: Whatsapp,
-        private config: ConfigService,
+        private config: WhatsappConfigService,
         private log: Logger,
     ) {
         this.log.setContext('WhatsappService')
 
         this.clean_downloads()
+        this.FILES_FOLDER = this.config.files_folder
 
         this.log.log('Configuring webhooks...')
         for (const hook of HOOKS) {
@@ -88,13 +89,13 @@ export class WhatsappService implements OnApplicationShutdown {
     }
 
     private clean_downloads() {
-        if (fs.existsSync(this.DOWNLOADS_FOLDER)) {
-            del([`${this.DOWNLOADS_FOLDER}/*`], {force: true}).then((paths) =>
+        if (fs.existsSync(this.FILES_FOLDER)) {
+            del([`${this.FILES_FOLDER}/*`], {force: true}).then((paths) =>
                 console.log('Deleted files and directories:\n', paths.join('\n'))
             )
         } else {
-            fs.mkdirSync(this.DOWNLOADS_FOLDER)
-            this.log.log(`Directory '${this.DOWNLOADS_FOLDER}' created from scratch`)
+            fs.mkdirSync(this.FILES_FOLDER)
+            this.log.log(`Directory '${this.FILES_FOLDER}' created from scratch`)
         }
     }
 
@@ -142,13 +143,12 @@ export class WhatsappService implements OnApplicationShutdown {
 
             this.log.log(`The message ${message.id} has media, downloading it...`);
             const fileName = `${message.id}.${mime.extension(message.mimetype)}`;
-            const filePath = path.resolve(`${this.DOWNLOADS_FOLDER}/${fileName}`)
+            const filePath = path.resolve(`${this.FILES_FOLDER}/${fileName}`)
             this.log.verbose(`Writing file to ${filePath}...`)
             await writeFileAsync(filePath, buffer);
             this.log.log(`The file from ${message.id} has been saved to ${filePath}`);
 
-            // TODO: Pass real URL
-            message.clientUrl = "http://localhost/..."
+            message.clientUrl = this.config.files_url + fileName
             return message
         });
     }
