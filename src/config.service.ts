@@ -34,6 +34,13 @@ export class WhatsappConfigService {
         )
     }
 
+    get files_lifetime(): number {
+        return this.configService.get<number>(
+            'WHATSAPP_FILES_LIFETIME',
+            180,
+        )
+    }
+
     get mimetypes(): string[] | null {
         const types = this.configService.get('WHATSAPP_FILES_MIMETYPES', "")
         return types ? types.split(',') : null

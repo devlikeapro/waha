@@ -59,6 +59,7 @@ export class WhatsappService implements OnApplicationShutdown {
     private RETRY_ATTEMPTS = 3;
     readonly FILES_FOLDER: string
     readonly mimetypes: string[]
+    readonly files_lifetime: number
 
     constructor(
         @Inject('WHATSAPP') private whatsapp: Whatsapp,
@@ -70,6 +71,7 @@ export class WhatsappService implements OnApplicationShutdown {
         this.FILES_FOLDER = this.config.files_folder
         this.clean_downloads()
         this.mimetypes = this.config.mimetypes
+        this.files_lifetime = this.config.files_lifetime * SECOND
 
         this.log.log('Configuring webhooks...')
         for (const hook of HOOKS) {
@@ -152,6 +154,7 @@ export class WhatsappService implements OnApplicationShutdown {
             this.log.log(`The file from ${message.id} has been saved to ${filePath}`);
 
             message.clientUrl = this.config.files_url + fileName
+            this.removeFile(filePath)
             return message
         });
     }
@@ -161,4 +164,10 @@ export class WhatsappService implements OnApplicationShutdown {
         return this.whatsapp.close()
     }
 
+    private removeFile(file: string) {
+        setTimeout(() => fs.unlink(file, () => {
+            this.log.log(`File ${file} was removed`)
+        }), this.files_lifetime)
+
+    }
 }

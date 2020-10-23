@@ -17,8 +17,9 @@ All webhooks are disabled by default.
 - `WHATSAPP_HOOK_ONACK=http://localhost/uri`
 - `WHATSAPP_HOOK_ONADDEDTOGROUP=http://localhost/uri`
 ## File storage 
-- `WHATSAPP_FILES_FOLDER` - folder where will be stored files from chats (images, voice messages)
+- `WHATSAPP_FILES_FOLDER` - folder where will be stored files from chats (images, voice messages) (default: `/tmp/whatsapp-files`)
 - `WHATSAPP_FILES_MIMETYPES` - download only these mimetypes from messages. Mimetypes must be separated by comma, without spaces: `audio,image/png,image/gif`. In order to choose type use prefix (like `audio,image`). Disabled by default, `message.clientUrl` will be equal emtpy string `""`.
+- `WHATSAPP_FILES_LIFETIME`- to keep free space files will be removed after this time (default: `180`, in seconds)
 
 # Installation
 ```bash
