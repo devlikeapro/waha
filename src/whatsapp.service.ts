@@ -58,6 +58,7 @@ export class WhatsappService implements OnApplicationShutdown {
     private RETRY_DELAY = 15
     private RETRY_ATTEMPTS = 3;
     readonly FILES_FOLDER: string
+    readonly mimetypes: string[]
 
     constructor(
         @Inject('WHATSAPP') private whatsapp: Whatsapp,
@@ -66,8 +67,9 @@ export class WhatsappService implements OnApplicationShutdown {
     ) {
         this.log.setContext('WhatsappService')
 
-        this.clean_downloads()
         this.FILES_FOLDER = this.config.files_folder
+        this.clean_downloads()
+        this.mimetypes = this.config.mimetypes
 
         this.log.log('Configuring webhooks...')
         for (const hook of HOOKS) {
@@ -135,9 +137,10 @@ export class WhatsappService implements OnApplicationShutdown {
 
     private async downloadAndDecryptMedia(message: Message) {
         return this.whatsapp.decryptFile(message).then(async (buffer) => {
-            // TODO: Add filter from env variables
-            if (!message.mimetype.startsWith("audio")) {
+            // Download only certain mimetypes
+            if (this.mimetypes === null || !this.mimetypes.some((type) => message.mimetype.startsWith(type))) {
                 this.log.log(`The message ${message.id} has ${message.mimetype} media, skip it.`);
+                message.clientUrl = ""
                 return message
             }
 

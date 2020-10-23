@@ -34,6 +34,11 @@ export class WhatsappConfigService {
         )
     }
 
+    get mimetypes(): string[] | null {
+        const types = this.configService.get('WHATSAPP_FILES_MIMETYPES', "")
+        return types ? types.split(',') : null
+    }
+
     get(name: string): any {
         return this.configService.get(name)
     }
