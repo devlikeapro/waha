@@ -32,7 +32,6 @@ export const whatsappProvider = {
             logQR: true,
             browserArgs: ["--no-sandbox"],
             autoClose: 60000,
-            disableSpins: true,
             createPathFileToken: true,
             puppeteerOptions: {},
         }

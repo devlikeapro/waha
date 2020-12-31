@@ -58,7 +58,7 @@ export class ChattingController {
     @Post('/reply')
     @ApiOperation({summary: 'Reply to a text message'})
     reply(@Body() message: MessageReply) {
-        return this.whatsapp.reply(message.chatId, message.text, message.reply_to, [])
+        return this.whatsapp.reply(message.chatId, message.text, message.reply_to)
     }
 
     @Post('/sendSeen')
