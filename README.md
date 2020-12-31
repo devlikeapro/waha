@@ -1,13 +1,26 @@
-# WhatsApp HTTP API
+# WhatsApp HTTP API Free
 WhatsApp HTTP API that you can configure in a click!
 
 # Quickstart
+Install and run
+```bash
+docker pull ...
+```
+
+## Send a text message
+```bash
+# Phone without +
+export PHONE=79776772457
+curl -d "{\"chatId\": \"${PHONE}@c.us\", \"text\": \"Hello from WhatsApp HTTP API Free\" }" -H "Content-Type: application/json" -X POST http://localhost:3000/api/sendText
+
+```
 
 # Environment variables
 ## Common
 - `DEBUG` - show debug and verbose logs, set in any value
 - `WHATSAPP_API_PORT` - listen port for HTTP server (default: `3000`)
 - `WHATSAPP_API_HOSTNAME` - Hostname for HTTP server (default: `localhost`)
+
 ## Webhooks
 https://github.com/orkestral/venom#events
 All webhooks are disabled by default.
@@ -21,13 +34,8 @@ All webhooks are disabled by default.
 - `WHATSAPP_FILES_MIMETYPES` - download only these mimetypes from messages. Mimetypes must be separated by comma, without spaces: `audio,image/png,image/gif`. In order to choose type use prefix (like `audio,image`). Disabled by default, `message.clientUrl` will be equal emtpy string `""`.
 - `WHATSAPP_FILES_LIFETIME`- to keep free space files will be removed after this time (default: `180`, in seconds)
 
-# Installation
-```bash
-docker pull ...
-```
-
 # Development
-
+Use node 10 version:
 ```bash
 $ npm install
 ```
