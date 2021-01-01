@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  whatsapp-http-api:
+    build: .
+    image: allburov/whatsapp-http-api
+    restart: always
+    ports:
+      - 3000:3000
+    shm_size: "1gb"
+    environment:
+      - WHATSAPP_DOWNLOADS_FOLDER=/app/files/downloads
+    volumes:
+      - ./tokens:/app/tokens
+      - ./files:/app/files
