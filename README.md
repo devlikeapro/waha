@@ -61,6 +61,43 @@ export PHONE=79776772457
 curl -d "{\"chatId\": \"${PHONE}@c.us\", \"text\": \"Hello from WhatsApp HTTP API Free\" }" -H "Content-Type: application/json" -X POST http://localhost:3000/api/sendText
 ```
 
+## Echo
+
+To show how to receive messages we'll create a simple "echo" server with two functions:
+
+1. When we receive a text message - just send the text back
+2. When we receive a message with a file (an image, a voice message) - download it and send the path back
+
+In order to send you messages we use webhooks and configure them via environments variables. So what you need to
+create "echo" server is HTTP server that will receive JSON POST request and then call back WhatsApp HTTP API
+via `POST /api/sendText` endpoint with JSON body.
+
+### Python echo server
+
+We use Python. Feel free to create your favorite language example and contribute to the project!
+
+Run "echo" server in one terminal and leave it working:
+
+```bash
+# if you haven't already
+git clone https://github.com/allburov/whatsapp-http-api.git 
+cd whatsapp-http-api
+python -mpip install -r examples/requirements.txt
+export FLASK_APP=examples/echo.py
+flask run
+```
+
+Visit http://localhost:5000 and check that we are good to go further.
+
+Let's start WhatsApp HTTP API and configure the "on message" webhook and point it on our "http://localhost:5000/message"
+endpoint:
+
+```bash
+docker run -it -v `pwd`/tokens:/app/tokens --network=host -e WHATSAPP_HOOK_ONMESSAGE=http://localhost:5000/message allburov/whatsapp-http-api
+```
+
+Now go ahead, open the second whatsapp and send to our WhatsApp HTTP API a text message! It must reply the same text.
+
 # Environment variables
 
 ## Common

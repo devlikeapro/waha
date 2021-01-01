@@ -1,5 +1,6 @@
 tokens
 files
+venv
 
 # compiled output
 /dist
