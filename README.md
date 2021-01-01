@@ -98,6 +98,8 @@ docker run -it -v `pwd`/tokens:/app/tokens --network=host -e WHATSAPP_HOOK_ONMES
 
 Now go ahead, open the second whatsapp and send to our WhatsApp HTTP API a text message! It must reply the same text.
 
+If you try to send an image the "echo server" will send a path to the downloaded file.
+
 # Environment variables
 
 ## Common
