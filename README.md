@@ -30,11 +30,8 @@ docker pull allburov/whatsapp-http-api
 
 # First Steps
 
-We are going to show how to use WhatsApp HTTP API.
-
-TODO: Add GIF here
-
 ## Run and login
+
 Run WhatsApp HTTP API:
 
 ```bash
@@ -48,11 +45,6 @@ We will remember the session so there is no need to authenticate everytime.
 After that open in a browser the link and you'll see Swagger (OpenApi) API specification for WhatsApp HTTP API
 http://localhost:3000/#/
 
-## Get a screenshot
-
-Go to the "screenshot" section and get a screenshot http://localhost:3000/#/screenshot
-![](./docs/screenshot.png)
-
 ## Send a text message
 
 Let's try to send a message:
@@ -62,6 +54,11 @@ Let's try to send a message:
 export PHONE=79776772457
 curl -d "{\"chatId\": \"${PHONE}@c.us\", \"text\": \"Hello from WhatsApp HTTP API Free\" }" -H "Content-Type: application/json" -X POST http://localhost:3000/api/sendText
 ```
+
+## Get a screenshot
+
+Go to the "screenshot" section and get a screenshot http://localhost:3000/#/screenshot
+![](./docs/screenshot.png)
 
 ## Echo
 
