@@ -62,7 +62,7 @@ curl -d "{\"chatId\": \"${PHONE}@c.us\", \"text\": \"Hello from WhatsApp HTTP AP
 Go to the "screenshot" section and get a screenshot http://localhost:3000/#/screenshot
 ![](./docs/screenshot.png)
 
-## Echo
+## Receive messages
 
 To show how to receive messages we'll create a simple "echo" server with two functions:
 
