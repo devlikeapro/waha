@@ -9,12 +9,14 @@ app = Flask(__name__)
 
 @app.route("/")
 def whatsapp_echo():
-    return "WhatsApp Echo server is ready!"
+    return "WhatsApp HTTP API Echo server is ready!"
 
 
 @app.route("/message", methods=["GET", "POST"])
 def whatsapp_webhook():
     data = request.get_json()
+    if not data:
+        return "WhatsApp HTTP API Echo server is ready!"
     pprint(data)
     # The text
     text = data["body"]
