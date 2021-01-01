@@ -34,6 +34,7 @@ We are going to show how to use WhatsApp HTTP API.
 
 TODO: Add GIF here
 
+## Run and login
 ```bash
 docker run -it -v `pwd`/tokens:/app/tokens -p 127.0.0.1:3000:3000/tcp allburov/whatsapp-http-api
 ```
