@@ -12,7 +12,7 @@ async function bootstrap() {
     app.enableShutdownHooks();
     const options = new DocumentBuilder()
         .setTitle('WhatsApp HTTP API')
-        .setDescription('WhatsApp HTTP API that you can configure in a click')
+        .setDescription('WhatsApp HTTP API that you can configure in a click!\nGithub: https://github.com/allburov/whatsapp-http-api')
         .setVersion('1.0')
         .addTag('device', 'Device information')
         .addTag('chatting', 'Chat methods')
