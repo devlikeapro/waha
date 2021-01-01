@@ -2,6 +2,10 @@
 
 WhatsApp HTTP API that you can configure in a click! It's really Free! :)
 
+You can go through supported methods in Swagger here: https://allburov.github.io/whatsapp-http-api/
+
+The project is an HTTP wrapper around https://github.com/orkestral/venom, so we can also support these methods:
+
 |                                                            |     |
 | ---------------------------------------------------------- | --- |
 | Automatic QR Refresh                                       | ✔   |
@@ -16,8 +20,6 @@ WhatsApp HTTP API that you can configure in a click! It's really Free! :)
 | insert user section                                        | ✔   |
 | 📍 Send location!!                                         | ✔   |
 | 🕸🕸 **and much more**                                       | ✔   |
-
-The project is an HTTP wrapper around https://github.com/orkestral/venom
 
 # Installation
 
