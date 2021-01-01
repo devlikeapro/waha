@@ -1,6 +1,6 @@
 # WhatsApp HTTP API Free
 
-WhatsApp HTTP API that you can configure in a click! And it's Free! :)
+WhatsApp HTTP API that you can configure in a click! It's really Free! :)
 
 |                                                            |     |
 | ---------------------------------------------------------- | --- |
@@ -35,21 +35,23 @@ We are going to show how to use WhatsApp HTTP API.
 TODO: Add GIF here
 
 ## Run and login
+Run WhatsApp HTTP API:
 
 ```bash
 docker run -it -v `pwd`/tokens:/app/tokens -p 127.0.0.1:3000:3000/tcp allburov/whatsapp-http-api
 ```
 
 If you are not logged in, it will print a QR code in the terminal. Scan it with your phone and you are ready to go!
-We will remember the session so there is no need to authenticate everytime.
 [How to log in - the instruction on WhatsApp site](https://faq.whatsapp.com/general/download-and-installation/how-to-log-in-or-out/?lang=en)
+We will remember the session so there is no need to authenticate everytime.
 
-After that open in a browser the link and you'll see API swagger specification for you own WhatsApp HTTP API
+After that open in a browser the link and you'll see Swagger (OpenApi) API specification for WhatsApp HTTP API
 http://localhost:3000/#/
 
 ## Get a screenshot
 
 Go to the "screenshot" section and get a screenshot http://localhost:3000/#/screenshot
+![](./docs/screenshot.png)
 
 ## Send a text message
 
