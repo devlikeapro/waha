@@ -57,7 +57,7 @@ export class WhatsappService implements OnApplicationShutdown {
     private RETRY_DELAY = 15
     private RETRY_ATTEMPTS = 3;
     readonly FILES_FOLDER: string
-    readonly mimetypes: string[]
+    readonly mimetypes: string[] | null
     readonly files_lifetime: number
 
     constructor(
@@ -139,7 +139,7 @@ export class WhatsappService implements OnApplicationShutdown {
     private async downloadAndDecryptMedia(message: Message) {
         return this.whatsapp.decryptFile(message).then(async (buffer) => {
             // Download only certain mimetypes
-            if (this.mimetypes === null || !this.mimetypes.some((type) => message.mimetype.startsWith(type))) {
+            if (this.mimetypes !== null && !this.mimetypes.some((type) => message.mimetype.startsWith(type))) {
                 this.log.log(`The message ${message.id} has ${message.mimetype} media, skip it.`);
                 message.clientUrl = ""
                 return message

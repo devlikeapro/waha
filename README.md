@@ -35,6 +35,7 @@ We are going to show how to use WhatsApp HTTP API.
 TODO: Add GIF here
 
 ## Run and login
+
 ```bash
 docker run -it -v `pwd`/tokens:/app/tokens -p 127.0.0.1:3000:3000/tcp allburov/whatsapp-http-api
 ```
@@ -83,9 +84,9 @@ All webhooks are disabled by default:
 
 - `WHATSAPP_FILES_FOLDER` - folder where will be stored files from chats (images, voice messages) (
   default: `/tmp/whatsapp-files`)
-- `WHATSAPP_FILES_MIMETYPES` - download only these mimetypes from messages. Mimetypes must be separated by comma,
-  without spaces: `audio,image/png,image/gif`. In order to choose type use prefix (like `audio,image`). Disabled by
-  default, `message.clientUrl` will be equal emtpy string `""`.
+- `WHATSAPP_FILES_MIMETYPES` - download only these mimetypes from messages (download all files be default). Mimetypes
+  must be separated by a comma, without spaces: `audio,image/png,image/gif`. In order to choose type use prefix (
+  like `audio,image`).
 - `WHATSAPP_FILES_LIFETIME`- to keep free space files will be removed after this time (default: `180`, in seconds)
 
 # Development
