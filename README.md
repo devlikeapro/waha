@@ -2,8 +2,9 @@
 
 WhatsApp HTTP API that you can configure in a click! It's really Free! :)
 
-You can go through supported methods in Swagger here: https://allburov.github.io/whatsapp-http-api/
+> The article [Make a WhatsApp Bot Via HTTP API For Free And Fun!](https://allburov.medium.com/make-a-whatsapp-bot-for-free-and-fun-via-http-api-b3e6afcdf395) on Medium about this repository. 
 
+You can go [through currently supported methods in Swagger](https://allburov.github.io/whatsapp-http-api/)
 The project is an HTTP wrapper around https://github.com/orkestral/venom, so we can also support these methods:
 
 |                                                            |     |
