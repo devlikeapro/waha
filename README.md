@@ -1,6 +1,10 @@
 # WhatsApp HTTP API Free
 
-**NOTE**: If you have any problem with docker version of API - try to use the fork https://github.com/diazzaid/whatsapp-api-venom. It uses the latest Venom and probably works better. I haven't updated the venom here for a long time...
+**NOTE**
+
+If you have any problem with docker version of API - try to use the fork https://github.com/diazzaid/whatsapp-api-venom. It uses the latest Venom and probably works better. I haven't updated the venom here for a long time...
+
+----------
 
 WhatsApp HTTP API that you can configure in a click! It's really Free! :)
 
