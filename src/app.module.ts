@@ -1,4 +1,4 @@
-import {Logger, Module} from '@nestjs/common';
+import {ConsoleLogger, Logger, Module} from '@nestjs/common';
 import {ChattingController} from './api/chatting.controller';
 import {DeviceController} from "./api/device.controller";
 import {whatsappProvider, WhatsappService} from "./whatsapp.service";
@@ -9,12 +9,11 @@ import {ServeStaticModule} from "@nestjs/serve-static";
 
 @Module({
     imports: [
-        WhatsappConfigService,
         ConfigModule.forRoot({
             isGlobal: true,
         }),
         ServeStaticModule.forRootAsync({
-            imports: [WhatsappConfigService],
+            imports: [],
             extraProviders: [WhatsappConfigService],
             inject: [WhatsappConfigService],
             useFactory: (config: WhatsappConfigService) => {
@@ -26,7 +25,7 @@ import {ServeStaticModule} from "@nestjs/serve-static";
         }),
     ],
     controllers: [ChattingController, DeviceController, ScreenshotController],
-    providers: [whatsappProvider, WhatsappService, Logger, WhatsappConfigService],
+    providers: [whatsappProvider, WhatsappService, ConsoleLogger, WhatsappConfigService],
 })
 export class AppModule {
 }
