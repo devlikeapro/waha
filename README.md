@@ -58,7 +58,7 @@ Let's try to send a message:
 ```bash
 # Phone without +
 # Using GET
-curl http://localhost:3000/api/sendText?phone=79776772457&text=Hello+from+WhatsApp+HTTP+API+Free! 
+curl "http://localhost:3000/api/sendText?phone=79776772457&text=Hello+from+WhatsApp+HTTP+API+Free!"
 
 # Using POST 
 export PHONE=79776772457
