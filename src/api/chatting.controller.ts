@@ -1,4 +1,4 @@
-import {Body, Controller, Inject, NotImplementedException, Post} from '@nestjs/common';
+import {Body, Controller, Get, Inject, NotImplementedException, Post, Query} from '@nestjs/common';
 import {ApiOperation, ApiTags} from "@nestjs/swagger";
 import {
     Chat,
@@ -12,6 +12,15 @@ import {
 } from "./all.dto";
 import {Whatsapp} from "venom-bot";
 
+const SUFFIX_DIRECT_MESSAGE = "@c.us"
+
+function ensureSuffix(phone){
+    if (phone.endsWith(SUFFIX_DIRECT_MESSAGE)){
+        return phone
+    }
+    return phone + SUFFIX_DIRECT_MESSAGE
+}
+
 @Controller('api')
 @ApiTags('chatting')
 export class ChattingController {
@@ -23,10 +32,19 @@ export class ChattingController {
         return this.whatsapp.sendContactVcard(message.chatId, message.contactsId, message.name)
     }
 
+    @Get('/sendText')
+    @ApiOperation({summary: 'Send a text message'})
+    sendTextGet(
+        @Query('phone') phone: string,
+        @Query('text') text: string,
+    ) {
+        return this.whatsapp.sendText(ensureSuffix(phone), text)
+    }
+
     @Post('/sendText')
     @ApiOperation({summary: 'Send a text message'})
     sendText(@Body() message: MessageText) {
-        return this.whatsapp.sendText(message.chatId, message.text)
+        return this.whatsapp.sendText(ensureSuffix(message.chatId), message.text)
     }
 
     @Post('/sendLocation')

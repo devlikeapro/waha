@@ -32,7 +32,7 @@ export const whatsappProvider = {
             autoClose: 60000,
             createPathFileToken: true,
             puppeteerOptions: {},
-            multidevice: false
+            multidevice: false,
         }
     )
 }
