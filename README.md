@@ -44,6 +44,7 @@ docker pull allburov/whatsapp-http-api
 Run WhatsApp HTTP API:
 
 ```bash
+docker pull allburov/whatsapp-http-api 
 docker run -it -v `pwd`/tokens:/app/tokens -p 127.0.0.1:3000:3000/tcp allburov/whatsapp-http-api
 ```
 
@@ -60,6 +61,10 @@ Let's try to send a message:
 
 ```bash
 # Phone without +
+# Using GET
+curl "http://localhost:3000/api/sendText?phone=79776772457&text=Hello+from+WhatsApp+HTTP+API+Free!"
+
+# Using POST 
 export PHONE=79776772457
 curl -d "{\"chatId\": \"${PHONE}@c.us\", \"text\": \"Hello from WhatsApp HTTP API Free\" }" -H "Content-Type: application/json" -X POST http://localhost:3000/api/sendText
 ```

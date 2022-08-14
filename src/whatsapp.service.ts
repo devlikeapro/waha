@@ -1,5 +1,5 @@
 import {create, Message, Whatsapp} from "venom-bot";
-import {Inject, Injectable, Logger, OnApplicationShutdown} from "@nestjs/common";
+import {ConsoleLogger, Inject, Injectable, Logger, OnApplicationShutdown} from "@nestjs/common";
 import {ConfigService} from "@nestjs/config";
 import * as path from "path";
 import {WhatsappConfigService} from "./config.service";
@@ -21,9 +21,7 @@ export const whatsappProvider = {
         (base64Qr, asciiQR) => {
             console.log(asciiQR);
         },
-        (statusFind) => {
-            console.log(statusFind);
-        },
+        undefined,
         {
             headless: true,
             devtools: false,
@@ -34,8 +32,9 @@ export const whatsappProvider = {
             autoClose: 60000,
             createPathFileToken: true,
             puppeteerOptions: {},
+            multidevice: false,
         }
-    ),
+    )
 }
 
 const ONMESSAGE_HOOK = "onMessage"
@@ -63,7 +62,7 @@ export class WhatsappService implements OnApplicationShutdown {
     constructor(
         @Inject('WHATSAPP') private whatsapp: Whatsapp,
         private config: WhatsappConfigService,
-        private log: Logger,
+        private log: ConsoleLogger,
     ) {
         this.log.setContext('WhatsappService')
 
