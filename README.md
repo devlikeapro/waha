@@ -37,6 +37,7 @@ TODO: Add GIF here
 ## Run and login
 
 ```bash
+docker pull allburov/whatsapp-http-api 
 docker run -it -v `pwd`/tokens:/app/tokens -p 127.0.0.1:3000:3000/tcp allburov/whatsapp-http-api
 ```
 
