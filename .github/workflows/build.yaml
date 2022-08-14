@@ -9,7 +9,6 @@ jobs:
   deploy-docker:
     runs-on: ubuntu-latest
 
-    needs: deploy-pypi
     steps:
       - uses: actions/checkout@v2
 
