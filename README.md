@@ -45,7 +45,7 @@ Run WhatsApp HTTP API:
 
 ```bash
 docker pull allburov/whatsapp-http-api 
-docker run -it -v `pwd`/tokens:/app/tokens -p 127.0.0.1:3000:3000/tcp allburov/whatsapp-http-api
+docker run -it -v `pwd`/tokens:/app/tokens -p 3000:3000/tcp allburov/whatsapp-http-api
 ```
 
 If you are not logged in, it will print a QR code in the terminal. Scan it with your phone and you are ready to go!
