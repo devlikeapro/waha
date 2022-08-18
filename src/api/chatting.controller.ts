@@ -11,15 +11,7 @@ import {
     MessageText
 } from "./all.dto";
 import {Whatsapp} from "venom-bot";
-
-const SUFFIX_DIRECT_MESSAGE = "@c.us"
-
-function ensureSuffix(phone){
-    if (phone.endsWith(SUFFIX_DIRECT_MESSAGE)){
-        return phone
-    }
-    return phone + SUFFIX_DIRECT_MESSAGE
-}
+import {ensureSuffix} from "../whatsapp.service";
 
 @Controller('api')
 @ApiTags('chatting')

@@ -1,5 +1,5 @@
 import {create, Message, Whatsapp} from "venom-bot";
-import {ConsoleLogger, Inject, Injectable, Logger, OnApplicationShutdown} from "@nestjs/common";
+import {ConsoleLogger, Inject, Injectable, OnApplicationShutdown} from "@nestjs/common";
 import {ConfigService} from "@nestjs/config";
 import * as path from "path";
 import {WhatsappConfigService} from "./config.service";
@@ -168,4 +168,17 @@ export class WhatsappService implements OnApplicationShutdown {
         }), this.files_lifetime)
 
     }
+}
+
+const SUFFIX_DIRECT_MESSAGE = "@c.us"
+
+/**
+ * Add WhatsApp suffix (@c.us) to the phone number if it doesn't have it yet
+ * @param phone
+ */
+export function ensureSuffix(phone) {
+    if (phone.endsWith(SUFFIX_DIRECT_MESSAGE)) {
+        return phone
+    }
+    return phone + SUFFIX_DIRECT_MESSAGE
 }
