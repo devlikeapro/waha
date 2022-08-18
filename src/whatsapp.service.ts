@@ -66,10 +66,10 @@ export class WhatsappService implements OnApplicationShutdown {
     ) {
         this.log.setContext('WhatsappService')
 
-        this.FILES_FOLDER = this.config.files_folder
-        this.clean_downloads()
+        this.FILES_FOLDER = this.config.filesFolder
+        this.cleanDownloadsFolder()
         this.mimetypes = this.config.mimetypes
-        this.files_lifetime = this.config.files_lifetime * SECOND
+        this.files_lifetime = this.config.filesLifetime * SECOND
 
         this.log.log('Configuring webhooks...')
         for (const hook of HOOKS) {
@@ -90,7 +90,7 @@ export class WhatsappService implements OnApplicationShutdown {
         this.log.log('Webhooks were configured.')
     }
 
-    private clean_downloads() {
+    private cleanDownloadsFolder() {
         if (fs.existsSync(this.FILES_FOLDER)) {
             del([`${this.FILES_FOLDER}/*`], {force: true}).then((paths) =>
                 console.log('Deleted files and directories:\n', paths.join('\n'))
@@ -151,7 +151,7 @@ export class WhatsappService implements OnApplicationShutdown {
             await writeFileAsync(filePath, buffer);
             this.log.log(`The file from ${message.id} has been saved to ${filePath}`);
 
-            message.clientUrl = this.config.files_url + fileName
+            message.clientUrl = this.config.filesURL + fileName
             this.removeFile(filePath)
             return message
         });

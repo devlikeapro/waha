@@ -18,7 +18,7 @@ import {ServeStaticModule} from "@nestjs/serve-static";
             inject: [WhatsappConfigService],
             useFactory: (config: WhatsappConfigService) => {
                 return [{
-                    rootPath: config.files_folder,
+                    rootPath: config.filesFolder,
                     serveRoot: config.files_uri,
                 }]
             },
