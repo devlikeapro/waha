@@ -1,6 +1,5 @@
 import {create, Message, Whatsapp} from "venom-bot";
-import {ConsoleLogger, Inject, Injectable, OnApplicationShutdown} from "@nestjs/common";
-import {ConfigService} from "@nestjs/config";
+import {ConsoleLogger, Injectable, OnApplicationShutdown} from "@nestjs/common";
 import * as path from "path";
 import {WhatsappConfigService} from "./config.service";
 import request = require('requestretry');
@@ -15,28 +14,6 @@ const writeFileAsync = promisify(fs.writeFile)
 
 const SECOND = 1000;
 
-export const whatsappProvider = {
-    provide: 'WHATSAPP',
-    useFactory: async (config: ConfigService) => create('sessionName',
-        (base64Qr, asciiQR) => {
-            console.log(asciiQR);
-        },
-        undefined,
-        {
-            headless: true,
-            devtools: false,
-            useChrome: true,
-            debug: false,
-            logQR: true,
-            browserArgs: ["--no-sandbox"],
-            autoClose: 60000,
-            createPathFileToken: true,
-            puppeteerOptions: {},
-            multidevice: false,
-        }
-    )
-}
-
 const ONMESSAGE_HOOK = "onMessage"
 const HOOKS = [
     ONMESSAGE_HOOK,
@@ -50,26 +27,23 @@ const HOOKS = [
 const ENV_PREFIX = "WHATSAPP_HOOK_"
 
 
-@Injectable()
-export class WhatsappService implements OnApplicationShutdown {
-    // TODO: Use environment variables
+export class WhatsappService {
+    readonly filesFolder: string
+    readonly mimetypes: string[] | null
+    readonly filesLifetime: number
     private RETRY_DELAY = 15
     private RETRY_ATTEMPTS = 3;
-    readonly FILES_FOLDER: string
-    readonly mimetypes: string[] | null
-    readonly files_lifetime: number
+    private log: ConsoleLogger;
 
     constructor(
-        @Inject('WHATSAPP') private whatsapp: Whatsapp,
+        public whatsapp: Whatsapp,
         private config: WhatsappConfigService,
-        private log: ConsoleLogger,
     ) {
+        this.log = new ConsoleLogger()
         this.log.setContext('WhatsappService')
-
-        this.FILES_FOLDER = this.config.filesFolder
-        this.cleanDownloadsFolder()
+        this.filesFolder = this.config.filesFolder
         this.mimetypes = this.config.mimetypes
-        this.files_lifetime = this.config.filesLifetime * SECOND
+        this.filesLifetime = this.config.filesLifetime * SECOND
 
         this.log.log('Configuring webhooks...')
         for (const hook of HOOKS) {
@@ -88,17 +62,6 @@ export class WhatsappService implements OnApplicationShutdown {
             this.log.log(`Hook '${hook}' was enabled to url: ${url}`)
         }
         this.log.log('Webhooks were configured.')
-    }
-
-    private cleanDownloadsFolder() {
-        if (fs.existsSync(this.FILES_FOLDER)) {
-            del([`${this.FILES_FOLDER}/*`], {force: true}).then((paths) =>
-                console.log('Deleted files and directories:\n', paths.join('\n'))
-            )
-        } else {
-            fs.mkdirSync(this.FILES_FOLDER)
-            this.log.log(`Directory '${this.FILES_FOLDER}' created from scratch`)
-        }
     }
 
 
@@ -146,7 +109,7 @@ export class WhatsappService implements OnApplicationShutdown {
 
             this.log.log(`The message ${message.id} has media, downloading it...`);
             const fileName = `${message.id}.${mime.extension(message.mimetype)}`;
-            const filePath = path.resolve(`${this.FILES_FOLDER}/${fileName}`)
+            const filePath = path.resolve(`${this.filesFolder}/${fileName}`)
             this.log.verbose(`Writing file to ${filePath}...`)
             await writeFileAsync(filePath, buffer);
             this.log.log(`The file from ${message.id} has been saved to ${filePath}`);
@@ -157,16 +120,99 @@ export class WhatsappService implements OnApplicationShutdown {
         });
     }
 
-    onApplicationShutdown(signal ?: string): any {
-        this.log.log('Close a browser...')
-        return this.whatsapp.close()
-    }
-
     private removeFile(file: string) {
         setTimeout(() => fs.unlink(file, () => {
             this.log.log(`File ${file} was removed`)
-        }), this.files_lifetime)
+        }), this.filesLifetime)
+    }
+}
 
+@Injectable()
+export class WhatsappSessionManager implements OnApplicationShutdown {
+    readonly filesFolder: string
+    private readonly sessions: Record<string, WhatsappService>;
+    private sessionsQR: Record<string, string>;
+
+    constructor(
+        private config: WhatsappConfigService,
+        private log: ConsoleLogger,
+    ) {
+        this.log.setContext('WhatsappSessionManager')
+        this.filesFolder = this.config.filesFolder
+        this.cleanDownloadsFolder()
+        this.sessions = {}
+        this.sessionsQR = {}
+    }
+
+    async startSession(name: string) {
+        this.log.log(`Starting ${name} session...`)
+        const whatsapp = await create('sessionName',
+            (base64Qrimg, asciiQR, attempts, urlCode) => {
+                this.saveQR(name, base64Qrimg)
+                console.log('Number of attempts to read the qrcode: ', attempts);
+                console.log('Terminal qrcode: ', asciiQR);
+            },
+            undefined,
+            {
+                headless: true,
+                devtools: false,
+                useChrome: true,
+                debug: false,
+                logQR: true,
+                browserArgs: ["--no-sandbox"],
+                autoClose: 60000,
+                createPathFileToken: true,
+                puppeteerOptions: {},
+                multidevice: false,
+            }
+        )
+        this.sessions[name] = new WhatsappService(whatsapp, this.config)
+        this.deleteQR(name)
+    }
+
+    getQR(name: string) {
+        let qrBase64 = this.sessionsQR[name]
+        qrBase64 = qrBase64.replace(/^data:image\/png;base64,/, '');
+        return Buffer.from(qrBase64, "base64")
+    }
+
+    saveQR(name, base64Qrimg) {
+        this.sessionsQR[name] = base64Qrimg
+        console.log('base64 image string qrcode: ', base64Qrimg);
+    }
+
+    deleteQR(name) {
+        delete this.sessionsQR[name]
+    }
+
+    getSession(name: string): Whatsapp {
+        // TODO: Check session exists
+        return this.sessions[name].whatsapp
+    }
+
+    stopSession(name: string) {
+        this.log.log(`Stopping ${name} session...`)
+        this.log.log(`"${name}" has been stopped.`)
+    }
+
+    getAllSessions() {
+        return Object.keys(this.sessions) as Array<string>
+    }
+
+    onApplicationShutdown(signal ?: string): any {
+        this.log.log('Close a browser...')
+        // TODO: Stop all sessions
+    }
+
+    private cleanDownloadsFolder() {
+        if (fs.existsSync(this.filesFolder)) {
+            del([`${this.filesFolder}/*`], {force: true}).then((paths) =>
+                console.log('Deleted files and directories:\n', paths.join('\n'))
+            )
+        } else {
+            fs.mkdirSync(this.filesFolder)
+            this.log.log(`Directory '${this.filesFolder}' created from scratch`)
+        }
     }
 }
 

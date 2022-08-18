@@ -1,29 +1,38 @@
 import {ApiProperty} from "@nestjs/swagger";
 
-const chatId = ApiProperty({
+const chatIdProperty = ApiProperty({
     example: '791231234567@c.us'
 })
+const sessionNameProperty = ApiProperty({
+    default: "default",
+    example: 'default',
+})
+
+export class Session {
+    @sessionNameProperty
+    sessionName: string;
+}
 
 export class Chat {
-    @chatId
+    @chatIdProperty
     chatId: string;
 }
 
 export class MessageContactVcard {
-    @chatId
+    @chatIdProperty
     chatId: string;
     contactsId: string;
     name: string
 }
 
 export class MessageText {
-    @chatId
+    @chatIdProperty
     chatId: string;
     text: string;
 }
 
 export class MessageReply {
-    @chatId
+    @chatIdProperty
     chatId: string;
     text: string;
     @ApiProperty({
@@ -33,7 +42,7 @@ export class MessageReply {
 }
 
 export class MessageLocation {
-    @chatId
+    @chatIdProperty
     chatId: string;
     latitude: string;
     longitude: string;
@@ -41,7 +50,7 @@ export class MessageLocation {
 }
 
 export class MessageImage {
-    @chatId
+    @chatIdProperty
     chatId: string;
     path: string;
     filename: string;
@@ -49,7 +58,7 @@ export class MessageImage {
 }
 
 export class MessageFile {
-    @chatId
+    @chatIdProperty
     chatId: string;
     path: string;
     filename: string;
@@ -57,7 +66,7 @@ export class MessageFile {
 }
 
 export class MessageLinkPreview {
-    @chatId
+    @chatIdProperty
     chatId: string;
     url: string;
     title: string;
