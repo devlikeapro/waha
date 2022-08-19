@@ -2,7 +2,6 @@ import {create, Message, Whatsapp} from "venom-bot";
 import {ConsoleLogger, Injectable, NotFoundException, OnApplicationShutdown} from "@nestjs/common";
 import * as path from "path";
 import {WhatsappConfigService} from "./config.service";
-import {WHATSAPP_DEFAULT_SESSION_NAME} from "./api/all.dto";
 import {UnprocessableEntityException} from "@nestjs/common/exceptions/unprocessable-entity.exception";
 import request = require('requestretry');
 import mime = require('mime-types');
@@ -210,7 +209,6 @@ export class WhatsappSessionManager implements OnApplicationShutdown {
         this.log.setContext('WhatsappSessionManager')
         this.cleanDownloadsFolder(this.config.filesFolder)
         this.sessions = {}
-        this.startSession(WHATSAPP_DEFAULT_SESSION_NAME)
     }
 
     async startSession(name: string) {
