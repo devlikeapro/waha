@@ -1,7 +1,7 @@
 import {Body, Controller, Get, Post} from '@nestjs/common';
 import {ApiTags} from "@nestjs/swagger";
 import {WhatsappSessionManager} from "../whatsapp.service";
-import {Session} from "./all.dto";
+import {SessionRequest} from "./all.dto";
 
 
 @Controller('api/sessions')
@@ -12,14 +12,14 @@ export class SessionsController {
 
 
     @Post('/start/')
-    async start(@Body() query: Session) {
-        this.whatsappSessionManager.startSession(query.sessionName)
+    async start(@Body() request: SessionRequest) {
+        this.whatsappSessionManager.startSession(request.sessionName)
         return
     }
 
     @Post('/stop/')
-    async stop(@Body() query: Session) {
-        this.whatsappSessionManager.stopSession(query.sessionName)
+    async stop(@Body() request: SessionRequest) {
+        this.whatsappSessionManager.stopSession(request.sessionName)
         return
     }
 
