@@ -2,6 +2,7 @@ import {NestFactory} from '@nestjs/core';
 import {AppModule} from './app.module';
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 import {WhatsappConfigService} from "./config.service";
+import {AllExceptionsFilter} from "./api/exception.filter";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
@@ -10,6 +11,7 @@ async function bootstrap() {
     });
 
     app.enableShutdownHooks();
+    app.useGlobalFilters(new AllExceptionsFilter());
     const options = new DocumentBuilder()
         .setTitle('WhatsApp HTTP API')
         .setDescription('WhatsApp HTTP API that you can configure in a click!')

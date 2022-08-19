@@ -1,8 +1,9 @@
 import {create, Message, Whatsapp} from "venom-bot";
-import {ConsoleLogger, Injectable, OnApplicationShutdown} from "@nestjs/common";
+import {ConsoleLogger, Injectable, NotFoundException, OnApplicationShutdown} from "@nestjs/common";
 import * as path from "path";
 import {WhatsappConfigService} from "./config.service";
 import {WHATSAPP_DEFAULT_SESSION_NAME} from "./api/all.dto";
+import {UnprocessableEntityException} from "@nestjs/common/exceptions/unprocessable-entity.exception";
 import request = require('requestretry');
 import mime = require('mime-types');
 import fs = require('fs');
@@ -86,13 +87,13 @@ export class WhatsappService {
 
     public async getScreenshotOrQRCode(): Promise<Buffer | string> {
         if (this.status === WhatsappStatus.STARTING) {
-            //    TODO: raise an error please wait
+            throw new UnprocessableEntityException(`The session is starting, please try again after few seconds`);
         } else if (this.status === WhatsappStatus.SCAN_QR_CODE) {
             return this.getQRCode()
         } else if (this.status === WhatsappStatus.WORKING) {
             return await this.whatsapp.page.screenshot()
         } else {
-            //    TODO: throw unknown status
+            throw new UnprocessableEntityException(`Unknown status - ${this.status}`);
         }
 
     }
@@ -159,6 +160,11 @@ export class WhatsappService {
     }
 
     public getWhatsapp() {
+        if (this.status != WhatsappStatus.WORKING) {
+            throw new UnprocessableEntityException(
+                `The session status is "${this.status}". Please scan QR code first by using GET /screenshot method.`,
+            );
+        }
         return this.whatsapp
 
     }
@@ -215,12 +221,18 @@ export class WhatsappSessionManager implements OnApplicationShutdown {
     }
 
     getService(name: string): WhatsappService {
-        return this.sessions[name]
+        const session = this.sessions[name]
+        if (!session) {
+            throw new NotFoundException(
+                `We didn't find a session with name "${name}". Please start it first by using POST /sessions/start request`,
+            );
+        }
+        return session
     }
 
     getSession(name: string): Whatsapp {
-        // TODO: Check session exists
-        return this.sessions[name].getWhatsapp()
+        const service = this.getService(name)
+        return service.getWhatsapp()
     }
 
     stopSession(name: string) {
