@@ -26,44 +26,75 @@ const HOOKS = [
 ]
 const ENV_PREFIX = "WHATSAPP_HOOK_"
 
+enum WhatsappStatus {
+    STARTING = "STARTING",
+    SCAN_QR_CODE = "SCAN_QR_CODE",
+    WORKING = "WORKING",
+}
 
 export class WhatsappService {
+    private status: WhatsappStatus;
+    private qrCodeBase64: string;
     readonly filesFolder: string
     readonly mimetypes: string[] | null
     readonly filesLifetime: number
     private RETRY_DELAY = 15
     private RETRY_ATTEMPTS = 3;
     private log: ConsoleLogger;
+    private whatsapp: Whatsapp;
 
     constructor(
-        public whatsapp: Whatsapp,
         private config: WhatsappConfigService,
+        public name: string,
     ) {
+        this.name = name
+        this.status = WhatsappStatus.STARTING
         this.log = new ConsoleLogger()
-        this.log.setContext('WhatsappService')
+        this.log.setContext(`WhatsappService - ${this.name}`)
         this.filesFolder = this.config.filesFolder
         this.mimetypes = this.config.mimetypes
         this.filesLifetime = this.config.filesLifetime * SECOND
-
-        this.log.log('Configuring webhooks...')
-        for (const hook of HOOKS) {
-            const env_name = ENV_PREFIX + hook.toUpperCase()
-            const url = config.get(env_name)
-            if (!url) {
-                this.log.log(`Hook '${hook}' is disabled. Set ${env_name} environment variable to url if you want to enabled it.`)
-                continue
-            }
-
-            if (hook === ONMESSAGE_HOOK) {
-                this.whatsapp[hook](data => this.onMessageHook(data, url))
-            } else {
-                this.whatsapp[hook](data => this.callWebhook(data, url))
-            }
-            this.log.log(`Hook '${hook}' was enabled to url: ${url}`)
-        }
-        this.log.log('Webhooks were configured.')
     }
 
+    public async start() {
+        this.whatsapp = await create('sessionName',
+            (base64Qrimg, asciiQR, attempts, urlCode) => {
+                this.saveQRCode(base64Qrimg)
+                this.status = WhatsappStatus.SCAN_QR_CODE
+                console.log('Number of attempts to read the qrcode: ', attempts);
+                console.log('Terminal qrcode: ', asciiQR);
+            },
+            undefined,
+            {
+                headless: true,
+                devtools: false,
+                useChrome: true,
+                debug: false,
+                logQR: true,
+                browserArgs: ["--no-sandbox"],
+                autoClose: 60000,
+                createPathFileToken: true,
+                puppeteerOptions: {},
+                multidevice: false,
+            }
+        )
+        this.saveQRCode("")
+        this.configureWebhooks();
+        this.status = WhatsappStatus.WORKING
+    }
+
+    public async getScreenshotOrQRCode(): Promise<Buffer | string> {
+        if (this.status === WhatsappStatus.STARTING) {
+            //    TODO: raise an error please wait
+        } else if (this.status === WhatsappStatus.SCAN_QR_CODE) {
+            return this.getQRCode()
+        } else if (this.status === WhatsappStatus.WORKING) {
+            return await this.whatsapp.page.screenshot()
+        } else {
+            //    TODO: throw unknown status
+        }
+
+    }
 
     private callWebhook(data, url) {
         this.log.log(`Sending POST to ${url}...`)
@@ -125,69 +156,69 @@ export class WhatsappService {
             this.log.log(`File ${file} was removed`)
         }), this.filesLifetime)
     }
+
+    public getWhatsapp() {
+        return this.whatsapp
+
+    }
+
+    private configureWebhooks() {
+        this.log.log('Configuring webhooks...')
+        for (const hook of HOOKS) {
+            const env_name = ENV_PREFIX + hook.toUpperCase()
+            const url = this.config.get(env_name)
+            if (!url) {
+                this.log.log(`Hook '${hook}' is disabled. Set ${env_name} environment variable to url if you want to enabled it.`)
+                continue
+            }
+
+            if (hook === ONMESSAGE_HOOK) {
+                this.whatsapp[hook](data => this.onMessageHook(data, url))
+            } else {
+                this.whatsapp[hook](data => this.callWebhook(data, url))
+            }
+            this.log.log(`Hook '${hook}' was enabled to url: ${url}`)
+        }
+        this.log.log('Webhooks were configured.')
+    }
+
+    private saveQRCode(base64Qrimg) {
+        base64Qrimg = base64Qrimg.replace(/^data:image\/png;base64,/, '');
+        this.qrCodeBase64 = base64Qrimg
+    }
+
+    private getQRCode() {
+        return Buffer.from(this.qrCodeBase64, "base64")
+    }
 }
 
 @Injectable()
 export class WhatsappSessionManager implements OnApplicationShutdown {
-    readonly filesFolder: string
     private readonly sessions: Record<string, WhatsappService>;
-    private sessionsQR: Record<string, string>;
 
     constructor(
         private config: WhatsappConfigService,
         private log: ConsoleLogger,
     ) {
         this.log.setContext('WhatsappSessionManager')
-        this.filesFolder = this.config.filesFolder
-        this.cleanDownloadsFolder()
+        this.cleanDownloadsFolder(this.config.filesFolder)
         this.sessions = {}
-        this.sessionsQR = {}
     }
 
     async startSession(name: string) {
         this.log.log(`Starting ${name} session...`)
-        const whatsapp = await create('sessionName',
-            (base64Qrimg, asciiQR, attempts, urlCode) => {
-                this.saveQR(name, base64Qrimg)
-                console.log('Number of attempts to read the qrcode: ', attempts);
-                console.log('Terminal qrcode: ', asciiQR);
-            },
-            undefined,
-            {
-                headless: true,
-                devtools: false,
-                useChrome: true,
-                debug: false,
-                logQR: true,
-                browserArgs: ["--no-sandbox"],
-                autoClose: 60000,
-                createPathFileToken: true,
-                puppeteerOptions: {},
-                multidevice: false,
-            }
-        )
-        this.sessions[name] = new WhatsappService(whatsapp, this.config)
-        this.deleteQR(name)
+        const session = new WhatsappService(this.config, name)
+        session.start()
+        this.sessions[name] = session
     }
 
-    getQR(name: string) {
-        let qrBase64 = this.sessionsQR[name]
-        qrBase64 = qrBase64.replace(/^data:image\/png;base64,/, '');
-        return Buffer.from(qrBase64, "base64")
-    }
-
-    saveQR(name, base64Qrimg) {
-        this.sessionsQR[name] = base64Qrimg
-        console.log('base64 image string qrcode: ', base64Qrimg);
-    }
-
-    deleteQR(name) {
-        delete this.sessionsQR[name]
+    getService(name: string): WhatsappService {
+        return this.sessions[name]
     }
 
     getSession(name: string): Whatsapp {
         // TODO: Check session exists
-        return this.sessions[name].whatsapp
+        return this.sessions[name].getWhatsapp()
     }
 
     stopSession(name: string) {
@@ -204,14 +235,14 @@ export class WhatsappSessionManager implements OnApplicationShutdown {
         // TODO: Stop all sessions
     }
 
-    private cleanDownloadsFolder() {
-        if (fs.existsSync(this.filesFolder)) {
-            del([`${this.filesFolder}/*`], {force: true}).then((paths) =>
+    private cleanDownloadsFolder(filesFolder) {
+        if (fs.existsSync(filesFolder)) {
+            del([`${filesFolder}/*`], {force: true}).then((paths) =>
                 console.log('Deleted files and directories:\n', paths.join('\n'))
             )
         } else {
-            fs.mkdirSync(this.filesFolder)
-            this.log.log(`Directory '${this.filesFolder}' created from scratch`)
+            fs.mkdirSync(filesFolder)
+            this.log.log(`Directory '${filesFolder}' created from scratch`)
         }
     }
 }
