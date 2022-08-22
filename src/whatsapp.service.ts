@@ -34,7 +34,7 @@ enum WhatsappStatus {
 }
 
 export class WhatsappService {
-    private status: WhatsappStatus;
+    public status: WhatsappStatus;
     private qrCodeBase64: string;
     readonly filesFolder: string
     readonly mimetypes: string[] | null
@@ -42,7 +42,7 @@ export class WhatsappService {
     private RETRY_DELAY = 15
     private RETRY_ATTEMPTS = 3;
     private log: ConsoleLogger;
-    private whatsapp: Whatsapp;
+    public whatsapp: Whatsapp;
 
     constructor(
         private config: WhatsappConfigService,
@@ -158,6 +158,9 @@ export class WhatsappService {
         }), this.filesLifetime)
     }
 
+    /**
+     * Get venom instance if it's working (with no QR code required)
+     */
     public getWhatsapp() {
         if (this.status != WhatsappStatus.WORKING) {
             throw new UnprocessableEntityException(
@@ -233,18 +236,26 @@ export class WhatsappSessionManager implements OnApplicationShutdown {
         return service.getWhatsapp()
     }
 
-    stopSession(name: string) {
+    async stopSession(name: string) {
         this.log.log(`Stopping ${name} session...`)
+        const service = this.getService(name)
+        await service.getWhatsapp().close()
         this.log.log(`"${name}" has been stopped.`)
+        delete this.sessions[name]
     }
 
     getAllSessions() {
-        return Object.keys(this.sessions) as Array<string>
+        const result = Object.values(this.sessions).map((session) => {
+            return {name: session.name, status: session.status}
+        })
+        return result
     }
 
-    onApplicationShutdown(signal ?: string): any {
-        this.log.log('Close a browser...')
-        // TODO: Stop all sessions
+    async onApplicationShutdown(signal ?: string) {
+        this.log.log('Stop all sessions...')
+        for (const sessionName of Object.keys(this.sessions)) {
+            await this.stopSession(sessionName)
+        }
     }
 
     private cleanDownloadsFolder(filesFolder) {
