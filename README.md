@@ -2,11 +2,11 @@
 
 WhatsApp HTTP API that you can configure in a click! It's really Free! :)
 
-The project provides you HTTP API for Whatsapp that you can use to send and receive messages!
-
-You can go [through currently supported methods in Swagger](https://allburov.github.io/whatsapp-http-api/)
+The project provides you HTTP API for Whatsapp that you can use to send and receive messages. You can
+go [through currently supported methods in Swagger](https://allburov.github.io/whatsapp-http-api/)
 
 The project is an HTTP API wrapper around https://github.com/orkestral/venom
+
 
 # Installation
 
@@ -135,36 +135,13 @@ All webhooks are disabled by default:
   like `audio,image`).
 - `WHATSAPP_FILES_LIFETIME`- to keep free space files will be removed after this time (default: `180`, in seconds)
 
-# Development
+# Support
 
-Use node 10 version:
+If you want to support the project - you can either:
 
-```bash
-$ npm install
-```
+1. Create a Pull Request for desired functionality
+2. Support [the project one time](https://boosty.to/allburov/single-payment/post/e7db2841-5b53-4e5e-bb37-e0fdcbab8d2b)
+3. Support [the project every month](https://boosty.to/allburov/purchase/1015878)
+4.
+Support [the project every month and get access to private telegram channel](https://boosty.to/allburov/purchase/1015879)
 
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
