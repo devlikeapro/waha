@@ -19,7 +19,9 @@ docker pull allburov/whatsapp-http-api
 
 # First Steps
 
-## Run
+We're going to go through basic steps and send a text message at the end!
+
+## Run WhatsAPP HTTP API
 
 Run WhatsApp HTTP API:
 
@@ -30,18 +32,17 @@ docker run -it --rm -v `pwd`/tokens:/app/tokens -p 127.0.0.1:3000:3000/tcp --nam
 # WhatsApp HTTP API is running on: http://[::1]:3000
 ```
 
-Open the link in your browser http: http://localhost:3000/
+Open the link in your browser: http://localhost:3000/
 
 Note: We don't recommend expose the API outside the world because it does not
 support ([yet](https://github.com/allburov/whatsapp-http-api/issues/4)) authorization!
 
 ## Create a new session and login
 
-To start a new session you should have your mobile phone with installed WhatsApp application close to you.
-Please go and read how what we'll need to a bit
-later: [How to log in - the instruction on WhatsApp site](https://faq.whatsapp.com/381777293328336/?helpref=hc_fnav)
-
-1. Go to http://localhost:3000/
+1. To start a new session you should have your mobile phone with installed WhatsApp application close to you. Please go
+   and read how what we'll need to a bit
+   later: [How to log in - the instruction on WhatsApp site](https://faq.whatsapp.com/381777293328336/?helpref=hc_fnav)
+2. Open API documentation at http://localhost:3000/
 2. **Start a new session with a name** (you can use `default` for the start)  - find `POST /api/session/start`, click
    on *Try it out*, then **Execute** a bit below.
 3. **Scan QR Code** - find `GET /api/screenshot` and execute it, it'll show you QR code that you must scan with your
@@ -66,14 +67,15 @@ export PHONE=79776772457
 curl -d "{\"chatId\": \"${PHONE}@c.us\", \"text\": \"Hello from WhatsApp HTTP API Free\" }" -H "Content-Type: application/json" -X POST http://localhost:3000/api/sendText
 ```
 
-## Receive messages
+# Receive messages
 
 To show how to receive messages we'll create a simple "echo" server with two functions:
 
 1. When we receive a text message - just send the text back
 2. When we receive a message with a file (an image, a voice message) - download it and send the path back
 
-In order to send you messages we use webhooks and configure them via environments variables. So what you need to
+In order to send you messages we use **Webhooks** (look at them below) and configure them via environments variables. So
+what you need to
 create "echo" server is HTTP server that will receive JSON POST request and then call back WhatsApp HTTP API
 via `POST /api/sendText` endpoint with JSON body.
 
