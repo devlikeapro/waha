@@ -27,10 +27,11 @@ const HOOKS = [
 ]
 const ENV_PREFIX = "WHATSAPP_HOOK_"
 
-enum WhatsappStatus {
+export enum WhatsappStatus {
     STARTING = "STARTING",
     SCAN_QR_CODE = "SCAN_QR_CODE",
     WORKING = "WORKING",
+    FAILED = "FAILED",
 }
 
 export class WhatsappService {
@@ -58,27 +59,35 @@ export class WhatsappService {
     }
 
     public async start() {
-        this.whatsapp = await create('sessionName',
-            (base64Qrimg, asciiQR, attempts, urlCode) => {
-                this.saveQRCode(base64Qrimg)
-                this.status = WhatsappStatus.SCAN_QR_CODE
-                console.log('Number of attempts to read the qrcode: ', attempts);
-                console.log('Terminal qrcode: ', asciiQR);
-            },
-            undefined,
-            {
-                headless: true,
-                devtools: false,
-                useChrome: true,
-                debug: false,
-                logQR: true,
-                browserArgs: ["--no-sandbox"],
-                autoClose: 60000,
-                createPathFileToken: true,
-                puppeteerOptions: {},
-                multidevice: false,
-            }
-        )
+        try {
+            this.whatsapp = await create('sessionName',
+                (base64Qrimg, asciiQR, attempts, urlCode) => {
+                    this.saveQRCode(base64Qrimg)
+                    this.status = WhatsappStatus.SCAN_QR_CODE
+                    console.log('Number of attempts to read the qrcode: ', attempts);
+                    console.log('Terminal qrcode: ', asciiQR);
+                },
+                undefined,
+                {
+                    headless: true,
+                    devtools: false,
+                    useChrome: true,
+                    debug: false,
+                    logQR: true,
+                    browserArgs: ["--no-sandbox"],
+                    autoClose: 60000,
+                    createPathFileToken: true,
+                    puppeteerOptions: {},
+                    multidevice: false,
+                }
+            )
+        } catch (error) {
+            this.status = WhatsappStatus.FAILED
+            this.log.error(error)
+            this.saveQRCode("")
+            return
+        }
+
         this.saveQRCode("")
         this.configureWebhooks();
         this.status = WhatsappStatus.WORKING
@@ -239,7 +248,7 @@ export class WhatsappSessionManager implements OnApplicationShutdown {
     async stopSession(name: string) {
         this.log.log(`Stopping ${name} session...`)
         const service = this.getService(name)
-        await service.getWhatsapp().close()
+        await service.whatsapp.close()
         this.log.log(`"${name}" has been stopped.`)
         delete this.sessions[name]
     }
