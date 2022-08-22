@@ -142,6 +142,5 @@ If you want to support the project - you can either:
 1. Create a Pull Request for desired functionality
 2. Support [the project one time](https://boosty.to/allburov/single-payment/post/e7db2841-5b53-4e5e-bb37-e0fdcbab8d2b)
 3. Support [the project every month](https://boosty.to/allburov/purchase/1015878)
-4.
-Support [the project every month and get access to private telegram channel](https://boosty.to/allburov/purchase/1015879)
+4. Support [the project and get access to private telegram channel](https://boosty.to/allburov/purchase/1015879)
 
