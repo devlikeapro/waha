@@ -2,25 +2,11 @@
 
 WhatsApp HTTP API that you can configure in a click! It's really Free! :)
 
-> The article [Make a WhatsApp Bot Via HTTP API For Free And Fun!](https://allburov.medium.com/make-a-whatsapp-bot-for-free-and-fun-via-http-api-b3e6afcdf395) on Medium about this repository. 
+The project provides you HTTP API for Whatsapp that you can use to send and receive messages. You can
+go [through currently supported methods in Swagger](https://allburov.github.io/whatsapp-http-api/)
 
-You can go [through currently supported methods in Swagger](https://allburov.github.io/whatsapp-http-api/)
-The project is an HTTP wrapper around https://github.com/orkestral/venom, so we can also support these methods:
+The project is an HTTP API wrapper around https://github.com/orkestral/venom
 
-|                                                            |     |
-| ---------------------------------------------------------- | --- |
-| Automatic QR Refresh                                       | ✔   |
-| Send **text, image, video, audio and docs**                | ✔   |
-| Get **contacts, chats, groups, group members, Block List** | ✔   |
-| Send contacts                                              | ✔   |
-| Send stickers                                              | ✔   |
-| Send stickers GIF                                          | ✔   |
-| Multiple Sessions                                          | ✔   |
-| Forward Messages                                           | ✔   |
-| Receive message                                            | ✔   |
-| insert user section                                        | ✔   |
-| 📍 Send location!!                                         | ✔   |
-| 🕸🕸 **and much more**                                       | ✔   |
 
 # Installation
 
@@ -33,25 +19,43 @@ docker pull allburov/whatsapp-http-api
 
 # First Steps
 
-## Run and login
+We're going to go through basic steps and send a text message at the end!
+
+## Run WhatsAPP HTTP API
 
 Run WhatsApp HTTP API:
 
 ```bash
-docker pull allburov/whatsapp-http-api 
-docker run -it -v `pwd`/tokens:/app/tokens -p 3000:3000/tcp allburov/whatsapp-http-api
+docker run -it --rm -v `pwd`/tokens:/app/tokens -p 127.0.0.1:3000:3000/tcp --name whatsapp-http-api allburov/whatsapp-http-api
+
+# It prints logs and the last line must be 
+# WhatsApp HTTP API is running on: http://[::1]:3000
 ```
 
-If you are not logged in, it will print a QR code in the terminal. Scan it with your phone and you are ready to go!
-[How to log in - the instruction on WhatsApp site](https://faq.whatsapp.com/general/download-and-installation/how-to-log-in-or-out/?lang=en)
-We will remember the session so there is no need to authenticate everytime.
+Open the link in your browser: http://localhost:3000/
 
-After that open in a browser the link and you'll see Swagger (OpenApi) API specification for WhatsApp HTTP API
-http://localhost:3000/#/
+Note: We don't recommend expose the API outside the world because it does not
+support ([yet](https://github.com/allburov/whatsapp-http-api/issues/4)) authorization!
+
+## Create a new session and login
+
+1. To start a new session you should have your mobile phone with installed WhatsApp application close to you. Please go
+   and read how what we'll need to a bit
+   later: [How to log in - the instruction on WhatsApp site](https://faq.whatsapp.com/381777293328336/?helpref=hc_fnav)
+2. Open API documentation at http://localhost:3000/
+2. **Start a new session with a name** (you can use `default` for the start)  - find `POST /api/session/start`, click
+   on **Try it out**, then **Execute** a bit below.
+3. **Scan QR Code** - find `GET /api/screenshot` and execute it, it'll show you QR code that you must scan with your
+   device.
+4. **Get a screenshot** from Whatsapp again! It'll show you the screenshot of you Whatsapp instance.
+5. If you can get the actual screenshot - then you're ready to start sending messages!
+   ![](./docs/screenshot.png)
 
 ## Send a text message
 
-Let's try to send a message:
+Let's try to send a message - you can either find `POST /api/sendText`  in swagger (http://localhost:3000/) or
+use `curl` or just open a link in a browser (change the phone
+before!) http://localhost:3000/api/sendText?phone=79776772457&text=Hello+from+WhatsApp+HTTP+API+Free!
 
 ```bash
 # Phone without +
@@ -63,19 +67,15 @@ export PHONE=79776772457
 curl -d "{\"chatId\": \"${PHONE}@c.us\", \"text\": \"Hello from WhatsApp HTTP API Free\" }" -H "Content-Type: application/json" -X POST http://localhost:3000/api/sendText
 ```
 
-## Get a screenshot
-
-Go to the "screenshot" section and get a screenshot http://localhost:3000/#/screenshot
-![](./docs/screenshot.png)
-
-## Receive messages
+# Receive messages
 
 To show how to receive messages we'll create a simple "echo" server with two functions:
 
 1. When we receive a text message - just send the text back
 2. When we receive a message with a file (an image, a voice message) - download it and send the path back
 
-In order to send you messages we use webhooks and configure them via environments variables. So what you need to
+In order to send you messages we use **Webhooks** (look at them below) and configure them via environments variables. So
+what you need to
 create "echo" server is HTTP server that will receive JSON POST request and then call back WhatsApp HTTP API
 via `POST /api/sendText` endpoint with JSON body.
 
@@ -135,36 +135,12 @@ All webhooks are disabled by default:
   like `audio,image`).
 - `WHATSAPP_FILES_LIFETIME`- to keep free space files will be removed after this time (default: `180`, in seconds)
 
-# Development
+# Support
 
-Use node 10 version:
+If you want to support the project - you can either:
 
-```bash
-$ npm install
-```
+1. Create a Pull Request for desired functionality
+2. Support [the project one time](https://boosty.to/allburov/single-payment/post/e7db2841-5b53-4e5e-bb37-e0fdcbab8d2b)
+3. Support [the project every month](https://boosty.to/allburov/purchase/1015878)
+4. Support [the project and get access to private telegram channel](https://boosty.to/allburov/purchase/1015879)
 
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```

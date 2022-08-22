@@ -1,19 +1,24 @@
-import {Controller, Get, Inject, Res} from '@nestjs/common';
+import {Controller, Get, Query, Res} from '@nestjs/common';
 import {ApiTags} from "@nestjs/swagger";
-import {Whatsapp} from "venom-bot";
 import {Readable} from "stream";
 import {Response} from 'express';
+import {WhatsappSessionManager} from "../whatsapp.service";
+import {SessionQuery} from "./all.dto";
 
 
 @Controller('api')
 @ApiTags('screenshot')
 export class ScreenshotController {
-    constructor(@Inject('WHATSAPP') private whatsapp: Whatsapp) {
+    constructor(private whatsappSessionManager: WhatsappSessionManager) {
     }
 
     @Get('/screenshot')
-    async screenshot(@Res() res: Response,) {
-        const buffer = await this.whatsapp.page.screenshot();
+    async screenshot(
+        @Res() res: Response,
+        @Query() sessionQuery: SessionQuery,
+    ) {
+        const whatsappService = this.whatsappSessionManager.getService(sessionQuery.sessionName)
+        const buffer = await whatsappService.getScreenshotOrQRCode();
         const stream = new Readable();
         stream.push(buffer);
         stream.push(null);

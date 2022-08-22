@@ -9,7 +9,7 @@ export class WhatsappConfigService {
     constructor(private configService: ConfigService) {
     }
 
-    get files_url(): string {
+    get filesURL(): string {
         return `${this.schema}://${this.hostname}:${this.port}${this.files_uri}/`
     }
 
@@ -27,14 +27,14 @@ export class WhatsappConfigService {
         )
     }
 
-    get files_folder(): string {
+    get filesFolder(): string {
         return this.configService.get(
             'WHATSAPP_FILES_FOLDER',
             '/tmp/whatsapp-files',
         )
     }
 
-    get files_lifetime(): number {
+    get filesLifetime(): number {
         return this.configService.get<number>(
             'WHATSAPP_FILES_LIFETIME',
             180,
