@@ -18,7 +18,7 @@ async function bootstrap() {
         .setExternalDoc("Github WhatsApp HTTP API", "https://github.com/allburov/whatsapp-http-api")
         .setVersion('1.0')
         .addTag('sessions', 'Control your WhatsApp sessions')
-        .addTag('screenshot', 'Get QR code or the screenshot of WhatsApp')
+        .addTag('screenshot', 'Get screenshot of WhatsApp and show QR code')
         .addTag('chatting', 'Chat methods')
         .addTag('device', 'Device information')
         .addApiKey({
