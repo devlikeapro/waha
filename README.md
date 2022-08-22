@@ -44,7 +44,7 @@ support ([yet](https://github.com/allburov/whatsapp-http-api/issues/4)) authoriz
    later: [How to log in - the instruction on WhatsApp site](https://faq.whatsapp.com/381777293328336/?helpref=hc_fnav)
 2. Open API documentation at http://localhost:3000/
 2. **Start a new session with a name** (you can use `default` for the start)  - find `POST /api/session/start`, click
-   on *Try it out*, then **Execute** a bit below.
+   on **Try it out**, then **Execute** a bit below.
 3. **Scan QR Code** - find `GET /api/screenshot` and execute it, it'll show you QR code that you must scan with your
    device.
 4. **Get a screenshot** from Whatsapp again! It'll show you the screenshot of you Whatsapp instance.
