@@ -137,7 +137,7 @@ All webhooks are disabled by default:
 
 # Support
 
-If you want to support the project - you can either:
+If you want [to support the project](https://boosty.to/allburov) - you can either:
 
 1. Create a Pull Request for desired functionality
 2. Support [the project one time](https://boosty.to/allburov/single-payment/post/e7db2841-5b53-4e5e-bb37-e0fdcbab8d2b)
