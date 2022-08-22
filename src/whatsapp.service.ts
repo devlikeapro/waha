@@ -248,7 +248,9 @@ export class WhatsappSessionManager implements OnApplicationShutdown {
     async stopSession(name: string) {
         this.log.log(`Stopping ${name} session...`)
         const service = this.getService(name)
-        await service.whatsapp.close()
+        if (service.whatsapp) {
+            await service.whatsapp.close()
+        }
         this.log.log(`"${name}" has been stopped.`)
         delete this.sessions[name]
     }
