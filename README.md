@@ -2,24 +2,11 @@
 
 WhatsApp HTTP API that you can configure in a click! It's really Free! :)
 
+The project provides you HTTP API for Whatsapp that you can use to send and receive messages!
 
 You can go [through currently supported methods in Swagger](https://allburov.github.io/whatsapp-http-api/)
-The project is an HTTP wrapper around https://github.com/orkestral/venom, so we can also support these methods:
 
-|                                                            |     |
-| ---------------------------------------------------------- | --- |
-| Automatic QR Refresh                                       | ✔   |
-| Send **text, image, video, audio and docs**                | ✔   |
-| Get **contacts, chats, groups, group members, Block List** | ✔   |
-| Send contacts                                              | ✔   |
-| Send stickers                                              | ✔   |
-| Send stickers GIF                                          | ✔   |
-| Multiple Sessions                                          | ✔   |
-| Forward Messages                                           | ✔   |
-| Receive message                                            | ✔   |
-| insert user section                                        | ✔   |
-| 📍 Send location!!                                         | ✔   |
-| 🕸🕸 **and much more**                                       | ✔   |
+The project is an HTTP API wrapper around https://github.com/orkestral/venom
 
 # Installation
 
@@ -32,25 +19,42 @@ docker pull allburov/whatsapp-http-api
 
 # First Steps
 
-## Run and login
+## Run
 
 Run WhatsApp HTTP API:
 
 ```bash
-docker pull allburov/whatsapp-http-api 
-docker run -it -v `pwd`/tokens:/app/tokens -p 3000:3000/tcp allburov/whatsapp-http-api
+docker run -it --rm -v `pwd`/tokens:/app/tokens -p 127.0.0.1:3000:3000/tcp --name whatsapp-http-api allburov/whatsapp-http-api
+
+# It prints logs and the last line must be 
+# WhatsApp HTTP API is running on: http://[::1]:3000
 ```
 
-If you are not logged in, it will print a QR code in the terminal. Scan it with your phone and you are ready to go!
-[How to log in - the instruction on WhatsApp site](https://faq.whatsapp.com/general/download-and-installation/how-to-log-in-or-out/?lang=en)
-We will remember the session so there is no need to authenticate everytime.
+Open the link in your browser http: http://localhost:3000/
 
-After that open in a browser the link and you'll see Swagger (OpenApi) API specification for WhatsApp HTTP API
-http://localhost:3000/#/
+Note: We don't recommend expose the API outside the world because it does not
+support ([yet](https://github.com/allburov/whatsapp-http-api/issues/4)) authorization!
+
+## Create a new session and login
+
+To start a new session you should have your mobile phone with installed WhatsApp application close to you.
+Please go and read how what we'll need to a bit
+later: [How to log in - the instruction on WhatsApp site](https://faq.whatsapp.com/381777293328336/?helpref=hc_fnav)
+
+1. Go to http://localhost:3000/
+2. **Start a new session with a name** (you can use `default` for the start)  - find `POST /api/session/start`, click
+   on *Try it out*, then **Execute** a bit below.
+3. **Scan QR Code** - find `GET /api/screenshot` and execute it, it'll show you QR code that you must scan with your
+   device.
+4. **Get a screenshot** from Whatsapp again! It'll show you the screenshot of you Whatsapp instance.
+5. If you can get the actual screenshot - then you're ready to start sending messages!
+   ![](./docs/screenshot.png)
 
 ## Send a text message
 
-Let's try to send a message:
+Let's try to send a message - you can either find `POST /api/sendText`  in swagger (http://localhost:3000/) or
+use `curl` or just open a link in a browser (change the phone
+before!) http://localhost:3000/api/sendText?phone=79776772457&text=Hello+from+WhatsApp+HTTP+API+Free!
 
 ```bash
 # Phone without +
@@ -61,11 +65,6 @@ curl "http://localhost:3000/api/sendText?phone=79776772457&text=Hello+from+Whats
 export PHONE=79776772457
 curl -d "{\"chatId\": \"${PHONE}@c.us\", \"text\": \"Hello from WhatsApp HTTP API Free\" }" -H "Content-Type: application/json" -X POST http://localhost:3000/api/sendText
 ```
-
-## Get a screenshot
-
-Go to the "screenshot" section and get a screenshot http://localhost:3000/#/screenshot
-![](./docs/screenshot.png)
 
 ## Receive messages
 
