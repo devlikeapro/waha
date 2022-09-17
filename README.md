@@ -42,14 +42,16 @@ support ([yet](https://github.com/allburov/whatsapp-http-api/issues/4)) authoriz
 1. To start a new session you should have your mobile phone with installed WhatsApp application close to you. Please go
    and read how what we'll need to a bit
    later: [How to log in - the instruction on WhatsApp site](https://faq.whatsapp.com/381777293328336/?helpref=hc_fnav)
-2. Open API documentation at http://localhost:3000/
-2. **Start a new session with a name** (you can use `default` for the start)  - find `POST /api/session/start`, click
+1. Open API documentation at http://localhost:3000/
+1. **Start a new session with a name** (you can use `default` for the start)  - find `POST /api/session/start`, click
    on **Try it out**, then **Execute** a bit below.
-3. **Scan QR Code** - find `GET /api/screenshot` and execute it, it'll show you QR code that you must scan with your
+   ![](./docs/images/session-start.png)
+1. **Scan QR Code** - find `GET /api/screenshot` and execute it, it'll show you QR code that you must scan with your
    device.
-4. **Get a screenshot** from Whatsapp again! It'll show you the screenshot of you Whatsapp instance.
-5. If you can get the actual screenshot - then you're ready to start sending messages!
-   ![](./docs/screenshot.png)
+   ![](./docs/images/qr.png)
+1. **Get a screenshot again** - it'll show you the screenshot of you Whatsapp instance. If you can get the actual
+   screenshot - then you're ready to start sending messages!
+   ![](./docs/images/screenshot.png)
 
 ## Send a text message
 
