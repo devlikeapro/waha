@@ -23,8 +23,6 @@ jobs:
           images: allburov/whatsapp-http-api
           flavor: latest=true
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
             type=semver,pattern={{version}}
 
       - name: Login to image repository
