@@ -288,7 +288,7 @@ const SUFFIX_DIRECT_MESSAGE = "@c.us"
  * @param phone
  */
 export function ensureSuffix(phone) {
-    if (phone.endsWith(SUFFIX_DIRECT_MESSAGE)) {
+    if (phone.includes("@")) {
         return phone
     }
     return phone + SUFFIX_DIRECT_MESSAGE
