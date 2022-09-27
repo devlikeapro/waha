@@ -2,6 +2,7 @@ import {Body, Controller, Get, NotImplementedException, Post, Query} from '@nest
 import {ApiOperation, ApiTags} from "@nestjs/swagger";
 import {
     ChatRequest,
+    CheckNumberStatusQuery,
     MessageContactVcard,
     MessageFile,
     MessageImage,
@@ -17,6 +18,20 @@ import {ensureSuffix, WhatsappSessionManager} from "../whatsapp.service";
 @ApiTags('chatting')
 export class ChattingController {
     constructor(private whatsappSessionManager: WhatsappSessionManager) {
+    }
+
+    @Get('/checkNumberStatus')
+    @ApiOperation({summary: 'Check number status'})
+    async checkNumberStatus(
+        @Query() request: CheckNumberStatusQuery,
+    ) {
+        const whatsapp = this.whatsappSessionManager.getSession(request.sessionName)
+        try {
+            const result = await whatsapp.checkNumberStatus(ensureSuffix(request.phone))
+            return {numberExists: result['numberExists']}
+        } catch (e) {
+            return {numberExists: false}
+        }
     }
 
     @Post('/sendContactVcard')
