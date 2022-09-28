@@ -221,6 +221,9 @@ export class WhatsappSessionManager implements OnApplicationShutdown {
         this.log.setContext('WhatsappSessionManager')
         this.cleanDownloadsFolder(this.config.filesFolder)
         this.sessions = {}
+        if (config.startSession) {
+            this.startSession(config.startSession)
+        }
     }
 
     async startSession(name: string) {

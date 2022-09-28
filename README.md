@@ -116,6 +116,7 @@ If you try to send an image the "echo server" will send a path to the downloaded
 - `DEBUG` - show debug and verbose logs, set in any value
 - `WHATSAPP_API_PORT` - listen port for HTTP server (default: `3000`)
 - `WHATSAPP_API_HOSTNAME` - Hostname for HTTP server (default: `localhost`)
+- `WHATSAPP_START_SESSION` - start session with that name right after launching the app
 
 ## Webhooks
 

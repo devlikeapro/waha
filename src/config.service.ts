@@ -46,6 +46,10 @@ export class WhatsappConfigService {
         return types ? types.split(',') : null
     }
 
+    get startSession(): string | undefined {
+        return this.configService.get('WHATSAPP_START_SESSION', undefined)
+    }
+
     get(name: string): any {
         return this.configService.get(name)
     }
