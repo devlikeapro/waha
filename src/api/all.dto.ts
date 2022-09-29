@@ -53,6 +53,12 @@ export class MessageText extends ChatRequest {
     text: string;
 }
 
+export class MessageTextButtons extends ChatRequest {
+    text: string;
+    title: string;
+    buttons: any[];
+}
+
 export class MessageReply extends ChatRequest {
     text: string;
     @ApiProperty({
