@@ -10,7 +10,8 @@ import {
     MessageLocation,
     MessageReply,
     MessageText,
-    MessageTextQuery
+    MessageTextQuery,
+    MessageTextButtons
 } from "./all.dto";
 import {ensureSuffix, WhatsappSessionManager} from "../whatsapp.service";
 
@@ -54,6 +55,13 @@ export class ChattingController {
     sendText(@Body() message: MessageText) {
         const whatsapp = this.whatsappSessionManager.getSession(message.sessionName)
         return whatsapp.sendText(ensureSuffix(message.chatId), message.text)
+    }
+
+    @Post('/sendTextButtons')
+    @ApiOperation({summary: 'Send a text message with buttons'})
+    sendTextButtons(@Body() message: MessageTextButtons) {
+        const whatsapp = this.whatsappSessionManager.getSession(message.sessionName)
+        return whatsapp.sendButtons(ensureSuffix(message.chatId), message.title, message.buttons, message.text)
     }
 
     @Post('/sendLocation')
