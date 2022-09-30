@@ -22,6 +22,8 @@ The project is an HTTP API wrapper around https://github.com/orkestral/venom
   * [Common](#common)
   * [Webhooks](#webhooks)
   * [File storage](#file-storage)
+- [How to](#how-to)
+  * [How to build the newest Docker image locally](#how-to-build-the-newest-docker-image-locally)
 - [Support](#support)
 
 <!-- tocstop -->
@@ -155,6 +157,16 @@ All webhooks are disabled by default:
   must be separated by a comma, without spaces: `audio,image/png,image/gif`. In order to choose type use prefix (
   like `audio,image`).
 - `WHATSAPP_FILES_LIFETIME`- to keep free space files will be removed after this time (default: `180`, in seconds)
+
+# How to
+## How to build the newest Docker image locally
+
+If the changes haven't been released yet from `main` branch - you can build your own version from the git repository
+```bash
+git clone https://github.com/allburov/whatsapp-http-api.git
+cd whatsapp-http-api
+docker build . -t allburov/whatsapp-http-api
+```
 
 # Support
 
