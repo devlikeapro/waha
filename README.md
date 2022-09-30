@@ -7,6 +7,24 @@ go [through currently supported methods in Swagger](https://allburov.github.io/w
 
 The project is an HTTP API wrapper around https://github.com/orkestral/venom
 
+# Tables of Contents
+
+<!-- toc -->
+
+- [Installation](#installation)
+- [First Steps](#first-steps)
+  * [Run WhatsAPP HTTP API](#run-whatsapp-http-api)
+  * [Create a new session and login](#create-a-new-session-and-login)
+  * [Send a text message](#send-a-text-message)
+- [Receive messages](#receive-messages)
+    + [Python echo server](#python-echo-server)
+- [Environment variables](#environment-variables)
+  * [Common](#common)
+  * [Webhooks](#webhooks)
+  * [File storage](#file-storage)
+- [Support](#support)
+
+<!-- tocstop -->
 
 # Installation
 
