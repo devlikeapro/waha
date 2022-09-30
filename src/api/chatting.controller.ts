@@ -61,18 +61,6 @@ export class ChattingController {
     @ApiOperation({summary: 'Send a text message with buttons'})
     sendTextButtons(@Body() message: MessageTextButtons) {
         const whatsapp = this.whatsappSessionManager.getSession(message.sessionName)
-        /* const buttons = [
-            {
-              "buttonText": {
-                "displayText": "Text of Button 1"
-                }
-              },
-            {
-              "buttonText": {
-                "displayText": "Text of Button 2"
-                }
-              }
-            ] */
         return whatsapp.sendButtons(ensureSuffix(message.chatId), message.title, message.buttons, message.text)
     }
 
