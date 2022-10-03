@@ -65,7 +65,8 @@ export class WhatsappService {
                     this.saveQRCode(base64Qrimg)
                     this.status = WhatsappStatus.SCAN_QR_CODE
                     console.log('Number of attempts to read the qrcode: ', attempts);
-                    console.log('Terminal qrcode: ', asciiQR);
+                    console.log('Terminal qrcode:');
+                    console.log(asciiQR);
                 },
                 undefined,
                 {
