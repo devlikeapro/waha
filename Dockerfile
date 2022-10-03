@@ -19,5 +19,6 @@ RUN npm install
 WORKDIR /app
 ADD . /app
 RUN npm run build
-ENTRYPOINT npm run start:prod
 EXPOSE 3000
+
+CMD npm run start:prod
