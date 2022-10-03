@@ -10,8 +10,8 @@ import {
     MessageLocation,
     MessageReply,
     MessageText,
-    MessageTextQuery,
-    MessageTextButtons
+    MessageTextButtons,
+    MessageTextQuery
 } from "./all.dto";
 import {ensureSuffix, WhatsappSessionManager} from "../whatsapp.service";
 
@@ -30,7 +30,11 @@ export class ChattingController {
         try {
             const result = await whatsapp.checkNumberStatus(ensureSuffix(request.phone))
             return {numberExists: result['numberExists']}
-        } catch (e) {
+        } catch (error) {
+            // We need to "touch" the error in order to get unhandled rejections
+            // It logs out the session and stop the app
+            console.log(typeof error)
+            console.log(error)
             return {numberExists: false}
         }
     }
