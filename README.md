@@ -144,6 +144,7 @@ The description of [webhooks you can in Venom README.md, section Events](https:/
 
 All webhooks are disabled by default:
 
+- `WHATSAPP_HOOK_ONANYMESSAGE=http://localhost/uri`
 - `WHATSAPP_HOOK_ONMESSAGE=http://localhost/uri`
 - `WHATSAPP_HOOK_ONSTATECHANGE=http://localhost/uri`
 - `WHATSAPP_HOOK_ONACK=http://localhost/uri`

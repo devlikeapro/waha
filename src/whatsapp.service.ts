@@ -15,9 +15,11 @@ const writeFileAsync = promisify(fs.writeFile)
 
 const SECOND = 1000;
 
-const ONMESSAGE_HOOK = "onMessage"
+const ON_ANY_MESSAGE_HOOK = "onAnyMessage"
+const ON_MESSAGE_HOOK = "onMessage"
 const HOOKS = [
-    ONMESSAGE_HOOK,
+    ON_ANY_MESSAGE_HOOK,
+    ON_MESSAGE_HOOK,
     "onStateChange",
     "onAck",
     // TODO: IMPLEMENTED THESE TOO
@@ -191,7 +193,7 @@ export class WhatsappService {
                 continue
             }
 
-            if (hook === ONMESSAGE_HOOK) {
+            if (hook === ON_MESSAGE_HOOK || hook == ON_ANY_MESSAGE_HOOK) {
                 this.whatsapp[hook](data => this.onMessageHook(data, url))
             } else {
                 this.whatsapp[hook](data => this.callWebhook(data, url))
