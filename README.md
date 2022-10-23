@@ -5,7 +5,7 @@ WhatsApp HTTP API that you can configure in a click! It's really Free! :)
 The project provides you HTTP API for Whatsapp that you can use to send and receive messages. You can
 go [through currently supported methods in Swagger](https://allburov.github.io/whatsapp-http-api/)
 
-The project is an HTTP API wrapper around https://github.com/orkestral/venom
+> The project is an HTTP API wrapper around https://github.com/orkestral/venom
 
 # Tables of Contents
 
@@ -181,4 +181,5 @@ If you want to support the project - you can either:
 
 1. Create a Pull Request for desired functionality
 2. Support [the project one time, every month or get access to telegram channel on Boosty](https://boosty.to/allburov)
+3. Looking for the personal support, have an important feature request for your business, need to develop a whatsapp bot? [Reach me out at Telegram](https://t.me/allburov)!
 
