@@ -1,5 +1,14 @@
 repos:
-  - repo: https://github.com/Lucas-C/pre-commit-hooks-nodejs
-    rev: v1.1.2
+  - repo: local
     hooks:
-      - id: markdown-toc
+      - id: no-plus-in-core
+        name: No "plus" in core
+        language: pygrep
+        entry: 'plus'
+        files: |
+            (?x)^(
+                src/api/.*|
+                src/core/.*|
+                src/structures/.*|
+                src/config.service.ts|
+            )$          

@@ -1,30 +1,30 @@
 import {Body, Controller, Get, Post} from '@nestjs/common';
-import {ApiTags} from "@nestjs/swagger";
-import {WhatsappSessionManager} from "../whatsapp.service";
-import {SessionRequest} from "./all.dto";
+import {ApiSecurity, ApiTags} from "@nestjs/swagger";
+import {SessionDTO, SessionStartRequest, SessionStopRequest} from "../structures/sessions.dto";
+import {SessionManager} from "../core/abc/manager.abc";
 
 
+@ApiSecurity('api_key')
 @Controller('api/sessions')
 @ApiTags('sessions')
 export class SessionsController {
-    constructor(private whatsappSessionManager: WhatsappSessionManager) {
+    constructor(private manager: SessionManager) {
     }
 
 
     @Post('/start/')
-    async start(@Body() request: SessionRequest) {
-        // Do not wait it, because we get venom instance only after scanning QR code
-        this.whatsappSessionManager.startSession(request.sessionName)
+    start(@Body() request: SessionStartRequest): SessionDTO {
+        return this.manager.start(request)
     }
 
     @Post('/stop/')
-    async stop(@Body() request: SessionRequest) {
-        await this.whatsappSessionManager.stopSession(request.sessionName)
+    stop(@Body() request: SessionStopRequest): Promise<void> {
+        return this.manager.stop(request)
     }
 
     @Get('/')
-    async list() {
-        return this.whatsappSessionManager.getAllSessions()
+    list(): SessionDTO[] {
+        return this.manager.getSessions()
     }
 }
 

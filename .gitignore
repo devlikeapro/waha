@@ -1,6 +1,8 @@
-tokens
+.sessions
 files
 venv
+.wwebjs_auth
+test.js
 
 # compiled output
 /dist

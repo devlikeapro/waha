@@ -1,0 +1,36 @@
+---
+title : "Configuration"
+description: "Configuration"
+lead: ""
+date: 2020-10-06T08:48:45+00:00
+lastmod: 2020-10-06T08:48:45+00:00
+draft: false
+images: []
+weight: 400
+---
+You can configure WhatsApp HTTP API behaviour via environment variables, by adding `-e WHATSAPP_VARNAME=value` at the
+begging of the command line or by using [other options](https://docs.docker.com/engine/reference/commandline/run/)
+
+```bash
+docker run -it -e WHATSAPP_HOOK_EVENTS=* -e WHATSAPP_HOOK_URL=https://httpbin.org/post devlikeapro/whatsapp-http-api
+```
+
+## Environment variables
+
+### Common
+
+- `DEBUG=1` - show debug and verbose logs, set in any value
+- `WHATSAPP_API_PORT=3000` - listen port for HTTP server (default: `3000`)
+- `WHATSAPP_API_HOSTNAME=localhost` - Hostname for HTTP server (default: `localhost`)
+- `WHATSAPP_API_KEY=mysecret` - protect the api with a secret code. If you set it - add `X-Api-Key: mysecret` to all
+  requests.
+- `WHATSAPP_START_SESSION=default` - start session with the name right after launching the app
+-
+
+## File storage ![](/images/versions/plus.png)
+- `WHATSAPP_FILES_MIMETYPES` - download only these mimetypes from messages (download all files be default). Mimetypes
+  must be separated by a comma, without spaces: `audio,image/png,image/gif`. In order to choose type use prefix (
+  like `audio,image`).
+- `WHATSAPP_FILES_LIFETIME`- to keep free space files will be removed after this time (default: `180`, in seconds)
+- `WHATSAPP_FILES_FOLDER` - folder where will be stored files from chats (images, voice messages) (
+  default: `/tmp/whatsapp-files`)

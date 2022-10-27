@@ -20,7 +20,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: allburov/whatsapp-http-api
+          images: ${{ secrets.DOCKER_IMAGE }}
           flavor: latest=true
           tags: |
             type=semver,pattern={{version}}

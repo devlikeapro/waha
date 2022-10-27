@@ -1,10 +1,23 @@
 import {NestFactory} from '@nestjs/core';
-import {AppModule} from './app.module';
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 import {WhatsappConfigService} from "./config.service";
 import {AllExceptionsFilter} from "./api/exception.filter";
+import {getWAHAVersion, VERSION, WAHAVersion} from "./version";
+
+async function getAppModule() {
+    const version = getWAHAVersion()
+    console.log(`WAHA (WhatsApp HTTP API) - Running ${version} version...`)
+
+    if (version === WAHAVersion.CORE) {
+        const {AppModuleCore} = await import("./core/app.module.core")
+        return AppModuleCore
+    }
+    const {AppModulePlus} = await import("./plus/app.module.plus")
+    return AppModulePlus
+}
 
 async function bootstrap() {
+    const AppModule = await getAppModule()
     const app = await NestFactory.create(AppModule, {
         logger: process.env.DEBUG != undefined ? ['log', 'debug', 'error', 'verbose', 'warn'] :
             ['log', 'error', 'warn'],
@@ -13,18 +26,18 @@ async function bootstrap() {
     app.enableShutdownHooks();
     app.useGlobalFilters(new AllExceptionsFilter());
     const options = new DocumentBuilder()
-        .setTitle('WhatsApp HTTP API')
+        .setTitle('WAHA - WhatsApp HTTP API')
         .setDescription('WhatsApp HTTP API that you can configure in a click!')
-        .setExternalDoc("Github WhatsApp HTTP API", "https://github.com/allburov/whatsapp-http-api")
-        .setVersion('1.0')
+        .setExternalDoc("Documentation", "https://waha.devlike.pro/")
+        .setVersion(VERSION.version)
         .addTag('sessions', 'Control your WhatsApp sessions')
         .addTag('screenshot', 'Get screenshot of WhatsApp and show QR code')
         .addTag('chatting', 'Chat methods')
-        .addTag('device', 'Device information')
+        .addTag('other', 'Other endpoints')
         .addApiKey({
                 type: 'apiKey',
-                description: 'Your secret key',
-                name: 'X-VENOM-TOKEN'
+                description: 'Your secret api key',
+                name: 'X-Api-Key'
             }
         )
         .build();
