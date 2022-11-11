@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Help on</title><link>https://doks-child-theme.netlify.app/docs/help/</link><description>Recent content in Help on</description><generator>Hugo -- gohugo.io</generator><lastBuildDate>Tue, 06 Oct 2020 08:49:15 +0000</lastBuildDate><atom:link href="https://doks-child-theme.netlify.app/docs/help/index.xml" rel="self" type="application/rss+xml"/><item><title>Changelog</title><link>https://doks-child-theme.netlify.app/docs/help/changelog/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://doks-child-theme.netlify.app/docs/help/changelog/</guid><description>2022.11 #
+Engine #
+WAHA has changed its underlying engine from Venom to Whatsapp Web.JS. It might change the response and webhook&amp;rsquo;s payloads.
+Please test changes in test environment before update production!!
+Requests #
+For all /api/session/ requests use name field instead of sessionName. For all &amp;ldquo;chatting&amp;rdquo; requests use session field instead of sessionName. Sessions #
+Now you don&amp;rsquo;t have to scan QR code each time you run WAHA, WAHA saves it for you!</description></item><item><title>How to Update</title><link>https://doks-child-theme.netlify.app/docs/help/how-to-update/</link><pubDate>Thu, 12 Nov 2020 13:26:54 +0100</pubDate><guid>https://doks-child-theme.netlify.app/docs/help/how-to-update/</guid><description>💡 Please test all new versions in the development environment before updating production! Core #
+For Core version the command is
+docker pull devlikeapro/whatsapp-http-api Plus #
+For Plus version, we use login to get the image before:
+docker login -u devlikeapro -p {PASSWORD} docker pull devlikeapro/whatsapp-http-api-plus docker logout Read more about how to get PASSWORD for Plus Version →</description></item><item><title>FAQ</title><link>https://doks-child-theme.netlify.app/docs/help/faq/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://doks-child-theme.netlify.app/docs/help/faq/</guid><description>How to build the newest Docker image locally #
+If the changes haven&amp;rsquo;t been released yet from main branch - you can build your own version from the git repository
+git clone https://github.com/devlikeapro/whatsapp-http-api.git cd whatsapp-http-api docker build . -t devlikeapro/whatsapp-http-api</description></item></channel></rss>
