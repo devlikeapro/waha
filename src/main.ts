@@ -12,6 +12,8 @@ async function getAppModule() {
         const {AppModuleCore} = await import("./core/app.module.core")
         return AppModuleCore
     }
+    // Ignore if it's core version - there's no plus module
+    // @ts-ignore
     const {AppModulePlus} = await import("./plus/app.module.plus")
     return AppModulePlus
 }
