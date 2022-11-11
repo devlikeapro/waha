@@ -1,4 +1,4 @@
-baseurl = "https://doks-child-theme.netlify.app/"
+baseurl = "https://waha.devlike.pro/"
 canonifyURLs = false
 disableAliases = true
 disableHugoGeneratorInject = true
