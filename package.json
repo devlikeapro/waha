@@ -42,7 +42,7 @@
     "rxjs": "^7.1.0",
     "swagger-ui-express": "^4.1.4",
     "venom-bot": "^4.3.0",
-    "whatsapp-web.js": "^1.18.2"
+    "whatsapp-web.js": "github:mrfelipemartins/whatsapp-web.js#fix-group-module"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
