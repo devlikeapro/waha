@@ -8,6 +8,4 @@ Now you don&amp;rsquo;t have to scan QR code each time you run WAHA, WAHA saves 
 For Core version the command is
 docker pull devlikeapro/whatsapp-http-api Plus #
 For Plus version, we use login to get the image before:
-docker login -u devlikeapro -p {PASSWORD} docker pull devlikeapro/whatsapp-http-api-plus docker logout Read more about how to get PASSWORD for Plus Version →</description></item><item><title>FAQ</title><link>https://waha.devlike.pro/docs/help/faq/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://waha.devlike.pro/docs/help/faq/</guid><description>How to build the newest Docker image locally #
-If the changes haven&amp;rsquo;t been released yet from main branch - you can build your own version from the git repository
-git clone https://github.com/devlikeapro/whatsapp-http-api.git cd whatsapp-http-api docker build . -t devlikeapro/whatsapp-http-api</description></item></channel></rss>
+docker login -u devlikeapro -p {PASSWORD} docker pull devlikeapro/whatsapp-http-api-plus docker logout Read more about how to get PASSWORD for Plus Version →</description></item></channel></rss>
