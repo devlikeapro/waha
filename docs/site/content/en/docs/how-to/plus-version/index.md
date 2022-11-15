@@ -32,6 +32,12 @@ Treat **WAHA Plus** it as an additional episode, behind-the-scenes videos, our n
 We donate most of the donations down to the stream to the underlying libraries and tools - JS-community, Node, other libraries authors, personal contributors.
 By donating to the **WAHA** you donate to the Open Source world!
 
+### Special New Year Offer!
+We set minimum donation to **$19** till **January 15, 2022**!
+
+You can subscribe now and get **WAHA Plus** version for almost free!
+Stay subscribed and the donation amount WILL NOT be changed for your - **always $19** even after **January 15, 2022**!
+
 ## Features
 
 The Plus additional features are:
