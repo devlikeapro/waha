@@ -77,13 +77,13 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         throw new NotImplementedByEngineError()
     }
 
-    sendText(request: MessageTextRequest): Promise<WAMessage> {
-        return this.whatsapp.sendMessage(this.ensureSuffix(request.chatId), request.text).then(this.toWAMessage)
+    sendText(request: MessageTextRequest) {
+        return this.whatsapp.sendMessage(this.ensureSuffix(request.chatId), request.text)
     }
 
     sendTextButtons(request: MessageTextButtonsRequest) {
         const message = new Buttons("", request.buttons, request.title, request.text)
-        return this.whatsapp.sendMessage(this.ensureSuffix(request.chatId), message).then(this.toWAMessage)
+        return this.whatsapp.sendMessage(this.ensureSuffix(request.chatId), message)
     }
 
     sendContactVCard(request: MessageContactVcardRequest) {
@@ -94,7 +94,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         const options = {
             quotedMessageId: request.reply_to,
         };
-        return this.whatsapp.sendMessage(request.chatId, request.text, options).then(this.toWAMessage)
+        return this.whatsapp.sendMessage(request.chatId, request.text, options)
     }
 
     sendImage(request: MessageImageRequest) {
