@@ -1,4 +1,5 @@
 .sessions
+tokens
 files
 venv
 .wwebjs_auth
