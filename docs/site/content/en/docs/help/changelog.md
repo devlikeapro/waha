@@ -14,10 +14,12 @@ toc: true
 ---
 
 ## 2022.11
-### Engine ![](/images/versions/core.png) ![](/images/versions/plus.png)
-WAHA has changed its underlying engine from Venom to Whatsapp Web.JS. It might change the response and webhook's payloads.
-
 **Please test changes in test environment before update production!!**
+
+### Engine ![](/images/versions/core.png) ![](/images/versions/plus.png)
+1. WAHA has changed its underlying engine from Venom to Whatsapp Web.JS. It might change the response and webhook's payloads.
+2. Optimize CPU and memory consumption.
+
 
 ### Requests ![](/images/versions/core.png) ![](/images/versions/plus.png)
 - For all `/api/session/` requests use `name` field instead of `sessionName`.

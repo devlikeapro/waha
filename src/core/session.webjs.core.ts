@@ -31,8 +31,8 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         return new Client({
             puppeteer: {
                 headless: true,
-                executablePath: "/usr/bin/google-chrome-stable",
-                args: ['--no-sandbox', '--disable-setuid-sandbox'],
+                executablePath: this.getBrowserExecutablePath(),
+                args: this.getBrowserArgsForPuppeteer(),
             }
         });
     }

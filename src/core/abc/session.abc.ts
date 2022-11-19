@@ -26,6 +26,40 @@ export abstract class WhatsappSession {
         this.log = log
     }
 
+    getBrowserExecutablePath(){
+        return "/usr/bin/google-chrome-stable"
+    }
+
+    getBrowserArgsForPuppeteer() {
+        // Run optimized version of Chrome
+        // References:
+        // https://github.com/pedroslopez/whatsapp-web.js/issues/1420
+        // https://www.bannerbear.com/blog/ways-to-speed-up-puppeteer-screenshots/
+        return [
+            '--no-sandbox',
+            '--disable-client-side-phishing-detection',
+            '--disable-setuid-sandbox',
+            '--disable-component-update',
+            '--disable-default-apps',
+            '--disable-popup-blocking',
+            '--disable-offer-store-unmasked-wallet-cards',
+            '--disable-speech-api',
+            '--hide-scrollbars',
+            '--mute-audio',
+            '--disable-extensions',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-default-browser-check',
+            '--no-pings',
+            '--password-store=basic',
+            '--use-mock-keychain',
+            '--no-zygote',
+            '--single-process',
+            '--disable-gpu'
+        ]
+    }
+
 
     /** Start the session */
     abstract start()
