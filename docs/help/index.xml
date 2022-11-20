@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Help on</title><link>https://waha.devlike.pro/docs/help/</link><description>Recent content in Help on</description><generator>Hugo -- gohugo.io</generator><lastBuildDate>Tue, 06 Oct 2020 08:49:15 +0000</lastBuildDate><atom:link href="https://waha.devlike.pro/docs/help/index.xml" rel="self" type="application/rss+xml"/><item><title>Changelog</title><link>https://waha.devlike.pro/docs/help/changelog/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://waha.devlike.pro/docs/help/changelog/</guid><description>2022.11 #
-Engine #
-WAHA has changed its underlying engine from Venom to Whatsapp Web.JS. It might change the response and webhook&amp;rsquo;s payloads.
 Please test changes in test environment before update production!!
-Requests #
+Engine #
+WAHA has changed its underlying engine from Venom to Whatsapp Web.JS. It might change the response and webhook&amp;rsquo;s payloads. Optimize CPU and memory consumption. Requests #
 For all /api/session/ requests use name field instead of sessionName. For all &amp;ldquo;chatting&amp;rdquo; requests use session field instead of sessionName. Sessions #
 Now you don&amp;rsquo;t have to scan QR code each time you run WAHA, WAHA saves it for you!</description></item><item><title>How to Update</title><link>https://waha.devlike.pro/docs/help/how-to-update/</link><pubDate>Thu, 12 Nov 2020 13:26:54 +0100</pubDate><guid>https://waha.devlike.pro/docs/help/how-to-update/</guid><description>💡 Please test all new versions in the development environment before updating production! Core #
 For Core version the command is
