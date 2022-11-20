@@ -24,8 +24,8 @@ To authorize requests - set X-Api-Key header to yoursecretkey for all requests t
 Plus version allows you to save &amp;ldquo;session&amp;rdquo; state and avoid scanning QR code everytime when you start a container.
 File storage #
 If you want to save your session and do not scan QR code everytime when you launch WAHA - connect a local file storage to the container. WAHA stores authentication information in the directory and reuses it after restart.
-Attach volume part to the command:</description></item><item><title>Plus version</title><link>https://waha.devlike.pro/docs/how-to/plus-version/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/plus-version/</guid><description>WAHA is distributed in two versions:
-Core the basic version that meet almost 80% people’s needs. 100% free and open source. Plus the version with advanced messages, security, and reliability features. Plus version - available through donations - either one time or subscription.
-It doesn&amp;rsquo;t require monthly subscriptions, once installed on your server - it always works!
-💡 No licence checks or expiration on already installed instances! Donations #
-We do not sell WAHA, it&amp;rsquo;s not a purchase.</description></item></channel></rss>
+Attach volume part to the command:</description></item><item><title>Plus version</title><link>https://waha.devlike.pro/docs/how-to/plus-version/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/plus-version/</guid><description>Overview #
+WAHA is distributed in two versions:
+Core the basic version that meet almost 80% people’s needs. 100% free and open source. Plus the version with advanced messages, security, and reliability features. If you enjoy Core version and would like to support the project - you can subscribe on Core level. It&amp;rsquo;s not expensive, but it supports the project a lot!
+Boosty -&amp;gt; Patreon -&amp;gt; Features #
+The Plus additional features are:</description></item></channel></rss>
