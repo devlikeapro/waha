@@ -7,4 +7,6 @@ Now you don&amp;rsquo;t have to scan QR code each time you run WAHA, WAHA saves 
 For Core version the command is
 docker pull devlikeapro/whatsapp-http-api Plus #
 For Plus version, we use login to get the image before:
-docker login -u devlikeapro -p {PASSWORD} docker pull devlikeapro/whatsapp-http-api-plus docker logout Read more about how to get PASSWORD for Plus Version →</description></item></channel></rss>
+docker login -u devlikeapro -p {PASSWORD} docker pull devlikeapro/whatsapp-http-api-plus docker logout Read more about how to get PASSWORD for Plus Version →</description></item><item><title>FAQ</title><link>https://waha.devlike.pro/docs/help/faq/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://waha.devlike.pro/docs/help/faq/</guid><description>How much CPU and Memory does WhatsApp HTTP API consume? #
+The benchmark has been made on Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz. It may differ from case to case, it depends on usage pattern - how many messages you get, how many send, etc.
+Accounts (sessions) in the container CPU Memory 1 30% 400MB 10 270% 1.5GB The nature of WhatsApp HTTP API and its underlying engines - is to run real WhatsApp Web version in Chrome and communicate with it to prevent blocking from WhatsApp.</description></item></channel></rss>
