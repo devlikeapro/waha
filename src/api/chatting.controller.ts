@@ -28,7 +28,7 @@ export class ChattingController {
     @Get('/checkNumberStatus')
     @ApiOperation({summary: 'Check number status'})
     async checkNumberStatus(@Query() request: CheckNumberStatusQuery): Promise<WANumberExistResult> {
-        const whatsapp = this.manager.getSession(request.sessionName)
+        const whatsapp = this.manager.getSession(request.session)
         return whatsapp.checkNumberStatus(request)
     }
 
@@ -43,11 +43,11 @@ export class ChattingController {
     sendTextGet(
         @Query() query: MessageTextQuery,
     ) {
-        const whatsapp = this.manager.getSession(query.sessionName)
+        const whatsapp = this.manager.getSession(query.session)
         const msg = new MessageTextRequest()
         msg.chatId = query.phone
         msg.text = query.text
-        return whatsapp.sendText(new MessageTextRequest())
+        return whatsapp.sendText(msg)
     }
 
     @Post('/sendText')
