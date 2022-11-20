@@ -125,14 +125,13 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
 
     async checkNumberStatus(request: CheckNumberStatusQuery): Promise<WANumberExistResult> {
         try {
-            const result = await this.whatsapp.checkNumberStatus(this.ensureSuffix(request.phone))
-            return {numberExists: result['numberExists']}
+            return  await this.whatsapp.checkNumberStatus(this.ensureSuffix(request.phone))
         } catch (error) {
-            // We need to "touch" the error in order to get unhandled rejections
-            // It logs out the session and stop the app
-            console.log(typeof error)
-            console.log(error)
-            return {numberExists: false}
+            // Catch number doesn't exist error and return it as is
+            if (error.status === 404 && !error.numberExists){
+                return error
+            }
+            throw error
         }
     }
 
