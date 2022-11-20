@@ -179,4 +179,4 @@ To configure the url you can use environment variables `WHATSAPP_API_HOSTNAME` a
 
 ## Webhook retries ![](/images/versions/plus.png)
 
-**WAHA** retries to reach your webhook URL 15 times and with 2 seconds.
+**WAHA** retries to reach your webhook URL 15 times and with 2 seconds delay between attempts.
