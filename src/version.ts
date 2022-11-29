@@ -24,4 +24,4 @@ export function getWAHAVersion(): WAHAVersion {
     return WAHAVersion.CORE
 }
 
-export const VERSION = {version: "2022.11.20", tier: getWAHAVersion()}
+export const VERSION = {version: "2022.11.29", tier: getWAHAVersion()}
