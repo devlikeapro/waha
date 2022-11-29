@@ -41,7 +41,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.1.0",
     "swagger-ui-express": "^4.1.4",
-    "venom-bot": "^4.3.5",
+    "venom-bot": "^4.3.6",
     "whatsapp-web.js": "^1.18.4"
   },
   "devDependencies": {
