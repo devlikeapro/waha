@@ -84,12 +84,13 @@ If you have any problems with one engine - try another!
 👉 API responses and webhook payloads may differ significantly! We do our best to keep requests body stable between engines. WhatsApp WebJS #WAHA uses WhatsApp WebJS engine by default
 https://github.com/pedroslopez/whatsapp-web.js WHATSAPP_DEFAULT_ENGINE=WEBJS Venom #https://github.com/orkestral/venom WHATSAPP_DEFAULT_ENGINE=VENOM `}),e.add({id:12,href:"/docs/help/",title:"Help",description:"Help Doks.",content:""}),e.add({id:13,href:"/docs/how-to/security/",title:"Security",description:"Security",content:`💡 Do not expose WhatsApp HTTP API on public networks! We do not recommend exposing the API on any public networks!
 Either protect the API with Api Key or deny access by using firewalls.
-API security #You can protect the API by requiring Api Key in a request\u0026rsquo;s headers.
-Set Api Key #Set WHATSAPP_API_KEY=yoursecretkey environment variable for that:
-docker run -it -e WHATSAPP_API_KEY=yoursecretkey devlikeapro/whatsapp-http-api Swagger #After you set api key - to authorize on swagger use Authorize button at the top: Add X-Api-Key header #To authorize requests - set X-Api-Key header to yoursecretkey for all requests that go to WAHA.
+Swagger Security #If you want to hide the project Swagger panel under the password - run the following command to hide under admin/admin login and password.
+docker run -it -e WHATSAPP_SWAGGER_USERNAME=admin -eWHATSAPP_SWAGGER_PASSWORD=admin devlikeapro/whatsapp-http-api Open http://localhost:3000/ and enter admin / admin in the inputs:
+👉 Protecting Swagger under the password does not protect your API from other request! Use both techniques to protect your API and Swagger! API security #You can protect the API by requiring Api Key in a request\u0026rsquo;s headers.
+👉 Api Key does not hide your Swagger documentation. Please have a look at the previous section to find how to hide Swagger under the password. Set Api Key #Set WHATSAPP_API_KEY=yoursecretkey environment variable for that:
+docker run -it -e WHATSAPP_API_KEY=yoursecretkey devlikeapro/whatsapp-http-api Use Api-Key in Swagger #After you set api key - to authorize on swagger use Authorize button at the top: Add X-Api-Key header #To authorize requests - set X-Api-Key header to yoursecretkey for all requests that go to WAHA.
 Python #Example for Python requests library:
-import requests headers = { 'Content-type': 'application/json', 'X-Api-Key': 'yoursecretkey', } requests.get(\u0026quot;http://localhost:3000/api/sessions\u0026quot;, headers=headers) Swagger Security #If you want to hide under a password the swagger UI - please create an issue on GitHub, we\u0026rsquo;ll do it!
-`}),e.add({id:14,href:"/docs/how-to/sessions/",title:"Sessions",description:"Sessions",content:`Saving session #Plus version allows you to save \u0026ldquo;session\u0026rdquo; state and avoid scanning QR code everytime when you start a container.
+import requests headers = { 'Content-type': 'application/json', 'X-Api-Key': 'yoursecretkey', } requests.get(\u0026quot;http://localhost:3000/api/sessions\u0026quot;, headers=headers) `}),e.add({id:14,href:"/docs/how-to/sessions/",title:"Sessions",description:"Sessions",content:`Saving session #Plus version allows you to save \u0026ldquo;session\u0026rdquo; state and avoid scanning QR code everytime when you start a container.
 File storage #If you want to save your session and do not scan QR code everytime when you launch WAHA - connect a local file storage to the container. WAHA stores authentication information in the directory and reuses it after restart.
 Attach volume part to the command:
 -v \`pwd\`/.sessions:/app/.sessions The full command would be:

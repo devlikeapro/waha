@@ -14,13 +14,9 @@ WAHA uses WhatsApp WebJS engine by default
 https://github.com/pedroslopez/whatsapp-web.js WHATSAPP_DEFAULT_ENGINE=WEBJS Venom #
 https://github.com/orkestral/venom WHATSAPP_DEFAULT_ENGINE=VENOM</description></item><item><title>Security</title><link>https://waha.devlike.pro/docs/how-to/security/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/security/</guid><description>💡 Do not expose WhatsApp HTTP API on public networks! We do not recommend exposing the API on any public networks!
 Either protect the API with Api Key or deny access by using firewalls.
-API security #
-You can protect the API by requiring Api Key in a request&amp;rsquo;s headers.
-Set Api Key #
-Set WHATSAPP_API_KEY=yoursecretkey environment variable for that:
-docker run -it -e WHATSAPP_API_KEY=yoursecretkey devlikeapro/whatsapp-http-api Swagger #
-After you set api key - to authorize on swagger use Authorize button at the top: Add X-Api-Key header #
-To authorize requests - set X-Api-Key header to yoursecretkey for all requests that go to WAHA.</description></item><item><title>Sessions</title><link>https://waha.devlike.pro/docs/how-to/sessions/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/sessions/</guid><description>Saving session #
+Swagger Security #
+If you want to hide the project Swagger panel under the password - run the following command to hide under admin/admin login and password.
+docker run -it -e WHATSAPP_SWAGGER_USERNAME=admin -eWHATSAPP_SWAGGER_PASSWORD=admin devlikeapro/whatsapp-http-api Open http://localhost:3000/ and enter admin / admin in the inputs:</description></item><item><title>Sessions</title><link>https://waha.devlike.pro/docs/how-to/sessions/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/sessions/</guid><description>Saving session #
 Plus version allows you to save &amp;ldquo;session&amp;rdquo; state and avoid scanning QR code everytime when you start a container.
 File storage #
 If you want to save your session and do not scan QR code everytime when you launch WAHA - connect a local file storage to the container. WAHA stores authentication information in the directory and reuses it after restart.
