@@ -15,9 +15,25 @@ We do not recommend exposing the API on any public networks!
 Either protect the API with [Api Key](https://www.fortinet.com/resources/cyberglossary/api-key) or deny access by using
 firewalls.
 
+## Swagger Security ![](/images/versions/plus.png)
+If you want to hide the project Swagger panel under the password - run the following command to hide under `admin/admin`
+login and password.
+
+```bash
+docker run -it -e WHATSAPP_SWAGGER_USERNAME=admin -eWHATSAPP_SWAGGER_PASSWORD=admin devlikeapro/whatsapp-http-api
+```
+
+Open http://localhost:3000/ and enter `admin / admin` in the inputs:
+
+![](swagger-basic-auth.png)
+
+{{< alert icon="👉" text="Protecting Swagger under the password does not protect your API from other request! Use both techniques to protect your API and Swagger!" />}}
+
 ## API security ![](/images/versions/plus.png)
 
 You can protect the API by requiring Api Key in a request's headers.
+
+{{< alert icon="👉" text="Api Key does not hide your Swagger documentation. Please have a look at the previous section to find how to hide Swagger under the password." />}}
 
 ### Set Api Key
 
@@ -27,7 +43,7 @@ Set `WHATSAPP_API_KEY=yoursecretkey` environment variable for that:
 docker run -it -e WHATSAPP_API_KEY=yoursecretkey devlikeapro/whatsapp-http-api
 ```
 
-### Swagger
+### Use Api-Key in Swagger
 
 After you set api key - to authorize on swagger use **Authorize** button at the top:
 ![](swagger-auth.png)
@@ -49,5 +65,3 @@ headers = {
 requests.get("http://localhost:3000/api/sessions", headers=headers)
 ```
 
-## Swagger Security ![](/images/versions/plus-soon.png)
-If you want to hide under a password the swagger UI - please create an issue on GitHub, we'll do it!
