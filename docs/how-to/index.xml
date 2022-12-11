@@ -16,7 +16,7 @@ https://github.com/orkestral/venom WHATSAPP_DEFAULT_ENGINE=VENOM</description></
 Either protect the API with Api Key or deny access by using firewalls.
 Swagger Security #
 If you want to hide the project Swagger panel under the password - run the following command to hide under admin/admin login and password.
-docker run -it -e WHATSAPP_SWAGGER_USERNAME=admin -eWHATSAPP_SWAGGER_PASSWORD=admin devlikeapro/whatsapp-http-api Open http://localhost:3000/ and enter admin / admin in the inputs:</description></item><item><title>Sessions</title><link>https://waha.devlike.pro/docs/how-to/sessions/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/sessions/</guid><description>Saving session #
+docker run -it -e WHATSAPP_SWAGGER_USERNAME=admin -eWHATSAPP_SWAGGER_PASSWORD=admin devlikeapro/whatsapp-http-api-plus Open http://localhost:3000/ and enter admin / admin in the inputs:</description></item><item><title>Sessions</title><link>https://waha.devlike.pro/docs/how-to/sessions/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/sessions/</guid><description>Saving session #
 Plus version allows you to save &amp;ldquo;session&amp;rdquo; state and avoid scanning QR code everytime when you start a container.
 File storage #
 If you want to save your session and do not scan QR code everytime when you launch WAHA - connect a local file storage to the container. WAHA stores authentication information in the directory and reuses it after restart.
