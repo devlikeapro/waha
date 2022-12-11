@@ -24,6 +24,7 @@ docker run -it -e WHATSAPP_HOOK_EVENTS=* -e WHATSAPP_HOOK_URL=https://httpbin.or
 - `WHATSAPP_API_HOSTNAME=localhost` - Hostname for HTTP server (default: `localhost`)
 - `WHATSAPP_API_KEY=mysecret` - protect the api with a secret code. If you set it - add `X-Api-Key: mysecret` to all
   requests.
+- `WHATSAPP_SWAGGER_USERNAME=admin` + `WHATSAPP_SWAGGER_PASSWORD=admin` - protect the Swagger panel with `admin / admin` credentials. It doesn't affect api access!
 - `WHATSAPP_START_SESSION=default` - start session with the name right after launching the app
 -
 
