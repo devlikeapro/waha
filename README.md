@@ -56,6 +56,7 @@
 - Multiple WhatsApp account running inside one container 
 
 ## Security
+- Swagger panel authentication 
 - API authentication 
 
 ## Updates
