@@ -193,3 +193,12 @@ To configure the url you can use environment variables `WHATSAPP_API_HOSTNAME` a
 ## Webhook retries ![](/images/versions/plus.png)
 
 **WAHA** retries to reach your webhook URL 15 times and with 2 seconds delay between attempts.
+
+## Get messages
+You can read messages from the history by using `GET /api/messages` endpoint.
+
+```bash
+curl -X 'GET' \
+  'http://localhost:3000/api/messages?chatId=11111111111%40c.us&limit=1000&session=default' \
+  -H 'accept: application/json'
+```

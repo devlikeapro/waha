@@ -12,6 +12,8 @@ menu:
 weight: 600
 toc: true
 ---
+## 2022.12
+- Added `GET /messages/` endpoint to get chat messages [#31](https://github.com/devlikeapro/whatsapp-http-api/issues/31)
 
 ## 2022.11
 **Please test changes in test environment before update production!!**
