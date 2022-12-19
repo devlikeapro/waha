@@ -7,6 +7,7 @@ import {WAMessage, WANumberExistResult} from "../structures/responses.dto";
 import {
     ChatRequest,
     CheckNumberStatusQuery,
+    GetMessageQuery,
     MessageContactVcardRequest,
     MessageFileRequest,
     MessageImageRequest,
@@ -139,6 +140,19 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     async stopTyping(request: ChatRequest) {
         const chat: Chat = await this.whatsapp.getChatById(request.chatId)
         await chat.clearState()
+    }
+
+    async getMessages(query: GetMessageQuery) {
+        const chat: Chat = await this.whatsapp.getChatById(this.ensureSuffix(query.chatId))
+        const messages = await chat.fetchMessages({
+            limit: query.limit,
+        })
+        // Go over messages, download media, and convert to right format.
+        const result = []
+        for (const message of messages) {
+            result.push(await this.processIncomingMessage(message))
+        }
+        return result
     }
 
     async setReaction(request: MessageReactionRequest) {

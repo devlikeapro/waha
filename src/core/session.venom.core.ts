@@ -2,7 +2,7 @@ import {WhatsappSession} from "./abc/session.abc";
 import {
     Button,
     ChatRequest,
-    CheckNumberStatusQuery,
+    CheckNumberStatusQuery, GetMessageQuery,
     MessageContactVcardRequest,
     MessageFileRequest,
     MessageImageRequest,
@@ -190,6 +190,20 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
 
     stopTyping(chat: ChatRequest) {
         return this.whatsapp.stopTyping(chat.chatId)
+    }
+
+    async getMessages(query: GetMessageQuery){
+        const messages = await this.whatsapp.getAllMessagesInChat(query.chatId, true, false)
+        // Go over messages, download media, and convert to right format.
+        const result = []
+        for (const [count, message] of messages.entries()) {
+            if (count > query.limit){
+                // Have enough in the list, stop processing
+                break
+            }
+            result.push(await this.processIncomingMessage(message))
+        }
+        return result
     }
 
     setReaction(request: MessageReactionRequest) {

@@ -2,7 +2,7 @@ import {Body, Controller, Get, Post, Put, Query} from '@nestjs/common';
 import {ApiOperation, ApiSecurity, ApiTags} from "@nestjs/swagger";
 import {
     ChatRequest,
-    CheckNumberStatusQuery,
+    CheckNumberStatusQuery, GetMessageQuery,
     MessageContactVcardRequest,
     MessageFileRequest,
     MessageImageRequest,
@@ -130,5 +130,12 @@ export class ChattingController {
     setReaction(@Body() request: MessageReactionRequest) {
         const whatsapp = this.manager.getSession(request.session)
         return whatsapp.setReaction(request)
+    }
+
+    @Get('/messages')
+    @ApiOperation({summary: 'Get messages in a chat'})
+    getMessages( @Query() query: GetMessageQuery ) {
+        const whatsapp = this.manager.getSession(query.session)
+        return whatsapp.getMessages(query)
     }
 }

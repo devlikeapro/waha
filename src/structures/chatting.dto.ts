@@ -1,4 +1,4 @@
-import {IsNotEmpty, IsString} from "class-validator";
+import {IsNotEmpty, IsString, IsOptional, IsNumber} from "class-validator";
 import {ApiExtraModels, ApiProperty, getSchemaPath} from "@nestjs/swagger";
 import {SessionBaseRequest, SessionQuery} from "./base.dto";
 
@@ -18,6 +18,18 @@ export class MessageTextQuery extends SessionQuery {
     text: string
 }
 
+export class ChatQuery extends SessionQuery {
+    @ApiProperty({
+        example: '11111111111@c.us',
+    })
+    chatId: string
+}
+
+export class GetMessageQuery extends ChatQuery {
+    @IsNumber()
+    limit: number
+}
+
 
 /**
  * Requests
@@ -29,7 +41,7 @@ export class ChatRequest extends SessionBaseRequest {
     chatId: string
 }
 
-export class MessageRequest extends SessionBaseRequest{
+export class MessageRequest extends SessionBaseRequest {
     @ApiProperty({
         example: "false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA",
     })
@@ -186,3 +198,4 @@ export class MessageReactionRequest extends MessageRequest {
     })
     reaction: string
 }
+
