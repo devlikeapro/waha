@@ -3,6 +3,8 @@ import {ApiOperation, ApiSecurity, ApiTags} from "@nestjs/swagger";
 import {SessionManager} from "../core/abc/manager.abc";
 import {ContactQuery, ContactRequest} from "../structures/contacts.dto";
 import {SessionQuery} from "../structures/base.dto";
+import {CheckNumberStatusQuery} from "../structures/chatting.dto";
+import {WANumberExistResult} from "../structures/responses.dto";
 
 @ApiSecurity('api_key')
 @Controller('api/contacts')
@@ -12,7 +14,7 @@ export class ContactsController {
     }
 
     @Get('/')
-    @ApiOperation({summary: 'Get contact basic info'})
+    @ApiOperation({summary: 'Get contact basic info. The method always return result, even if the phone number is not registered in WhatsApp. For that - use /check-exists endpoint below.'})
     get(@Query() query: ContactQuery) {
         const whatsapp = this.manager.getSession(query.session)
         return whatsapp.getContact(query)
@@ -23,6 +25,13 @@ export class ContactsController {
     getAll(@Query() query: SessionQuery) {
         const whatsapp = this.manager.getSession(query.session)
         return whatsapp.getContacts()
+    }
+
+    @Get('/check-exists')
+    @ApiOperation({summary: 'Check phone number is registered in WhatsApp.'})
+    async checkExists(@Query() request: CheckNumberStatusQuery): Promise<WANumberExistResult> {
+        const whatsapp = this.manager.getSession(request.session)
+        return whatsapp.checkNumberStatus(request)
     }
 
     @Get('/about')

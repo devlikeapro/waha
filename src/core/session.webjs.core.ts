@@ -74,8 +74,9 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         return await this.whatsapp.pupPage.screenshot()
     }
 
-    checkNumberStatus(request: CheckNumberStatusQuery): Promise<WANumberExistResult> {
-        throw new NotImplementedByEngineError()
+    async checkNumberStatus(request: CheckNumberStatusQuery): Promise<WANumberExistResult> {
+        const exist = await this.whatsapp.isRegisteredUser(this.ensureSuffix(request.phone))
+        return {numberExists: exist}
     }
 
     sendText(request: MessageTextRequest) {
