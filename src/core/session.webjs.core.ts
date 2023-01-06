@@ -1,5 +1,5 @@
 import {UnprocessableEntityException} from "@nestjs/common/exceptions/unprocessable-entity.exception";
-import {Buttons, Chat, Client, Events, Message} from "whatsapp-web.js";
+import {Buttons, Chat, Client, Contact, Events, Message} from "whatsapp-web.js";
 import {Message as MessageInstance} from "whatsapp-web.js/src/structures"
 import {WAEvents, WhatsappStatus} from "../structures/enums.dto";
 import {WhatsappSession} from "./abc/session.abc";
@@ -19,6 +19,7 @@ import {
     MessageVoiceRequest
 } from "../structures/chatting.dto";
 import {AvailableInPlusVersion, NotImplementedByEngineError} from "./exceptions";
+import {ContactQuery, ContactRequest} from "../structures/contacts.dto";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const qrcode = require('qrcode-terminal');
@@ -144,6 +145,38 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         return message.react(request.reaction)
     }
 
+
+    /**
+     * Contacts methods
+     */
+    getContact(query: ContactQuery) {
+        return this.whatsapp.getContactById(this.ensureSuffix(query.contactId)).then(this.toWAContact)
+    }
+
+    getContacts() {
+        return this.whatsapp.getContacts().then(contacts => contacts.map(this.toWAContact))
+    }
+
+    public async getContactAbout(query: ContactQuery) {
+        const contact = await this.whatsapp.getContactById(this.ensureSuffix(query.contactId))
+        return {"about": await contact.getAbout()}
+    }
+
+    public async getContactProfilePicture(query: ContactQuery) {
+        const contact = await this.whatsapp.getContactById(this.ensureSuffix(query.contactId))
+        return {"profilePictureURL": await contact.getProfilePicUrl()}
+    }
+
+    public async blockContact(request: ContactRequest) {
+        const contact = await this.whatsapp.getContactById(this.ensureSuffix(request.contactId))
+        await contact.block()
+    }
+
+    public async unblockContact(request: ContactRequest) {
+        const contact = await this.whatsapp.getContactById(this.ensureSuffix(request.contactId))
+        await contact.unblock()
+    }
+
     /**
      * END - Methods for API
      */
@@ -192,6 +225,12 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         })
     }
 
+    protected toWAContact(contact: Contact) {
+        // @ts-ignore
+        contact.id = contact.id._serialized
+        return contact
+    }
+
     protected async downloadMedia(message: Message) {
         if (!message.hasMedia) {
             return message
@@ -201,7 +240,6 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         message.mediaUrl = await this.storage.save(message.id._serialized, "", undefined)
         return message
     }
-
 
 }
 

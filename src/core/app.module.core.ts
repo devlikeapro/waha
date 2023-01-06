@@ -5,6 +5,7 @@ import {WhatsappConfigService} from "../config.service";
 import {ServeStaticModule} from "@nestjs/serve-static";
 import {SessionsController} from "../api/sessions.controller";
 import {ChattingController} from "../api/chatting.controller";
+import {ContactsController} from "../api/contacts.controller";
 import {VersionController} from "../api/version.controller";
 import {PassportModule} from "@nestjs/passport";
 import {SessionManager} from "./abc/manager.abc";
@@ -30,6 +31,7 @@ export const IMPORTS = [
 export const CONTROLLERS = [
     SessionsController,
     ChattingController,
+    ContactsController,
     ScreenshotController,
     VersionController,
 ]

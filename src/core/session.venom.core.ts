@@ -20,6 +20,7 @@ import {NotImplementedByEngineError} from "./exceptions";
 import {MediaStorage} from "./abc/storage.abc";
 import {UnprocessableEntityException} from "@nestjs/common/exceptions/unprocessable-entity.exception";
 import {ConsoleLogger} from "@nestjs/common";
+import {ContactQuery} from "../structures/contacts.dto";
 
 class QR {
     private base64: string;

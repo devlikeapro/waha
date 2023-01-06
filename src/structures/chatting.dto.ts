@@ -1,17 +1,11 @@
 import {IsNotEmpty, IsString} from "class-validator";
 import {ApiExtraModels, ApiProperty, getSchemaPath} from "@nestjs/swagger";
-
-export const WHATSAPP_DEFAULT_SESSION_NAME = "default"
+import {SessionBaseRequest, SessionQuery} from "./base.dto";
 
 
 /**
  * Queries
  */
-export class SessionQuery {
-    @IsNotEmpty()
-    session: string = WHATSAPP_DEFAULT_SESSION_NAME;
-}
-
 export class CheckNumberStatusQuery extends SessionQuery {
     @IsString()
     phone: string
@@ -28,11 +22,6 @@ export class MessageTextQuery extends SessionQuery {
 /**
  * Requests
  */
-
-export class SessionBaseRequest {
-    session = WHATSAPP_DEFAULT_SESSION_NAME
-}
-
 export class ChatRequest extends SessionBaseRequest {
     @ApiProperty({
         example: '11111111111@c.us',

@@ -2,8 +2,8 @@ import {Controller, Get, Query, Res} from '@nestjs/common';
 import {ApiSecurity, ApiTags} from "@nestjs/swagger";
 import {Readable} from "stream";
 import {Response} from 'express';
-import {SessionQuery} from "../structures/chatting.dto";
 import {SessionManager} from "../core/abc/manager.abc";
+import {SessionQuery} from "../structures/base.dto";
 
 
 @ApiSecurity('api_key')
