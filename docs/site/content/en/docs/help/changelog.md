@@ -12,6 +12,15 @@ menu:
 weight: 600
 toc: true
 ---
+## 2021.1
+- Added  [contacts API]({{< relref "/docs/how-to/contacts" >}})
+  - Get all contacts
+  - Get a contact
+  - Get contact "about" (status)
+  - Get contact profile picture
+  - Check number exists (is registered in WhatsApp) - works even if the number is not in the contact list
+  - Block and unblock contact
+
 ## 2022.12
 - Added `GET /messages/` endpoint to get chat messages [#31](https://github.com/devlikeapro/whatsapp-http-api/issues/31)
 
