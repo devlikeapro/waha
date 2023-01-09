@@ -55,7 +55,7 @@ WAHA does not support reply with files (images, voice, etc). If you're intereste
 ## Add a reaction ![](/images/versions/core.png) ![](/images/versions/plus.png)
 Use `PUT /api/reaction` method to set reaction to a message.
 
-{{< alert icon="👉" text="Reactoin API uses PUT, not POST request! Please make sure you send right request." />}}
+{{< alert icon="👉" text="Reaction API uses PUT, not POST request! Please make sure you send right request." />}}
 
 ```json
 {
