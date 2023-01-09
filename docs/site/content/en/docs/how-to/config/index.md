@@ -6,7 +6,7 @@ date: 2020-10-06T08:48:45+00:00
 lastmod: 2020-10-06T08:48:45+00:00
 draft: false
 images: []
-weight: 400
+weight: 800
 ---
 You can configure WhatsApp HTTP API behaviour via environment variables, by adding `-e WHATSAPP_VARNAME=value` at the
 begging of the command line or by using [other options](https://docs.docker.com/engine/reference/commandline/run/)
