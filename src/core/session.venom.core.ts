@@ -165,7 +165,7 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
     }
 
     sendLocation(request: MessageLocationRequest) {
-        return this.whatsapp.sendLocation(request.chatId, request.latitude, request.longitude, request.title)
+        return this.whatsapp.sendLocation(request.chatId, String(request.latitude), String(request.longitude), request.title)
     }
 
     sendSeen(chat: ChatRequest) {

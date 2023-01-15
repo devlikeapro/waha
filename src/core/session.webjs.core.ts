@@ -1,5 +1,5 @@
 import {UnprocessableEntityException} from "@nestjs/common/exceptions/unprocessable-entity.exception";
-import {Buttons, Chat, Client, Contact, Events, Message} from "whatsapp-web.js";
+import {Buttons, Chat, Client, Contact, Events, Location, Message} from "whatsapp-web.js";
 import {Message as MessageInstance} from "whatsapp-web.js/src/structures"
 import {WAEvents, WhatsappStatus} from "../structures/enums.dto";
 import {WhatsappSession} from "./abc/session.abc";
@@ -111,13 +111,19 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         throw new AvailableInPlusVersion()
     }
 
+    async sendLocation(request: MessageLocationRequest) {
+        const location = new Location(
+            request.latitude,
+            request.longitude,
+            request.title,
+        )
+        return this.whatsapp.sendMessage(request.chatId, location)
+    }
+
     sendLinkPreview(request: MessageLinkPreviewRequest) {
         throw new NotImplementedByEngineError()
     }
 
-    sendLocation(request: MessageLocationRequest) {
-        throw new NotImplementedByEngineError()
-    }
 
     async sendSeen(request: ChatRequest) {
         const chat: Chat = await this.whatsapp.getChatById(request.chatId)
