@@ -41,18 +41,19 @@ What is the difference between **WAHA Plus** and other SaaS solutions for WhatsA
 
 |                    |                     WAHA Plus                     |                                                                            Others |
 |--------------------|:-------------------------------------------------:|----------------------------------------------------------------------------------:|
-| **Sessions**       |                   ✔️ No limits!                   |                                                      ➖ One account for $50/month. |
+| **Sessions**       |   ✔️ No limits on **accounts** or **servers**!    |                                                      ➖ One account for $50/month. |
 | **Infrastructure** | ✔️ On-Premise - your server, your infrastructure! |                                                        ➖ Insecure cloud solution. |
 | **Security**       |                 ✔️ No data leaks!                 | ➖ You have to give access to customers' data - phone number, name, your messages. |
-| **License Term**               |               ✔️ No license checks!   |                                                                       ➖ One month |
+| **License Term**               |               ✔️ No license checks!               |                                                                       ➖ One month |
 | **Message price**  |             ✔️ All messages are Free!             |                     ➖ Some solutions have a price for messages - $1/100 messages. |
-| **Expenses**       |           ✔️ one-time $19 **donation**!           |                                                 ➖ Monthly payment starts from $50 |
+| **Expenses**       |               ✔️ $19 **donation**!                |                                                 ➖ Monthly payment starts from $50 |
 
 ## Donations
 
-WAHA Plus version is available through **donations** - either one time or subscription.
+WAHA Plus version is available through **donations** (subscriptions).
 
 **It doesn't require monthly subscriptions, once installed on your server - it always works!**
+(until WhatsApp made backward-incompatible changes, and you have to update the image)
 
 {{< alert icon="💡" text="No licence checks or expiration on already installed instances!" />}}
 We do not sell **WAHA**, it's not a purchase. It's a donation.
@@ -79,7 +80,7 @@ For $19 one-time donation you get:
 ### Boosty
 We use Boosty to get donations (Patreon analogue) - [https://boosty.to/wa-http-api](https://boosty.to/wa-http-api).
 
-Go ahead and get your monthly password to get no license expiration WhatsApp HTTP API - either subscribe or use one time donation!
+Go ahead and get your monthly password to get no license expiration WhatsApp HTTP API!
 
 {{< alert icon="💡" text="If you stay subscribed - the donation amount will never change for you and always be $19 to get monthly updates!" />}}
 
