@@ -1,0 +1,60 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches:
+      - core
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs/site
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Build
+        run: |
+          npm run build
+
+      - name: Upload folder
+        uses: actions/upload-artifact@v2
+        with:
+          path: docs/site/public
+          name: public
+
+  deploy-github-pages:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Download folder
+        uses: actions/download-artifact@v2
+        with:
+          name: public
+          path: public
+
+      - name: File list
+        run: |
+          ls -la && ls -la public
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: public
+          CLEAN: true

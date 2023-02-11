@@ -1,0 +1,114 @@
+# Meta Data for SEO
+
+## Homepage
+title = "WAHA"
+titleSeparator = "-"
+titleAddition = "WhatsApp HTTP API"
+description = "WAHA - WhatsApp HTTP API that you can configure in a click!"
+
+## Documentation
+# docsVersion = "0.3"
+
+## Open Graph
+images = ["/images/logo.png"]
+ogLocale = "en_US"
+domainTLD = "waha.devlike.pro"
+titleHome = "WAHA"
+
+## Twitter Cards
+#twitterSite = "@getdoks"
+#twitterCreator = "@henkverlinde"
+
+## JSON-LD
+# schemaType = "Person"
+#schemaType = "Organization"
+#schemaName = "Doks"
+#schemaAuthor = "Henk Verlinde"
+#schemaAuthorTwitter = "https://twitter.com/henkverlinde"
+#schemaAuthorLinkedIn = "https://www.linkedin.com/in/henkverlinde/"
+#schemaAuthorGitHub = "https://github.com/h-enk"
+#schemaLocale = "en-US"
+#schemaLogo = "logo-doks.png"
+#schemaLogoWidth = 512
+#schemaLogoHeight = 512
+#schemaImage = "doks.png"
+#schemaImageWidth = 1280
+#schemaImageHeight = 640
+#schemaTwitter = "https://twitter.com/getdoks"
+#schemaLinkedIn = ""
+#schemaGitHub = "https://github.com/h-enk/doks"
+#schemaSection = "blog"
+
+## Sitelinks Search Box
+siteLinksSearchBox = false
+
+## Chrome Browser
+themeColor = "#fff"
+
+# Images - Temporarily left in place for backward compatibility
+quality = 85
+bgColor = "#fff"
+landscapePhotoWidths = [900, 800, 700, 600, 500]
+portraitPhotoWidths = [800, 700, 600, 500]
+lqipWidth = "20x"
+smallLimit = "300"
+
+# Images
+imageResponsive = true
+imageConvertTo = "webp"
+imageImageSizes = ["480","720","1080","1280","1600","2048"]
+singleSize = false
+imageAddClass = "img-fluid lazyload blur-up"
+
+### Image template
+defaultImage = "default-image.png" # put in `./assets/images/`
+fillImage = "1270x740 Center" # normalize image size
+
+# Footer
+footer = 'This project is not affiliated, associated, authorized, endorsed by, or in any way officially connected with WhatsApp or any of its subsidiaries or its affiliates.<br/>The official WhatsApp website can be found at <a class="text-muted" href="https://whatsapp.com/">https://whatsapp.com/</a>.<br/>"WhatsApp" as well as related names, marks, emblems and images are registered trademarks of their respective owners.'
+
+# Feed
+copyRight = "Copyright (c) 2021-2023 Dev Like A Pro"
+
+# Alert
+alert = true
+alertDismissable = false
+# alertText = "Introducing the Doks child theme, several DX + UX updates, and more! <a class=\"alert-link stretched-link\" href=\"https://getdoks.org/blog/doks-v0.2/\" target=\"_blank\" rel=\"noopener\">Check out Doks v0.2</a>"
+alertText = "Enjoy Core version or want to get WAHA Plus verison? You can <a class=\"alert-link stretched-link\" href=\"https://waha.devlike.pro/docs/how-to/plus-version/\">support the project -></a>"
+
+# Edit Page
+# repoHost [Github | Gitea | GitLab | Bitbucket | BitbucketServer ] is used for building the edit link based on git hoster
+repoHost = "GitHub"
+#repoHost = "Gitea"
+docsRepo = "https://github.com/devlikeapro/whatsapp-http-api"
+docsRepoBranch = "core"
+docsRepoSubPath = ""
+editPage = false
+lastMod = false
+
+[sections]
+  sectionNav = ["docs", "guides"]
+
+[options]
+  lazySizes = true
+  clipBoard = true
+  instantPage = true
+  flexSearch = true
+  searchSectionsShow = []
+  searchSectionsIndex = []
+  darkMode = true
+  bootStrapJs = true
+  breadCrumb = false
+  highLight = true
+  kaTex = false
+  multilingualMode = false
+  docsVersioning = false
+  fullWidth = false
+  navbarSticky = true
+  toTopButton = false
+  scrollSpy = false # experimental; needs Bootstrap >= 5.2.0-beta1
+
+[menu]
+  [menu.section]
+    auto = true
+    collapsibleSidebar = true
