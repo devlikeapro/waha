@@ -12,8 +12,11 @@ menu:
 weight: 600
 toc: true
 ---
+## 2021.3
+- Added  [Groups API]({{< relref "/docs/how-to/groups" >}})
+
 ## 2021.1
-- Added  [contacts API]({{< relref "/docs/how-to/contacts" >}})
+- Added  [Contacts API]({{< relref "/docs/how-to/contacts" >}})
   - Get all contacts
   - Get a contact
   - Get contact "about" (status)
