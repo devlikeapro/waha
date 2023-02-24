@@ -1,5 +1,5 @@
 import {UnprocessableEntityException} from "@nestjs/common/exceptions/unprocessable-entity.exception";
-import {Buttons, Chat, Client, Contact, Events, Location, Message} from "whatsapp-web.js";
+import {Buttons, Chat, Client, Contact, Events, GroupChat, Location, Message} from "whatsapp-web.js";
 import {Message as MessageInstance} from "whatsapp-web.js/src/structures"
 import {WAEvents, WhatsappStatus} from "../structures/enums.dto";
 import {WhatsappSession} from "./abc/session.abc";
@@ -20,6 +20,7 @@ import {
 } from "../structures/chatting.dto";
 import {AvailableInPlusVersion, NotImplementedByEngineError} from "./exceptions";
 import {ContactQuery, ContactRequest} from "../structures/contacts.dto";
+import {CreateGroupRequest, ParticipantsRequest} from "../structures/groups.dto";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const qrcode = require('qrcode-terminal');
@@ -182,6 +183,82 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     public async unblockContact(request: ContactRequest) {
         const contact = await this.whatsapp.getContactById(this.ensureSuffix(request.contactId))
         await contact.unblock()
+    }
+
+    /**
+     * Group methods
+     */
+    public createGroup(request: CreateGroupRequest) {
+        const participantIds = request.participants.map(participant => participant.id)
+        return this.whatsapp.createGroup(request.name, participantIds)
+    }
+
+    public getGroups() {
+        return this.whatsapp.getChats().then(chats => chats.filter(chat => chat.isGroup))
+    }
+
+    public getGroup(id) {
+        return this.whatsapp.getChatById(id)
+    }
+
+    public async deleteGroup(id) {
+        const groupChat = await this.whatsapp.getChatById(id) as GroupChat
+        return groupChat.delete()
+    }
+
+    public async leaveGroup(id) {
+        const groupChat = await this.whatsapp.getChatById(id) as GroupChat
+        return groupChat.leave()
+    }
+
+    public async setDescription(id, description) {
+        const groupChat = await this.whatsapp.getChatById(id) as GroupChat
+        return groupChat.setDescription(description)
+    }
+
+    public async setSubject(id, subject) {
+        const groupChat = await this.whatsapp.getChatById(id) as GroupChat
+        return groupChat.setSubject(subject)
+    }
+
+    public async getInviteCode(id): Promise<string> {
+        const groupChat = await this.whatsapp.getChatById(id) as GroupChat
+        return groupChat.getInviteCode()
+    }
+
+    public async revokeInviteCode(id): Promise<string> {
+        const groupChat = await this.whatsapp.getChatById(id) as GroupChat
+        await groupChat.revokeInvite()
+        return groupChat.getInviteCode()
+    }
+
+    public async getParticipants(id) {
+        const groupChat = await this.whatsapp.getChatById(id) as GroupChat
+        return groupChat.participants
+    }
+
+    public async addParticipants(id, request: ParticipantsRequest) {
+        const groupChat = await this.whatsapp.getChatById(id) as GroupChat
+        const participantIds = request.participants.map(participant => participant.id)
+        return groupChat.addParticipants(participantIds)
+    }
+
+    public async removeParticipants(id, request: ParticipantsRequest) {
+        const groupChat = await this.whatsapp.getChatById(id) as GroupChat
+        const participantIds = request.participants.map(participant => participant.id)
+        return groupChat.removeParticipants(participantIds)
+    }
+
+    public async promoteParticipantsToAdmin(id, request: ParticipantsRequest) {
+        const groupChat = await this.whatsapp.getChatById(id) as GroupChat
+        const participantIds = request.participants.map(participant => participant.id)
+        return groupChat.promoteParticipants(participantIds)
+    }
+
+    public async demoteParticipantsToUser(id, request: ParticipantsRequest) {
+        const groupChat = await this.whatsapp.getChatById(id) as GroupChat
+        const participantIds = request.participants.map(participant => participant.id)
+        return groupChat.demoteParticipants(participantIds)
     }
 
     /**

@@ -10,6 +10,7 @@ import {VersionController} from "../api/version.controller";
 import {PassportModule} from "@nestjs/passport";
 import {SessionManager} from "./abc/manager.abc";
 import {SessionManagerCore} from "./manager.core";
+import {GroupsController} from "../api/groups.controller";
 
 export const IMPORTS = [
     ConfigModule.forRoot({
@@ -32,6 +33,7 @@ export const CONTROLLERS = [
     SessionsController,
     ChattingController,
     ContactsController,
+    GroupsController,
     ScreenshotController,
     VersionController,
 ]

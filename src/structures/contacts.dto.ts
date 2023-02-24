@@ -1,5 +1,5 @@
 import {IsString} from "class-validator";
-import {SessionBaseRequest, SessionQuery, WHATSAPP_DEFAULT_SESSION_NAME} from "./base.dto";
+import {SessionBaseRequest, SessionQuery} from "./base.dto";
 
 
 /**

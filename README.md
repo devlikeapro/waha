@@ -18,8 +18,8 @@
   * [Sessions](#sessions)
   * [Security](#security)
   * [Updates](#updates)
-  * [Groups [soon]](#groups-soon)
-  * [Contacts [soon]](#contacts-soon)
+  * [Groups](#groups)
+  * [Contacts](#contacts)
 - [Quick start](#quick-start)
   * [Requirements](#requirements)
   * [Send your first message](#send-your-first-message)
@@ -64,22 +64,19 @@
 - One month delay in bug fixes and updates. 
 
 
-## Groups [soon]
-- Join groups by invite
+## Groups
+- Create a group
 - Get invite for group
 - Modify group info (subject, description)
-- Modify group settings (send messages, edit info)
 - Add group participants
 - Kick group participants
 - Promote/demote group participants
 
-## Contacts [soon]
-- Mention users
+## Contacts
 - Mute/unmute chats
 - Block/unblock contacts
 - Get contact info
 - Get profile pictures
-- Set user status message
 
 # Quick start
 

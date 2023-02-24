@@ -20,6 +20,10 @@ export class SwaggerModuleCore {
                 Use phone number (without +) or phone number and \`@c.us\` at the end as \`contactId\`.<br>
                 'E.g: \`12312312310\` OR \`12312312310@c.us\`<br>`
             )
+            .addTag(
+                'groups',
+                `Groups methods.<br>`
+            )
             .addTag('other', 'Other methods')
             .addApiKey({
                     type: 'apiKey',

@@ -18,6 +18,7 @@ import {MediaStorage} from "./storage.abc";
 import {MessageId} from "whatsapp-web.js";
 import {ContactQuery, ContactRequest} from "../../structures/contacts.dto";
 import {NotImplementedByEngineError} from "../exceptions";
+import {CreateGroupRequest, ParticipantsRequest} from "../../structures/groups.dto";
 
 export abstract class WhatsappSession {
     public status: WhatsappStatus;
@@ -129,6 +130,65 @@ export abstract class WhatsappSession {
     }
 
     public unblockContact(request: ContactRequest) {
+        throw new NotImplementedByEngineError()
+    }
+
+    /**
+     * Group methods
+     */
+    public createGroup(request: CreateGroupRequest) {
+        throw new NotImplementedByEngineError()
+    }
+
+    public getGroups() {
+        throw new NotImplementedByEngineError()
+    }
+
+    public getGroup(id) {
+        throw new NotImplementedByEngineError()
+    }
+
+    public deleteGroup(id) {
+        throw new NotImplementedByEngineError()
+    }
+
+    public leaveGroup(id) {
+        throw new NotImplementedByEngineError()
+    }
+
+    public setDescription(id, description) {
+        throw new NotImplementedByEngineError()
+    }
+
+    public setSubject(id, description) {
+        throw new NotImplementedByEngineError()
+    }
+
+    public getInviteCode(id): Promise<string> {
+        throw new NotImplementedByEngineError()
+    }
+
+    public revokeInviteCode(id): Promise<string> {
+        throw new NotImplementedByEngineError()
+    }
+
+    public getParticipants(id) {
+        throw new NotImplementedByEngineError()
+    }
+
+    public addParticipants(id, request: ParticipantsRequest) {
+        throw new NotImplementedByEngineError()
+    }
+
+    public removeParticipants(id, request: ParticipantsRequest) {
+        throw new NotImplementedByEngineError()
+    }
+
+    public promoteParticipantsToAdmin(id, request: ParticipantsRequest) {
+        throw new NotImplementedByEngineError()
+    }
+
+    public demoteParticipantsToUser(id, request: ParticipantsRequest) {
         throw new NotImplementedByEngineError()
     }
 
