@@ -35,4 +35,4 @@ update-swagger:
 	wget http://localhost:3000/-json -O ./docs/site/static/swagger/openapi.json
 
 update-dependencies:
-	. ${NVM_DIR}/nvm.sh && nvm exec npm install venom-bot whatsapp-web.js --save
+	. ${NVM_DIR}/nvm.sh && nvm exec yarn install venom-bot whatsapp-web.js --save

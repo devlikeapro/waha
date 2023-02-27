@@ -7,8 +7,8 @@ ENV PUPPETEER_SKIP_DOWNLOAD=True
 # npm packages
 WORKDIR /src
 COPY package.json .
-COPY package-lock.json .
-RUN npm install
+COPY yarn.lock .
+RUN yarn install
 
 # App
 WORKDIR /src
