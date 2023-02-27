@@ -2,6 +2,7 @@
 # Build
 #
 FROM node:18 as build
+ENV PUPPETEER_SKIP_DOWNLOAD=True
 
 # npm packages
 WORKDIR /src
@@ -18,6 +19,7 @@ RUN npm run build && find ./dist -name "*.d.ts" -delete
 # Final
 #
 FROM node:18 as release
+ENV PUPPETEER_SKIP_DOWNLOAD=True
 
 # Install Chrome
 RUN apt-get update  \
