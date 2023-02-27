@@ -1,6 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import {getBrowserExecutablePath} from "./core/abc/session.abc";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require('fs')
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
@@ -26,7 +27,8 @@ export function getWAHAVersion(): WAHAVersion {
     return WAHAVersion.CORE
 }
 
-export const VERSION = {version: "2023.4.1",
+export const VERSION = {
+    version: "2023.3.1",
     tier: getWAHAVersion(),
     browser: getBrowserExecutablePath()
 }
