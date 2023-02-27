@@ -13,7 +13,8 @@ weight: 600
 toc: true
 ---
 ## 2021.3
-- Added  [Groups API]({{< relref "/docs/how-to/groups" >}})
+- Add [Groups API]({{< relref "/docs/how-to/groups" >}})
+- Use Chromium by default instead of Chrome
 
 ## 2021.1
 - Added  [Contacts API]({{< relref "/docs/how-to/contacts" >}})
