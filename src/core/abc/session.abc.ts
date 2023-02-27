@@ -22,7 +22,7 @@ import {CreateGroupRequest, ParticipantsRequest} from "../../structures/groups.d
 import * as fs from "fs";
 
 const CHROME_PATH = "/usr/bin/google-chrome-stable"
-const CHROMIUM_PATH = "/usr/bin/chromium-browser"
+const CHROMIUM_PATH = "/usr/bin/chromium"
 
 export function getBrowserExecutablePath() {
     if (fs.existsSync(CHROME_PATH)) {
