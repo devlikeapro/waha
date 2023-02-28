@@ -1,18 +1,20 @@
 # WAHA (WhatsApp HTTP API) Python examples
 
-## Requirements
+## Installation
 
 We assume that you have installed software:
 
 1. Python 3
 2. Docker
 
+### Download and start image
+
 First of all, you must run WhatsApp HTTP API locally (which under the hood it runs real WhatsApp Web instance and expose
 HTTP API for interaction).
 
 Here are the steps from [Quick Start](https://waha.devlike.pro/docs/overview/quick-start/):
 
-1. Download and start WhatsApp HTTP API docker container
+Download and start WhatsApp HTTP API docker container
 
 ```bash
 # Download the image
@@ -23,6 +25,25 @@ docker run -it --rm --network=host -e WHATSAPP_HOOK_URL=http://localhost:5000/bo
 # It prints logs and the last line must be
 # WhatsApp HTTP API is running on: http://[::1]:3000
 ```
+
+#### Download image - ARM
+
+If you're using ARM (like Apple Silicon, Apple M1, etc) - use following commands to download the image
+
+![](/images/versions/core.png) For Core version the command is
+```bash
+# Download the image
+docker pull devlikeapro/whatsapp-http-api:arm
+# Rename it, so you can use devlikeapro/whatsapp-http-api image in other place
+docker tag devlikeapro/whatsapp-http-api:arm devlikeapro/whatsapp-http-api
+# Run the docker container
+docker run -it --rm --network=host -e WHATSAPP_HOOK_URL=http://localhost:5000/bot -e WHATSAPP_HOOK_EVENTS=* --name whatsapp-http-api devlikeapro/whatsapp-http-api
+
+# It prints logs and the last line must be
+# WhatsApp HTTP API is running on: http://[::1]:3000
+```
+
+### Start session and scan QR
 
 2. Open Swagger API in the browser http://localhost:3000/
 3. Start session and scan QR code in swagger

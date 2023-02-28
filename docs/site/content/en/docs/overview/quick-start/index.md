@@ -13,7 +13,8 @@ weight: 110
 toc: true
 ---
 
-On this page you're going to install WAHA, run it, authenticate the client using QR code and send the first text message to WhatsApp!
+On this page you're going to install WAHA, run it, authenticate the client using QR code and send the first text message
+to WhatsApp!
 
 ## Requirements
 
@@ -53,6 +54,28 @@ docker logout
 
 Read more about how to get `PASSWORD` for [Plus Version →]({{< relref "plus-version" >}})
 
+#### 1.1 Download image on ARM
+
+If you're using ARM (like Apple Silicon, Apple M1, etc) - use following commands to download the image
+
+![](/images/versions/core.png) For Core version the command is
+```bash
+# Download the image
+docker pull devlikeapro/whatsapp-http-api:arm
+# Rename it, so you can use devlikeapro/whatsapp-http-api image in other place
+docker tag devlikeapro/whatsapp-http-api:arm devlikeapro/whatsapp-http-api
+```
+
+![](/images/versions/plus.png) For Plus version the command is:
+```bash
+docker login -u devlikeapro -p {PASSWORD}
+docker pull devlikeapro/whatsapp-http-api-plus:arm
+docker logout
+
+# Rename it, so you can use devlikeapro/whatsapp-http-api image in other place
+docker tag devlikeapro/whatsapp-http-api-plus:arm devlikeapro/whatsapp-http-api
+```
+
 ### 2. Run WhatsApp HTTP API
 
 Run WhatsApp HTTP API:
@@ -83,8 +106,8 @@ How to log in - the instruction on WhatsApp site
 
 When your ready - find `POST /api/session/start`, click on **Try it out**, then **Execute** a bit below.
 
-
 The example payload:
+
 ```json
 {
   "name": "default"
@@ -93,7 +116,8 @@ The example payload:
 
 ![](session-start.png)
 
-By using the request with `name` values you can start multiple session (WhatsApp accounts) inside the single docker container in Plus
+By using the request with `name` values you can start multiple session (WhatsApp accounts) inside the single docker
+container in Plus
 ![](/images/versions/plus.png) version and only one account in Core ![](/images/versions/core.png) version.
 
 Read more about [multiple sessions →]({{< relref "/docs/how-to/sessions" >}})
@@ -123,6 +147,7 @@ way: use a phone international phone number without `+` symbol and add `@c.us` a
 For phone number `12132132131` the `chatId` is  `12132132131@c.us`.
 
 The example payload:
+
 ```json
 {
   "chatId": "12132132130@c.us",
@@ -142,6 +167,7 @@ curl -d "{\"chatId\": \"${PHONE}@c.us\", \"text\": \"Hello from WhatsApp HTTP AP
 ```
 
 ## What is next?
+
 - Right now you've sent simple text message, but you can send more! [Send messages →]({{< relref "/docs/how-to/send-messages" >}})
 - Read how to receive and response to messages [Receive messages →]({{< relref "/docs/how-to/receive-messages" >}})
 - Make sure your [API is properly protected ->]({{< relref "/docs/how-to/security" >}})
