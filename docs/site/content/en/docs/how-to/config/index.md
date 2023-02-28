@@ -12,7 +12,7 @@ You can configure WhatsApp HTTP API behaviour via environment variables, by addi
 begging of the command line or by using [other options](https://docs.docker.com/engine/reference/commandline/run/)
 
 ```bash
-docker run -it -e WHATSAPP_HOOK_EVENTS=* -e WHATSAPP_HOOK_URL=https://httpbin.org/post devlikeapro/whatsapp-http-api
+docker run -it -e "WHATSAPP_HOOK_EVENTS=*" -e WHATSAPP_HOOK_URL=https://httpbin.org/post devlikeapro/whatsapp-http-api
 ```
 
 ## Environment variables

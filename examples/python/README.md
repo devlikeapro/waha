@@ -20,7 +20,7 @@ Download and start WhatsApp HTTP API docker container
 # Download the image
 docker pull devlikeapro/whatsapp-http-api
 # Run the docker container
-docker run -it --rm --network=host -e WHATSAPP_HOOK_URL=http://localhost:5000/bot -e WHATSAPP_HOOK_EVENTS=* --name whatsapp-http-api devlikeapro/whatsapp-http-api
+docker run -it --rm --network=host -e WHATSAPP_HOOK_URL=http://localhost:5000/bot -e "WHATSAPP_HOOK_EVENTS=*" --name whatsapp-http-api devlikeapro/whatsapp-http-api
 
 # It prints logs and the last line must be
 # WhatsApp HTTP API is running on: http://[::1]:3000
@@ -37,7 +37,7 @@ docker pull devlikeapro/whatsapp-http-api:arm
 # Rename it, so you can use devlikeapro/whatsapp-http-api image in other place
 docker tag devlikeapro/whatsapp-http-api:arm devlikeapro/whatsapp-http-api
 # Run the docker container
-docker run -it --rm --network=host -e WHATSAPP_HOOK_URL=http://localhost:5000/bot -e WHATSAPP_HOOK_EVENTS=* --name whatsapp-http-api devlikeapro/whatsapp-http-api
+docker run -it --rm --network=host -e WHATSAPP_HOOK_URL=http://localhost:5000/bot -e "WHATSAPP_HOOK_EVENTS=*" --name whatsapp-http-api devlikeapro/whatsapp-http-api
 
 # It prints logs and the last line must be
 # WhatsApp HTTP API is running on: http://[::1]:3000
@@ -98,7 +98,7 @@ Download **WAHA Plus** version:
 # Download the image
 docker pull devlikeapro/whatsapp-http-api-plus
 # Run the docker container
-docker run -it --rm --network=host -e WHATSAPP_HOOK_URL=http://localhost:5000/bot -e WHATSAPP_HOOK_EVENTS=* --name whatsapp-http-api devlikeapro/whatsapp-http-api-plus
+docker run -it --rm --network=host -e WHATSAPP_HOOK_URL=http://localhost:5000/bot -e "WHATSAPP_HOOK_EVENTS=*" --name whatsapp-http-api devlikeapro/whatsapp-http-api-plus
 ```
 
 Run the WhatsApp Download Files bot:

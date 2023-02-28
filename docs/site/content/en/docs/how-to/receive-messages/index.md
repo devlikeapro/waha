@@ -40,7 +40,7 @@ Below the list of all events that WhatsApp HTTP API sends to your.
 Run the bellow command and see look at the logs - it prints body request for all events that happen in your WhatsApp!
 
 ```bash
-docker run -it -e WHATSAPP_HOOK_EVENTS=* -e WHATSAPP_HOOK_URL=https://httpbin.org/post devlikeapro/whatsapp-http-api
+docker run -it -e "WHATSAPP_HOOK_EVENTS=*" -e WHATSAPP_HOOK_URL=https://httpbin.org/post devlikeapro/whatsapp-http-api
 ```
 
 ### Examples
