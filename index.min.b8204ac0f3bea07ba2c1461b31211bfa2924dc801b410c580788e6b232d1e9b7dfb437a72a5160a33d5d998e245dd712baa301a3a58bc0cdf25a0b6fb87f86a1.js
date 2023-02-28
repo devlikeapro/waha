@@ -12,7 +12,10 @@ Send your first message #Let\u0026rsquo;s go over steps that allow you to send 
 For Core version the command is
 docker pull devlikeapro/whatsapp-http-api For Plus version, we use login to get the image before:
 docker login -u devlikeapro -p {PASSWORD} docker pull devlikeapro/whatsapp-http-api-plus docker logout Read more about how to get PASSWORD for Plus Version →
-2. Run WhatsApp HTTP API #Run WhatsApp HTTP API:
+1.1 Download image on ARM #If you\u0026rsquo;re using ARM (like Apple Silicon, Apple M1, etc) - use following commands to download the image
+For Core version the command is
+# Download the image docker pull devlikeapro/whatsapp-http-api:arm # Rename it, so you can use devlikeapro/whatsapp-http-api image in other place docker tag devlikeapro/whatsapp-http-api:arm devlikeapro/whatsapp-http-api For Plus version the command is:
+docker login -u devlikeapro -p {PASSWORD} docker pull devlikeapro/whatsapp-http-api-plus:arm docker logout # Rename it, so you can use devlikeapro/whatsapp-http-api image in other place docker tag devlikeapro/whatsapp-http-api-plus:arm devlikeapro/whatsapp-http-api 2. Run WhatsApp HTTP API #Run WhatsApp HTTP API:
 docker run -it --rm -p 127.0.0.1:3000:3000/tcp --name whatsapp-http-api devlikeapro/whatsapp-http-api # It prints logs and the last line must be # WhatsApp HTTP API is running on: http://[::1]:3000 Open the link in your browser http://localhost:3000/ and you\u0026rsquo;ll see API documentation (Swagger).
 👉 We don't recommend expose the API in the internet without authentication! 3. Start a new session #To start a new session you should have your mobile phone with installed WhatsApp application close to you.
 Please go and read how what we\u0026rsquo;ll need to a bit later: How to log in - the instruction on WhatsApp site When your ready - find POST /api/session/start, click on Try it out, then Execute a bit below.
