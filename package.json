@@ -42,8 +42,8 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.1.0",
     "swagger-ui-express": "^4.1.4",
-    "venom-bot": "^4.3.7",
-    "whatsapp-web.js": "pedroslopez/whatsapp-web.js"
+    "venom-bot": "https://github.com/orkestral/venom",
+    "whatsapp-web.js": "https://github.com/pedroslopez/whatsapp-web.js"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
