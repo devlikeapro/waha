@@ -34,12 +34,12 @@ toc: true
 ## 2022.11
 **Please test changes in test environment before update production!!**
 
-### Engine ![](/images/versions/core.png) ![](/images/versions/plus.png)
+### Engine ![](/images/versions/core.png)
 1. WAHA has changed its underlying engine from Venom to Whatsapp Web.JS. It might change the response and webhook's payloads.
 2. Optimize CPU and memory consumption.
 
 
-### Requests ![](/images/versions/core.png) ![](/images/versions/plus.png)
+### Requests ![](/images/versions/core.png)
 - For all `/api/session/` requests use `name` field instead of `sessionName`.
 - For all "chatting" requests use `session` field instead of `sessionName`.
 
@@ -51,7 +51,7 @@ Now you can authenticate all requests for WAHA - use `WHATSAPP_API_KEY=secret` e
 
 If `WHATSAPP_API_KEY` is set - requests must have `X-Api-Key` header with `secret` value, where `secret` - any random secret key.
 
-### Webhooks ![](/images/versions/core.png) ![](/images/versions/plus.png)
+### Webhooks ![](/images/versions/core.png)
 #### Configuration
 
 Instead of setting each webhook via environment variables - we use two environments variables:

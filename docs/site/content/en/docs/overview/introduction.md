@@ -32,21 +32,21 @@ WAHA is distributed in two versions:
 Here's the available features:
 
 ### Messages
-- Send messages ![](/images/versions/core.png) ![](/images/versions/plus.png)
-- Receive messages ![](/images/versions/core.png) ![](/images/versions/plus.png)
-- Message replies ![](/images/versions/core.png) ![](/images/versions/plus.png)
-- Send location ![](/images/versions/core.png) ![](/images/versions/plus.png)
-- Send buttons ![](/images/versions/core.png) ![](/images/versions/plus.png)
-- Receive location ![](/images/versions/core.png) ![](/images/versions/plus.png)
-- React to messages ![](/images/versions/core.png) ![](/images/versions/plus.png)
+- Send messages ![](/images/versions/core.png)
+- Receive messages ![](/images/versions/core.png)
+- Message replies ![](/images/versions/core.png)
+- Send location ![](/images/versions/core.png)
+- Send buttons ![](/images/versions/core.png)
+- Receive location ![](/images/versions/core.png)
+- React to messages ![](/images/versions/core.png)
 - Send media (images/documents/files) ![](/images/versions/plus.png)
 - Send voice messages ![](/images/versions/plus.png)
 - Receive media (images/audio/video/documents) ![](/images/versions/plus.png)
 - Receive messages - webhook retries ![](/images/versions/plus.png)
 
 ### Sessions
-- Multi Device ![](/images/versions/core.png) ![](/images/versions/plus.png)
-- Get the screenshot ![](/images/versions/core.png) ![](/images/versions/plus.png)
+- Multi Device ![](/images/versions/core.png)
+- Get the screenshot ![](/images/versions/core.png)
 - Session saving (don't have to scan QR on every restart) ![](/images/versions/plus.png)
 - Session saving on remote storage (database, redis) ![](/images/versions/plus-soon.png)
 - Single WhatsApp account running inside one container ![](/images/versions/core.png)
@@ -54,26 +54,23 @@ Here's the available features:
 
 ### Security
 - API authentication ![](/images/versions/plus.png)
-- Swagger panel authentication ![](/images/versions/plus-soon.png)
+- Swagger panel authentication ![](/images/versions/plus.png)
 
 ### Updates
 - Bug fixes and updates come as soon as they are implemented. ![](/images/versions/plus.png)
 - One month delay in bug fixes and updates. ![](/images/versions/core.png)
 
 
-### Groups ![](/images/versions/soon.png)
-- Join groups by invite
+### Groups ![](/images/versions/core.png)
+- Create a group
 - Get invite for group
 - Modify group info (subject, description)
-- Modify group settings (send messages, edit info)
 - Add group participants
 - Kick group participants
 - Promote/demote group participants
 
-### Contacts ![](/images/versions/soon.png)
-- Mention users
+### Contacts ![](/images/versions/core.png)
 - Mute/unmute chats
 - Block/unblock contacts
 - Get contact info
 - Get profile pictures
-- Set user status message

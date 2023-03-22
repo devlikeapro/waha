@@ -28,7 +28,7 @@ Read more about [multiple sessions →]({{< relref "/docs/how-to/sessions" >}})
     For phone number `12132132131` the `chatId` is  `12132132131@c.us`.
   - **Groups** use random number with `@g.us` at the end.
 
-## Send text ![](/images/versions/core.png) ![](/images/versions/plus.png)
+## Send text ![](/images/versions/core.png)
 To send text message - use `POST /api/sendText` with example payload.
 ```json
 {
@@ -38,7 +38,7 @@ To send text message - use `POST /api/sendText` with example payload.
 }
 ```
 
-## Reply on message ![](/images/versions/core.png) ![](/images/versions/plus.png)
+## Reply on message ![](/images/versions/core.png)
 To reply on a message - use `POST /api/reply` with example payload.
 ```json
 {
@@ -52,7 +52,7 @@ To reply on a message - use `POST /api/reply` with example payload.
 ### Reply files ![](/images/versions/plus-soon.png)
 WAHA does not support reply with files (images, voice, etc). If you're interested in it - please create an issue in GitHub.
 
-## Add a reaction ![](/images/versions/core.png) ![](/images/versions/plus.png)
+## Add a reaction ![](/images/versions/core.png)
 Use `PUT /api/reaction` method to set reaction to a message.
 
 {{< alert icon="👉" text="Reaction API uses PUT, not POST request! Please make sure you send right request." />}}
