@@ -8278,9 +8278,9 @@ webpack@5.75.0:
     watchpack "^2.4.0"
     webpack-sources "^3.2.3"
 
-"whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js":
+"whatsapp-web.js@https://github.com/saifkhan7865/whatsapp-web.js":
   version "1.19.5"
-  resolved "https://github.com/pedroslopez/whatsapp-web.js#ea6c130edd355edb1ef8d93cb9c015785d053828"
+  resolved "https://github.com/saifkhan7865/whatsapp-web.js#4d0b6da33b99ab18d6f4c4f05661e778f8b9e9c2"
   dependencies:
     "@pedroslopez/moduleraid" "^5.0.2"
     fluent-ffmpeg "^2.1.2"
