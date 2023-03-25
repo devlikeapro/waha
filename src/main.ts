@@ -4,6 +4,7 @@ import {AllExceptionsFilter} from "./api/exception.filter";
 import {getWAHAVersion, VERSION, WAHAVersion} from "./version";
 import {AppModuleCore} from "./core/app.module.core";
 import {SwaggerModuleCore} from "./core/swagger.module.core";
+import {json, urlencoded} from "express";
 
 async function loadModules(): Promise<[typeof AppModuleCore, typeof SwaggerModuleCore]> {
     const version = getWAHAVersion()
@@ -31,6 +32,10 @@ async function bootstrap() {
 
     app.enableShutdownHooks();
     app.useGlobalFilters(new AllExceptionsFilter());
+
+    // Allow to send big body - for images and attachments
+    app.use(json({limit: '50mb'}));
+    app.use(urlencoded({limit: '50mb'}));
 
     // Configure swagger
     const swagger = new SwaggerModule()
