@@ -27,6 +27,7 @@ On the URL that you set via `WHATSAPP_HOOK_URL` you receive JSON-data with follo
 ```json
 {
   "event": "message",
+  "session": "default",
   "payload": {}
 }
 ```
@@ -64,6 +65,7 @@ Incoming message (text/audio/files)
 ```json
 {
   "event": "message",
+  "session": "default",
   "payload": {
     "id": "true_11111111111@c.us_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
     "timestamp": 1667561485,
@@ -126,6 +128,7 @@ Fired on all message creations, including your own. The payload is the same as f
 ```json
 {
   "event": "message.any",
+  "session": "default",
   "payload": {}
 }
 ```
@@ -135,6 +138,7 @@ Fired on all message creations, including your own. The payload is the same as f
 ```json
 {
   "event": "message.ack",
+  "session": "default",
   "payload": {}
 }
 ```
@@ -144,6 +148,7 @@ Fired on all message creations, including your own. The payload is the same as f
 ```json
 {
   "event": "state.change",
+  "session": "default",
   "payload": {}
 }
 ```
@@ -153,6 +158,7 @@ Fired on all message creations, including your own. The payload is the same as f
 ```json
 {
   "event": "group.join",
+  "session": "default",
   "payload": {}
 }
 ```
@@ -162,6 +168,7 @@ Fired on all message creations, including your own. The payload is the same as f
 ```json
 {
   "event": "group.left",
+  "session": "default",
   "payload": {}
 }
 ```
@@ -176,6 +183,7 @@ For example, you can get the webhook like this with `mediaUrl` value (we've skip
 ```json
 {
   "event": "message",
+  "session": "default",
   "payload": {
     "id": "true_11111111111@c.us_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
     "timestamp": 1667561485,

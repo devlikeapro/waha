@@ -40,7 +40,7 @@ export class WebhookConductorCore implements WebhookConductor {
         this.log.log('Configuring webhooks...')
         for (const event of this.events) {
             try {
-                session.subscribe(event, (data: any) => this.callWebhook(event, data, this.url))
+                session.subscribe(event, (data: any) => this.callWebhook(event, session, data, this.url))
             } catch (error) {
                 if (error instanceof NotImplementedByEngineError) {
                     this.log.error(error)
@@ -53,8 +53,8 @@ export class WebhookConductorCore implements WebhookConductor {
         this.log.log('Webhooks were configured.')
     }
 
-    public callWebhook(event, data: any, url) {
-        const json: WAWebhook = {event: event, payload: data}
+    public callWebhook(event, session: WhatsappSession, data: any, url) {
+        const json: WAWebhook = {event: event, session: session.name, payload: data}
         this.log.log(`Sending POST to ${url}...`)
         this.log.debug(`POST DATA: ${JSON.stringify(json)}`)
         this.post(json, url)

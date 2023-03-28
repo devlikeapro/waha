@@ -133,6 +133,7 @@ export class WAMessage {
 
 export class WAWebhook {
     event: WAEvents
+    session: string
     // eslint-disable-next-line @typescript-eslint/ban-types
     payload: WAMessage | WAGroupNotification | object
 }
