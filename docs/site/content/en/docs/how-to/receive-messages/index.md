@@ -9,8 +9,17 @@ images: []
 weight: 120
 ---
 
-The project uses [Webhooks](https://en.wikipedia.org/wiki/Webhook) to send the messages or events from WhatsApp to your
+The project uses [Webhooks](https://en.wikipedia.org/wiki/Webhook) to send the messages and events from WhatsApp to your
 application.
+
+Webhooks are a way for two different applications to communicate with each other in real-time.
+When a certain event happens in one application, it sends a message to another application through a webhook URL.
+The receiving application can then take action based on the information received.
+
+To receive incoming messages with webhooks,
+you first need to set up a webhook URL in your application and pass it to `WHATSAPP_HOOK_URL` environment variable.
+This URL is where WhatsApp will send incoming messages and other events -
+define which events you want to receive with `WHATSAPP_HOOK_EVENTS` environment variable.
 
 ## Webhooks ![](/images/versions/core.png)
 
@@ -19,7 +28,7 @@ You can configure where you want to receive events in environment variables:
 - `WHATSAPP_HOOK_URL=https://httpbin.org/post`  - to set up a URL for the webhook
 - `WHATSAPP_HOOK_EVENTS=message,message.any,state.change,group.join,group.leave` - specify events. DO NOT specify all of
   them, it's too heavy payload, choose the right for you.
-- `WHATSAPP_HOOK_EVENTS=*` - subscribe to all events. It's not recommended for production, but it's fine for
+  - `WHATSAPP_HOOK_EVENTS=*` - subscribe to all events. It's not recommended for production, but it's fine for
   development.
 
 On the URL that you set via `WHATSAPP_HOOK_URL` you receive JSON-data with following format:
