@@ -7,7 +7,8 @@ Requirements #Only thing that you must have - installed docker. Please follow t
 When you are ready - come back and follows the below steps to send the first text message to WhatsApp via HTTP API!
 Why Docker?Docker makes it easy to ship all-in-one solution with the runtime and dependencies. You don\u0026rsquo;t have to worry about language-specific libraries or chrome installation.
 Also Docker makes installation and update processes so simple, just one command!
-Send your first message #Let\u0026rsquo;s go over steps that allow you to send your first text message via WhatsApp HTTP API!
+Send your first message #We will guide you through the necessary steps to successfully send your first text message using WhatsApp HTTP API.
+If you find it easier to follow a video tutorial rather than reading through text, we\u0026rsquo;ve got you covered! A 3-minute video tutorial is available to help you navigate WhatsApp HTTP API smoothly.
 1. Download image #Assuming you have installed Docker, let\u0026rsquo;s download the image.
 For Core version the command is
 docker pull devlikeapro/whatsapp-http-api For Plus version, we use login to get the image before:
