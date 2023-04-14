@@ -62,7 +62,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     }
 
     stop() {
-        return this.whatsapp.pupPage.close()
+        return this.whatsapp.destroy()
     }
 
     /**
