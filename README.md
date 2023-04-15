@@ -61,8 +61,6 @@
 
 ## Updates
 - Bug fixes and updates come as soon as they are implemented. 
-- One month delay in bug fixes and updates. 
-
 
 ## Groups
 - Create a group

@@ -72,9 +72,7 @@ Here's the available features:
 - Swagger panel authentication ![](/images/versions/plus.png)
 
 ### Updates
-- Bug fixes and updates come as soon as they are implemented. ![](/images/versions/plus.png)
-- One month delay in bug fixes and updates. ![](/images/versions/core.png)
-
+- Bug fixes and updates come as soon as they are implemented. ![](/images/versions/core.png)![](/images/versions/plus.png)
 
 ### Groups ![](/images/versions/core.png)
 - Create a group
