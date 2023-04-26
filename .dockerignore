@@ -1,5 +1,5 @@
 Dockerfile
-.sessions
+.*sessions
 files
 venv
 .wwebjs_auth
