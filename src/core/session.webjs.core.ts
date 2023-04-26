@@ -2,9 +2,10 @@ import {UnprocessableEntityException} from "@nestjs/common/exceptions/unprocessa
 import {Buttons, Chat, Client, Contact, Events, GroupChat, Location, Message} from "whatsapp-web.js";
 import {Message as MessageInstance} from "whatsapp-web.js/src/structures"
 import {WAEvents, WhatsappStatus} from "../structures/enums.dto";
-import {WhatsappSession} from "./abc/session.abc";
+import {WAHAInternalEvent, WhatsappSession} from "./abc/session.abc";
 import {WAMessage, WANumberExistResult} from "../structures/responses.dto";
 import {
+    Button,
     ChatRequest,
     CheckNumberStatusQuery,
     GetMessageQuery,
@@ -17,7 +18,7 @@ import {
     MessageReplyRequest,
     MessageTextButtonsRequest,
     MessageTextRequest,
-    MessageVoiceRequest
+    MessageVoiceRequest, SendSeenRequest
 } from "../structures/chatting.dto";
 import {AvailableInPlusVersion, NotImplementedByEngineError} from "./exceptions";
 import {ContactQuery, ContactRequest} from "../structures/contacts.dto";
@@ -59,6 +60,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
             this.status = WhatsappStatus.WORKING
             this.log.log(`Session '${this.name}' has been authenticated!`)
         });
+        this.events.emit(WAHAInternalEvent.engine_start)
         return this
     }
 
@@ -86,7 +88,13 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     }
 
     sendTextButtons(request: MessageTextButtonsRequest) {
-        const message = new Buttons("", request.buttons, request.title, request.text)
+        const buttons = request.buttons.map((button: Button) => {
+            return {
+                id: button.id,
+                body: button.text,
+            }
+        })
+        const message = new Buttons("", buttons, request.title, request.footer)
         return this.whatsapp.sendMessage(this.ensureSuffix(request.chatId), message)
     }
 
@@ -127,7 +135,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     }
 
 
-    async sendSeen(request: ChatRequest) {
+    async sendSeen(request: SendSeenRequest) {
         const chat: Chat = await this.whatsapp.getChatById(request.chatId)
         await chat.sendSeen()
     }
@@ -157,8 +165,6 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
     async setReaction(request: MessageReactionRequest) {
         const messageId = this.deserializeId(request.messageId)
-        console.log(messageId)
-
         // Recreate instance to react on it
         const message = new MessageInstance(this.whatsapp)
         message.id = messageId

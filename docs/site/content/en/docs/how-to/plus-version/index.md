@@ -32,8 +32,7 @@ The Plus additional features are:
 4. [**Security** →]({{< relref "/docs/how-to/security" >}})
 5. [**Saving sessions** →]({{< relref "/docs/how-to/sessions" >}})
 6. [**Support multiple sessions** →]({{< relref "/docs/how-to/sessions" >}})
-7. **Instant updates** - no one month delay in getting bugfixes or new features
-8. **Priority in support** - on both bugs and features
+7. **Priority in support** - on both bugs and features
 
 ## Differences
 

@@ -23,6 +23,8 @@ import * as fs from "fs";
 
 const CHROME_PATH = "/usr/bin/google-chrome-stable"
 const CHROMIUM_PATH = "/usr/bin/chromium"
+import { EventEmitter } from 'events'
+
 
 export function getBrowserExecutablePath() {
     if (fs.existsSync(CHROME_PATH)) {
@@ -30,14 +32,27 @@ export function getBrowserExecutablePath() {
     }
     return CHROMIUM_PATH
 }
+export function ensureSuffix(phone) {
+    const suffix = "@c.us"
+    if (phone.includes("@")) {
+        return phone
+    }
+    return phone + suffix
+}
+
+export enum WAHAInternalEvent {
+    engine_start = "engine.start",
+}
 
 export abstract class WhatsappSession {
     public status: WhatsappStatus;
+    public events: EventEmitter
 
     public constructor(public name: string, protected storage: MediaStorage, protected log: ConsoleLogger) {
         this.name = name
         this.status = WhatsappStatus.STARTING
         this.log = log
+        this.events = new EventEmitter()
     }
 
     getBrowserExecutablePath() {
@@ -216,11 +231,7 @@ export abstract class WhatsappSession {
      * @param phone
      */
     protected ensureSuffix(phone) {
-        const suffix = "@c.us"
-        if (phone.includes("@")) {
-            return phone
-        }
-        return phone + suffix
+        return ensureSuffix(phone)
     }
 
     protected deserializeId(messageId: string): MessageId {

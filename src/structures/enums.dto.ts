@@ -18,5 +18,6 @@ export enum WhatsappStatus {
 
 export enum WhatsappEngine {
     VENOM = "VENOM",
-    WEBJS = "WEBJS"
+    WEBJS = "WEBJS",
+    NOWEB = "NOWEB",
 }

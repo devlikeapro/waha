@@ -1,6 +1,6 @@
 import {ConsoleLogger, Injectable, NotFoundException, UnprocessableEntityException} from "@nestjs/common";
 import {SessionManager} from "./abc/manager.abc";
-import {WhatsappSession} from "./abc/session.abc";
+import {WAHAInternalEvent, WhatsappSession} from "./abc/session.abc";
 import {WhatsappEngine} from "../structures/enums.dto";
 import {SessionDTO, SessionStartRequest, SessionStopRequest} from "../structures/sessions.dto";
 import {WhatsappConfigService} from "../config.service";
@@ -9,6 +9,7 @@ import {WhatsappSessionWebJSCore} from "./session.webjs.core";
 import {DOCS_URL} from "./exceptions";
 import {WebhookConductorCore} from "./webhooks.core";
 import {MediaStorageCore} from "./storage.core";
+import {WhatsappSessionNoWebCore} from "./session.noweb.core";
 
 export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
     constructor() {
@@ -49,6 +50,8 @@ export class SessionManagerCore extends SessionManager {
             return WhatsappSessionWebJSCore
         } else if (engine === WhatsappEngine.VENOM) {
             return WhatsappSessionVenomCore
+        } else if (engine === WhatsappEngine.NOWEB) {
+            return WhatsappSessionNoWebCore
         } else {
             throw new NotFoundException(`Unknown whatsapp engine '${engine}'.`)
         }
@@ -100,7 +103,8 @@ export class SessionManagerCore extends SessionManager {
         const session = new this.EngineClass(name, storage, log)
         this.session = session
 
-        session.start().then(() => webhook.configure(session))
+        session.events.on(WAHAInternalEvent.engine_start, () => webhook.configure(session))
+        session.start()
         return {name: session.name, status: session.status}
     }
 

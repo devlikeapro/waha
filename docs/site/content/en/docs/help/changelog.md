@@ -5,18 +5,31 @@ lead: "Changelog"
 date: 2020-10-06T08:49:31+00:00
 lastmod: 2020-10-06T08:49:31+00:00
 draft: false
-images: []
+images: [ ]
 menu:
   docs:
     parent: "help"
 weight: 600
 toc: true
 ---
-## 2021.3
+
+## 2021.5 - May 2023
+
+- Added new [NOWEB engine]({{< relref "/docs/how-to/engines" >}}). **NOWEB** engine does not require a browser to work
+  with
+  WhatsApp Web, it does so directly using a WebSocket.
+  - Less CPU and RAM usage!
+  - Send Locations API works!
+  - Send Link Preview API works!
+  - ⚠ Read the article before using it [How to avoid blocking ->]({{< relref "/docs/help/how-to-avoid-blocking" >}}).
+
+## 2021.4 - March 2023
+
 - Add [Groups API]({{< relref "/docs/how-to/groups" >}})
 - Use Chromium by default instead of Chrome
 
-## 2021.1
+## 2021.1 - January 2023
+
 - Added  [Contacts API]({{< relref "/docs/how-to/contacts" >}})
   - Get all contacts
   - Get a contact
@@ -25,33 +38,42 @@ toc: true
   - Check number exists (is registered in WhatsApp) - works even if the number is not in the contact list
   - Block and unblock contact
 
-## 2022.12
+## 2022.12 - December 2023
+
 - Added `GET /messages/` endpoint to get chat messages [#31](https://github.com/devlikeapro/whatsapp-http-api/issues/31)
 
 ### Security ![](/images/versions/plus.png)
+
 - Added `WHATSAPP_SWAGGER_USERNAME` and `WHATSAPP_SWAGGER_PASSWORD` to hide and protect swagger panel.
 
 ## 2022.11
+
 **Please test changes in test environment before update production!!**
 
 ### Engine ![](/images/versions/core.png)
-1. WAHA has changed its underlying engine from Venom to Whatsapp Web.JS. It might change the response and webhook's payloads.
+
+1. WAHA has changed its underlying engine from Venom to Whatsapp Web.JS. It might change the response and webhook's
+   payloads.
 2. Optimize CPU and memory consumption.
 
-
 ### Requests ![](/images/versions/core.png)
+
 - For all `/api/session/` requests use `name` field instead of `sessionName`.
 - For all "chatting" requests use `session` field instead of `sessionName`.
 
 ### Sessions ![](/images/versions/plus.png)
+
 Now you don't have to scan QR code each time you run WAHA, WAHA saves it for you! Available only in Plus version.
 
 ### Authentication ![](/images/versions/plus.png)
+
 Now you can authenticate all requests for WAHA - use `WHATSAPP_API_KEY=secret` environment variable to set "secret key".
 
-If `WHATSAPP_API_KEY` is set - requests must have `X-Api-Key` header with `secret` value, where `secret` - any random secret key.
+If `WHATSAPP_API_KEY` is set - requests must have `X-Api-Key` header with `secret` value, where `secret` - any random
+secret key.
 
 ### Webhooks ![](/images/versions/core.png)
+
 #### Configuration
 
 Instead of setting each webhook via environment variables - we use two environments variables:

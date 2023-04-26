@@ -89,6 +89,11 @@ export class WAMessage {
     to: string
 
     @ApiProperty({
+        description: "For groups - participant who sent the message"
+    })
+    participant: string
+
+    @ApiProperty({
         description: "Message content"
     })
     body: string

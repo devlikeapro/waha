@@ -4,6 +4,15 @@
 FROM node:18 as build
 ENV PUPPETEER_SKIP_DOWNLOAD=True
 
+
+# Install https://github.com/WhiskeySockets/Baileys
+WORKDIR /
+RUN git clone https://github.com/WhiskeySockets/Baileys WhiskeySockets-Baileys && \
+    cd WhiskeySockets-Baileys && \
+    git checkout b7878e531144133b48d9e5970787e7b256d21063 && \
+    yarn install && \
+    yarn build:all
+
 # npm packages
 WORKDIR /src
 COPY package.json .

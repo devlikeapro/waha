@@ -1,4 +1,4 @@
-import {WhatsappSession} from "./abc/session.abc";
+import {WAHAInternalEvent, WhatsappSession} from "./abc/session.abc";
 import {ConsoleLogger} from "@nestjs/common";
 import {WAEvents} from "../structures/enums.dto";
 import {WAWebhook} from "../structures/responses.dto";

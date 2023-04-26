@@ -1,8 +1,9 @@
-import {WhatsappSession} from "./abc/session.abc";
+import {WAHAInternalEvent, WhatsappSession} from "./abc/session.abc";
 import {
     Button,
     ChatRequest,
-    CheckNumberStatusQuery, GetMessageQuery,
+    CheckNumberStatusQuery,
+    GetMessageQuery,
     MessageContactVcardRequest,
     MessageFileRequest,
     MessageImageRequest,
@@ -20,20 +21,7 @@ import {NotImplementedByEngineError} from "./exceptions";
 import {MediaStorage} from "./abc/storage.abc";
 import {UnprocessableEntityException} from "@nestjs/common/exceptions/unprocessable-entity.exception";
 import {ConsoleLogger} from "@nestjs/common";
-import {ContactQuery} from "../structures/contacts.dto";
-
-class QR {
-    private base64: string;
-
-    save(base64) {
-        this.base64 = base64.replace(/^data:image\/png;base64,/, '');
-    }
-
-    get(): Buffer {
-        return Buffer.from(this.base64, "base64")
-    }
-
-}
+import {QR} from "./QR";
 
 export class WhatsappSessionVenomCore extends WhatsappSession {
     whatsapp: Whatsapp;
@@ -84,6 +72,7 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
         }
 
         this.status = WhatsappStatus.WORKING
+        this.events.emit(WAHAInternalEvent.engine_start)
         return this
     }
 
@@ -126,10 +115,10 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
 
     async checkNumberStatus(request: CheckNumberStatusQuery): Promise<WANumberExistResult> {
         try {
-            return  await this.whatsapp.checkNumberStatus(this.ensureSuffix(request.phone))
+            return await this.whatsapp.checkNumberStatus(this.ensureSuffix(request.phone))
         } catch (error) {
             // Catch number doesn't exist error and return it as is
-            if (error.status === 404 && !error.numberExists){
+            if (error.status === 404 && !error.numberExists) {
                 return error
             }
             throw error
@@ -177,11 +166,11 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
             return {
                 buttonId: button.id,
                 buttonText: {
-                    displayText: button.body
+                    displayText: button.text
                 }
             }
         })
-        return this.whatsapp.sendButtons(this.ensureSuffix(request.chatId), request.title, buttons, request.text)
+        return this.whatsapp.sendButtons(this.ensureSuffix(request.chatId), request.title, buttons, request.footer)
     }
 
     startTyping(chat: ChatRequest) {
@@ -192,12 +181,12 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
         return this.whatsapp.stopTyping(chat.chatId)
     }
 
-    async getMessages(query: GetMessageQuery){
+    async getMessages(query: GetMessageQuery) {
         const messages = await this.whatsapp.getAllMessagesInChat(query.chatId, true, false)
         // Go over messages, download media, and convert to right format.
         const result = []
         for (const [count, message] of messages.entries()) {
-            if (count > query.limit){
+            if (count > query.limit) {
                 // Have enough in the list, stop processing
                 break
             }

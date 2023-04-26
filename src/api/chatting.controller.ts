@@ -13,7 +13,7 @@ import {
     MessageTextButtonsRequest,
     MessageTextQuery,
     MessageTextRequest,
-    MessageVoiceRequest
+    MessageVoiceRequest, SendSeenRequest
 } from "../structures/chatting.dto";
 import {WAMessage, WANumberExistResult} from "../structures/responses.dto";
 import {SessionManager} from "../core/abc/manager.abc";
@@ -105,7 +105,7 @@ export class ChattingController {
     }
 
     @Post('/sendSeen')
-    sendSeen(@Body() chat: ChatRequest) {
+    sendSeen(@Body() chat: SendSeenRequest) {
         const whatsapp = this.manager.getSession(chat.session)
         return whatsapp.sendSeen(chat)
     }

@@ -1,4 +1,4 @@
-.sessions
+.*sessions
 tokens
 files
 venv

@@ -41,6 +41,22 @@ export class ChatRequest extends SessionBaseRequest {
     chatId: string
 }
 
+export class SendSeenRequest extends ChatRequest {
+    @ApiProperty({
+        example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
+        required: false,
+        description: "NOWEB engine only - it's important to mark ALL messages as seen"
+    })
+    messageId?: string
+
+    @ApiProperty({
+        example: '11111111111@c.us',
+        required: false,
+        description: "NOWEB engine only - the ID of the user that sent the  message (undefined for individual chats)"
+    })
+    participant?: string
+}
+
 export class MessageRequest extends SessionBaseRequest {
     @ApiProperty({
         example: "false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA",
@@ -59,12 +75,12 @@ export class MessageTextRequest extends ChatRequest {
 
 export class Button {
     id: string
-    body: string
+    text: string
 }
 
 export class MessageTextButtonsRequest extends ChatRequest {
     title: string;
-    text: string;
+    footer?: string
     buttons?: Array<Button>;
 }
 
