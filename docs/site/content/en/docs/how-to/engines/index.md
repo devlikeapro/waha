@@ -20,7 +20,9 @@ If you have any problems with one engine - try another!
 
 {{< alert icon="👉" text="API responses and webhook payloads may differ significantly! We do our best to keep requests body stable between engines." />}}
 
-## WEBJS ![](/images/versions/core.png)
+All engines are available in Core version ![](/images/versions/core.png)
+
+## WEBJS
 
 A WhatsApp API client that connects through the WhatsApp Web browser app.
 It uses Puppeteer to run a real instance of Whatsapp Web to avoid getting blocked.
@@ -30,7 +32,7 @@ It uses Puppeteer to run a real instance of Whatsapp Web to avoid getting blocke
 - `WHATSAPP_DEFAULT_ENGINE=WEBJS`
 - https://github.com/pedroslopez/whatsapp-web.js
 
-## NOWEB ![](/images/versions/core.png)
+## NOWEB
 
 **NOWEB** engine does not require a browser to work with WhatsApp Web, it does so directly using a WebSocket.
 Not running Chromium saves you CPU and Memory, so you can run more instances on a single server!
@@ -42,7 +44,7 @@ Not running Chromium saves you CPU and Memory, so you can run more instances on 
 - `WHATSAPP_DEFAULT_ENGINE=NOWEB`
 - https://github.com/WhiskeySockets/Baileys
 
-## VENOM ![](/images/versions/core.png)
+## VENOM
 
 It's a high-performance system developed with JavaScript to create a bot for WhatsApp
 
