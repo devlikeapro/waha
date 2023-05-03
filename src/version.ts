@@ -28,7 +28,7 @@ export function getWAHAVersion(): WAHAVersion {
 }
 
 export const VERSION = {
-    version: "2023.4.27",
+    version: "2023.5.3",
     tier: getWAHAVersion(),
     browser: getBrowserExecutablePath()
 }
