@@ -377,12 +377,18 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         }
         const from = message.key.remoteJid
         const id = buildMessageId(message.key)
+        let body = message.message.conversation
+        if (!body){
+            // Some of the messages have no conversation, but instead have text in extendedTextMessage
+            // https://github.com/devlikeapro/whatsapp-http-api/issues/90
+            body = message.message.extendedTextMessage?.text
+        }
         return Promise.resolve({
             id: id,
             timestamp: message.messageTimestamp,
             from: toCusFormat(from),
             fromMe: message.key.fromMe,
-            body: message.message.conversation,
+            body: body,
             to: toCusFormat(to),
             participant: toCusFormat(participant),
             // @ts-ignore
