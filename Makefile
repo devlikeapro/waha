@@ -1,6 +1,9 @@
 build:
 	docker build . -t devlikeapro/whatsapp-http-api
 
+build-plus:
+	docker build . -t devlikeapro/whatsapp-http-api-plus
+
 run-webjs:
 	docker run \
 		--rm -d \
