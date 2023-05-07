@@ -35,7 +35,7 @@ async function bootstrap() {
 
     // Allow to send big body - for images and attachments
     app.use(json({limit: '50mb'}));
-    app.use(urlencoded({limit: '50mb'}));
+    app.use(urlencoded({limit: '50mb', extended: false}));
 
     // Configure swagger
     const swagger = new SwaggerModule()
