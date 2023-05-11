@@ -153,6 +153,7 @@ export class MessageImageRequest extends FileRequest {
 }
 
 export class MessageFileRequest extends FileRequest {
+    caption: string;
 }
 
 export class VoiceBinaryFile {
