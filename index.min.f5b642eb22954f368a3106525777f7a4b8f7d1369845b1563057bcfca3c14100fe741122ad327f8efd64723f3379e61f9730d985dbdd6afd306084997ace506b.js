@@ -54,7 +54,7 @@ WHATSAPP_HOOK_URL=https://httpbin.org/post - to set up a URL for the webhook WHA
 { \u0026quot;event\u0026quot;: \u0026quot;message\u0026quot;, \u0026quot;session\u0026quot;: \u0026quot;default\u0026quot;, \u0026quot;payload\u0026quot;: {} } Where event value helps you identify the incoming event with payload for that events.
 Below the list of all events that WhatsApp HTTP API sends to your.
 👉 If you want to look at a webhook body - use the url \`https://httpbin.org/post\` Run the bellow command and see look at the logs - it prints body request for all events that happen in your WhatsApp!
-docker run -it -e \u0026quot;WHATSAPP_HOOK_EVENTS=*\u0026quot; -e WHATSAPP_HOOK_URL=https://httpbin.org/post devlikeapro/whatsapp-http-api Examples #Here\u0026rsquo;s few examples of how to handle webhook in different languages:
+docker run -it -e \u0026quot;WHATSAPP_HOOK_EVENTS=*\u0026quot; -e WHATSAPP_HOOK_URL=https://httpbin.org/post -p 3000:3000 devlikeapro/whatsapp-http-api Examples #Here\u0026rsquo;s few examples of how to handle webhook in different languages:
 Python guide Do you use another language?
 Please create a short guide how to handle webhook and send message after you finish your setup! You can create a pull request with your favorite language in the GitHub, in examples folder.
 Just put the code and README.md file in the folder - we\u0026rsquo;ll do the rest!
