@@ -1,40 +1,39 @@
-import {IsArray, IsString} from "class-validator";
+import { IsArray, IsString } from 'class-validator';
 
 /**
  * Structures
  */
 export class Participant {
-    @IsString()
-    id: string
+  @IsString()
+  id: string;
 }
 
 /**
  * Queries
  */
 
-
 /**
  * Requests
  */
 
 export class ParticipantsRequest {
-    @IsArray()
-    participants: Array<Participant>
+  @IsArray()
+  participants: Array<Participant>;
 }
 
 export class DescriptionRequest {
-    @IsString()
-    description: string
+  @IsString()
+  description: string;
 }
 export class SubjectRequest {
-    @IsString()
-    subject: string
+  @IsString()
+  subject: string;
 }
 
 export class CreateGroupRequest {
-    @IsString()
-    name: string
+  @IsString()
+  name: string;
 
-    @IsArray()
-    participants: Array<Participant>
+  @IsArray()
+  participants: Array<Participant>;
 }

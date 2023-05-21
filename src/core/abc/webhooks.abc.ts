@@ -1,5 +1,5 @@
-import {WhatsappSession} from "./session.abc";
+import { WhatsappSession } from './session.abc';
 
 export abstract class WebhookConductor {
-    abstract configure(session: WhatsappSession)
+  abstract configure(session: WhatsappSession);
 }

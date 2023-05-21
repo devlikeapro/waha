@@ -1,7 +1,7 @@
-import { ApiParam } from "@nestjs/swagger";
-import { Injectable, Param, PipeTransform } from "@nestjs/common";
-import { SessionManager } from "../core/abc/manager.abc";
-import { WhatsappSession } from "../core/abc/session.abc";
+import { ApiParam } from '@nestjs/swagger';
+import { Injectable, Param, PipeTransform } from '@nestjs/common';
+import { SessionManager } from '../core/abc/manager.abc';
+import { WhatsappSession } from '../core/abc/session.abc';
 
 /**
  * Get session name and return Whatsapp session back (if exists)
@@ -10,27 +10,25 @@ import { WhatsappSession } from "../core/abc/session.abc";
  */
 @Injectable()
 export class SessionPipe implements PipeTransform<WhatsappSession> {
-    constructor(private manager: SessionManager) {
-    }
+  constructor(private manager: SessionManager) {}
 
-    async transform(value: any) {
-        return this.manager.getSession(value)
-    }
+  async transform(value: any) {
+    return this.manager.getSession(value);
+  }
 }
 
 /**
  * Decorator for a method that uses SessionPipe above
  */
 export const SessionApiParam = ApiParam({
-    name: 'session',
-    required: true,
-    type: "string",
-    description: "WhatsApp session name",
-})
+  name: 'session',
+  required: true,
+  type: 'string',
+  description: 'WhatsApp session name',
+});
 
 /**
  * Session param
  @SessionParam session: WhatsappSession,
  */
-export const SessionParam = Param('session', SessionPipe)
-
+export const SessionParam = Param('session', SessionPipe);
