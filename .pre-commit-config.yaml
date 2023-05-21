@@ -1,4 +1,13 @@
 repos:
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: 'v2.7.1'
+    hooks:
+      - id: prettier
+        types_or: [javascript, ts]
+        files: |
+          (?x)^(
+              src/.*|
+          )$
   - repo: https://github.com/Lucas-C/pre-commit-hooks-nodejs
     rev: v1.1.2
     hooks:
@@ -12,9 +21,9 @@ repos:
         language: pygrep
         entry: 'plus'
         files: |
-            (?x)^(
-                src/api/.*|
-                src/core/.*|
-                src/structures/.*|
-                src/config.service.ts|
-            )$          
+          (?x)^(
+              src/api/.*|
+              src/core/.*|
+              src/structures/.*|
+              src/config.service.ts|
+          )$
