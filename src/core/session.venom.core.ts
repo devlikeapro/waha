@@ -40,13 +40,11 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
     return create(this.name, this.getCatchQR(), undefined, {
       headless: true,
       devtools: false,
-      useChrome: true,
       debug: false,
       logQR: true,
       browserArgs: this.getBrowserArgsForPuppeteer(),
       autoClose: 60000,
       puppeteerOptions: {},
-      multidevice: true,
     });
   }
 
@@ -184,7 +182,7 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
   }
 
   sendSeen(chat: ChatRequest) {
-    return this.whatsapp.sendSeen(chat.chatId);
+    return this.whatsapp.markMarkSeenMessage(chat.chatId);
   }
 
   sendTextButtons(request: MessageTextButtonsRequest) {
@@ -199,17 +197,19 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
     return this.whatsapp.sendButtons(
       this.ensureSuffix(request.chatId),
       request.title,
-      buttons,
       request.footer,
+      buttons,
     );
   }
 
   startTyping(chat: ChatRequest) {
-    return this.whatsapp.startTyping(chat.chatId);
+    return this.whatsapp.startTyping(chat.chatId, false);
   }
 
   stopTyping(chat: ChatRequest) {
-    return this.whatsapp.stopTyping(chat.chatId);
+    return;
+    // The method is not available yet in new venom-bot
+    // return this.whatsapp.stopTyping(chat.chatId);
   }
 
   async getMessages(query: GetMessageQuery) {
