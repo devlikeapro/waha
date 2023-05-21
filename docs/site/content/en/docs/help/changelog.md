@@ -13,6 +13,39 @@ weight: 600
 toc: true
 ---
 
+## 2021.6 - June 2023
+
+Improvements on session management, restarting sessions and more:
+
+- Added `WHATSAPP_RESTART_ALL_SESSIONS=True`: Set this variable to `True` to start all **STOPPED** sessions after
+  container restarts. By default, this variable is set to `False`.
+  - Please note that this will start all **STOPPED** sessions, not just the sessions that were working before the
+    restart. You can maintain the session list by
+    using `POST /api/session/stop` with the `logout: True` parameter or by calling `POST /api/session/logout` to remove
+    **STOPPED** sessions. You can see all sessions, including **STOPPED** sessions, in the `GET /api/sessions/all=True`
+    response.
+- `WHATSAPP_START_SESSION` now support more than one session! Separate session names by command, and it'll start them
+  ALWAYS after container restart `WHATSAPP_START_SESSION=session1,session2`
+- `WHATSAPP_SWAGGER_CONFIG_ADVANCED=true` enables advanced configuration options for Swagger documentation - you can customize host, port and base URL for the requests.
+  Disabled by default.
+- Added `?all=true` parameter to `GET /api/session?all=True` endpoint - it'll show you ALL session, included **STOPPED
+  **, so you can know which one will be restarted if you set `WHATSAPP_RESTART_ALL_SESSIONS=True` environment variable.
+- Added `POST /api/sessions/logout` that allow you to logout from session - remove saved credentials.
+- Added `logout` boolean parameter to `POST /api/sessions/stop` request that allow you to stop the session AND logout at
+  the same time.
+- Added [How to deploy page ->]({{< relref "/docs/how-to/deploy" >}}) with
+  [docker-compose.yaml](https://github.com/devlikeapro/whatsapp-http-api/blob/core/docker-compose.yaml) example
+- Added `engine` field in webhook payload
+
+```json
+{
+  "event": "message",
+  "session": "default",
+  "engine": "WEBJS",
+  "payload": {}
+}
+```
+
 ## 2021.5 - May 2023
 
 - Added new [NOWEB engine]({{< relref "/docs/how-to/engines" >}}). **NOWEB** engine does not require a browser to work

@@ -16,19 +16,19 @@ import {
 } from "../structures/chatting.dto";
 import {WAMessage, WANumberExistResult} from "../structures/responses.dto";
 import {create, Message, Whatsapp} from "venom-bot";
-import {WAEvents, WhatsappStatus} from "../structures/enums.dto";
+import { WAEvents, WhatsappEngine, WhatsappStatus } from "../structures/enums.dto";
 import {NotImplementedByEngineError} from "./exceptions";
-import {MediaStorage} from "./abc/storage.abc";
 import {UnprocessableEntityException} from "@nestjs/common/exceptions/unprocessable-entity.exception";
-import {ConsoleLogger} from "@nestjs/common";
 import {QR} from "./QR";
 
 export class WhatsappSessionVenomCore extends WhatsappSession {
+    engine = WhatsappEngine.NOWEB
+
     whatsapp: Whatsapp;
     private qr: QR
 
-    public constructor(public name: string, protected storage: MediaStorage, protected log: ConsoleLogger) {
-        super(name, storage, log);
+    public constructor(config) {
+        super(config);
         this.qr = new QR()
     }
 

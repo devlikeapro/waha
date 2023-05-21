@@ -1,0 +1,32 @@
+version: '3'
+services:
+  whatsapp-http-api:
+    image: devlikeapro/whatsapp-http-api
+    container_name: whatsapp-http-api
+    ports:
+      - "3000:3000/tcp"
+    environment:
+      # Environment variables from https://waha.devlike.pro/docs/how-to/config/
+      - WHATSAPP_HOOK_URL=https://httpbin.org/post
+      - WHATSAPP_HOOK_EVENTS=message
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+    restart: always
+
+  whatsapp-http-api-plus:
+    image: devlikeapro/whatsapp-http-api-plus
+    container_name: whatsapp-http-api-plus
+    ports:
+      - "3000:3000/tcp"
+    volumes:
+      - "./.sessions:/app/.sessions"
+    environment:
+      # Environment variables from https://waha.devlike.pro/docs/how-to/config/
+      - WHATSAPP_RESTART_ALL_SESSIONS=True
+      - WHATSAPP_HOOK_URL=https://httpbin.org/post
+      - WHATSAPP_HOOK_EVENTS=message
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+      - WHATSAPP_API_KEY=321
+      - WHATSAPP_SWAGGER_USERNAME=admin
+      - WHATSAPP_SWAGGER_PASSWORD=123
+      - WHATSAPP_API_HOSTNAME=localhost
+    restart: always

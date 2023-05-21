@@ -1,4 +1,4 @@
-import {WAEvents, WhatsappStatus} from "../../structures/enums.dto";
+import { WAEvents, WhatsappEngine, WhatsappStatus } from "../../structures/enums.dto";
 import {ConsoleLogger} from "@nestjs/common";
 import {
     ChatRequest,
@@ -14,7 +14,7 @@ import {
     MessageTextRequest,
     MessageVoiceRequest
 } from "../../structures/chatting.dto";
-import {MediaStorage} from "./storage.abc";
+import { LocalSessionStorage, MediaStorage } from "./storage.abc";
 import {MessageId} from "whatsapp-web.js";
 import {ContactQuery, ContactRequest} from "../../structures/contacts.dto";
 import {NotImplementedByEngineError} from "../exceptions";
@@ -44,14 +44,29 @@ export enum WAHAInternalEvent {
     engine_start = "engine.start",
 }
 
+export interface WhatsAppSessionConfig {
+    name: string,
+    storage: MediaStorage,
+    log: ConsoleLogger,
+    sessionStorage: LocalSessionStorage,
+}
+
 export abstract class WhatsappSession {
     public status: WhatsappStatus;
     public events: EventEmitter
+    public engine: WhatsappEngine
 
-    public constructor(public name: string, protected storage: MediaStorage, protected log: ConsoleLogger) {
+    public name: string
+    protected storage: MediaStorage
+    protected log: ConsoleLogger
+    protected sessionStorage: LocalSessionStorage
+
+
+    public constructor({name, log, sessionStorage}: WhatsAppSessionConfig ) {
         this.name = name
         this.status = WhatsappStatus.STARTING
         this.log = log
+        this.sessionStorage = sessionStorage
         this.events = new EventEmitter()
     }
 

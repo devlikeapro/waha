@@ -1,7 +1,7 @@
 import {UnprocessableEntityException} from "@nestjs/common/exceptions/unprocessable-entity.exception";
 import {Buttons, Chat, Client, Contact, Events, GroupChat, Location, Message} from "whatsapp-web.js";
 import {Message as MessageInstance} from "whatsapp-web.js/src/structures"
-import {WAEvents, WhatsappStatus} from "../structures/enums.dto";
+import { WAEvents, WhatsappEngine, WhatsappStatus } from "../structures/enums.dto";
 import {WAHAInternalEvent, WhatsappSession} from "./abc/session.abc";
 import {WAMessage, WANumberExistResult} from "../structures/responses.dto";
 import {
@@ -29,6 +29,8 @@ const qrcode = require('qrcode-terminal');
 
 
 export class WhatsappSessionWebJSCore extends WhatsappSession {
+    engine = WhatsappEngine.NOWEB
+
     whatsapp: Client;
 
     protected buildClient() {

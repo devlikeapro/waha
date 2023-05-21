@@ -1,6 +1,7 @@
-import {Injectable} from "@nestjs/common";
-import {ConfigService} from "@nestjs/config";
-import {WhatsappEngine} from "./structures/enums.dto";
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { WhatsappEngine } from "./structures/enums.dto";
+import { parseBool } from "./helpers";
 
 @Injectable()
 export class WhatsappConfigService {
@@ -47,8 +48,17 @@ export class WhatsappConfigService {
         return types ? types.split(',') : null
     }
 
-    get startSession(): string | undefined {
-        return this.configService.get('WHATSAPP_START_SESSION', undefined)
+    get startSessions(): string[] {
+        const value: string = this.configService.get('WHATSAPP_START_SESSION', "")
+        if (!value){
+            return []
+        }
+        return value.split(",")
+    }
+
+    get shouldRestartAllSessions(): boolean {
+        const value: string = this.configService.get('WHATSAPP_RESTART_ALL_SESSIONS', "false")
+        return parseBool(value)
     }
 
     getWebhookUrl(): string | undefined {
@@ -86,5 +96,9 @@ export class WhatsappConfigService {
             return undefined
         }
         return [user, password]
+    }
+
+    getSwaggerAdvancedConfigEnabled(): boolean {
+        return this.configService.get("WHATSAPP_SWAGGER_CONFIG_ADVANCED", false)
     }
 }

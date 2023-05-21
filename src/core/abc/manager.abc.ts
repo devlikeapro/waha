@@ -1,28 +1,38 @@
-import {OnApplicationShutdown} from "@nestjs/common";
-import {SessionDTO, SessionStartRequest, SessionStopRequest} from "../../structures/sessions.dto";
-import {WhatsappSession} from "./session.abc";
-import {WhatsappEngine} from "../../structures/enums.dto";
-import {MediaStorage} from "./storage.abc";
-import {WebhookConductor} from "./webhooks.abc";
+import { OnApplicationShutdown } from "@nestjs/common";
+import {
+  SessionLogoutRequest,
+  SessionDTO,
+  SessionStartRequest,
+  SessionStopRequest
+} from "../../structures/sessions.dto";
+import { WhatsappSession } from "./session.abc";
+import { WhatsappEngine } from "../../structures/enums.dto";
+import { MediaStorage } from "./storage.abc";
+import { WebhookConductor } from "./webhooks.abc";
 
 export abstract class SessionManager implements OnApplicationShutdown {
 
-    abstract start(request: SessionStartRequest): SessionDTO
+  protected abstract getEngine(engine: WhatsappEngine): typeof WhatsappSession
 
-    abstract stop(request: SessionStopRequest): Promise<void>
+  protected abstract get EngineClass(): typeof WhatsappSession
 
-    abstract getSession(name: string): WhatsappSession
+  protected abstract get WebhookConductorClass(): typeof WebhookConductor
 
-    abstract getSessions(): SessionDTO[]
+  protected abstract get MediaStorageClass(): typeof MediaStorage
 
-    abstract onApplicationShutdown(signal ?: string)
+  abstract onApplicationShutdown(signal ?: string)
 
-    protected abstract getEngine(engine: WhatsappEngine): typeof WhatsappSession
+  //
+  // API Methods
+  //
+  abstract start(request: SessionStartRequest): SessionDTO
 
-    protected abstract get EngineClass(): typeof WhatsappSession
+  abstract stop(request: SessionStopRequest): Promise<void>
 
-    protected abstract get WebhookConductorClass(): typeof WebhookConductor
+  abstract logout(request: SessionLogoutRequest): Promise<void>
 
-    protected abstract get MediaStorageClass(): typeof MediaStorage
+  abstract getSession(name: string, error?: boolean): WhatsappSession
+
+  abstract getSessions(all: boolean): SessionDTO[]
 }
 

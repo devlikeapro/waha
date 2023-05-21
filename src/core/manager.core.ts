@@ -1,15 +1,16 @@
 import {ConsoleLogger, Injectable, NotFoundException, UnprocessableEntityException} from "@nestjs/common";
 import {SessionManager} from "./abc/manager.abc";
-import {WAHAInternalEvent, WhatsappSession} from "./abc/session.abc";
-import {WhatsappEngine} from "../structures/enums.dto";
-import {SessionDTO, SessionStartRequest, SessionStopRequest} from "../structures/sessions.dto";
+import { WAHAInternalEvent, WhatsappSession, WhatsAppSessionConfig } from "./abc/session.abc";
+import { WhatsappEngine, WhatsappStatus } from "../structures/enums.dto";
+import { SessionLogoutRequest, SessionDTO, SessionStartRequest, SessionStopRequest } from "../structures/sessions.dto";
 import {WhatsappConfigService} from "../config.service";
 import {WhatsappSessionVenomCore} from "./session.venom.core";
 import {WhatsappSessionWebJSCore} from "./session.webjs.core";
 import {DOCS_URL} from "./exceptions";
 import {WebhookConductorCore} from "./webhooks.core";
-import {MediaStorageCore} from "./storage.core";
+import { MediaStorageCore, SessionStorageCore } from "./storage.core";
 import {WhatsappSessionNoWebCore} from "./session.noweb.core";
+import { LocalSessionStorage } from "./abc/storage.abc";
 
 export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
     constructor() {
@@ -27,6 +28,7 @@ export class SessionManagerCore extends SessionManager {
     // @ts-ignore
     protected WebhookConductorClass = WebhookConductorCore
     protected readonly EngineClass: typeof WhatsappSession;
+    protected sessionStorage: LocalSessionStorage
 
 
     constructor(
@@ -37,12 +39,20 @@ export class SessionManagerCore extends SessionManager {
 
         this.log.setContext('SessionManager')
         this.session = undefined
-        this.EngineClass = this.getEngine(this.config.getDefaultEngineName())
+        const engineName = this.config.getDefaultEngineName()
+        this.EngineClass = this.getEngine(engineName)
+        this.sessionStorage = new SessionStorageCore(engineName.toLowerCase())
+        this.sessionStorage.init()
 
-        // Start session from the start
-        if (config.startSession) {
-            this.start({name: config.startSession})
-        }
+        this.startPredefinedSessions()
+    }
+
+    protected startPredefinedSessions() {
+        const startSessions = this.config.startSessions;
+        startSessions.forEach((sessionName) => {
+              this.start({ name: sessionName });
+          }
+        );
     }
 
     protected getEngine(engine: WhatsappEngine): typeof WhatsappSession {
@@ -64,27 +74,16 @@ export class SessionManagerCore extends SessionManager {
         }
     }
 
-    getSession(name: string): WhatsappSession {
-        this.onlyDefault(name)
-        if (!this.session) {
-            throw new NotFoundException(
-                `We didn't find a session with name '${name}'. Please start it first by using POST /sessions/start request`,
-            );
-        }
-        return this.session
-    }
-
-    getSessions(): SessionDTO[] {
-        return [];
-    }
-
     async onApplicationShutdown(signal?: string) {
         if (!this.session){
             return
         }
-        await this.stop({name: this.DEFAULT})
+        await this.stop({name: this.DEFAULT, logout: false})
     }
 
+    //
+    // API Methods
+    //
     start(request: SessionStartRequest): SessionDTO {
         this.onlyDefault(request.name)
 
@@ -99,8 +98,9 @@ export class SessionManagerCore extends SessionManager {
             this.config.getWebhookEvents()
         )
 
+        const sessionConfig: WhatsAppSessionConfig = {name, storage, log, sessionStorage: this.sessionStorage}
         // @ts-ignore
-        const session = new this.EngineClass(name, storage, log)
+        const session = new this.EngineClass(sessionConfig)
         this.session = session
 
         session.events.on(WAHAInternalEvent.engine_start, () => webhook.configure(session))
@@ -109,6 +109,8 @@ export class SessionManagerCore extends SessionManager {
     }
 
     async stop(request: SessionStopRequest): Promise<void> {
+        this.onlyDefault(request.name)
+
         const name = request.name
         this.log.log(`Stopping ${name} session...`)
         const session = this.getSession(name)
@@ -117,4 +119,26 @@ export class SessionManagerCore extends SessionManager {
         this.session = undefined
     }
 
+    async logout(request: SessionLogoutRequest){
+        this.sessionStorage.clean(request.name)
+    }
+
+    getSession(name: string, error=true): WhatsappSession {
+        this.onlyDefault(name)
+        const session = this.session
+        if (!session) {
+            if (error){
+                throw new NotFoundException( `We didn't find a session with name '${name}'. Please start it first by using POST /sessions/start request`);
+            }
+            return
+        }
+        return session
+    }
+
+    getSessions(all: boolean): SessionDTO[] {
+        if (!this.session){
+            return all? [{name: this.DEFAULT, status: WhatsappStatus.STOPPED}] : []
+        }
+        return [{name: this.session.name, status: this.session.status}]
+    }
 }

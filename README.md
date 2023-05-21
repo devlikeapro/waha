@@ -121,7 +121,7 @@ Read more about how to get `PASSWORD` for [Plus Version →]({{< relref "plus-ve
 Run WhatsApp HTTP API:
 
 ```bash
-docker run -it --rm -p 127.0.0.1:3000:3000/tcp --name whatsapp-http-api devlikeapro/whatsapp-http-api
+docker run -it --rm -p 3000:3000/tcp --name whatsapp-http-api devlikeapro/whatsapp-http-api
 
 # It prints logs and the last line must be
 # WhatsApp HTTP API is running on: http://[::1]:3000

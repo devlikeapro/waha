@@ -26,7 +26,7 @@ to the container. WAHA stores authentication information in the directory and re
 
 The full command would be:
 ```bash
-docker run --rm -d -v `pwd`/.sessions:/app/.sessions -p 127.0.0.1:3000:3000/tcp --name whatsapp-http-api devlikeapro/whatsapp-http-api
+docker run --rm -d -v `pwd`/.sessions:/app/.sessions -p 3000:3000/tcp --name whatsapp-http-api devlikeapro/whatsapp-http-api
 ```
 
 ### Remote storage ![](/images/versions/soon.png)
@@ -69,11 +69,26 @@ The response:
 
 In order to stop a new session - call `POST /api/sessions/stop`
 
-{{< alert icon="👉" text="The stop request does not log out the account. Manually remove the session storage." />}}
+{{< alert icon="👉" text="The stop request does not log out the account by default. Set 'logout' field to 'true'." />}}
 
 ```json
 {
-  "name": "default"
+  "name": "default",
+  "logout": true
+}
+```
+
+
+### Logout
+
+In order to log out the session - call `POST /api/sessions/logout`
+
+{{< alert icon="👉" text="You must stop session first." />}}
+
+```json
+{
+  "name": "default",
+  "logout": true
 }
 ```
 

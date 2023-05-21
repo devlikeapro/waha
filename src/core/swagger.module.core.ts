@@ -35,29 +35,31 @@ export class SwaggerModuleCore {
             )
 
         const config = app.get(WhatsappConfigService)
-        builder.addServer(
-          "{protocol}://{host}:{port}/{baseUrl}",
-          "",
-          {
-              "protocol": {
-                  "default": "http",
-                  "enum": ["http", "https"],
-                  "description": "The protocol used to access the server."
-              },
-              "host": {
-                  "default": config.hostname,
-                  "description": "The hostname or IP address of the server."
-              },
-              "port": {
-                  "default": config.port,
-                  "description": "The port number on which the server is listening for requests"
-              },
-              "baseUrl": {
-                  "default": "",
-                  "description": "The base URL path for all API endpoints. This can be used to group related endpoints together under a common path.",
+        if (config.getSwaggerAdvancedConfigEnabled()){
+          builder.addServer(
+            "{protocol}://{host}:{port}/{baseUrl}",
+            "",
+            {
+                "protocol": {
+                    "default": "http",
+                    "enum": ["http", "https"],
+                    "description": "The protocol used to access the server."
+                },
+                "host": {
+                    "default": config.hostname,
+                    "description": "The hostname or IP address of the server."
+                },
+                "port": {
+                    "default": config.port,
+                    "description": "The port number on which the server is listening for requests"
+                },
+                "baseUrl": {
+                    "default": "",
+                    "description": "The base URL path for all API endpoints. This can be used to group related endpoints together under a common path.",
+                }
               }
-            }
-          )
+            )
+        }
 
         const options = builder.build()
         const document = SwaggerModule.createDocument(app, options);

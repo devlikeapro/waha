@@ -9,7 +9,7 @@ ENV PUPPETEER_SKIP_DOWNLOAD=True
 WORKDIR /
 RUN git clone https://github.com/WhiskeySockets/Baileys WhiskeySockets-Baileys && \
     cd WhiskeySockets-Baileys && \
-    git checkout b7878e531144133b48d9e5970787e7b256d21063 && \
+    git checkout e3ac5f596f16b706420ed016a349fa75bd3a157f && \
     yarn install && \
     yarn build:all
 

@@ -4,27 +4,6 @@ build:
 build-plus:
 	docker build . -t devlikeapro/whatsapp-http-api-plus
 
-run-webjs:
-	docker run \
-		--rm -d \
-		-p 127.0.0.1:3000:3000/tcp \
-		-v `pwd`/.sessions:/app/.sessions \
-		-e WHATSAPP_HOOK_URL=https://httpbin.org/post \
-		-e WHATSAPP_HOOK_EVENTS=* \
-		-e WHATSAPP_API_KEY=321 \
-		--name whatsapp-http-api devlikeapro/whatsapp-http-api
-
-run-venom:
-	docker run \
-		--rm -d \
-		-p 127.0.0.1:3000:3000/tcp \
-		-v `pwd`/.sessions:/app/.sessions \
-		-e WHATSAPP_HOOK_URL=https://httpbin.org/post \
-		-e WHATSAPP_HOOK_EVENTS=* \
-		-e WHATSAPP_DEFAULT_ENGINE=VENOM \
-		-e WHATSAPP_API_KEY=321 \
-		--name whatsapp-http-api devlikeapro/whatsapp-http-api
-
 stop:
 	docker stop whatsapp-http-api
 

@@ -1,7 +1,7 @@
-import {ApiParam} from "@nestjs/swagger";
-import {Injectable, Param, PipeTransform} from "@nestjs/common";
-import {SessionManager} from "../core/abc/manager.abc";
-import {WhatsappSession} from "../core/abc/session.abc";
+import { ApiParam } from "@nestjs/swagger";
+import { Injectable, Param, PipeTransform } from "@nestjs/common";
+import { SessionManager } from "../core/abc/manager.abc";
+import { WhatsappSession } from "../core/abc/session.abc";
 
 /**
  * Get session name and return Whatsapp session back (if exists)
@@ -33,3 +33,4 @@ export const SessionApiParam = ApiParam({
  @SessionParam session: WhatsappSession,
  */
 export const SessionParam = Param('session', SessionPipe)
+

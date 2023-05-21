@@ -37,6 +37,7 @@ On the URL that you set via `WHATSAPP_HOOK_URL` you receive JSON-data with follo
 {
   "event": "message",
   "session": "default",
+  "engine": "WEBJS",
   "payload": {}
 }
 ```

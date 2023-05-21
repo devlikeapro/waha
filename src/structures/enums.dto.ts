@@ -10,6 +10,7 @@ export enum WAEvents {
 }
 
 export enum WhatsappStatus {
+    STOPPED = "STOPPED",
     STARTING = "STARTING",
     SCAN_QR_CODE = "SCAN_QR_CODE",
     WORKING = "WORKING",

@@ -54,7 +54,12 @@ export class WebhookConductorCore implements WebhookConductor {
     }
 
     public callWebhook(event, session: WhatsappSession, data: any, url) {
-        const json: WAWebhook = {event: event, session: session.name, payload: data}
+        const json: WAWebhook = {
+            event: event,
+            session: session.name,
+            payload: data,
+            engine: session.engine,
+        }
         this.log.log(`Sending POST to ${url}...`)
         this.log.debug(`POST DATA: ${JSON.stringify(json)}`)
         this.post(json, url)

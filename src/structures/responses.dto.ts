@@ -1,5 +1,5 @@
 import {ApiProperty} from "@nestjs/swagger";
-import {WAEvents} from "./enums.dto";
+import { WAEvents, WhatsappEngine } from "./enums.dto";
 
 export class WANumberExistResult {
     numberExists: boolean
@@ -139,6 +139,7 @@ export class WAMessage {
 export class WAWebhook {
     event: WAEvents
     session: string
+    engine: WhatsappEngine
     // eslint-disable-next-line @typescript-eslint/ban-types
     payload: WAMessage | WAGroupNotification | object
 }
