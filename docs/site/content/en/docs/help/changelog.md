@@ -13,7 +13,8 @@ weight: 600
 toc: true
 ---
 
-## 2021.6 - June 2023
+## 2023.6
+June 2023
 
 Improvements on session management, restarting sessions and more:
 
@@ -46,7 +47,8 @@ Improvements on session management, restarting sessions and more:
 }
 ```
 
-## 2021.5 - May 2023
+## 2023.5
+May 2023
 
 - Added new [NOWEB engine]({{< relref "/docs/how-to/engines" >}}). **NOWEB** engine does not require a browser to work
   with
@@ -56,12 +58,14 @@ Improvements on session management, restarting sessions and more:
   - Send Link Preview API works!
   - ⚠ Read the article before using it [How to avoid blocking ->]({{< relref "/docs/help/how-to-avoid-blocking" >}}).
 
-## 2021.4 - March 2023
+## 2023.4
+March 2023
 
 - Add [Groups API]({{< relref "/docs/how-to/groups" >}})
 - Use Chromium by default instead of Chrome
 
-## 2021.1 - January 2023
+## 2023.1
+January 2023
 
 - Added  [Contacts API]({{< relref "/docs/how-to/contacts" >}})
   - Get all contacts
@@ -71,7 +75,8 @@ Improvements on session management, restarting sessions and more:
   - Check number exists (is registered in WhatsApp) - works even if the number is not in the contact list
   - Block and unblock contact
 
-## 2022.12 - December 2023
+## 2022.12
+December 2023
 
 - Added `GET /messages/` endpoint to get chat messages [#31](https://github.com/devlikeapro/whatsapp-http-api/issues/31)
 
