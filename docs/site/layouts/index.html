@@ -4,11 +4,16 @@
     <div class="col-lg-12 text-center">
       <h1 class="mt-0">{{ .Title }}</h1>
     </div>
-    <div class="col-lg-9 col-xl-8 text-center">
+    <div class="col-lg-9 col-xl-9 text-center">
       <div class="mb-4">
         <img src="/images/logo.png" title="WhatsApp HTTP API" alt="logo" width="100"/>
       </div>
       <p class="lead">{{ .Params.lead | safeHTML }}</p>
+      <code>
+        docker run -it -p 3000:3000/tcp devlikeapro/whatsapp-http-api
+      </code>
+      <br/>
+      <br/>
       <a class="btn btn-primary btn-lg px-4 mb-2"
          href="/docs/{{ if .Site.Params.options.docsVersioning }}{{ .Site.Params.docsVersion }}/{{ end }}overview/introduction/"
          role="button">Get Started</a>
