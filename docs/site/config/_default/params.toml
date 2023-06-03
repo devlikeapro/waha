@@ -74,7 +74,7 @@ copyRight = "Copyright (c) 2021-2023 Dev Like A Pro"
 alert = true
 alertDismissable = false
 # alertText = "Introducing the Doks child theme, several DX + UX updates, and more! <a class=\"alert-link stretched-link\" href=\"https://getdoks.org/blog/doks-v0.2/\" target=\"_blank\" rel=\"noopener\">Check out Doks v0.2</a>"
-alertText = "Enjoy Core version or want to get WAHA Plus verison? <a class=\"alert-link stretched-link\" href=\"https://waha.devlike.pro/docs/how-to/plus-version/\">Support the project -></a>"
+alertText = "<a class=\"alert-link stretched-link\" href=\"https://waha.devlike.pro/docs/how-to/plus-version/\">Support the project and get WAHA Plus version! -></a>"
 
 # Edit Page
 # repoHost [Github | Gitea | GitLab | Bitbucket | BitbucketServer ] is used for building the edit link based on git hoster
