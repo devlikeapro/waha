@@ -1,6 +1,6 @@
 ---
-title : "Plus version"
-description: "Plus version"
+title : "WAHA Plus"
+description: "WAHA Plus"
 lead: ""
 date: 2020-10-06T08:48:45+00:00
 lastmod: 2020-10-06T08:48:45+00:00
@@ -16,13 +16,7 @@ weight: 900
 1. Core ![](/images/versions/core.png) the basic version that meet almost 80% people’s needs. 100% free and open source.
 2. Plus ![](/images/versions/plus.png) the version with advanced messages, security, and reliability features.
 
-**If you enjoy Core ![](/images/versions/core.png) version and would like to support the project** - you can subscribe on Core level.
-It's not expensive, but it supports the project a lot!
-- [Boosty ->](https://boosty.to/wa-http-api)
-- [Patreon ->](https://patreon.com/wa_http_api)
-
-
-## Features
+### Features
 
 The Plus additional features are:
 
@@ -34,7 +28,7 @@ The Plus additional features are:
 6. [**Support multiple sessions** →]({{< relref "/docs/how-to/sessions" >}})
 7. **Priority in support** - on both bugs and features
 
-## Differences
+### Differences
 
 What is the difference between **WAHA Plus** and other SaaS solutions for WhatsApp HTTP API?
 
@@ -47,7 +41,7 @@ What is the difference between **WAHA Plus** and other SaaS solutions for WhatsA
 | **Message price**  |             ✔️ All messages are Free!             |                     ➖ Some solutions have a price for messages - $1/100 messages. |
 | **Expenses**       |               ✔️ $19 **donation**!                |                                                 ➖ Monthly payment starts from $50 |
 
-## Donations
+### Donations
 
 WAHA Plus version is available through **donations** (subscriptions).
 
