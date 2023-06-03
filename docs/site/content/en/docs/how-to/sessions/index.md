@@ -83,8 +83,8 @@ you can use set of these environment variables to start sessions for you:
 
 ## Advanced sessions ![](/images/versions/plus.png)
 
-Plus ![](/images/versions/plus.png) version allows you to save "session" state and avoid scanning QR code everytime when
-you start a container.
+[WAHA Plus version]({{< relref "plus-version" >}})
+allows you to save "session" state and avoid scanning QR code everytime when you start a container.
 
 ### Storage
 
