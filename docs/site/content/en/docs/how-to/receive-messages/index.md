@@ -206,7 +206,9 @@ Then you can use the link to download the file `http://localhost:3000/api/files/
 
 To configure the url you can use environment variables `WHATSAPP_API_HOSTNAME` and `WHATSAPP_API_PORT`.
 
-[Read more about file storage configuration and variables ->]({{< relref "config" >}}).
+By default, WAHA download all files that the account receive.
+If you want to limit files lifetime, specify file types for download or change directory for files -
+[read more about file storage configuration and variables ->]({{< relref "config" >}}).
 
 ## Webhook retries ![](/images/versions/plus.png)
 
