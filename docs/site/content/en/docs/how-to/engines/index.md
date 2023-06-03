@@ -39,7 +39,7 @@ Not running Chromium saves you CPU and Memory, so you can run more instances on 
 
 ️Working with the engine requires more attention, because it's easy to be blocked with it!
 
-⚠ Read the article before using **NOWEB** engine [How to avoid blocking ->]({{< relref "/docs/help/how-to-avoid-blocking" >}}).
+⚠ Read the article before using **NOWEB** engine [How to avoid blocking ->]({{< relref "/docs/overview/how-to-avoid-blocking" >}}).
 
 - `WHATSAPP_DEFAULT_ENGINE=NOWEB`
 - https://github.com/WhiskeySockets/Baileys

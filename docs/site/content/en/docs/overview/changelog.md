@@ -9,7 +9,7 @@ images: [ ]
 menu:
   docs:
     parent: "help"
-weight: 600
+weight: 199
 toc: true
 ---
 
@@ -56,7 +56,7 @@ May 2023
   - Less CPU and RAM usage!
   - Send Locations API works!
   - Send Link Preview API works!
-  - ⚠ Read the article before using it [How to avoid blocking ->]({{< relref "/docs/help/how-to-avoid-blocking" >}}).
+  - ⚠ Read the article before using it [How to avoid blocking ->]({{< relref "/docs/overview/how-to-avoid-blocking" >}}).
 
 ## 2023.4
 March 2023
