@@ -6,4 +6,17 @@ Requirements #
 Only thing that you must have - installed docker. Please follow the original instruction how to install docker -&amp;gt;.
 When you are ready - come back and follows the below steps to send the first text message to WhatsApp via HTTP API!
 Why Docker?
-Docker makes it easy to ship all-in-one solution with the runtime and dependencies.</description></item></channel></rss>
+Docker makes it easy to ship all-in-one solution with the runtime and dependencies.</description></item><item><title>How to Avoid Blocking</title><link>https://waha.devlike.pro/docs/overview/how-to-avoid-blocking/</link><pubDate>Thu, 12 Nov 2020 13:26:54 +0100</pubDate><guid>https://waha.devlike.pro/docs/overview/how-to-avoid-blocking/</guid><description>How to Avoid Blocking in WhatsApp when developing bots.
+It&amp;rsquo;s important to keep in mind that WhatsApp has strict policies in place to prevent spamming and abuse of their platform.
+If you&amp;rsquo;re developing a bot for WhatsApp, it&amp;rsquo;s crucial to follow these guidelines to avoid getting blocked.
+Guidelines to Follow #
+1. Only Reply to Messages #
+When developing a bot for WhatsApp, you should never initiate a conversation. Instead, your bot should only reply to messages that it receives.</description></item><item><title>FAQ</title><link>https://waha.devlike.pro/docs/overview/faq/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://waha.devlike.pro/docs/overview/faq/</guid><description>How to update? #
+💡 Please test all new versions in the development environment before updating production! For Core version the command is
+docker pull devlikeapro/whatsapp-http-api For Plus version, we use login to get the image before:
+docker login -u devlikeapro -p {PASSWORD} docker pull devlikeapro/whatsapp-http-api-plus docker logout Read more about how to get PASSWORD for Plus Version →
+How much CPU and Memory does WhatsApp HTTP API consume? #
+The benchmark has been made on Intel(R) Core(TM) i7-10510U CPU @ 1.</description></item><item><title>Changelog</title><link>https://waha.devlike.pro/docs/overview/changelog/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://waha.devlike.pro/docs/overview/changelog/</guid><description>2023.6 #
+June 2023
+Improvements on session management, restarting sessions and more:
+Added WHATSAPP_RESTART_ALL_SESSIONS=True: Set this variable to True to start all STOPPED sessions after container restarts. By default, this variable is set to False. Please note that this will start all STOPPED sessions, not just the sessions that were working before the restart. You can maintain the session list by using POST /api/session/stop with the logout: True parameter or by calling POST /api/session/logout to remove STOPPED sessions.</description></item></channel></rss>
