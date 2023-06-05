@@ -47,19 +47,19 @@ WAHA is distributed in two versions:
 Here's the available features:
 
 ### Messages
-- Send messages ![](/images/versions/core.png)
-- Receive messages ![](/images/versions/core.png)
-- Message replies ![](/images/versions/core.png)
-- Send location ![](/images/versions/core.png)
-- Send buttons ![](/images/versions/core.png)
-- Receive location ![](/images/versions/core.png)
-- React to messages ![](/images/versions/core.png)
+- Send messages
+- Receive messages
+- Message replies
+- Send location
+- Send buttons
+- Receive location
+- React to messages
 - Send media (images/documents/files) ![](/images/versions/plus.png)
 - Send voice messages ![](/images/versions/plus.png)
 - Receive media (images/audio/video/documents) ![](/images/versions/plus.png)
 - Receive messages - webhook retries ![](/images/versions/plus.png)
--
-### Groups ![](/images/versions/core.png)
+
+### Groups
 - Create a group
 - Get invite for group
 - Modify group info (subject, description)
@@ -67,24 +67,24 @@ Here's the available features:
 - Kick group participants
 - Promote/demote group participants
 
-### Contacts ![](/images/versions/core.png)
+### Contacts
 - Mute/unmute chats
 - Block/unblock contacts
 - Get contact info
 - Get profile pictures
 
 ### Sessions
-- Multi Device ![](/images/versions/core.png)
-- Get the screenshot ![](/images/versions/core.png)
-- Single WhatsApp account running inside one container ![](/images/versions/core.png)
+- Multi Device
+- Get the screenshot
+- Single WhatsApp account running inside one container
 - Multiple WhatsApp account running inside one container ![](/images/versions/plus.png)
 - Session saving (don't have to scan QR on every restart) ![](/images/versions/plus.png)
 - Session saving on remote storage (database, redis) ![](/images/versions/plus-soon.png)
 
-### Security ![](/images/versions/plus.png)
-- API authentication
-- Swagger panel authentication
+### Security
+- API authentication ![](/images/versions/plus.png)
+- Swagger panel authentication ![](/images/versions/plus.png)
 
 ### Updates
-- Bug fixes and updates come as soon as they are implemented. ![](/images/versions/core.png)
+- Bug fixes and updates come as soon as they are implemented.
 
