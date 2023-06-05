@@ -41,7 +41,7 @@ A 3-minute video tutorial is available to help you navigate WhatsApp HTTP API sm
 
 ## Features
 WAHA is distributed in two versions:
-- Core ![](/images/versions/core.png) - the basic version that meet almost 80% people's needs. 100% free and [open source](https://github.com/devlikeapro/whatsapp-http-api).
+- Core ![](/images/versions/core.png) - the basic version that meet almost 80% people's needs. 100% free and [open source ->](https://github.com/devlikeapro/whatsapp-http-api).
 - Plus ![](/images/versions/plus.png) - the version with advanced messages, security, and reliability features. One-time donation, no license expiration, quick updates, read more about [Plus Version →]({{< relref "plus-version" >}})
 
 Here's the available features:
@@ -58,22 +58,7 @@ Here's the available features:
 - Send voice messages ![](/images/versions/plus.png)
 - Receive media (images/audio/video/documents) ![](/images/versions/plus.png)
 - Receive messages - webhook retries ![](/images/versions/plus.png)
-
-### Sessions
-- Multi Device ![](/images/versions/core.png)
-- Get the screenshot ![](/images/versions/core.png)
-- Session saving (don't have to scan QR on every restart) ![](/images/versions/plus.png)
-- Session saving on remote storage (database, redis) ![](/images/versions/plus-soon.png)
-- Single WhatsApp account running inside one container ![](/images/versions/core.png)
-- Multiple WhatsApp account running inside one container ![](/images/versions/plus.png)
-
-### Security
-- API authentication ![](/images/versions/plus.png)
-- Swagger panel authentication ![](/images/versions/plus.png)
-
-### Updates
-- Bug fixes and updates come as soon as they are implemented. ![](/images/versions/core.png)![](/images/versions/plus.png)
-
+-
 ### Groups ![](/images/versions/core.png)
 - Create a group
 - Get invite for group
@@ -87,3 +72,19 @@ Here's the available features:
 - Block/unblock contacts
 - Get contact info
 - Get profile pictures
+
+### Sessions
+- Multi Device ![](/images/versions/core.png)
+- Get the screenshot ![](/images/versions/core.png)
+- Single WhatsApp account running inside one container ![](/images/versions/core.png)
+- Multiple WhatsApp account running inside one container ![](/images/versions/plus.png)
+- Session saving (don't have to scan QR on every restart) ![](/images/versions/plus.png)
+- Session saving on remote storage (database, redis) ![](/images/versions/plus-soon.png)
+
+### Security ![](/images/versions/plus.png)
+- API authentication
+- Swagger panel authentication
+
+### Updates
+- Bug fixes and updates come as soon as they are implemented. ![](/images/versions/core.png)
+
