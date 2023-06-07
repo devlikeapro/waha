@@ -44,12 +44,11 @@ import {
   ParticipantsRequest,
 } from '../structures/groups.dto';
 import { QR } from './QR';
-import { MediaStorage } from './abc/storage.abc';
-import { ConsoleLogger, UnprocessableEntityException } from '@nestjs/common';
+import { UnprocessableEntityException } from '@nestjs/common';
 import { Message } from 'whatsapp-web.js';
 import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
+import { Agent } from 'https';
+import { createAgentProxy } from './helpers.proxy';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -88,7 +87,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   async makeSocket() {
     const { state, saveCreds } = await useMultiFileAuthState(this.authFolder);
+    const agent = this.makeAgent();
     const sock: any = makeWASocket({
+      agent: agent,
+      fetchAgent: agent,
       auth: state,
       printQRInTerminal: true,
       browser: ['Linux', 'Chrome', '111.0.5563.64'],
@@ -96,6 +98,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     });
     sock.ev.on(BaileysEvents.CREDS_UPDATE, saveCreds);
     return sock;
+  }
+
+  protected makeAgent(): Agent {
+    if (!this.proxyConfig) {
+      return undefined;
+    }
+    return createAgentProxy(this.proxyConfig);
   }
 
   connectStore() {

@@ -3,6 +3,7 @@ import {
   Buttons,
   Chat,
   Client,
+  ClientOptions,
   Contact,
   Events,
   GroupChat,
@@ -53,13 +54,32 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   whatsapp: Client;
 
   protected buildClient() {
-    return new Client({
+    const clientOptions: ClientOptions = {
       puppeteer: {
         headless: true,
         executablePath: this.getBrowserExecutablePath(),
         args: this.getBrowserArgsForPuppeteer(),
       },
-    });
+    };
+    this.addProxyConfig(clientOptions);
+    return new Client(clientOptions);
+  }
+
+  protected addProxyConfig(clientOptions: ClientOptions) {
+    if (this.proxyConfig?.proxyServer !== undefined) {
+      // push the proxy server to the args
+      clientOptions.puppeteer.args.push(
+        `--proxy-server=${this.proxyConfig?.proxyServer}`,
+      );
+
+      // Authenticate
+      if (this.proxyConfig?.proxyUsername && this.proxyConfig?.proxyPassword) {
+        clientOptions.proxyAuthentication = {
+          username: this.proxyConfig?.proxyUsername,
+          password: this.proxyConfig?.proxyPassword,
+        };
+      }
+    }
   }
 
   async start() {

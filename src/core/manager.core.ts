@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { SessionManager } from './abc/manager.abc';
 import {
+  ProxyConfig,
   WAHAInternalEvent,
   WhatsappSession,
   WhatsAppSessionConfig,
@@ -25,6 +26,7 @@ import { WebhookConductorCore } from './webhooks.core';
 import { MediaStorageCore, SessionStorageCore } from './storage.core';
 import { WhatsappSessionNoWebCore } from './session.noweb.core';
 import { LocalSessionStorage } from './abc/storage.abc';
+import { getProxyConfig } from './helpers.proxy';
 
 export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
   constructor() {
@@ -116,6 +118,7 @@ export class SessionManagerCore extends SessionManager {
       storage,
       log,
       sessionStorage: this.sessionStorage,
+      proxyConfig: this.getProxyConfig(),
     };
     // @ts-ignore
     const session = new this.EngineClass(sessionConfig);
@@ -126,6 +129,10 @@ export class SessionManagerCore extends SessionManager {
     );
     session.start();
     return { name: session.name, status: session.status };
+  }
+
+  protected getProxyConfig(): ProxyConfig | undefined {
+    return getProxyConfig(this.config, { [this.DEFAULT]: this.session });
   }
 
   async stop(request: SessionStopRequest): Promise<void> {

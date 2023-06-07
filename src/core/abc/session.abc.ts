@@ -56,7 +56,14 @@ export interface WhatsAppSessionConfig {
   storage: MediaStorage;
   log: ConsoleLogger;
   sessionStorage: LocalSessionStorage;
+  proxyConfig?: ProxyConfig;
 }
+
+export type ProxyConfig = {
+  proxyServer: string;
+  proxyUsername?: string;
+  proxyPassword?: string;
+};
 
 export abstract class WhatsappSession {
   public status: WhatsappStatus;
@@ -67,9 +74,16 @@ export abstract class WhatsappSession {
   protected storage: MediaStorage;
   protected log: ConsoleLogger;
   protected sessionStorage: LocalSessionStorage;
+  protected proxyConfig?: ProxyConfig;
 
-  public constructor({ name, log, sessionStorage }: WhatsAppSessionConfig) {
+  public constructor({
+    name,
+    log,
+    sessionStorage,
+    proxyConfig,
+  }: WhatsAppSessionConfig) {
     this.name = name;
+    this.proxyConfig = proxyConfig;
     this.status = WhatsappStatus.STARTING;
     this.log = log;
     this.sessionStorage = sessionStorage;

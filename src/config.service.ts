@@ -54,6 +54,31 @@ export class WhatsappConfigService {
     return parseBool(value);
   }
 
+  get proxyServer(): string[] | string | undefined {
+    const single = this.configService.get('WHATSAPP_PROXY_SERVER', undefined);
+    const multipleValues = this.configService.get(
+      'WHATSAPP_PROXY_SERVER_LIST',
+      undefined,
+    );
+    const multiple = multipleValues ? multipleValues.split(',') : undefined;
+    return single ? single : multiple;
+  }
+
+  get proxyServerIndexPrefix(): string | undefined {
+    return this.configService.get(
+      'WHATSAPP_PROXY_SERVER_INDEX_PREFIX',
+      undefined,
+    );
+  }
+
+  get proxyServerUsername(): string | undefined {
+    return this.configService.get('WHATSAPP_PROXY_SERVER_USERNAME', undefined);
+  }
+
+  get proxyServerPassword(): string | undefined {
+    return this.configService.get('WHATSAPP_PROXY_SERVER_PASSWORD', undefined);
+  }
+
   getWebhookUrl(): string | undefined {
     return this.get('WHATSAPP_HOOK_URL');
   }

@@ -37,6 +37,7 @@
     "del": "^6.0.0",
     "express-basic-auth": "^1.2.1",
     "file-type": "16.5.4",
+    "https-proxy-agent": "^7.0.0",
     "link-preview-js": "^3.0.4",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.27",

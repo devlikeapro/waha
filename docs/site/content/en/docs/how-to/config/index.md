@@ -39,15 +39,27 @@ The following environment variables can be used to configure the WAHA.
 - `WHATSAPP_START_SESSION=session1,session2`: This variable can be used to start sessions with the specified names right
   after launching the API. Separate session names with a comma.
 
+### Swagger
+- `WHATSAPP_SWAGGER_CONFIG_ADVANCED=true` - enables advanced configuration options for Swagger documentation - you can customize host, port and base URL for the requests.
+  Disabled by default.
+
+### Proxy
+If you need to use a proxy, you can set the following environment variables:
+
+- `WHATSAPP_PROXY_SERVER=localhost:3128`: Use this variable to set the proxy server in the format `host:port`, without http or https.
+- `WHATSAPP_PROXY_SERVER_USERNAME=username` and `WHATSAPP_PROXY_SERVER_PASSWORD=password`: Use these variables to set up credentials for the proxy.
+- `WHATSAPP_PROXY_SERVER_LIST=host1.example.com:3138,host2.example.com:3138`: Use this variable to set a comma-separated list of addresses to use, using a round-robin algorithm to choose the server for the session.
+- `WHATSAPP_PROXY_SERVER_INDEX_PREFIX=proxy-`: Use this variable to parse the session name for the prefix and find the appropriate session.
+  For example, if you have set `WHATSAPP_PROXY_SERVER_LIST=host-first:80,host-second:80,host-third:80` and `WHATSAPP_PROXY_SERVER_INDEX_PREFIX=proxy-` and you run `proxy-3` session, the `host-third:80` proxy will be chosen for that session.
+  This is a way to select a proxy from while you start session.
+  Note that a proxy configuration will be added in the `POST /api/session/start` request soon, so you'll be able to define the proxy there.
+
 ### Security ![](/images/versions/plus.png)
 - `WHATSAPP_API_KEY=mysecret`: If you set this variable, you must include the `X-Api-Key: mysecret` header in all
   requests to the API. This will protect the API with a secret code.
 - `WHATSAPP_SWAGGER_USERNAME=admin` and `WHATSAPP_SWAGGER_PASSWORD=admin`: These variables can be used to protect the
   Swagger panel with `admin / admin` credentials. This does not affect API access.
 
-### Swagger
-- `WHATSAPP_SWAGGER_CONFIG_ADVANCED=true` - enables advanced configuration options for Swagger documentation - you can customize host, port and base URL for the requests.
-  Disabled by default.
 
 ### Files ![](/images/versions/plus.png)
 

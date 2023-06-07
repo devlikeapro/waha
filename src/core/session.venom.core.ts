@@ -15,7 +15,7 @@ import {
   MessageTextRequest,
 } from '../structures/chatting.dto';
 import { WAMessage, WANumberExistResult } from '../structures/responses.dto';
-import { create, Message, Whatsapp } from 'venom-bot';
+import { create, CreateConfig, Message, Whatsapp } from 'venom-bot';
 import {
   WAEvents,
   WhatsappEngine,
@@ -37,7 +37,7 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
   }
 
   protected buildClient() {
-    return create(this.name, this.getCatchQR(), undefined, {
+    const venomOptions: CreateConfig = {
       headless: true,
       devtools: false,
       debug: false,
@@ -45,7 +45,22 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
       browserArgs: this.getBrowserArgsForPuppeteer(),
       autoClose: 60000,
       puppeteerOptions: {},
-    });
+    };
+    this.addProxyConfig(venomOptions);
+    return create(this.name, this.getCatchQR(), undefined, venomOptions);
+  }
+
+  protected addProxyConfig(venomOptions: CreateConfig) {
+    if (this.proxyConfig?.proxyServer !== undefined) {
+      venomOptions.addProxy = [this.proxyConfig?.proxyServer];
+    }
+    if (
+      this.proxyConfig?.proxyUsername !== undefined &&
+      this.proxyConfig?.proxyPassword !== undefined
+    ) {
+      venomOptions.userProxy = this.proxyConfig?.proxyUsername;
+      venomOptions.userPass = this.proxyConfig?.proxyPassword;
+    }
   }
 
   protected getCatchQR() {

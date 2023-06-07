@@ -12,6 +12,10 @@ menu:
 weight: 199
 toc: true
 ---
+## 2023.7
+July 2023
+- Added [proxy configuration](https://waha.devlike.pro/docs/how-to/config/#proxy) with supporting proxy authentication.
+  Thanks **puntolino** for the contribution!
 
 ## 2023.6
 June 2023
