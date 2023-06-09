@@ -4,6 +4,7 @@ files
 venv
 .wwebjs_auth
 test.js
+.wwebjs_cache
 
 # compiled output
 /dist
