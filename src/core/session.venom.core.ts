@@ -26,7 +26,7 @@ import { UnprocessableEntityException } from '@nestjs/common/exceptions/unproces
 import { QR } from './QR';
 
 export class WhatsappSessionVenomCore extends WhatsappSession {
-  engine = WhatsappEngine.NOWEB;
+  engine = WhatsappEngine.VENOM;
 
   whatsapp: Whatsapp;
   private qr: QR;

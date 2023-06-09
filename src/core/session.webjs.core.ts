@@ -49,7 +49,7 @@ import {
 const qrcode = require('qrcode-terminal');
 
 export class WhatsappSessionWebJSCore extends WhatsappSession {
-  engine = WhatsappEngine.NOWEB;
+  engine = WhatsappEngine.WEBJS;
 
   whatsapp: Client;
 
