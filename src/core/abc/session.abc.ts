@@ -81,6 +81,7 @@ export abstract class WhatsappSession {
     log,
     sessionStorage,
     proxyConfig,
+    storage,
   }: WhatsAppSessionConfig) {
     this.name = name;
     this.proxyConfig = proxyConfig;
@@ -88,6 +89,7 @@ export abstract class WhatsappSession {
     this.log = log;
     this.sessionStorage = sessionStorage;
     this.events = new EventEmitter();
+    this.storage = storage;
   }
 
   getBrowserExecutablePath() {
