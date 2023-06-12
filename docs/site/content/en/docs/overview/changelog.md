@@ -16,6 +16,8 @@ toc: true
 July 2023
 - Added [proxy configuration](https://waha.devlike.pro/docs/how-to/config/#proxy) with supporting proxy authentication.
   Thanks **puntolino** for the contribution!
+- Added [presence information](https://waha.devlike.pro/docs/how-to/presence) - now you can get online status for
+  a contact by calling endpoints or receiving a webhook event!
 - Now you can mention contact in groups by settings `mentions` field in `POST /api/sendText`
   [read more about it in Send Messages ->]({{< relref "/docs/how-to/send-messages" >}})
 

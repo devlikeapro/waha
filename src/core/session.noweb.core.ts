@@ -1,6 +1,7 @@
 import {
   SECOND,
   WAEvents,
+  WAHAPresenceStatus,
   WhatsappEngine,
   WhatsappStatus,
 } from '../structures/enums.dto';
@@ -8,6 +9,7 @@ import makeWASocket, {
   DisconnectReason,
   isJidGroup,
   makeInMemoryStore,
+  PresenceData,
   useMultiFileAuthState,
 } from '@adiwajshing/baileys';
 
@@ -49,6 +51,11 @@ import { Message } from 'whatsapp-web.js';
 import * as fs from 'fs';
 import { Agent } from 'https';
 import { createAgentProxy } from './helpers.proxy';
+import {
+  WAHAPresenceData,
+  WAHAChatPresences,
+} from '../structures/presence.dto';
+import * as lodash from 'lodash';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -60,6 +67,15 @@ export const BaileysEvents = {
   CREDS_UPDATE: 'creds.update',
   MESSAGES_UPSERT: 'messages.upsert',
   GROUPS_UPSERT: 'groups.upsert',
+  PRESENCE_UPDATE: 'presence.update',
+};
+
+const PresenceStatuses = {
+  unavailable: WAHAPresenceStatus.OFFLINE,
+  available: WAHAPresenceStatus.ONLINE,
+  composing: WAHAPresenceStatus.TYPING,
+  recording: WAHAPresenceStatus.RECORDING,
+  paused: WAHAPresenceStatus.PAUSED,
 };
 
 export class WhatsappSessionNoWebCore extends WhatsappSession {
@@ -114,6 +130,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.store.bind(this.sock.ev);
   }
 
+  resubscribeToKnownPresences() {
+    for (const jid in this.store.presences) {
+      this.sock.presenceSubscribe(jid);
+    }
+  }
+
   async buildClient() {
     this.sock = await this.makeSocket();
     this.connectStore();
@@ -122,6 +144,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       if (connection === 'connecting') {
         this.qr.save('');
         this.status = WhatsappStatus.WORKING;
+        this.resubscribeToKnownPresences();
         return;
       } else if (connection === 'close') {
         const shouldReconnect =
@@ -388,6 +411,32 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return this.sock.groupParticipantsUpdate(id, participants, 'demote');
   }
 
+  public async getPresences(): Promise<WAHAChatPresences[]> {
+    const result: WAHAChatPresences[] = [];
+    for (const remoteJid in this.store.presences) {
+      const storedPresences = this.store.presences[remoteJid];
+      result.push(this.toWahaPresences(remoteJid, storedPresences));
+    }
+    return result;
+  }
+
+  public async getPresence(chatId: string): Promise<WAHAChatPresences> {
+    await this.subscribePresence(chatId);
+    const remoteJid = toJID(chatId);
+    const storedPresences = this.store.presences[remoteJid];
+    return this.toWahaPresences(remoteJid, storedPresences || []);
+  }
+
+  public async subscribePresence(chatId: string): Promise<void> {
+    const remoteJid = toJID(chatId);
+    if (this.store.presences[remoteJid]) {
+      return;
+    }
+    // Have no info - subscribe to listen for events
+    await this.sock.presenceSubscribe(remoteJid);
+    return;
+  }
+
   /**
    * END - Methods for API
    */
@@ -405,6 +454,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       return this.sock.ev.on(BaileysEvents.CONNECTION_UPDATE, handler);
     } else if (event === WAEvents.GROUP_JOIN) {
       return this.sock.ev.on(BaileysEvents.GROUPS_UPSERT, handler);
+    } else if (event === WAEvents.PRESENCE_UPDATE) {
+      return this.sock.ev.on(BaileysEvents.PRESENCE_UPDATE, (data) =>
+        handler(this.toWahaPresences(data.id, data.presences)),
+      );
     } else {
       throw new NotImplementedByEngineError(
         `Engine does not support webhook event: ${event}`,
@@ -463,6 +516,30 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       vCards: message.vCards,
       _data: message,
     });
+  }
+
+  private toWahaPresences(
+    remoteJid,
+    storedPresences: PresenceData[],
+  ): WAHAChatPresences {
+    const presences: WAHAPresenceData[] = [];
+    for (const participant in storedPresences) {
+      const data: PresenceData = storedPresences[participant];
+      const lastKnownPresence = lodash.get(
+        PresenceStatuses,
+        data.lastKnownPresence,
+        data.lastKnownPresence,
+      );
+      const presence: WAHAPresenceData = {
+        participant: toCusFormat(participant),
+        // @ts-ignore
+        lastKnownPresence: lastKnownPresence,
+        lastSeen: data.lastSeen || null,
+      };
+      presences.push(presence);
+    }
+    const chatId = toCusFormat(remoteJid);
+    return { id: chatId, presences: presences };
   }
 
   protected async downloadMedia(message: Message) {

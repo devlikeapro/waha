@@ -4,6 +4,7 @@ import {
   ChatRequest,
   CheckNumberStatusQuery,
   GetMessageQuery,
+  GetPresenceQuery,
   MessageContactVcardRequest,
   MessageFileRequest,
   MessageImageRequest,

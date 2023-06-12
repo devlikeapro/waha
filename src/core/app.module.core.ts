@@ -11,6 +11,7 @@ import { PassportModule } from '@nestjs/passport';
 import { SessionManager } from './abc/manager.abc';
 import { SessionManagerCore } from './manager.core';
 import { GroupsController } from '../api/groups.controller';
+import { PresenceController } from '../api/presence.controller';
 
 export const IMPORTS = [
   ConfigModule.forRoot({
@@ -36,6 +37,7 @@ export const CONTROLLERS = [
   ChattingController,
   ContactsController,
   GroupsController,
+  PresenceController,
   ScreenshotController,
   VersionController,
 ];

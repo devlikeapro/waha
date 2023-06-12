@@ -7,6 +7,7 @@ export enum WAEvents {
   STATE_CHANGE = 'state.change',
   GROUP_JOIN = 'group.join',
   GROUP_LEAVE = 'group.leave',
+  PRESENCE_UPDATE = 'presence.update',
 }
 
 export enum WhatsappStatus {
@@ -21,4 +22,12 @@ export enum WhatsappEngine {
   VENOM = 'VENOM',
   WEBJS = 'WEBJS',
   NOWEB = 'NOWEB',
+}
+
+export enum WAHAPresenceStatus {
+  OFFLINE = 'offline',
+  ONLINE = 'online',
+  TYPING = 'typing',
+  RECORDING = 'recording',
+  PAUSED = 'paused',
 }

@@ -72,6 +72,7 @@ Here's the available features:
 - Block/unblock contacts
 - Get contact info
 - Get profile pictures
+- Get presence (online\offline\typing) status
 
 ### Sessions
 - Multi Device

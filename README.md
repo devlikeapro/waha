@@ -75,6 +75,7 @@
 - Block/unblock contacts
 - Get contact info
 - Get profile pictures
+- Get presence (online\offline\typing) status
 
 # Quick start
 

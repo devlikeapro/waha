@@ -32,6 +32,7 @@ import * as fs from 'fs';
 const CHROME_PATH = '/usr/bin/google-chrome-stable';
 const CHROMIUM_PATH = '/usr/bin/chromium';
 import { EventEmitter } from 'events';
+import { WAHAChatPresences } from '../../structures/presence.dto';
 
 export function getBrowserExecutablePath() {
   if (fs.existsSync(CHROME_PATH)) {
@@ -253,6 +254,18 @@ export abstract class WhatsappSession {
   }
 
   public demoteParticipantsToUser(id, request: ParticipantsRequest) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public getPresences(): Promise<WAHAChatPresences[]> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public getPresence(id: string): Promise<WAHAChatPresences> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public subscribePresence(id: string): Promise<void> {
     throw new NotImplementedByEngineError();
   }
 

@@ -29,6 +29,8 @@ export class GetMessageQuery extends ChatQuery {
   limit: number;
 }
 
+export class GetPresenceQuery extends ChatQuery {}
+
 /**
  * Requests
  */
