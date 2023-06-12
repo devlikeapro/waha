@@ -190,7 +190,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   sendText(request: MessageTextRequest) {
     const chatId = this.ensureSuffix(request.chatId);
-    return this.sock.sendMessage(chatId, { text: request.text });
+    const message = {
+      text: request.text,
+      mentions: request.mentions?.map(toJID),
+    };
+    return this.sock.sendMessage(chatId, message);
   }
 
   sendTextButtons(request: MessageTextButtonsRequest) {
@@ -217,12 +221,17 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   async reply(request: MessageReplyRequest) {
     const { id } = parseMessageId(request.reply_to);
-    const message = await this.store.loadMessage(toJID(request.chatId), id);
-    return await this.sock.sendMessage(
-      request.chatId,
-      { text: request.text },
-      { quoted: message },
+    const quotedMessage = await this.store.loadMessage(
+      toJID(request.chatId),
+      id,
     );
+    const message = {
+      text: request.text,
+      mentions: request.mentions?.map(toJID),
+    };
+    return await this.sock.sendMessage(request.chatId, message, {
+      quoted: quotedMessage,
+    });
   }
 
   sendImage(request: MessageImageRequest) {

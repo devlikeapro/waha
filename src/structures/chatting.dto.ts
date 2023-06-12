@@ -71,6 +71,13 @@ export class MessageContactVcardRequest extends ChatRequest {
 
 export class MessageTextRequest extends ChatRequest {
   text = 'Hi there!';
+  @ApiProperty({
+    description:
+      'Mention contact in the message. ' +
+      "The message MUST contain '@123456789' text in order to work with 'mentions' field.",
+    example: ['123456789@c.us'],
+  })
+  mentions?: string[];
 }
 
 export class Button {
@@ -84,7 +91,7 @@ export class MessageTextButtonsRequest extends ChatRequest {
   buttons?: Array<Button>;
 }
 
-export class MessageReplyRequest extends ChatRequest {
+export class MessageReplyRequest extends MessageTextRequest {
   text = 'Reply text';
   @ApiProperty({
     example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',

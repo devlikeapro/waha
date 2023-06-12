@@ -37,6 +37,23 @@ To send text message - use `POST /api/sendText` with example payload.
   "text": "Hi there!"
 }
 ```
+### Mention contact
+If you send a message in a group and want to mention a participant in the message -
+use `mentions` field for that in `POST /api/sendText` request.
+
+Please note that you MUST mention a number in the text as well in the format `@2132132130` and
+also mention it in `mentions` in format `2132132130@c.us`
+
+```json
+{
+  "session": "default",
+  "chatId": "12132132130@c.us",
+  "text": "Hi there! @2132132130",
+  "mentions": [
+    "2132132130@c.us"
+  ]
+}
+```
 
 ## Reply on message ![](/images/versions/core.png)
 To reply on a message - use `POST /api/reply` with example payload.
