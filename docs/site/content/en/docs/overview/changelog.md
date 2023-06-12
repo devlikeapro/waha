@@ -16,6 +16,8 @@ toc: true
 July 2023
 - Added [proxy configuration](https://waha.devlike.pro/docs/how-to/config/#proxy) with supporting proxy authentication.
   Thanks **puntolino** for the contribution!
+- Now you can mention contact in groups by settings `mentions` field in `POST /api/sendText`
+  [read more about it in Send Messages ->]({{< relref "/docs/how-to/send-messages" >}})
 
 ## 2023.6
 June 2023
