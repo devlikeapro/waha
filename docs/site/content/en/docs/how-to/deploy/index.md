@@ -27,7 +27,7 @@ instructions [here](https://docs.docker.com/compose/install/).
 
 ### Getting Started
 
-To get started, you need to clone the docker-compose file to your local machine.
+To get started, you need to clone the [docker-compose.yaml](https://github.com/devlikeapro/whatsapp-http-api/blob/core/docker-compose.yaml) file to your local machine.
 Open your terminal and run the following command:
 
 ```
