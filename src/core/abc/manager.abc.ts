@@ -1,12 +1,13 @@
 import { OnApplicationShutdown } from '@nestjs/common';
+
+import { WhatsappEngine } from '../../structures/enums.dto';
 import {
-  SessionLogoutRequest,
   SessionDTO,
+  SessionLogoutRequest,
   SessionStartRequest,
   SessionStopRequest,
 } from '../../structures/sessions.dto';
 import { WhatsappSession } from './session.abc';
-import { WhatsappEngine } from '../../structures/enums.dto';
 import { MediaStorage } from './storage.abc';
 import { WebhookConductor } from './webhooks.abc';
 

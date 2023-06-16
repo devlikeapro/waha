@@ -1,5 +1,6 @@
-import { WhatsappStatus } from './enums.dto';
 import { ApiProperty } from '@nestjs/swagger';
+
+import { WhatsappStatus } from './enums.dto';
 
 /**
  * Queries

@@ -1,17 +1,18 @@
 import { ConsoleLogger, Module } from '@nestjs/common';
-import { ScreenshotController } from '../api/screenshot.controller';
 import { ConfigModule } from '@nestjs/config';
-import { WhatsappConfigService } from '../config.service';
+import { PassportModule } from '@nestjs/passport';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { SessionsController } from '../api/sessions.controller';
+
 import { ChattingController } from '../api/chatting.controller';
 import { ContactsController } from '../api/contacts.controller';
-import { VersionController } from '../api/version.controller';
-import { PassportModule } from '@nestjs/passport';
-import { SessionManager } from './abc/manager.abc';
-import { SessionManagerCore } from './manager.core';
 import { GroupsController } from '../api/groups.controller';
 import { PresenceController } from '../api/presence.controller';
+import { ScreenshotController } from '../api/screenshot.controller';
+import { SessionsController } from '../api/sessions.controller';
+import { VersionController } from '../api/version.controller';
+import { WhatsappConfigService } from '../config.service';
+import { SessionManager } from './abc/manager.abc';
+import { SessionManagerCore } from './manager.core';
 
 export const IMPORTS = [
   ConfigModule.forRoot({

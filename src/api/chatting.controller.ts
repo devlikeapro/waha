@@ -1,10 +1,11 @@
 import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
+
+import { SessionManager } from '../core/abc/manager.abc';
 import {
   ChatRequest,
   CheckNumberStatusQuery,
   GetMessageQuery,
-  GetPresenceQuery,
   MessageContactVcardRequest,
   MessageFileRequest,
   MessageImageRequest,
@@ -19,7 +20,6 @@ import {
   SendSeenRequest,
 } from '../structures/chatting.dto';
 import { WAMessage, WANumberExistResult } from '../structures/responses.dto';
-import { SessionManager } from '../core/abc/manager.abc';
 
 @ApiSecurity('api_key')
 @Controller('api')

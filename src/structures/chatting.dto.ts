@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsString, IsOptional, IsNumber } from 'class-validator';
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { IsNumber, IsString } from 'class-validator';
+
 import { SessionBaseRequest, SessionQuery } from './base.dto';
 
 /**

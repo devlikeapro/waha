@@ -1,7 +1,8 @@
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
-import { VERSION } from '../version';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
 import { WhatsappConfigService } from '../config.service';
+import { VERSION } from '../version';
 
 export class SwaggerModuleCore {
   configure(app: INestApplication) {

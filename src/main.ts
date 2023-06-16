@@ -1,10 +1,11 @@
 import { NestFactory } from '@nestjs/core';
-import { WhatsappConfigService } from './config.service';
+import { json, urlencoded } from 'express';
+
 import { AllExceptionsFilter } from './api/exception.filter';
-import { getWAHAVersion, VERSION, WAHAVersion } from './version';
+import { WhatsappConfigService } from './config.service';
 import { AppModuleCore } from './core/app.module.core';
 import { SwaggerModuleCore } from './core/swagger.module.core';
-import { json, urlencoded } from 'express';
+import { getWAHAVersion, WAHAVersion } from './version';
 
 async function loadModules(): Promise<
   [typeof AppModuleCore, typeof SwaggerModuleCore]

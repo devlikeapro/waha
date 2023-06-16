@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 import { WAEvents, WhatsappEngine } from './enums.dto';
 
 export class WANumberExistResult {

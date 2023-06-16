@@ -8,14 +8,15 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
+
 import { SessionManager } from '../core/abc/manager.abc';
+import { WhatsappSession } from '../core/abc/session.abc';
 import {
   CreateGroupRequest,
   DescriptionRequest,
   ParticipantsRequest,
   SubjectRequest,
 } from '../structures/groups.dto';
-import { WhatsappSession } from '../core/abc/session.abc';
 import { SessionApiParam, SessionParam } from './helpers';
 
 @ApiSecurity('api_key')

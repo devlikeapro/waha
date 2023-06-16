@@ -1,4 +1,6 @@
-import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
+import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
+import { create, CreateConfig, Message, Whatsapp } from 'venom-bot';
+
 import {
   Button,
   ChatRequest,
@@ -14,15 +16,14 @@ import {
   MessageTextButtonsRequest,
   MessageTextRequest,
 } from '../structures/chatting.dto';
-import { WAMessage, WANumberExistResult } from '../structures/responses.dto';
-import { create, CreateConfig, Message, Whatsapp } from 'venom-bot';
 import {
   WAEvents,
   WhatsappEngine,
   WhatsappStatus,
 } from '../structures/enums.dto';
+import { WAMessage, WANumberExistResult } from '../structures/responses.dto';
+import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
 import { NotImplementedByEngineError } from './exceptions';
-import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
 import { QR } from './QR';
 
 export class WhatsappSessionVenomCore extends WhatsappSession {

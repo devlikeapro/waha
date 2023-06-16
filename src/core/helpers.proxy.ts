@@ -1,8 +1,9 @@
-import { WhatsappConfigService } from '../config.service';
-import { WhatsappSession, ProxyConfig } from './abc/session.abc';
-import { HttpsProxyAgent } from 'https-proxy-agent';
 import { Agent } from 'https';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { URL } from 'url';
+
+import { WhatsappConfigService } from '../config.service';
+import { ProxyConfig, WhatsappSession } from './abc/session.abc';
 
 export function getProxyConfig(
   config: WhatsappConfigService,

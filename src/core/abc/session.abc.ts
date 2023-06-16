@@ -1,9 +1,8 @@
-import {
-  WAEvents,
-  WhatsappEngine,
-  WhatsappStatus,
-} from '../../structures/enums.dto';
 import { ConsoleLogger } from '@nestjs/common';
+import { EventEmitter } from 'events';
+import * as fs from 'fs';
+import { MessageId } from 'whatsapp-web.js';
+
 import {
   ChatRequest,
   CheckNumberStatusQuery,
@@ -19,20 +18,22 @@ import {
   MessageTextRequest,
   MessageVoiceRequest,
 } from '../../structures/chatting.dto';
-import { LocalSessionStorage, MediaStorage } from './storage.abc';
-import { MessageId } from 'whatsapp-web.js';
 import { ContactQuery, ContactRequest } from '../../structures/contacts.dto';
-import { NotImplementedByEngineError } from '../exceptions';
+import {
+  WAEvents,
+  WhatsappEngine,
+  WhatsappStatus,
+} from '../../structures/enums.dto';
 import {
   CreateGroupRequest,
   ParticipantsRequest,
 } from '../../structures/groups.dto';
-import * as fs from 'fs';
+import { WAHAChatPresences } from '../../structures/presence.dto';
+import { NotImplementedByEngineError } from '../exceptions';
+import { LocalSessionStorage, MediaStorage } from './storage.abc';
 
 const CHROME_PATH = '/usr/bin/google-chrome-stable';
 const CHROMIUM_PATH = '/usr/bin/chromium';
-import { EventEmitter } from 'events';
-import { WAHAChatPresences } from '../../structures/presence.dto';
 
 export function getBrowserExecutablePath() {
   if (fs.existsSync(CHROME_PATH)) {

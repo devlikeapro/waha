@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
+
 import { VERSION } from '../version';
 
 @ApiSecurity('api_key')

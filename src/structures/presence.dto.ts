@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 import { WAHAPresenceStatus } from './enums.dto';
 
 export class WAHAPresenceData {

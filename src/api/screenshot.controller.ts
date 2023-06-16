@@ -1,7 +1,8 @@
 import { Controller, Get, Query, Res } from '@nestjs/common';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { Readable } from 'stream';
 import { Response } from 'express';
+import { Readable } from 'stream';
+
 import { SessionManager } from '../core/abc/manager.abc';
 import { SessionQuery } from '../structures/base.dto';
 

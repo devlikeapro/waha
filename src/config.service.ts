@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { WhatsappEngine } from './structures/enums.dto';
+
 import { parseBool } from './helpers';
+import { WhatsappEngine } from './structures/enums.dto';
 
 @Injectable()
 export class WhatsappConfigService {

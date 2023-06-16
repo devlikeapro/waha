@@ -1,9 +1,10 @@
-import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
 import { ConsoleLogger } from '@nestjs/common';
+
 import { WAEvents } from '../structures/enums.dto';
 import { WAWebhook } from '../structures/responses.dto';
-import { NotImplementedByEngineError } from './exceptions';
+import { WhatsappSession } from './abc/session.abc';
 import { WebhookConductor } from './abc/webhooks.abc';
+import { NotImplementedByEngineError } from './exceptions';
 import request = require('request');
 
 export class WebhookConductorCore implements WebhookConductor {

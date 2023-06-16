@@ -1,10 +1,3 @@
-import {
-  SECOND,
-  WAEvents,
-  WAHAPresenceStatus,
-  WhatsappEngine,
-  WhatsappStatus,
-} from '../structures/enums.dto';
 import makeWASocket, {
   DisconnectReason,
   isJidGroup,
@@ -12,13 +5,12 @@ import makeWASocket, {
   PresenceData,
   useMultiFileAuthState,
 } from '@adiwajshing/baileys';
+import { UnprocessableEntityException } from '@nestjs/common';
+import * as fs from 'fs';
+import { Agent } from 'https';
+import * as lodash from 'lodash';
+import { Message } from 'whatsapp-web.js';
 
-import {
-  ensureSuffix,
-  WAHAInternalEvent,
-  WhatsappSession,
-} from './abc/session.abc';
-import { WAMessage, WANumberExistResult } from '../structures/responses.dto';
 import {
   Button,
   ChatRequest,
@@ -36,26 +28,34 @@ import {
   MessageVoiceRequest,
   SendSeenRequest,
 } from '../structures/chatting.dto';
-import {
-  AvailableInPlusVersion,
-  NotImplementedByEngineError,
-} from './exceptions';
 import { ContactQuery, ContactRequest } from '../structures/contacts.dto';
+import {
+  SECOND,
+  WAEvents,
+  WAHAPresenceStatus,
+  WhatsappEngine,
+  WhatsappStatus,
+} from '../structures/enums.dto';
 import {
   CreateGroupRequest,
   ParticipantsRequest,
 } from '../structures/groups.dto';
-import { QR } from './QR';
-import { UnprocessableEntityException } from '@nestjs/common';
-import { Message } from 'whatsapp-web.js';
-import * as fs from 'fs';
-import { Agent } from 'https';
-import { createAgentProxy } from './helpers.proxy';
 import {
-  WAHAPresenceData,
   WAHAChatPresences,
+  WAHAPresenceData,
 } from '../structures/presence.dto';
-import * as lodash from 'lodash';
+import { WAMessage, WANumberExistResult } from '../structures/responses.dto';
+import {
+  ensureSuffix,
+  WAHAInternalEvent,
+  WhatsappSession,
+} from './abc/session.abc';
+import {
+  AvailableInPlusVersion,
+  NotImplementedByEngineError,
+} from './exceptions';
+import { createAgentProxy } from './helpers.proxy';
+import { QR } from './QR';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');

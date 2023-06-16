@@ -11,13 +11,7 @@ import {
   Message,
 } from 'whatsapp-web.js';
 import { Message as MessageInstance } from 'whatsapp-web.js/src/structures';
-import {
-  WAEvents,
-  WhatsappEngine,
-  WhatsappStatus,
-} from '../structures/enums.dto';
-import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
-import { WAMessage, WANumberExistResult } from '../structures/responses.dto';
+
 import {
   Button,
   ChatRequest,
@@ -35,15 +29,22 @@ import {
   MessageVoiceRequest,
   SendSeenRequest,
 } from '../structures/chatting.dto';
-import {
-  AvailableInPlusVersion,
-  NotImplementedByEngineError,
-} from './exceptions';
 import { ContactQuery, ContactRequest } from '../structures/contacts.dto';
+import {
+  WAEvents,
+  WhatsappEngine,
+  WhatsappStatus,
+} from '../structures/enums.dto';
 import {
   CreateGroupRequest,
   ParticipantsRequest,
 } from '../structures/groups.dto';
+import { WAMessage, WANumberExistResult } from '../structures/responses.dto';
+import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
+import {
+  AvailableInPlusVersion,
+  NotImplementedByEngineError,
+} from './exceptions';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const qrcode = require('qrcode-terminal');

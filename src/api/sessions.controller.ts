@@ -1,15 +1,16 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
+
+import { SessionManager } from '../core/abc/manager.abc';
+import { parseBool } from '../helpers';
 import {
-  SessionLogoutRequest,
+  ListSessionsQuery,
   SessionDTO,
+  SessionLogoutRequest,
   SessionStartRequest,
   SessionStopRequest,
-  ListSessionsQuery,
 } from '../structures/sessions.dto';
-import { SessionManager } from '../core/abc/manager.abc';
-import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
-import { parseBool } from '../helpers';
 
 @ApiSecurity('api_key')
 @Controller('api/sessions')

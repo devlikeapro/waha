@@ -1,8 +1,9 @@
-import { DOCS_URL } from './exceptions';
-import { LocalSessionStorage, MediaStorage } from './abc/storage.abc';
-import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
+import * as path from 'path';
+
+import { LocalSessionStorage, MediaStorage } from './abc/storage.abc';
+import { DOCS_URL } from './exceptions';
 
 export class MediaStorageCore implements MediaStorage {
   async save(
