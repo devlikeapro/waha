@@ -13,9 +13,9 @@ async function bootstrap() {
     app.enableShutdownHooks();
     app.useGlobalFilters(new AllExceptionsFilter());
     const options = new DocumentBuilder()
-        .setTitle('WhatsApp HTTP API')
-        .setDescription('WhatsApp HTTP API that you can configure in a click!')
-        .setExternalDoc("Github WhatsApp HTTP API", "https://github.com/allburov/whatsapp-http-api")
+        .setTitle('WA-Distributed')
+        .setDescription('WhatsApp HTTP API that you can run in a click!')
+        // .setExternalDoc("Github WhatsApp HTTP API", "https://github.com/allburov/whatsapp-http-api")
         .setVersion('1.0')
         .addTag('sessions', 'Control your WhatsApp sessions')
         .addTag('screenshot', 'Get screenshot of WhatsApp and show QR code')
