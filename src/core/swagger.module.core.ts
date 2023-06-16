@@ -10,7 +10,7 @@ export class SwaggerModuleCore {
 
     builder
       .setTitle('WAHA - WhatsApp HTTP API')
-      .setDescription('WhatsApp HTTP API that you can configure in a click!')
+      .setDescription('WhatsApp HTTP API that you can run in a click!')
       .setExternalDoc('Documentation', 'https://waha.devlike.pro/')
       .setVersion(VERSION.version)
       .addTag('sessions', 'Control WhatsApp sessions')
