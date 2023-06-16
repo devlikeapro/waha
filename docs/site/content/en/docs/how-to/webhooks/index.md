@@ -77,6 +77,7 @@ Incoming message (text/audio/files)
 {
   "event": "message",
   "session": "default",
+  "engine": "WEBJS",
   "payload": {
     "id": "true_11111111111@c.us_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
     "timestamp": 1667561485,
@@ -140,7 +141,10 @@ Fired on all message creations, including your own. The payload is the same as f
 {
   "event": "message.any",
   "session": "default",
-  "payload": {}
+  "engine": "WEBJS",
+  "payload": {
+    ...
+  }
 }
 ```
 
@@ -150,17 +154,25 @@ Fired on all message creations, including your own. The payload is the same as f
 {
   "event": "message.ack",
   "session": "default",
-  "payload": {}
+  "engine": "WEBJS",
+  "payload": {
+    ...
+  }
 }
 ```
 
 ### state.change
 
+It's an internal engine's state, not **session** `status`.
+
 ```json
 {
   "event": "state.change",
   "session": "default",
-  "payload": {}
+  "engine": "WEBJS",
+  "payload": {
+    ...
+  }
 }
 ```
 
@@ -170,7 +182,10 @@ Fired on all message creations, including your own. The payload is the same as f
 {
   "event": "group.join",
   "session": "default",
-  "payload": {}
+  "engine": "WEBJS",
+  "payload": {
+    ...
+  }
 }
 ```
 
@@ -180,7 +195,33 @@ Fired on all message creations, including your own. The payload is the same as f
 {
   "event": "group.left",
   "session": "default",
-  "payload": {}
+  "engine": "WEBJS",
+  "payload": {
+    ...
+  }
+}
+```
+
+### presence.update
+
+- `payload.id` indicates the chat - either direct chat with a contact or a group chat.
+- `payload.id.[].participant` - certain participant presence status. For a direct chat there's only one participant.
+
+```json
+{
+    "event": "presence.update",
+    "session": "default",
+    "engine": "NOWEB",
+    "payload": {
+        "id": "111111111111111111@g.us",
+        "presences": [
+            {
+                "participant": "11111111111@c.us",
+                "lastKnownPresence": "typing",
+                "lastSeen": null
+            }
+        ]
+    }
 }
 ```
 
