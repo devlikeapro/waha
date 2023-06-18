@@ -16,7 +16,8 @@ When developing a bot for WhatsApp, you should never initiate a conversation. In
 docker pull devlikeapro/whatsapp-http-api For Plus version, we use login to get the image before:
 docker login -u devlikeapro -p {PASSWORD} docker pull devlikeapro/whatsapp-http-api-plus docker logout Read more about how to get PASSWORD for Plus Version →
 How much CPU and Memory does WhatsApp HTTP API consume? #
-The benchmark has been made on Intel(R) Core(TM) i7-10510U CPU @ 1.</description></item><item><title>Changelog</title><link>https://waha.devlike.pro/docs/overview/changelog/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://waha.devlike.pro/docs/overview/changelog/</guid><description>2023.6 #
+The benchmark has been made on Intel(R) Core(TM) i7-10510U CPU @ 1.</description></item><item><title>Changelog</title><link>https://waha.devlike.pro/docs/overview/changelog/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://waha.devlike.pro/docs/overview/changelog/</guid><description>2023.7 #
+July 2023
+Added proxy configuration with supporting proxy authentication. Thanks puntolino for the contribution! Added presence information - now you can get online status for a contact by calling endpoints or receiving a webhook event! Now you can mention contact in groups by settings mentions field in POST /api/sendText read more about it in Send Messages -&amp;gt; 2023.6 #
 June 2023
-Improvements on session management, restarting sessions and more:
-Added WHATSAPP_RESTART_ALL_SESSIONS=True: Set this variable to True to start all STOPPED sessions after container restarts. By default, this variable is set to False. Please note that this will start all STOPPED sessions, not just the sessions that were working before the restart. You can maintain the session list by using POST /api/session/stop with the logout: True parameter or by calling POST /api/session/logout to remove STOPPED sessions.</description></item></channel></rss>
+Improvements on session management, restarting sessions and more:</description></item></channel></rss>
