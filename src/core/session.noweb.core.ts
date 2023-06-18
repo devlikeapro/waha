@@ -56,6 +56,7 @@ import {
 } from './exceptions';
 import { createAgentProxy } from './helpers.proxy';
 import { QR } from './QR';
+import { WABrowserDescription } from '@adiwajshing/baileys';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -100,18 +101,23 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     const folder = this.sessionStorage.getFolderPath(this.name);
     return fs.mkdtempSync(folder);
   }
-
-  async makeSocket() {
-    const { state, saveCreds } = await useMultiFileAuthState(this.authFolder);
-    const agent = this.makeAgent();
-    const sock: any = makeWASocket({
+  getSocketConfig(agent, state) {
+    return {
       agent: agent,
       fetchAgent: agent,
       auth: state,
       printQRInTerminal: true,
-      browser: ['Linux', 'Chrome', '111.0.5563.64'],
+      browser: ['Linux', 'Chrome', '111.0.5563.64'] as WABrowserDescription,
       logger: logger,
-    });
+      mobile: false,
+    };
+  }
+
+  async makeSocket() {
+    const { state, saveCreds } = await useMultiFileAuthState(this.authFolder);
+    const agent = this.makeAgent();
+    const socketConfig = this.getSocketConfig(agent, state);
+    const sock: any = makeWASocket(socketConfig);
     sock.ev.on(BaileysEvents.CREDS_UPDATE, saveCreds);
     return sock;
   }

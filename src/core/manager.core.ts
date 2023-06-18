@@ -28,6 +28,7 @@ import { WhatsappSessionVenomCore } from './session.venom.core';
 import { WhatsappSessionWebJSCore } from './session.webjs.core';
 import { MediaStorageCore, SessionStorageCore } from './storage.core';
 import { WebhookConductorCore } from './webhooks.core';
+import { WhatsappSessionNoWebMobileCore } from './session.noweb.mobile.core';
 
 export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
   constructor() {
@@ -79,6 +80,8 @@ export class SessionManagerCore extends SessionManager {
       return WhatsappSessionVenomCore;
     } else if (engine === WhatsappEngine.NOWEB) {
       return WhatsappSessionNoWebCore;
+    } else if (engine === WhatsappEngine.NOWEB_MOBILE) {
+      return WhatsappSessionNoWebMobileCore;
     } else {
       throw new NotFoundException(`Unknown whatsapp engine '${engine}'.`);
     }

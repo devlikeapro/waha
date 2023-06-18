@@ -4,19 +4,11 @@
 FROM node:18 as build
 ENV PUPPETEER_SKIP_DOWNLOAD=True
 
-
-# Install https://github.com/WhiskeySockets/Baileys
-WORKDIR /
-RUN git clone https://github.com/WhiskeySockets/Baileys WhiskeySockets-Baileys && \
-    cd WhiskeySockets-Baileys && \
-    git checkout e3ac5f596f16b706420ed016a349fa75bd3a157f && \
-    yarn install && \
-    yarn build:all
-
 # npm packages
 WORKDIR /src
 COPY package.json .
 COPY yarn.lock .
+RUN yarn set version berry
 RUN yarn install
 
 # App

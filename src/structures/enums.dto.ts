@@ -22,6 +22,7 @@ export enum WhatsappEngine {
   VENOM = 'VENOM',
   WEBJS = 'WEBJS',
   NOWEB = 'NOWEB',
+  NOWEB_MOBILE = 'NOWEB.MOBILE',
 }
 
 export enum WAHAPresenceStatus {
