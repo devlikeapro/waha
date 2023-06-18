@@ -42,19 +42,19 @@
   url = "/docs/how-to/plus-version"
   parent = "get-plus"
 
-[[main]]
-  name = "Get on Boosty ->"
-  weight = 50
-  identifier = "boosty"
-  url = "https://boosty.to/wa-http-api"
-  parent = "get-plus"
-
-[[main]]
-  name = "Get on Patreon ->"
-  weight = 60
-  identifier = "patreon"
-  url = "https://patreon.com/wa_http_api"
-  parent = "get-plus"
+#[[main]]
+#  name = "Get on Boosty ->"
+#  weight = 50
+#  identifier = "boosty"
+#  url = "https://boosty.to/wa-http-api"
+#  parent = "get-plus"
+#
+#[[main]]
+#  name = "Get on Patreon ->"
+#  weight = 60
+#  identifier = "patreon"
+#  url = "https://patreon.com/wa_http_api"
+#  parent = "get-plus"
 
 [[social]]
   name = "GitHub"
