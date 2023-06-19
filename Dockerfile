@@ -14,7 +14,8 @@ RUN yarn install
 # App
 WORKDIR /src
 ADD . /src
-RUN npm run build && find ./dist -name "*.d.ts" -delete
+RUN yarn install
+RUN yarn build && find ./dist -name "*.d.ts" -delete
 
 #
 # Final
@@ -58,4 +59,4 @@ COPY --from=build /src/dist ./dist
 
 # Run command, etc
 EXPOSE 3000
-CMD npm run start:prod
+CMD yarn start:prod
