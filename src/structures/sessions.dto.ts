@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { WhatsappStatus } from './enums.dto';
+import { WAHASessionStatus } from './enums.dto';
+import { WebhookConfig } from './webhooks.dto';
 
 /**
  * Queries
@@ -14,11 +15,17 @@ export class ListSessionsQuery {
   })
   all: boolean;
 }
+
 /**
  * Requests
  */
+export class SessionConfig {
+  webhooks?: WebhookConfig[];
+}
+
 export class SessionStartRequest {
   name = 'default';
+  config?: SessionConfig;
 }
 
 export class SessionStopRequest {
@@ -37,5 +44,6 @@ export class SessionLogoutRequest {
 
 export class SessionDTO {
   name = 'default';
-  status: WhatsappStatus;
+  status: WAHASessionStatus;
+  config: SessionConfig;
 }

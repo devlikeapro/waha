@@ -20,15 +20,16 @@ import {
 } from '../../structures/chatting.dto';
 import { ContactQuery, ContactRequest } from '../../structures/contacts.dto';
 import {
-  WAEvents,
-  WhatsappEngine,
-  WhatsappStatus,
+  WAHAEngine,
+  WAHAEvents,
+  WAHASessionStatus,
 } from '../../structures/enums.dto';
 import {
   CreateGroupRequest,
   ParticipantsRequest,
 } from '../../structures/groups.dto';
 import { WAHAChatPresences } from '../../structures/presence.dto';
+import { SessionConfig } from '../../structures/sessions.dto';
 import { NotImplementedByEngineError } from '../exceptions';
 import { LocalSessionStorage, MediaStorage } from './storage.abc';
 
@@ -53,12 +54,13 @@ export enum WAHAInternalEvent {
   engine_start = 'engine.start',
 }
 
-export interface WhatsAppSessionConfig {
+export interface SessionParams {
   name: string;
   storage: MediaStorage;
   log: ConsoleLogger;
   sessionStorage: LocalSessionStorage;
   proxyConfig?: ProxyConfig;
+  sessionConfig: SessionConfig;
 }
 
 export type ProxyConfig = {
@@ -68,15 +70,16 @@ export type ProxyConfig = {
 };
 
 export abstract class WhatsappSession {
-  public status: WhatsappStatus;
+  public status: WAHASessionStatus;
   public events: EventEmitter;
-  public engine: WhatsappEngine;
+  public engine: WAHAEngine;
 
   public name: string;
   protected storage: MediaStorage;
   protected log: ConsoleLogger;
   protected sessionStorage: LocalSessionStorage;
   protected proxyConfig?: ProxyConfig;
+  public sessionConfig: SessionConfig;
 
   public constructor({
     name,
@@ -84,14 +87,16 @@ export abstract class WhatsappSession {
     sessionStorage,
     proxyConfig,
     storage,
-  }: WhatsAppSessionConfig) {
+    sessionConfig,
+  }: SessionParams) {
     this.name = name;
     this.proxyConfig = proxyConfig;
-    this.status = WhatsappStatus.STARTING;
+    this.status = WAHASessionStatus.STARTING;
     this.log = log;
     this.sessionStorage = sessionStorage;
     this.events = new EventEmitter();
     this.storage = storage;
+    this.sessionConfig = sessionConfig;
   }
 
   getBrowserExecutablePath() {
@@ -135,7 +140,7 @@ export abstract class WhatsappSession {
   abstract stop(): void;
 
   /** Subscribe the handler to specific hook */
-  abstract subscribe(hook: WAEvents | string, handler: (message) => void);
+  abstract subscribe(hook: WAHAEvents | string, handler: (message) => void);
 
   /**
    * START - Methods for API

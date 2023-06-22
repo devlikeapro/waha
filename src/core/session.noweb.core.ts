@@ -5,8 +5,9 @@ import makeWASocket, {
   PresenceData,
   useMultiFileAuthState,
 } from '@adiwajshing/baileys';
+import { WABrowserDescription } from '@adiwajshing/baileys';
 import { UnprocessableEntityException } from '@nestjs/common';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 import { Agent } from 'https';
 import * as lodash from 'lodash';
 import { Message } from 'whatsapp-web.js';
@@ -31,10 +32,10 @@ import {
 import { ContactQuery, ContactRequest } from '../structures/contacts.dto';
 import {
   SECOND,
-  WAEvents,
+  WAHAEngine,
+  WAHAEvents,
   WAHAPresenceStatus,
-  WhatsappEngine,
-  WhatsappStatus,
+  WAHASessionStatus,
 } from '../structures/enums.dto';
 import {
   CreateGroupRequest,
@@ -56,7 +57,6 @@ import {
 } from './exceptions';
 import { createAgentProxy } from './helpers.proxy';
 import { QR } from './QR';
-import { WABrowserDescription } from '@adiwajshing/baileys';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -80,27 +80,21 @@ const PresenceStatuses = {
 };
 
 export class WhatsappSessionNoWebCore extends WhatsappSession {
-  engine = WhatsappEngine.NOWEB;
+  engine = WAHAEngine.NOWEB;
 
   sock: any;
   store: any;
   private qr: QR;
-  authFolder: string;
 
   public constructor(config) {
     super(config);
     this.qr = new QR();
-    this.authFolder = this.getAuthFolder();
   }
 
   start() {
     return this.buildClient();
   }
 
-  protected getAuthFolder() {
-    const folder = this.sessionStorage.getFolderPath(this.name);
-    return fs.mkdtempSync(folder);
-  }
   getSocketConfig(agent, state) {
     return {
       agent: agent,
@@ -114,7 +108,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async makeSocket() {
-    const { state, saveCreds } = await useMultiFileAuthState(this.authFolder);
+    const authFolder = this.sessionStorage.getFolderPath(this.name);
+    await fs.mkdir(authFolder, { recursive: true });
+    const { state, saveCreds } = await useMultiFileAuthState(authFolder);
     const agent = this.makeAgent();
     const socketConfig = this.getSocketConfig(agent, state);
     const sock: any = makeWASocket(socketConfig);
@@ -149,7 +145,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       const { connection, lastDisconnect, qr } = update;
       if (connection === 'connecting') {
         this.qr.save('');
-        this.status = WhatsappStatus.WORKING;
+        this.status = WAHASessionStatus.WORKING;
         this.resubscribeToKnownPresences();
         return;
       } else if (connection === 'close') {
@@ -163,7 +159,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
           shouldReconnect,
         );
         this.qr.save('');
-        this.status = WhatsappStatus.FAILED;
+        this.status = WAHASessionStatus.FAILED;
         // reconnect if not logged out
         if (shouldReconnect) {
           setTimeout(() => this.buildClient(), 2 * SECOND);
@@ -172,7 +168,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
       // Save QR
       if (qr) {
-        this.status = WhatsappStatus.SCAN_QR_CODE;
+        this.status = WAHASessionStatus.SCAN_QR_CODE;
         QRCode.toDataURL(qr).then((url) => {
           this.qr.save(url);
         });
@@ -182,8 +178,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   stop() {
+    this.sock.ws.close();
     this.sock.ws.removeAllListeners();
-    this.log.log('socket connection terminated');
     return;
   }
 
@@ -191,13 +187,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
    * START - Methods for API
    */
   async getScreenshot(): Promise<Buffer | string> {
-    if (this.status === WhatsappStatus.STARTING) {
+    if (this.status === WAHASessionStatus.STARTING) {
       throw new UnprocessableEntityException(
         `The session is starting, please try again after few seconds`,
       );
-    } else if (this.status === WhatsappStatus.SCAN_QR_CODE) {
+    } else if (this.status === WAHASessionStatus.SCAN_QR_CODE) {
       return Promise.resolve(this.qr.get());
-    } else if (this.status === WhatsappStatus.WORKING) {
+    } else if (this.status === WAHASessionStatus.WORKING) {
       throw new UnprocessableEntityException(
         `Can not get screenshot for non chrome based engine.`,
       );
@@ -448,19 +444,19 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
    */
 
   subscribe(event, handler) {
-    if (event === WAEvents.MESSAGE) {
+    if (event === WAHAEvents.MESSAGE) {
       return this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) =>
         this.handleIncomingMessages(messages, handler, false),
       );
-    } else if (event === WAEvents.MESSAGE_ANY) {
+    } else if (event === WAHAEvents.MESSAGE_ANY) {
       return this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) =>
         this.handleIncomingMessages(messages, handler, true),
       );
-    } else if (event === WAEvents.STATE_CHANGE) {
+    } else if (event === WAHAEvents.STATE_CHANGE) {
       return this.sock.ev.on(BaileysEvents.CONNECTION_UPDATE, handler);
-    } else if (event === WAEvents.GROUP_JOIN) {
+    } else if (event === WAHAEvents.GROUP_JOIN) {
       return this.sock.ev.on(BaileysEvents.GROUPS_UPSERT, handler);
-    } else if (event === WAEvents.PRESENCE_UPDATE) {
+    } else if (event === WAHAEvents.PRESENCE_UPDATE) {
       return this.sock.ev.on(BaileysEvents.PRESENCE_UPDATE, (data) =>
         handler(this.toWahaPresences(data.id, data.presences)),
       );

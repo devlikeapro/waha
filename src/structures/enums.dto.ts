@@ -1,6 +1,6 @@
 export const SECOND = 1000;
 
-export enum WAEvents {
+export enum WAHAEvents {
   MESSAGE = 'message',
   MESSAGE_ANY = 'message.any',
   MESSAGE_ACK = 'message.ack',
@@ -10,7 +10,7 @@ export enum WAEvents {
   PRESENCE_UPDATE = 'presence.update',
 }
 
-export enum WhatsappStatus {
+export enum WAHASessionStatus {
   STOPPED = 'STOPPED',
   STARTING = 'STARTING',
   SCAN_QR_CODE = 'SCAN_QR_CODE',
@@ -18,7 +18,7 @@ export enum WhatsappStatus {
   FAILED = 'FAILED',
 }
 
-export enum WhatsappEngine {
+export enum WAHAEngine {
   VENOM = 'VENOM',
   WEBJS = 'WEBJS',
   NOWEB = 'NOWEB',

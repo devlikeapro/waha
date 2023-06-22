@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { parseBool } from './helpers';
-import { WhatsappEngine } from './structures/enums.dto';
+import { WAHAEngine } from './structures/enums.dto';
+import { WebhookConfig } from './structures/webhooks.dto';
 
 @Injectable()
 export class WhatsappConfigService {
@@ -80,19 +81,28 @@ export class WhatsappConfigService {
     return this.configService.get('WHATSAPP_PROXY_SERVER_PASSWORD', undefined);
   }
 
-  getWebhookUrl(): string | undefined {
+  getWebhookConfig(): WebhookConfig | undefined {
+    const url = this.getWebhookUrl();
+    const events = this.getWebhookEvents();
+    if (!url || events.length === 0) {
+      return undefined;
+    }
+    return { url: url, events: events };
+  }
+
+  private getWebhookUrl(): string | undefined {
     return this.get('WHATSAPP_HOOK_URL');
   }
 
-  getWebhookEvents(): string[] {
+  private getWebhookEvents(): string[] {
     const value = this.get('WHATSAPP_HOOK_EVENTS', '');
     return value ? value.split(',') : [];
   }
 
-  getDefaultEngineName(): WhatsappEngine {
-    const value = this.get('WHATSAPP_DEFAULT_ENGINE', WhatsappEngine.WEBJS);
-    if (value in WhatsappEngine) {
-      return WhatsappEngine[value];
+  getDefaultEngineName(): WAHAEngine {
+    const value = this.get('WHATSAPP_DEFAULT_ENGINE', WAHAEngine.WEBJS);
+    if (value in WAHAEngine) {
+      return WAHAEngine[value];
     }
     console.log(
       `Unknown WhatsApp default engine, using WEBJS. WHATSAPP_DEFAULT_ENGINE=${value}`,

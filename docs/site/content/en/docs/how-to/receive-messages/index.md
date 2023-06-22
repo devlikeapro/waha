@@ -11,15 +11,22 @@ weight: 120
 
 You must use [Webhooks]({{< relref "/docs/how-to/webhooks" >}}) to receive messages from WhatsApp to your application.
 
-## Examples
-Here's few examples of how to receive messages in different languages:
-1. [Python guide ->]({{< relref "/docs/examples/python" >}})
-
-**Do you use another language?**
-
-Please create a short guide how to handle webhook and send message after you finish your setup!
-You can create a pull request with your favorite language in the
-[GitHub, in examples folder ->](https://github.com/devlikeapro/whatsapp-http-api/tree/core/examples).
+Start a new session with configured `message` event in webhooks - call `POST /api/sessions/start` with the payload:
+```json
+{
+  "name": "default",
+  "config": {
+    "webhooks": [
+      {
+        "url": "https://httpbin.org/post",
+        "events": [
+          "message"
+        ]
+      }
+    ]
+  }
+}
+```
 
 
 ## Events
@@ -150,3 +157,14 @@ curl -X 'GET' \
   'http://localhost:3000/api/messages?chatId=11111111111%40c.us&limit=1000&session=default' \
   -H 'accept: application/json'
 ```
+
+## Examples
+Here's few examples of how to receive messages in different languages:
+1. [Python guide ->]({{< relref "/docs/examples/python" >}})
+
+**Do you use another language?**
+
+Please create a short guide how to handle webhook and send message after you finish your setup!
+You can create a pull request with your favorite language in the
+[GitHub, in examples folder ->](https://github.com/devlikeapro/whatsapp-http-api/tree/core/examples).
+

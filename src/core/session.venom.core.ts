@@ -17,9 +17,9 @@ import {
   MessageTextRequest,
 } from '../structures/chatting.dto';
 import {
-  WAEvents,
-  WhatsappEngine,
-  WhatsappStatus,
+  WAHAEngine,
+  WAHAEvents,
+  WAHASessionStatus,
 } from '../structures/enums.dto';
 import { WAMessage, WANumberExistResult } from '../structures/responses.dto';
 import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
@@ -27,7 +27,7 @@ import { NotImplementedByEngineError } from './exceptions';
 import { QR } from './QR';
 
 export class WhatsappSessionVenomCore extends WhatsappSession {
-  engine = WhatsappEngine.VENOM;
+  engine = WAHAEngine.VENOM;
 
   whatsapp: Whatsapp;
   private qr: QR;
@@ -67,7 +67,7 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
   protected getCatchQR() {
     return (base64Qrimg, asciiQR, attempts, urlCode) => {
       this.qr.save(base64Qrimg);
-      this.status = WhatsappStatus.SCAN_QR_CODE;
+      this.status = WAHASessionStatus.SCAN_QR_CODE;
       this.log.debug('Number of attempts to read the qrcode: ', attempts);
       this.log.log('Terminal qrcode:');
       // Log QR image in console without this.log to make it pretty
@@ -79,13 +79,13 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
     try {
       this.whatsapp = await this.buildClient();
     } catch (error) {
-      this.status = WhatsappStatus.FAILED;
+      this.status = WAHASessionStatus.FAILED;
       this.log.error(error);
       this.qr.save('');
       return;
     }
 
-    this.status = WhatsappStatus.WORKING;
+    this.status = WAHASessionStatus.WORKING;
     this.events.emit(WAHAInternalEvent.engine_start);
     return this;
   }
@@ -94,20 +94,20 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
     return this.whatsapp.close();
   }
 
-  subscribe(event: WAEvents | string, handler: (message) => void) {
-    if (event === WAEvents.MESSAGE) {
+  subscribe(event: WAHAEvents | string, handler: (message) => void) {
+    if (event === WAHAEvents.MESSAGE) {
       return this.whatsapp.onMessage((message: Message) =>
         this.processIncomingMessage(message).then(handler),
       );
-    } else if (event === WAEvents.MESSAGE_ANY) {
+    } else if (event === WAHAEvents.MESSAGE_ANY) {
       return this.whatsapp.onAnyMessage((message: Message) =>
         this.processIncomingMessage(message).then(handler),
       );
-    } else if (event === WAEvents.STATE_CHANGE) {
+    } else if (event === WAHAEvents.STATE_CHANGE) {
       return this.whatsapp.onStateChange(handler);
-    } else if (event === WAEvents.MESSAGE_ACK) {
+    } else if (event === WAHAEvents.MESSAGE_ACK) {
       return this.whatsapp.onAck(handler);
-    } else if (event === WAEvents.GROUP_JOIN) {
+    } else if (event === WAHAEvents.GROUP_JOIN) {
       return this.whatsapp.onAddedToGroup(handler);
     } else {
       throw new NotImplementedByEngineError(
@@ -120,13 +120,13 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
    * START - Methods for API
    */
   getScreenshot(): Promise<Buffer | string> {
-    if (this.status === WhatsappStatus.STARTING) {
+    if (this.status === WAHASessionStatus.STARTING) {
       throw new UnprocessableEntityException(
         `The session is starting, please try again after few seconds`,
       );
-    } else if (this.status === WhatsappStatus.SCAN_QR_CODE) {
+    } else if (this.status === WAHASessionStatus.SCAN_QR_CODE) {
       return Promise.resolve(this.qr.get());
-    } else if (this.status === WhatsappStatus.WORKING) {
+    } else if (this.status === WAHASessionStatus.WORKING) {
       return this.whatsapp.page.screenshot();
     } else {
       throw new UnprocessableEntityException(`Unknown status - ${this.status}`);

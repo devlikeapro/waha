@@ -21,9 +21,60 @@ you first need to set up a webhook URL in your application and pass it to `WHATS
 This URL is where WhatsApp will send incoming messages and other events -
 define which events you want to receive with `WHATSAPP_HOOK_EVENTS` environment variable.
 
-## Webhooks
+## Setup webhooks
+### Session webhooks
+You can define webhooks configuration per session when you start it with `POST /api/sessions/start` request data.
 
-You can configure where you want to receive events in environment variables:
+Here's a simple example:
+```json
+{
+  "name": "default",
+  "config": {
+    "webhooks": [
+      {
+        "url": "https://httpbin.org/post",
+        "events": [
+          "message"
+        ]
+      }
+    ]
+  }
+}
+
+```
+
+Here's available configuration options for webhooks
+```json
+{
+  "name": "default",
+  "config": {
+    "webhooks": [
+      {
+        "url": "https://httpbin.org/post",
+        "events": [
+          "message"
+        ],
+        "hmac": {
+          "key": "your-secret-key"
+        },
+        "retries": {
+          "delaySeconds": 2,
+          "attempts": 15
+        },
+        "customHeaders": [
+          {
+            "name": "X-My-Custom-Header",
+            "value": "Value"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Global webhooks
+There's a way how you can configure webhooks for ALL sessions - by settings these environment variables:
 
 - `WHATSAPP_HOOK_URL=https://httpbin.org/post`  - to set up a URL for the webhook
 - `WHATSAPP_HOOK_EVENTS=message,message.any,state.change` - specify events. Do not specify all of
@@ -31,7 +82,11 @@ You can configure where you want to receive events in environment variables:
 - `WHATSAPP_HOOK_EVENTS=*` - subscribe to all events. It's not recommended for production, but it's fine for
 development.
 
-On the URL that you set via `WHATSAPP_HOOK_URL` you receive JSON-data with following format:
+That webhook configuration **does not appear** in `session.config` field in `GET /api/sessions/` request.
+
+## Webhook payload
+
+On the URL that you set you'll receive **HTTP POST** request with a JSON string with following format:
 
 ```json
 {
@@ -56,15 +111,6 @@ Run the bellow command and see look at the logs - it prints body request for all
 docker run -it -e "WHATSAPP_HOOK_EVENTS=*" -e WHATSAPP_HOOK_URL=https://httpbin.org/post -p 3000:3000 devlikeapro/whatsapp-http-api
 ```
 
-### Examples
-Here's few examples of how to handle webhook in different languages:
-1. [Python guide]({{< relref "/docs/examples/python" >}})
-
-**Do you use another language?**
-
-Please create a short guide how to handle webhook and send message after you finish your setup!
-You can create a pull request with your favorite language in the
-[GitHub, in examples folder ->](https://github.com/devlikeapro/whatsapp-http-api/tree/core/examples).
 
 
 ## Events
@@ -225,6 +271,109 @@ It's an internal engine's state, not **session** `status`.
 }
 ```
 
-## Webhook retries ![](/images/versions/plus.png)
+## Webhooks Advanced ![](/images/versions/plus.png)
+### HMAC authentication
 
-**WAHA** retries to reach your webhook URL **15 times** with **2 seconds delay** between attempts.
+You can authenticate webhook sender by using [HMAC Authentication](https://www.okta.com/identity-101/hmac/).
+
+1. Define you secret key in `config.hmac.key` field when you start session with `POST /api/sessions/start`:
+
+```json
+{
+  "name": "default",
+  "config": {
+    "webhooks": [
+      {
+        "url": "https://httpbin.org/post",
+        "events": [
+          "message"
+        ],
+        "hmac": {
+          "key": "your-secret-key"
+        }
+      }
+    ]
+  }
+}
+```
+
+2. After that you'll receive all webhooks payload with two additional headers:
+- `X-Webhook-Hmac` - message authentication code for the raw **body** in HTTP POST request that send to your endpoint.
+- `X-Webhook-Hmac-Algorithm` - `sha512` - algorithm that have been used to create `X-Webhook-Hmac` value.
+
+3. Implement the authentication algorithm by hashing body and using secret key and then verifying it with `X-Webhook-Hmac`
+value. Please [check your implementation here ->](https://www.devglan.com/online-tools/hmac-sha256-online)
+
+Here's example for
+```
+# Full body
+{"event":"message","session":"default","engine":"WEBJS"}
+# Secret key
+my-secret-key
+# X-Webhook-Hmac-Algorithm
+sha512
+# X-Webhook-Hmac
+208f8a55dde9e05519e898b10b89bf0d0b3b0fdf11fdbf09b6b90476301b98d8097c462b2b17a6ce93b6b47a136cf2e78a33a63f6752c2c1631777076153fa89
+```
+
+
+### Retries
+**WAHA** retries to reach your webhook URL **15 times** with **2 seconds delay** between attempts by default in
+[Plus Version →]({{< relref "plus-version" >}})
+
+You can configure those parameters by settings `config.retries` structure when `POST /api/sessions/start`:
+
+```json
+{
+  "name": "default",
+  "config": {
+    "webhooks": [
+      {
+        "url": "https://httpbin.org/post",
+        "events": [
+          "message"
+        ],
+        "retries": {
+          "delaySeconds": 2,
+          "attempts": 15
+        }
+      }
+    ]
+  }
+}
+
+```
+
+### Custom Headers
+You can send any customer headers by defining `config.webhooks.customHeaders` fields this way:
+```json
+{
+  "name": "default",
+  "config": {
+    "webhooks": [
+      {
+        "url": "https://httpbin.org/post",
+        "events": [
+          "message"
+        ],
+        "customHeaders": [
+          {
+            "name": "X-My-Custom-Header",
+            "value": "Value"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Examples
+Here's few examples of how to handle webhook in different languages:
+1. [Python guide]({{< relref "/docs/examples/python" >}})
+
+**Do you use another language?**
+
+Please create a short guide how to handle webhook and send message after you finish your setup!
+You can create a pull request with your favorite language in the
+[GitHub, in examples folder ->](https://github.com/devlikeapro/whatsapp-http-api/tree/core/examples).

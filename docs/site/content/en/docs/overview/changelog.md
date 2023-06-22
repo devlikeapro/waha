@@ -14,6 +14,11 @@ toc: true
 ---
 ## 2023.7
 July 2023
+- Now session can have their own [Webhooks](https://waha.devlike.pro/docs/how-to/webhooks) -
+   you can define webhook configuration when you start a session with `POST /api/session/start`!
+  - Add HMAC authentication for webhooks
+  - Configure retries
+  - Add you custom headers
 - Added [proxy configuration](https://waha.devlike.pro/docs/how-to/config/#proxy) with supporting proxy authentication.
   Thanks **puntolino** for the contribution!
 - Added [presence information](https://waha.devlike.pro/docs/how-to/presence) - now you can get online status for

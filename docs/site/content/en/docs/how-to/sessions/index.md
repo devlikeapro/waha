@@ -6,10 +6,10 @@ date: 2020-10-06T08:48:45+00:00
 lastmod: 2020-10-06T08:48:45+00:00
 draft: false
 images: [ ]
-weight: 200
+weight: 125
 ---
 
-## Session methods
+## Endpoints
 
 ### Start
 
@@ -20,6 +20,29 @@ In order to start a new session - call `POST /api/sessions/start`
   "name": "default"
 }
 ```
+#### Configure webhooks
+You can configure webhooks for a session:
+```json
+{
+  "name": "default",
+  "config": {
+    "webhooks": [
+      {
+        "url": "https://httpbin.org/post",
+        "events": [
+          "message"
+        ]
+      }
+    ]
+  }
+}
+```
+
+Read more about available options on [Webhooks page ->]({{< relref "/docs/how-to/webhooks#hmac-authentication" >}})
+
+The configuration is saved and will be applied if the docker container restarts,
+and you set `WHATSAPP_RESTART_ALL_SESSIONS` environment variables.
+Read more about it in [Autostart section](#autostart).
 
 ### List
 
@@ -66,30 +89,16 @@ In order to log out the session - call `POST /api/sessions/logout`
 }
 ```
 
-## Autostart
-If you don't want to call `POST /api/sessions/start` for every session each time when the container restart -
-you can use set of these environment variables to start sessions for you:
-
-- `WHATSAPP_RESTART_ALL_SESSIONS=True`: Set this variable to `True` to start all **STOPPED** sessions after container
-  restarts. By default, this variable is set to `False`.
-  - Please note that this will start all **STOPPED** sessions, not just the sessions that were working before the restart. You can maintain the session list by
-    using `POST /api/session/stop` with the `logout: True` parameter or by calling `POST /api/session/logout` to remove
-    **STOPPED** sessions. You can see all sessions, including **STOPPED** sessions, in the `GET /api/sessions/all=True`
-    response.
-- `WHATSAPP_START_SESSION=session1,session2`: This variable can be used to start sessions with the specified names right
-  after launching the API. Separate session names with a comma.
-
 
 
 ## Advanced sessions ![](/images/versions/plus.png)
 
-[WAHA Plus version]({{< relref "plus-version" >}})
-allows you to save "session" state and avoid scanning QR code everytime when you start a container.
+With [WAHA Plus version]({{< relref "plus-version" >}}) you can save session state to avoid scanning QR code everytime,
+configure autostart options so when the docker container restarts - it restores all previously run sessions!
 
-### Storage
+### Session persistent
 
 #### File storage
-
 If you want to save your session and do not scan QR code everytime when you launch WAHA - connect a local file storage
 to the container. WAHA stores authentication information in the directory and reuses it after restart.
 
@@ -112,7 +121,22 @@ issue on GitHub.
 
 For instances, it may be useful if you run WAHA in a cluster of servers and do not have shared file storage
 
+### Autostart
+If you don't want to call `POST /api/sessions/start` for every session each time when the container restart -
+you can use set of these environment variables to start sessions for you:
+
+- `WHATSAPP_RESTART_ALL_SESSIONS=True`: Set this variable to `True` to start all **STOPPED** sessions after container
+  restarts. By default, this variable is set to `False`.
+  - Please note that this will start all **STOPPED** sessions, not just the sessions that were working before the restart. You can maintain the session list by
+    using `POST /api/session/stop` with the `logout: True` parameter or by calling `POST /api/session/logout` to remove
+    **STOPPED** sessions. You can see all sessions, including **STOPPED** sessions, in the `GET /api/sessions/all=True`
+    response.
+- `WHATSAPP_START_SESSION=session1,session2`: This variable can be used to start sessions with the specified names right
+  after launching the API. Separate session names with a comma.
+
+
 ### Multiple sessions
 
 If you want to save server's CPU and Memory - run multiple sessions inside one docker container!
+[Plus version]({{< relref "plus-version" >}}) supports multiple sessions in one container.
 

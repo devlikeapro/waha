@@ -19,8 +19,13 @@ export class SessionsController {
   constructor(private manager: SessionManager) {}
 
   @Post('/start/')
-  start(@Body() request: SessionStartRequest): SessionDTO {
-    return this.manager.start(request);
+  async start(@Body() request: SessionStartRequest): Promise<SessionDTO> {
+    const result = await this.manager.start(request);
+    await this.manager.sessionStorage.configRepository.save(
+      request.name,
+      request.config,
+    );
+    return result;
   }
 
   @Post('/stop/')
@@ -46,7 +51,7 @@ export class SessionsController {
   }
 
   @Get('/')
-  list(@Query() query: ListSessionsQuery): SessionDTO[] {
+  async list(@Query() query: ListSessionsQuery): Promise<SessionDTO[]> {
     const all = parseBool(query.all);
     return this.manager.getSessions(all);
   }

@@ -65,3 +65,7 @@ headers = {
 requests.get("http://localhost:3000/api/sessions", headers=headers)
 ```
 
+## Webhook security ![](/images/versions/plus.png)
+To make sure that you get a webhook from your WAHA instance - you can use **HMAC authentication**.
+Read more about it on [Webhooks page ->]({{< relref "/docs/how-to/webhooks#hmac-authentication" >}})
+

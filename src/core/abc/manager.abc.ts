@@ -1,6 +1,6 @@
 import { OnApplicationShutdown } from '@nestjs/common';
 
-import { WhatsappEngine } from '../../structures/enums.dto';
+import { WAHAEngine } from '../../structures/enums.dto';
 import {
   SessionDTO,
   SessionLogoutRequest,
@@ -8,11 +8,13 @@ import {
   SessionStopRequest,
 } from '../../structures/sessions.dto';
 import { WhatsappSession } from './session.abc';
-import { MediaStorage } from './storage.abc';
+import { LocalSessionStorage, MediaStorage } from './storage.abc';
 import { WebhookConductor } from './webhooks.abc';
 
 export abstract class SessionManager implements OnApplicationShutdown {
-  protected abstract getEngine(engine: WhatsappEngine): typeof WhatsappSession;
+  public sessionStorage: LocalSessionStorage;
+
+  protected abstract getEngine(engine: WAHAEngine): typeof WhatsappSession;
 
   protected abstract get EngineClass(): typeof WhatsappSession;
 
@@ -25,7 +27,7 @@ export abstract class SessionManager implements OnApplicationShutdown {
   //
   // API Methods
   //
-  abstract start(request: SessionStartRequest): SessionDTO;
+  abstract start(request: SessionStartRequest): Promise<SessionDTO>;
 
   abstract stop(request: SessionStopRequest): Promise<void>;
 
@@ -33,5 +35,5 @@ export abstract class SessionManager implements OnApplicationShutdown {
 
   abstract getSession(name: string, error?: boolean): WhatsappSession;
 
-  abstract getSessions(all: boolean): SessionDTO[];
+  abstract getSessions(all: boolean): Promise<SessionDTO[]>;
 }

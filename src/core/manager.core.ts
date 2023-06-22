@@ -6,19 +6,24 @@ import {
 } from '@nestjs/common';
 
 import { WhatsappConfigService } from '../config.service';
-import { WhatsappEngine, WhatsappStatus } from '../structures/enums.dto';
+import {
+  WAHAEngine,
+  WAHAEvents,
+  WAHASessionStatus,
+} from '../structures/enums.dto';
 import {
   SessionDTO,
   SessionLogoutRequest,
   SessionStartRequest,
   SessionStopRequest,
 } from '../structures/sessions.dto';
+import { WebhookConfig } from '../structures/webhooks.dto';
 import { SessionManager } from './abc/manager.abc';
 import {
   ProxyConfig,
+  SessionParams,
   WAHAInternalEvent,
   WhatsappSession,
-  WhatsAppSessionConfig,
 } from './abc/session.abc';
 import { LocalSessionStorage } from './abc/storage.abc';
 import { DOCS_URL } from './exceptions';
@@ -47,7 +52,6 @@ export class SessionManagerCore extends SessionManager {
   // @ts-ignore
   protected WebhookConductorClass = WebhookConductorCore;
   protected readonly EngineClass: typeof WhatsappSession;
-  protected sessionStorage: LocalSessionStorage;
 
   constructor(
     private config: WhatsappConfigService,
@@ -60,7 +64,6 @@ export class SessionManagerCore extends SessionManager {
     const engineName = this.config.getDefaultEngineName();
     this.EngineClass = this.getEngine(engineName);
     this.sessionStorage = new SessionStorageCore(engineName.toLowerCase());
-    this.sessionStorage.init();
 
     this.startPredefinedSessions();
   }
@@ -72,12 +75,12 @@ export class SessionManagerCore extends SessionManager {
     });
   }
 
-  protected getEngine(engine: WhatsappEngine): typeof WhatsappSession {
-    if (engine === WhatsappEngine.WEBJS) {
+  protected getEngine(engine: WAHAEngine): typeof WhatsappSession {
+    if (engine === WAHAEngine.WEBJS) {
       return WhatsappSessionWebJSCore;
-    } else if (engine === WhatsappEngine.VENOM) {
+    } else if (engine === WAHAEngine.VENOM) {
       return WhatsappSessionVenomCore;
-    } else if (engine === WhatsappEngine.NOWEB) {
+    } else if (engine === WAHAEngine.NOWEB) {
       return WhatsappSessionNoWebCore;
     } else {
       throw new NotFoundException(`Unknown whatsapp engine '${engine}'.`);
@@ -100,7 +103,7 @@ export class SessionManagerCore extends SessionManager {
   //
   // API Methods
   //
-  start(request: SessionStartRequest): SessionDTO {
+  async start(request: SessionStartRequest): Promise<SessionDTO> {
     this.onlyDefault(request.name);
 
     const name = request.name;
@@ -108,28 +111,40 @@ export class SessionManagerCore extends SessionManager {
     const log = new ConsoleLogger(`WhatsappSession - ${name}`);
     const storage = new this.MediaStorageClass();
     const webhookLog = new ConsoleLogger(`Webhook - ${name}`);
-    const webhook = new this.WebhookConductorClass(
-      webhookLog,
-      this.config.getWebhookUrl(),
-      this.config.getWebhookEvents(),
-    );
+    const webhook = new this.WebhookConductorClass(webhookLog);
 
-    const sessionConfig: WhatsAppSessionConfig = {
+    await this.sessionStorage.init();
+
+    const sessionConfig: SessionParams = {
       name,
       storage,
       log,
       sessionStorage: this.sessionStorage,
       proxyConfig: this.getProxyConfig(),
+      sessionConfig: request.config,
     };
     // @ts-ignore
     const session = new this.EngineClass(sessionConfig);
     this.session = session;
 
+    // configure webhooks
+    let webhooks: WebhookConfig[] = [];
+    if (request.config.webhooks) {
+      webhooks = webhooks.concat(request.config.webhooks);
+    }
+    const globalWebhookConfig = this.config.getWebhookConfig();
+    webhooks.push(globalWebhookConfig);
     session.events.on(WAHAInternalEvent.engine_start, () =>
-      webhook.configure(session),
+      webhook.configure(session, webhooks),
     );
-    session.start();
-    return { name: session.name, status: session.status };
+
+    // start session
+    await session.start();
+    return {
+      name: session.name,
+      status: session.status,
+      config: session.sessionConfig,
+    };
   }
 
   protected getProxyConfig(): ProxyConfig | undefined {
@@ -148,7 +163,7 @@ export class SessionManagerCore extends SessionManager {
   }
 
   async logout(request: SessionLogoutRequest) {
-    this.sessionStorage.clean(request.name);
+    await this.sessionStorage.clean(request.name);
   }
 
   getSession(name: string, error = true): WhatsappSession {
@@ -165,12 +180,25 @@ export class SessionManagerCore extends SessionManager {
     return session;
   }
 
-  getSessions(all: boolean): SessionDTO[] {
+  async getSessions(all: boolean): Promise<SessionDTO[]> {
     if (!this.session) {
-      return all
-        ? [{ name: this.DEFAULT, status: WhatsappStatus.STOPPED }]
-        : [];
+      if (!all) {
+        return [];
+      }
+      return [
+        {
+          name: this.DEFAULT,
+          status: WAHASessionStatus.STOPPED,
+          config: undefined,
+        },
+      ];
     }
-    return [{ name: this.session.name, status: this.session.status }];
+    return [
+      {
+        name: this.session.name,
+        status: this.session.status,
+        config: this.session.sessionConfig,
+      },
+    ];
   }
 }

@@ -31,9 +31,9 @@ import {
 } from '../structures/chatting.dto';
 import { ContactQuery, ContactRequest } from '../structures/contacts.dto';
 import {
-  WAEvents,
-  WhatsappEngine,
-  WhatsappStatus,
+  WAHAEngine,
+  WAHAEvents,
+  WAHASessionStatus,
 } from '../structures/enums.dto';
 import {
   CreateGroupRequest,
@@ -50,7 +50,7 @@ import {
 const qrcode = require('qrcode-terminal');
 
 export class WhatsappSessionWebJSCore extends WhatsappSession {
-  engine = WhatsappEngine.WEBJS;
+  engine = WAHAEngine.WEBJS;
 
   whatsapp: Client;
 
@@ -87,7 +87,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     this.whatsapp = this.buildClient();
 
     this.whatsapp.initialize().catch((error) => {
-      this.status = WhatsappStatus.FAILED;
+      this.status = WAHASessionStatus.FAILED;
       this.log.error(error);
       return;
     });
@@ -95,11 +95,11 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     // Connect events
     this.whatsapp.on(Events.QR_RECEIVED, (qr) => {
       qrcode.generate(qr, { small: true });
-      this.status = WhatsappStatus.SCAN_QR_CODE;
+      this.status = WAHASessionStatus.SCAN_QR_CODE;
     });
 
     this.whatsapp.on(Events.AUTHENTICATED, () => {
-      this.status = WhatsappStatus.WORKING;
+      this.status = WAHASessionStatus.WORKING;
       this.log.log(`Session '${this.name}' has been authenticated!`);
     });
     this.events.emit(WAHAInternalEvent.engine_start);
@@ -114,7 +114,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
    * START - Methods for API
    */
   async getScreenshot(): Promise<Buffer | string> {
-    if (this.status === WhatsappStatus.FAILED) {
+    if (this.status === WAHASessionStatus.FAILED) {
       throw new UnprocessableEntityException(
         `The session under FAILED status. Please try to restart it.`,
       );
@@ -371,24 +371,24 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
    */
 
   subscribe(event, handler) {
-    if (event === WAEvents.MESSAGE) {
+    if (event === WAHAEvents.MESSAGE) {
       this.whatsapp.on(Events.MESSAGE_RECEIVED, (message) =>
         this.processIncomingMessage(message).then(handler),
       );
-    } else if (event === WAEvents.MESSAGE_ANY) {
+    } else if (event === WAHAEvents.MESSAGE_ANY) {
       this.whatsapp.on(Events.MESSAGE_CREATE, (message) =>
         this.processIncomingMessage(message).then(handler),
       );
-    } else if (event === WAEvents.STATE_CHANGE) {
+    } else if (event === WAHAEvents.STATE_CHANGE) {
       this.whatsapp.on(Events.STATE_CHANGED, handler);
-    } else if (event === WAEvents.MESSAGE_ACK) {
+    } else if (event === WAHAEvents.MESSAGE_ACK) {
       // We do not download media here
       this.whatsapp.on(Events.MESSAGE_ACK, (message) =>
         this.toWAMessage(message).then(handler),
       );
-    } else if (event === WAEvents.GROUP_JOIN) {
+    } else if (event === WAHAEvents.GROUP_JOIN) {
       this.whatsapp.on(Events.GROUP_JOIN, handler);
-    } else if (event === WAEvents.GROUP_LEAVE) {
+    } else if (event === WAHAEvents.GROUP_LEAVE) {
       this.whatsapp.on(Events.GROUP_LEAVE, handler);
     } else {
       throw new NotImplementedByEngineError(
