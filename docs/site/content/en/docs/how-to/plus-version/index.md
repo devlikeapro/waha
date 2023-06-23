@@ -62,7 +62,7 @@ By donating to the **WAHA** you donate to the Open Source world!
 
 ## Get Plus ![](/images/versions/plus.png)
 
-For $19 one-time donation you get:
+For $19 donation you get:
 1. **Secret password** for Docker Hub to download Plus image: `devlikeapro/whatsapp-http-api-plus`.
 2. **All updates for one month** for the Plus image.
 3. **NO LICENSE CHECKS** on installed instances!
