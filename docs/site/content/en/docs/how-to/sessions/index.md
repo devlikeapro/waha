@@ -38,11 +38,50 @@ You can configure webhooks for a session:
 }
 ```
 
-Read more about available options on [Webhooks page ->]({{< relref "/docs/how-to/webhooks#hmac-authentication" >}})
+Read more about available options on [**Webhooks page ->**]({{< relref "/docs/how-to/webhooks#hmac-authentication" >}})
 
 The configuration is saved and will be applied if the docker container restarts,
 and you set `WHATSAPP_RESTART_ALL_SESSIONS` environment variables.
 Read more about it in [Autostart section](#autostart).
+
+#### Configure proxy
+You can configure proxy for a session by setting `config.proxy` fields:
+- `server` - proxy server address, without `http://` or `https://` prefixes
+- `username` and `password` - set this if the proxy requires authentication
+
+
+**No authentication**
+```json
+{
+  "name": "default",
+  "config": {
+    "proxy": {
+      "server": "localhost:3128"
+    }
+  }
+}
+```
+
+**Proxy with authentication**
+```json
+{
+  "name": "default",
+  "config": {
+    "proxy": {
+      "server": "localhost:3128",
+      "username": "username",
+      "password": "P@ssw0rd"
+    }
+  }
+}
+```
+
+The configuration is saved and will be applied if the docker container restarts,
+and you set `WHATSAPP_RESTART_ALL_SESSIONS` environment variables.
+Read more about it in [Autostart section](#autostart).
+
+You can configure proxy when for all sessions by set up environment variables.
+Read more about it on [**Configuration page** ->]({{< relref "/docs/how-to/config#proxy" >}}).
 
 ### List
 

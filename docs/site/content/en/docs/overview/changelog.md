@@ -21,6 +21,7 @@ July 2023
   - Add you custom headers
 - Added [proxy configuration](https://waha.devlike.pro/docs/how-to/config/#proxy) with supporting proxy authentication.
   Thanks **puntolino** for the contribution!
+  You can control proxy's settings per session with `POST /api/session/start` or globally with environment variables.
 - Added [presence information](https://waha.devlike.pro/docs/how-to/presence) - now you can get online status for
   a contact by calling endpoints or receiving a webhook event!
 - Now you can mention contact in groups by settings `mentions` field in `POST /api/sendText`

@@ -52,15 +52,15 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
   }
 
   protected addProxyConfig(venomOptions: CreateConfig) {
-    if (this.proxyConfig?.proxyServer !== undefined) {
-      venomOptions.addProxy = [this.proxyConfig?.proxyServer];
+    if (this.proxyConfig?.server !== undefined) {
+      venomOptions.addProxy = [this.proxyConfig?.server];
     }
     if (
-      this.proxyConfig?.proxyUsername !== undefined &&
-      this.proxyConfig?.proxyPassword !== undefined
+      this.proxyConfig?.username !== undefined &&
+      this.proxyConfig?.password !== undefined
     ) {
-      venomOptions.userProxy = this.proxyConfig?.proxyUsername;
-      venomOptions.userPass = this.proxyConfig?.proxyPassword;
+      venomOptions.userProxy = this.proxyConfig?.username;
+      venomOptions.userPass = this.proxyConfig?.password;
     }
   }
 

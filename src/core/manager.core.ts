@@ -6,12 +6,9 @@ import {
 } from '@nestjs/common';
 
 import { WhatsappConfigService } from '../config.service';
+import { WAHAEngine, WAHASessionStatus } from '../structures/enums.dto';
 import {
-  WAHAEngine,
-  WAHAEvents,
-  WAHASessionStatus,
-} from '../structures/enums.dto';
-import {
+  ProxyConfig,
   SessionDTO,
   SessionLogoutRequest,
   SessionStartRequest,
@@ -20,12 +17,10 @@ import {
 import { WebhookConfig } from '../structures/webhooks.dto';
 import { SessionManager } from './abc/manager.abc';
 import {
-  ProxyConfig,
   SessionParams,
   WAHAInternalEvent,
   WhatsappSession,
 } from './abc/session.abc';
-import { LocalSessionStorage } from './abc/storage.abc';
 import { DOCS_URL } from './exceptions';
 import { getProxyConfig } from './helpers.proxy';
 import { WhatsappSessionNoWebCore } from './session.noweb.core';
@@ -115,12 +110,13 @@ export class SessionManagerCore extends SessionManager {
 
     await this.sessionStorage.init();
 
+    const proxyConfig = this.getProxyConfig(request);
     const sessionConfig: SessionParams = {
       name,
       storage,
       log,
       sessionStorage: this.sessionStorage,
-      proxyConfig: this.getProxyConfig(),
+      proxyConfig: proxyConfig,
       sessionConfig: request.config,
     };
     // @ts-ignore
@@ -128,12 +124,7 @@ export class SessionManagerCore extends SessionManager {
     this.session = session;
 
     // configure webhooks
-    let webhooks: WebhookConfig[] = [];
-    if (request.config.webhooks) {
-      webhooks = webhooks.concat(request.config.webhooks);
-    }
-    const globalWebhookConfig = this.config.getWebhookConfig();
-    webhooks.push(globalWebhookConfig);
+    const webhooks = this.getWebhooks(request);
     session.events.on(WAHAInternalEvent.engine_start, () =>
       webhook.configure(session, webhooks),
     );
@@ -147,8 +138,30 @@ export class SessionManagerCore extends SessionManager {
     };
   }
 
-  protected getProxyConfig(): ProxyConfig | undefined {
-    return getProxyConfig(this.config, { [this.DEFAULT]: this.session });
+  /**
+   * Combine per session and global webhooks
+   */
+  private getWebhooks(request: SessionStartRequest) {
+    let webhooks: WebhookConfig[] = [];
+    if (request.config.webhooks) {
+      webhooks = webhooks.concat(request.config.webhooks);
+    }
+    const globalWebhookConfig = this.config.getWebhookConfig();
+    webhooks.push(globalWebhookConfig);
+    return webhooks;
+  }
+
+  /**
+   * Get either session's or global proxy if defined
+   */
+  protected getProxyConfig(
+    request: SessionStartRequest,
+  ): ProxyConfig | undefined {
+    if (request.config.proxy) {
+      return request.config.proxy;
+    }
+    const sessions = { [request.name]: this.session };
+    return getProxyConfig(this.config, sessions, request.name);
   }
 
   async stop(request: SessionStopRequest): Promise<void> {

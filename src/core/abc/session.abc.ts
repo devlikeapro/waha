@@ -29,7 +29,7 @@ import {
   ParticipantsRequest,
 } from '../../structures/groups.dto';
 import { WAHAChatPresences } from '../../structures/presence.dto';
-import { SessionConfig } from '../../structures/sessions.dto';
+import { ProxyConfig, SessionConfig } from '../../structures/sessions.dto';
 import { NotImplementedByEngineError } from '../exceptions';
 import { LocalSessionStorage, MediaStorage } from './storage.abc';
 
@@ -62,12 +62,6 @@ export interface SessionParams {
   proxyConfig?: ProxyConfig;
   sessionConfig: SessionConfig;
 }
-
-export type ProxyConfig = {
-  proxyServer: string;
-  proxyUsername?: string;
-  proxyPassword?: string;
-};
 
 export abstract class WhatsappSession {
   public status: WAHASessionStatus;

@@ -67,17 +67,17 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   protected addProxyConfig(clientOptions: ClientOptions) {
-    if (this.proxyConfig?.proxyServer !== undefined) {
+    if (this.proxyConfig?.server !== undefined) {
       // push the proxy server to the args
       clientOptions.puppeteer.args.push(
-        `--proxy-server=${this.proxyConfig?.proxyServer}`,
+        `--proxy-server=${this.proxyConfig?.server}`,
       );
 
       // Authenticate
-      if (this.proxyConfig?.proxyUsername && this.proxyConfig?.proxyPassword) {
+      if (this.proxyConfig?.username && this.proxyConfig?.password) {
         clientOptions.proxyAuthentication = {
-          username: this.proxyConfig?.proxyUsername,
-          password: this.proxyConfig?.proxyPassword,
+          username: this.proxyConfig?.username,
+          password: this.proxyConfig?.password,
         };
       }
     }

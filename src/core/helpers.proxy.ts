@@ -3,7 +3,8 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import { URL } from 'url';
 
 import { WhatsappConfigService } from '../config.service';
-import { ProxyConfig, WhatsappSession } from './abc/session.abc';
+import { ProxyConfig } from '../structures/sessions.dto';
+import { WhatsappSession } from './abc/session.abc';
 
 export function getProxyConfig(
   config: WhatsappConfigService,
@@ -13,9 +14,9 @@ export function getProxyConfig(
   // Single proxy server configuration
   if (typeof config.proxyServer === 'string') {
     return {
-      proxyServer: config.proxyServer,
-      proxyUsername: config.proxyServerUsername,
-      proxyPassword: config.proxyServerPassword,
+      server: config.proxyServer,
+      username: config.proxyServerUsername,
+      password: config.proxyServerPassword,
     };
   }
 
@@ -32,9 +33,9 @@ export function getProxyConfig(
     idx = Object.keys(sessions).length % config.proxyServer.length;
     const index = indexToUse ? indexToUse % config.proxyServer.length : idx;
     return {
-      proxyServer: config.proxyServer[index],
-      proxyUsername: config.proxyServerUsername,
-      proxyPassword: config.proxyServerPassword,
+      server: config.proxyServer[index],
+      username: config.proxyServerUsername,
+      password: config.proxyServerPassword,
     };
   }
 
@@ -47,6 +48,10 @@ function getAuthenticatedUrl(
   username: string,
   password: string,
 ): string {
+  const hasSchema = url.startsWith('http://') || url.startsWith('https://');
+  if (!hasSchema) {
+    url = `http://${url}`;
+  }
   const parsedUrl = new URL(url);
   parsedUrl.protocol = parsedUrl.protocol || 'http';
   parsedUrl.username = username;
@@ -60,9 +65,9 @@ function getAuthenticatedUrl(
  */
 export function createAgentProxy(proxyConfig: ProxyConfig): Agent | undefined {
   const url = getAuthenticatedUrl(
-    proxyConfig.proxyServer,
-    proxyConfig.proxyUsername,
-    proxyConfig.proxyPassword,
+    proxyConfig.server,
+    proxyConfig.username,
+    proxyConfig.password,
   );
   return new HttpsProxyAgent(url);
 }

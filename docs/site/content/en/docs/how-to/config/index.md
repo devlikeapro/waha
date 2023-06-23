@@ -44,6 +44,7 @@ The following environment variables can be used to configure the WAHA.
   Disabled by default.
 
 ### Proxy
+#### Global proxy configuration
 If you need to use a proxy, you can set the following environment variables:
 
 - `WHATSAPP_PROXY_SERVER=localhost:3128`: Use this variable to set the proxy server in the format `host:port`, without http or https.
@@ -52,7 +53,13 @@ If you need to use a proxy, you can set the following environment variables:
 - `WHATSAPP_PROXY_SERVER_INDEX_PREFIX=proxy-`: Use this variable to parse the session name for the prefix and find the appropriate session.
   For example, if you have set `WHATSAPP_PROXY_SERVER_LIST=host-first:80,host-second:80,host-third:80` and `WHATSAPP_PROXY_SERVER_INDEX_PREFIX=proxy-` and you run `proxy-3` session, the `host-third:80` proxy will be chosen for that session.
   This is a way to select a proxy from while you start session.
-  Note that a proxy configuration will be added in the `POST /api/session/start` request soon, so you'll be able to define the proxy there.
+
+#### Session proxy configuration
+You can configure proxy when you start session by setting `config.proxy` fields.
+Read more about it on [**Session page** ->]({{< relref "/docs/how-to/sessions#configure-proxy" >}}).
+
+Keep in mind that session's proxy configuration takes precedence over proxy configuration set by environment variables!
+
 
 ### Security ![](/images/versions/plus.png)
 - `WHATSAPP_API_KEY=mysecret`: If you set this variable, you must include the `X-Api-Key: mysecret` header in all

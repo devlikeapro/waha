@@ -19,8 +19,27 @@ export class ListSessionsQuery {
 /**
  * Requests
  */
+export class ProxyConfig {
+  @ApiProperty({
+    example: 'localhost:3128',
+  })
+  server: string;
+  @ApiProperty({
+    example: null,
+  })
+  username?: string;
+  @ApiProperty({
+    example: null,
+  })
+  password?: string;
+}
+
 export class SessionConfig {
   webhooks?: WebhookConfig[];
+  @ApiProperty({
+    example: null,
+  })
+  proxy?: ProxyConfig;
 }
 
 export class SessionStartRequest {
