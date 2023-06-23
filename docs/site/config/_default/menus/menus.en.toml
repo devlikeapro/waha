@@ -19,8 +19,8 @@
 
 [[main]]
   name = "Documentation"
+  identifier = "docs"
   url = "/docs/overview/introduction/"
-# url = "/docs/1.0/overview/introduction/"
   weight = 10
 
 #[[main]]
@@ -29,18 +29,40 @@
 #  weight = 20
 
 [[main]]
-  name = "Get Plus"
-  weight = 30
-  identifier = "get-plus"
-  url = ""
-
+  name = "Introduction"
+  weight = 11
+  url = "/docs/overview/introduction"
+  parent = "docs"
 
 [[main]]
-  name = "About WAHA Plus"
-  weight = 40
-  identifier = "plus-version"
+  name = "Quick Start"
+  weight = 12
+  url = "/docs/overview/introduction"
+  parent = "docs"
+
+[[main]]
+  name = "Guides"
+  weight = 13
+  url = "/docs/how-to"
+  parent = "docs"
+
+[[main]]
+  name = "Swagger"
+  weight = 20
+  url = "https://waha.devlike.pro/swagger"
+  parent = "docs"
+
+[[main]]
+  name = "Examples"
+  weight = 21
+  url = "/docs/examples"
+  parent = "docs"
+
+[[main]]
+  name = "WAHA Plus"
+  weight = 99
   url = "/docs/how-to/plus-version"
-  parent = "get-plus"
+  parent = "docs"
 
 #[[main]]
 #  name = "Get on Boosty ->"
