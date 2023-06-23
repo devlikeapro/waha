@@ -19,3 +19,6 @@ update-swagger:
 update-dependencies:
 	. ${NVM_DIR}/nvm.sh && nvm exec yarn upgrade whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js
 	. ${NVM_DIR}/nvm.sh && nvm exec yarn upgrade venom-bot
+
+start-proxy:
+	docker run --rm -d --name squid-container -e TZ=UTC -p 3128:3128 ubuntu/squid:5.2-22.04_beta
