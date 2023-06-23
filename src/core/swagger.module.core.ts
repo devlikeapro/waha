@@ -62,7 +62,9 @@ export class SwaggerModuleCore {
 
     const options = builder.build();
     const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup('', app, document);
+    SwaggerModule.setup('', app, document, {
+      customSiteTitle: 'WAHA - WhatsApp HTTP API',
+    });
   }
 
   protected setUpAuth(app: INestApplication) {
