@@ -16,11 +16,6 @@ Webhooks are a way for two different applications to communicate with each other
 When a certain event happens in one application, it sends a message to another application through a webhook URL.
 The receiving application can then take action based on the information received.
 
-To receive incoming messages with webhooks,
-you first need to set up a webhook URL in your application and pass it to `WHATSAPP_HOOK_URL` environment variable.
-This URL is where WhatsApp will send incoming messages and other events -
-define which events you want to receive with `WHATSAPP_HOOK_EVENTS` environment variable.
-
 ## Setup webhooks
 ### Session webhooks
 You can define webhooks configuration per session when you start it with `POST /api/sessions/start` request data.
