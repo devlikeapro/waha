@@ -8,6 +8,11 @@ draft: false
 images: []
 weight: 120
 ---
+We consider that you've run docker container and authenticated the session with QR code.
+
+If you haven't yet - please follow the steps from [**Quick Start →**]({{< relref "/docs/overview/quick-start" >}}).
+
+## Webhooks
 
 You must use [Webhooks]({{< relref "/docs/how-to/webhooks" >}}) to receive messages from WhatsApp to your application.
 
@@ -27,6 +32,8 @@ Start a new session with configured `message` event in webhooks - call `POST /ap
   }
 }
 ```
+
+After that WAHA'll send events (see below) about new messages to an endpoint you provided.
 
 
 ## Events
