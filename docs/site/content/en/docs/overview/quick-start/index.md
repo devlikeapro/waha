@@ -34,7 +34,7 @@ Also Docker makes installation and update processes so simple, just one command!
 
 We will guide you through the necessary steps to successfully send your first text message using WhatsApp HTTP API.
 
-If you find it easier to follow a video tutorial rather than reading through text, we've got you covered!
+**If you find it easier to follow a video** tutorial, we've got you covered!
 A 3-minute video tutorial is available to help you navigate WhatsApp HTTP API smoothly.
 
 <div class="d-flex justify-content-center my-4">
