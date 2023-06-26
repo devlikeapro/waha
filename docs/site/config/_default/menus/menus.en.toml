@@ -62,7 +62,7 @@
 
 [[main]]
   name = "WAHA Plus"
-  weight = 20
+  weight = 30
   identifier = "waha-plus"
 
 [[main]]
@@ -85,7 +85,7 @@
 
 [[main]]
   name = "Examples"
-  weight = 99
+  weight = 20
   identifier = "examples"
 
 [[main]]
