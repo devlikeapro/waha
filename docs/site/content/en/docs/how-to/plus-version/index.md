@@ -70,6 +70,16 @@ For **$19** donation you get:
 
 {{< alert icon="💡" text="If you stay subscribed - the donation amount will never change for you and always be $19 to get monthly updates!" />}}
 
+Here's all available tiers with their perks:
+
+|                                                                                     |  Plus   | Advanced |   Pro   |
+|-------------------------------------------------------------------------------------|---------|:--------:|:-------:|
+| Access to WAHA Plus  ![](/images/versions/plus.png) docker image.                   |   ✔️    |    ✔️    |   ✔️    |
+| An invitation to a private Github repository so you have the WAHA Plus source code. |   ➖️    |    ✔️    |   ✔️️   |
+| Access to a Telegram group where we provide support and assistance.                 |   ➖️    |    ➖     |   ✔️    |
+| **Donation**                                                                        | **$19** | **$39**  | **$99** |
+
+
 ### Patreon
 <p align="center">
   <img src="patreon.png" alt="Patreon" />
