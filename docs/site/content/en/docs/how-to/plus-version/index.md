@@ -62,27 +62,44 @@ By donating to the **WAHA** you donate to the Open Source world!
 
 ## Get Plus ![](/images/versions/plus.png)
 
-For $19 donation you get:
+For **$19** donation you get:
 1. **Secret password** for Docker Hub to download Plus image: `devlikeapro/whatsapp-http-api-plus`.
 2. **All updates for one month** for the Plus image.
 3. **NO LICENSE CHECKS** on installed instances!
 4. **NO LICENSE EXPIRATION** on installed instances! We repeated it twice to make sure that you've got it 😊
 
-{{< alert icon="👉" text="We don't mind if you stay subscribed with us after one month :)" />}}
-
-### Boosty
-We use Boosty to get donations (Patreon analogue) - [https://boosty.to/wa-http-api](https://boosty.to/wa-http-api).
-
-Go ahead and get your monthly password to get no license expiration WhatsApp HTTP API!
-
 {{< alert icon="💡" text="If you stay subscribed - the donation amount will never change for you and always be $19 to get monthly updates!" />}}
 
-![](boosty.png)
-
 ### Patreon
-You can support the project and get WAHA Plus version on Patreon: [https://patreon.com/wa_http_api](https://patreon.com/wa_http_api)
+<p align="center">
+  <img src="patreon.png" alt="Patreon" />
+</p>
 
-{{< alert icon="💡" text="Please look at Boosty - we prefer it because of lower fees, so we can donate more to the projects!" />}}
+Support the project and get WAHA Plus version on
+<a href="https://patreon.com/wa_http_api" target="_blank">
+  <b>
+    Patreon ->
+  </b>
+</a>
+
+Go ahead and get your own WhatsApp HTTP API!
+
+### Boosty
+<p align="center">
+  <img src="boosty.svg" alt="Patreon" />
+  <br/>
+  <br/>
+</p>
+
+Support the project and get WAHA Plus version on
+<a href="https://boosty.to/wa-http-api" target="_blank">
+  <b>
+    Boosty ->
+  </b>
+</a>
+
+Go ahead and get your own WhatsApp HTTP API!
+
 
 
 ### Install Plus
@@ -93,3 +110,4 @@ docker pull devlikeapro/whatsapp-http-api-plus
 docker logout
 ```
 Then in all commands use **Plus** image `devlikeapro/whatsapp-http-api-plus` instead of Core `devlikeapro/whatsapp-http-api`.
+
