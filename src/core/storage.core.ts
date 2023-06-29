@@ -45,7 +45,7 @@ class LocalSessionConfigRepository extends SessionConfigRepository {
 
   async save(sessionName: string, config: SessionConfig) {
     const filepath = this.getFilePath(sessionName);
-    const content = JSON.stringify(config);
+    const content = JSON.stringify(config || null);
     await fs.writeFile(filepath, content);
   }
 
