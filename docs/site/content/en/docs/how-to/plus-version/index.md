@@ -80,19 +80,6 @@ Here's all available tiers with their perks:
 | **Donation**                                                                        | **$19** | **$39**  | **$99** |
 
 
-### Patreon
-<p align="center">
-  <img src="patreon.png" alt="Patreon" />
-</p>
-
-Support the project and get WAHA Plus version on
-<a href="https://patreon.com/wa_http_api" target="_blank">
-  <b>
-    Patreon ->
-  </b>
-</a>
-
-Go ahead and get your own WhatsApp HTTP API!
 
 ### Boosty
 <p align="center">
@@ -110,6 +97,19 @@ Support the project and get WAHA Plus version on
 
 Go ahead and get your own WhatsApp HTTP API!
 
+### Patreon
+<p align="center">
+  <img src="patreon.png" alt="Patreon" />
+</p>
+
+Support the project and get WAHA Plus version on
+<a href="https://patreon.com/wa_http_api" target="_blank">
+  <b>
+    Patreon ->
+  </b>
+</a>
+
+Go ahead and get your own WhatsApp HTTP API!
 
 
 ### Install Plus
