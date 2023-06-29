@@ -13,6 +13,9 @@ clean: stop
 push:
 	docker push devlikeapro/whatsapp-http-api
 
+for-swagger:
+	WHATSAPP_SWAGGER_CONFIG_ADVANCED=true npm run start
+
 update-swagger:
 	wget http://localhost:3000/-json -O ./docs/site/static/swagger/openapi.json
 
