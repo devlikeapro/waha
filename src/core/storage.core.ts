@@ -82,6 +82,7 @@ export class SessionStorageCore extends LocalSessionStorage {
   }
 
   async getAll(): Promise<string[]> {
+    await this.init();
     const content = await fs.readdir(this.engineFolder, {
       withFileTypes: true,
     });
