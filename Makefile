@@ -21,6 +21,7 @@ update-swagger:
 
 update-dependencies:
 	. ${NVM_DIR}/nvm.sh && nvm exec yarn up whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js
+	. ${NVM_DIR}/nvm.sh && nvm exec yarn up @adiwajshing/baileys@github:WhiskeySockets/Baileys
 	. ${NVM_DIR}/nvm.sh && nvm exec yarn up venom-bot
 
 start-proxy:
