@@ -41,12 +41,6 @@ export class SessionsController {
   @Post('/logout/')
   @ApiOperation({ summary: 'Logout from session.' })
   clean(@Body() request: SessionLogoutRequest): Promise<void> {
-    const session = this.manager.getSession(request.name, false);
-    if (session) {
-      throw new UnprocessableEntityException(
-        `Can not clean running session, please stop it first. You can set 'clean' field to 'True' in stop request so it stops and cleans at the same time.`,
-      );
-    }
     return this.manager.logout(request);
   }
 
