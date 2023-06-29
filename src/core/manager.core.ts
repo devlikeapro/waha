@@ -143,7 +143,7 @@ export class SessionManagerCore extends SessionManager {
    */
   private getWebhooks(request: SessionStartRequest) {
     let webhooks: WebhookConfig[] = [];
-    if (request.config.webhooks) {
+    if (request.config?.webhooks) {
       webhooks = webhooks.concat(request.config.webhooks);
     }
     const globalWebhookConfig = this.config.getWebhookConfig();
@@ -157,7 +157,7 @@ export class SessionManagerCore extends SessionManager {
   protected getProxyConfig(
     request: SessionStartRequest,
   ): ProxyConfig | undefined {
-    if (request.config.proxy) {
+    if (request.config?.proxy) {
       return request.config.proxy;
     }
     const sessions = { [request.name]: this.session };
