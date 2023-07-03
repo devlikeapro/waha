@@ -31,6 +31,7 @@ jobs:
         with:
           path: docs/site/public
           name: public
+          retention-days: 5
 
   deploy-github-pages:
     needs: build
