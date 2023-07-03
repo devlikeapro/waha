@@ -8,7 +8,7 @@ ENV PUPPETEER_SKIP_DOWNLOAD=True
 WORKDIR /src
 COPY package.json .
 COPY yarn.lock .
-RUN yarn set version berry
+RUN yarn set version 3.6.1
 RUN yarn install
 
 # App
