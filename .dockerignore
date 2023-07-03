@@ -11,6 +11,7 @@ examples
 # compiled output
 /dist
 /node_modules
+.yarn
 
 # Logs
 logs
