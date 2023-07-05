@@ -77,15 +77,9 @@ What is the difference between **WAHA Plus** and **other SaaS solutions** for Wh
 
 ## Get Plus ![](/images/versions/plus.png)
 
-For **$19** donation you get:
-1. **Secret password** for Docker Hub to download Plus image: `devlikeapro/whatsapp-http-api-plus`.
-2. **All updates for one month** for the Plus image.
-3. **NO LICENSE CHECKS** on installed instances!
-4. **NO LICENSE EXPIRATION** on installed instances! We repeated it twice to make sure that you've got it 😊
+The more you support the project - the more you get!
 
-{{< alert icon="💡" text="If you stay subscribed - the donation amount will never change for you and always be $19 to get monthly updates!" />}}
-
-Here's all available tiers with their perks:
+Here's available tiers for our supporters:
 
 |                                                                                     |  Plus   | Advanced |   Pro   |
 |-------------------------------------------------------------------------------------|---------|:--------:|:-------:|
@@ -94,6 +88,13 @@ Here's all available tiers with their perks:
 | Access to a Telegram group where we provide support and assistance.                 |   ➖️    |    ➖     |   ✔️    |
 | **Donation**                                                                        | **$19** | **$39**  | **$99** |
 
+For **$19** donation you get:
+1. **Secret password** for Docker Hub to download Plus image: `devlikeapro/whatsapp-http-api-plus`.
+2. **All updates for one month** for the Plus image.
+3. **NO LICENSE CHECKS** on installed instances!
+4. **NO LICENSE EXPIRATION** on installed instances! We repeated it twice to make sure that you've got it 😊
+
+{{< alert icon="💡" text="If you stay subscribed - the donation amount will never change for you and always be $19 to get monthly updates!" />}}
 
 
 ### Boosty
