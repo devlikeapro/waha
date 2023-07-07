@@ -16,6 +16,8 @@ toc: true
 On this page you're going to install WAHA, run it, authenticate the client using QR code and send the first text message
 to WhatsApp!
 
+![](swagger.png)
+
 ## Requirements
 
 Only thing that you must have - installed docker. Please follow the original
