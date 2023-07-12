@@ -22,6 +22,7 @@ import { ContactQuery, ContactRequest } from '../../structures/contacts.dto';
 import {
   WAHAEngine,
   WAHAEvents,
+  WAHAPresenceStatus,
   WAHASessionStatus,
 } from '../../structures/enums.dto';
 import {
@@ -254,6 +255,10 @@ export abstract class WhatsappSession {
   }
 
   public demoteParticipantsToUser(id, request: ParticipantsRequest) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public setPresence(presence: WAHAPresenceStatus, chatId?: string) {
     throw new NotImplementedByEngineError();
   }
 

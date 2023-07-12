@@ -12,6 +12,12 @@ menu:
 weight: 199
 toc: true
 ---
+## 2023.8
+August 2023
+- Added [set presence endpoint](https://waha.devlike.pro/docs/how-to/presence)!
+  - With `online` presence you can show your status as online [#121](https://github.com/devlikeapro/whatsapp-http-api/issues/121)
+  - With `offline` presence you can get notifications for your device [#28](https://github.com/devlikeapro/whatsapp-http-api/issues/28)
+
 ## 2023.7
 July 2023
 - Now session can have their own [Webhooks](https://waha.devlike.pro/docs/how-to/webhooks) -

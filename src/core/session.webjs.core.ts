@@ -33,6 +33,7 @@ import { ContactQuery, ContactRequest } from '../structures/contacts.dto';
 import {
   WAHAEngine,
   WAHAEvents,
+  WAHAPresenceStatus,
   WAHASessionStatus,
 } from '../structures/enums.dto';
 import {
@@ -364,6 +365,34 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       (participant) => participant.id,
     );
     return groupChat.demoteParticipants(participantIds);
+  }
+
+  public async setPresence(presence: WAHAPresenceStatus, chatId?: string) {
+    let chat: Chat;
+    switch (presence) {
+      case WAHAPresenceStatus.ONLINE:
+        await this.whatsapp.sendPresenceAvailable();
+        break;
+      case WAHAPresenceStatus.OFFLINE:
+        await this.whatsapp.sendPresenceUnavailable();
+        break;
+      case WAHAPresenceStatus.TYPING:
+        chat = await this.whatsapp.getChatById(chatId);
+        await chat.sendStateTyping();
+        break;
+      case WAHAPresenceStatus.RECORDING:
+        chat = await this.whatsapp.getChatById(chatId);
+        await chat.sendStateRecording();
+        break;
+      case WAHAPresenceStatus.PAUSED:
+        chat = await this.whatsapp.getChatById(chatId);
+        await chat.clearState();
+        break;
+      default:
+        throw new NotImplementedByEngineError(
+          `WEBJS engine doesn't support '${presence}' presence.`,
+        );
+    }
   }
 
   /**

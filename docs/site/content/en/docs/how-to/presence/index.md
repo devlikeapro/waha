@@ -12,7 +12,55 @@ weight: 801
 You can get presence information (online, offline with last seen, typing status) for a contact if they share their
 presence information.
 
-{{< alert icon="👉" text="Presence endpoints and webhook is available only in **NOWEB** engine." />}}
+Possible presence statuses that you can set or get for chats:
+- `online`
+- `offline`
+- `typing`
+- `recording`
+- `paused` resets the chat presence after you were `typing`
+
+
+## Endpoints
+
+### Set presence
+You can set your global or chat-related presence with `POST /api/{session}/presence` endpoint
+
+Start typing to a chat (you can use `POST /startTyping` instead)
+```json
+{
+  "chatId": "111111111@c.us",
+  "presence": "typing"
+}
+```
+
+Clear "typing" state (you can use `POST /stopTyping` instead)
+```json
+{
+  "chatId": "111111111@c.us",
+  "presence": "paused"
+}
+```
+
+Set global "online", all contacts will see it
+```json
+{
+  "presence": "online"
+}
+```
+
+💡 In the multi-device version of WhatsApp - if a desktop client is active, WhatsApp doesn't send push notifications
+to the device.
+If you would like to receive said notifications - you need to mark a session's presence as `offline`.
+
+```json
+{
+  "presence": "offline"
+}
+```
+
+### Get all chats presence
+
+{{< alert icon="👉" text="Get presence endpoints and webhook is available only in **NOWEB** engine." />}}
 [Read more about engines to choose right for you ->]({{< relref "/docs/how-to/engines" >}})
 
 Here's few notes about fields:
@@ -22,9 +70,6 @@ Here's few notes about fields:
 - `lastKnownPresence` - contains the last known presence status, which can be
   `offline`, `online`, `typing`, `recording`, or `paused`
 
-## Endpoints
-
-### Get all presence
 
 You can get all presence information available for a session by calling `GET /api/{session}/presence/`.
 It returns both groups' and personal chats' presence information.

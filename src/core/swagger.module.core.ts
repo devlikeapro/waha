@@ -24,10 +24,7 @@ export class SwaggerModuleCore {
                 'E.g: \`12312312310\` OR \`12312312310@c.us\`<br>`,
       )
       .addTag('groups', `Groups methods.<br>`)
-      .addTag(
-        'presence',
-        `Presence information. Available in <b>NOWEB</b> engine only.<br>`,
-      )
+      .addTag('presence', `Presence information`)
       .addTag('other', 'Other methods')
       .addApiKey({
         type: 'apiKey',
