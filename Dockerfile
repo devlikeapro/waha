@@ -1,7 +1,7 @@
 #
 # Build
 #
-FROM node:18 as build
+FROM node:20-bullseye as build
 ENV PUPPETEER_SKIP_DOWNLOAD=True
 
 # npm packages
@@ -20,7 +20,7 @@ RUN yarn build && find ./dist -name "*.d.ts" -delete
 #
 # Final
 #
-FROM node:18 as release
+FROM node:20-bullseye as release
 ENV PUPPETEER_SKIP_DOWNLOAD=True
 ARG USE_BROWSER=chromium
 
