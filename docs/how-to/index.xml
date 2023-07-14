@@ -39,8 +39,8 @@ The following environment variables can be used to configure the WAHA.</descript
 docker run -it -e &amp;quot;WHATSAPP_DEFAULT_ENGINE=WEBJS&amp;quot; devlikeapro/whatsapp-http-api If you have any problems with one engine - try another!
 👉 API responses and webhook payloads may differ significantly! We do our best to keep requests body stable between engines. All engines are available in Core version WEBJS #
 A WhatsApp API client that connects through the WhatsApp Web browser app.</description></item><item><title>Presence</title><link>https://waha.devlike.pro/docs/how-to/presence/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/presence/</guid><description>You can get presence information (online, offline with last seen, typing status) for a contact if they share their presence information.
-👉 Presence endpoints and webhook is available only in **NOWEB** engine. Read more about engines to choose right for you -&amp;gt;
-Here&amp;rsquo;s few notes about fields:
-chatId - either contact id (213213213@c.us) or group chat id (1111111111111@g.us). lastSeen - contains Unix timestamps indicating when a participant was last online lastKnownPresence - contains the last known presence status, which can be offline, online, typing, recording, or paused Endpoints #
-Get all presence #
-You can get all presence information available for a session by calling GET /api/{session}/presence/.</description></item></channel></rss>
+Possible presence statuses that you can set or get for chats:
+online offline typing recording paused resets the chat presence after you were typing Endpoints #
+Set presence #
+You can set your global or chat-related presence with POST /api/{session}/presence endpoint
+Start typing to a chat (you can use POST /startTyping instead)</description></item></channel></rss>
