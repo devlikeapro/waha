@@ -23,12 +23,12 @@ Get all chats
 ### Get messages from chat
 Get 100 messages from the chat
 
-`GET /api/{session}/chats/{chatId/messages?limit=100`
+`GET /api/{session}/chats/{chatId}/messages?limit=100`
 
 
 Get 100 messages from the chat, skip downloading media (images, files)
 
-`GET /api/{session}/chats/{chatId/messages?limit=100&downloadMedia=false`
+`GET /api/{session}/chats/{chatId}/messages?limit=100&downloadMedia=false`
 
 ### Delete chat
 Use the method to delete chat
