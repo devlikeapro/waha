@@ -56,8 +56,14 @@
 
 [[main]]
   name = "Swagger ->"
-  weight = 99
+  weight = 98
   url = "https://waha.devlike.pro/swagger"
+  parent = "docs"
+
+[[main]]
+  name = "OpenAPI JSON ->"
+  weight = 99
+  url = "https://waha.devlike.pro/swagger/openapi.json"
   parent = "docs"
 
 [[main]]
