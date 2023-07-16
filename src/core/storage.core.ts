@@ -67,8 +67,11 @@ export class SessionStorageCore extends LocalSessionStorage {
     return path.join(this.sessionsFolder, this.engine);
   }
 
-  async init() {
-    await fs.mkdir(this.engineFolder, { recursive: true });
+  async init(sessionName?: string) {
+    const folder = sessionName
+      ? this.getFolderPath(sessionName)
+      : this.engineFolder;
+    await fs.mkdir(folder, { recursive: true });
   }
 
   getFolderPath(name: string): string {
