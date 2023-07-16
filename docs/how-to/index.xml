@@ -25,7 +25,7 @@ Get all chats #
 Get all chats GET /api/{session}/chats
 Get messages from chat #
 Get 100 messages from the chat
-GET /api/{session}/chats/{chatId/messages?limit=100
+GET /api/{session}/chats/{chatId}/messages?limit=100
 Get 100 messages from the chat, skip downloading media (images, files)</description></item><item><title>Contacts</title><link>https://waha.devlike.pro/docs/how-to/contacts/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/contacts/</guid><description>Methods for contacts.
 👉 WhatsApp Web does not support adding contacts, so the API doesn't support it too. Get all contacts #
 Get your contacts - GET /api/contacts/all
