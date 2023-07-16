@@ -14,6 +14,12 @@ toc: true
 ---
 ## 2023.8
 August 2023
+- Added [chats endpoints](https://waha.devlike.pro/docs/how-to/chats)
+  - Get all chats - `GET /api/{session/chats`
+  - Delete chat - `DELETE /api/{session/chats/{chatId}`
+  - Get messages from chat - `GET /api/{session/chats/{chatId}/messages?limit=1000?downloadMedia=true`
+  - Clear messages in the chat `DELETE /api/{session/chats/{chatId}/messages`
+- Added `downloadMedia` flag to speed up `GET /api/messages` and `GET /api/{session/chats/{chatId}/messages` performance.
 - Added [set presence endpoint](https://waha.devlike.pro/docs/how-to/presence)!
   - With `online` presence you can show your status as online [#121](https://github.com/devlikeapro/whatsapp-http-api/issues/121)
   - With `offline` presence you can get notifications for your device [#28](https://github.com/devlikeapro/whatsapp-http-api/issues/28)

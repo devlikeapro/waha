@@ -212,18 +212,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   async getMessages(query: GetMessageQuery) {
-    const chat: Chat = await this.whatsapp.getChatById(
-      this.ensureSuffix(query.chatId),
-    );
-    const messages = await chat.fetchMessages({
-      limit: query.limit,
-    });
-    // Go over messages, download media, and convert to right format.
-    const result = [];
-    for (const message of messages) {
-      result.push(await this.processIncomingMessage(message));
-    }
-    return result;
+    return this.getChatMessages(query.chatId, query.limit, query.downloadMedia);
   }
 
   async setReaction(request: MessageReactionRequest) {
@@ -234,6 +223,39 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     message._data = { id: messageId };
 
     return message.react(request.reaction);
+  }
+
+  /**
+   * Chats methods
+   */
+  getChats() {
+    return this.whatsapp.getChats();
+  }
+
+  async getChatMessages(chatId: string, limit: number, downloadMedia: boolean) {
+    const chat: Chat = await this.whatsapp.getChatById(
+      this.ensureSuffix(chatId),
+    );
+    const messages = await chat.fetchMessages({
+      limit: limit,
+    });
+    // Go over messages, download media, and convert to right format.
+    const result = [];
+    for (const message of messages) {
+      const msg = await this.processIncomingMessage(message, downloadMedia);
+      result.push(msg);
+    }
+    return result;
+  }
+
+  async deleteChat(chatId) {
+    const chat = await this.whatsapp.getChatById(chatId);
+    return chat.delete();
+  }
+
+  async clearMessages(chatId) {
+    const chat = await this.whatsapp.getChatById(chatId);
+    return chat.clearMessages();
   }
 
   /**
@@ -426,8 +448,16 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     }
   }
 
-  private processIncomingMessage(message: Message) {
-    return this.downloadMedia(message).then(this.toWAMessage);
+  private async processIncomingMessage(message: Message, downloadMedia = true) {
+    if (downloadMedia) {
+      try {
+        message = await this.downloadMedia(message);
+      } catch (e) {
+        this.log.error('Failed when tried to download media for a message');
+        this.log.error(e, e.stack);
+      }
+    }
+    return await this.toWAMessage(message);
   }
 
   protected toWAMessage(message: Message): Promise<WAMessage> {

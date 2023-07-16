@@ -16,7 +16,8 @@ export class SwaggerModuleCore {
       .setVersion(VERSION.version)
       .addTag('sessions', 'Control WhatsApp sessions')
       .addTag('screenshot', 'Get screenshot of WhatsApp and show QR code')
-      .addTag('chatting', 'Chat methods')
+      .addTag('chatting', 'Chatting methods')
+      .addTag('chats', `Chats methods`)
       .addTag(
         'contacts',
         `Contacts methods.<br>

@@ -307,10 +307,6 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return this.sock.sendPresenceUpdate('paused', request.chatId);
   }
 
-  async getMessages(query: GetMessageQuery) {
-    throw new NotImplementedByEngineError();
-  }
-
   async setReaction(request: MessageReactionRequest) {
     const key = parseMessageId(request.messageId);
     const reactionMessage = {
