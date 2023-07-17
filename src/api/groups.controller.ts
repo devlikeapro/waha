@@ -49,6 +49,13 @@ export class GroupsController {
     return session.getGroup(id);
   }
 
+  @Get(':id')
+  @SessionApiParam
+  @ApiOperation({ summary: 'Set group admin only.' })
+  setGroupAdminOnly(@SessionParam session: WhatsappSession, @Param('id') id: string) {
+    return session.setInfoAdminsOnly(id);
+  }
+
   @Delete(':id')
   @SessionApiParam
   @ApiOperation({ summary: 'Delete the group.' })
