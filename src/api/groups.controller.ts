@@ -49,7 +49,7 @@ export class GroupsController {
     return session.getGroup(id);
   }
 
-  @Get(':id')
+  @Get(':id/groupAdminOnly')
   @SessionApiParam
   @ApiOperation({ summary: 'Set group admin only.' })
   setGroupAdminOnly(@SessionParam session: WhatsappSession, @Param('id') id: string) {
