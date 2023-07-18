@@ -39,11 +39,22 @@ class LocalSessionConfigRepository extends SessionConfigRepository {
       return undefined;
     }
 
-    const content = await fs.readFile(filepath, 'utf-8');
+    // Try to load config
+    let content;
+    try {
+      content = await fs.readFile(filepath, 'utf-8');
+    } catch (error) {
+      return undefined;
+    }
+
     return JSON.parse(content);
   }
 
   async save(sessionName: string, config: SessionConfig) {
+    // Create folder if not exist
+    const folder = this.storage.getFolderPath(sessionName);
+    await fs.mkdir(folder, { recursive: true });
+    // Save config
     const filepath = this.getFilePath(sessionName);
     const content = JSON.stringify(config || null);
     await fs.writeFile(filepath, content);
@@ -67,8 +78,11 @@ export class SessionStorageCore extends LocalSessionStorage {
     return path.join(this.sessionsFolder, this.engine);
   }
 
-  async init() {
-    await fs.mkdir(this.engineFolder, { recursive: true });
+  async init(sessionName?: string) {
+    const folder = sessionName
+      ? this.getFolderPath(sessionName)
+      : this.engineFolder;
+    await fs.mkdir(folder, { recursive: true });
   }
 
   getFolderPath(name: string): string {

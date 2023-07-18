@@ -28,6 +28,12 @@ export class ChatQuery extends SessionQuery {
 export class GetMessageQuery extends ChatQuery {
   @IsNumber()
   limit: number;
+  @ApiProperty({
+    example: true,
+    required: false,
+    description: 'Download media for messages',
+  })
+  downloadMedia: true;
 }
 
 export class GetPresenceQuery extends ChatQuery {}

@@ -22,3 +22,13 @@ export class WAHAChatPresences {
   id: string;
   presences: WAHAPresenceData[];
 }
+
+export class WAHASessionPresence {
+  presence: WAHAPresenceStatus;
+
+  @ApiProperty({
+    description: 'Chat ID - either group id or contact id',
+    example: '11111111111@c.us',
+  })
+  chatId: string;
+}

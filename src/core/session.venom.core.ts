@@ -228,22 +228,26 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
     // return this.whatsapp.stopTyping(chat.chatId);
   }
 
-  async getMessages(query: GetMessageQuery) {
+  async getChatMessages(chatId: string, limit: number) {
     const messages = await this.whatsapp.getAllMessagesInChat(
-      query.chatId,
+      chatId,
       true,
       false,
     );
     // Go over messages, download media, and convert to right format.
     const result = [];
     for (const [count, message] of messages.entries()) {
-      if (count > query.limit) {
+      if (count > limit) {
         // Have enough in the list, stop processing
         break;
       }
       result.push(await this.processIncomingMessage(message));
     }
     return result;
+  }
+
+  async getMessages(query: GetMessageQuery) {
+    return this.getChatMessages(query.chatId, query.limit);
   }
 
   setReaction(request: MessageReactionRequest) {

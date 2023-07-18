@@ -12,6 +12,7 @@ import { Agent } from 'https';
 import * as lodash from 'lodash';
 import { Message } from 'whatsapp-web.js';
 
+import { flipObject } from '../helpers';
 import {
   Button,
   ChatRequest,
@@ -78,6 +79,7 @@ const PresenceStatuses = {
   recording: WAHAPresenceStatus.RECORDING,
   paused: WAHAPresenceStatus.PAUSED,
 };
+const ToEnginePresenceStatus = flipObject(PresenceStatuses);
 
 export class WhatsappSessionNoWebCore extends WhatsappSession {
   engine = WAHAEngine.NOWEB;
@@ -305,10 +307,6 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return this.sock.sendPresenceUpdate('paused', request.chatId);
   }
 
-  async getMessages(query: GetMessageQuery) {
-    throw new NotImplementedByEngineError();
-  }
-
   async setReaction(request: MessageReactionRequest) {
     const key = parseMessageId(request.messageId);
     const reactionMessage = {
@@ -412,6 +410,16 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   public async demoteParticipantsToUser(id, request: ParticipantsRequest) {
     const participants = request.participants.map(getId);
     return this.sock.groupParticipantsUpdate(id, participants, 'demote');
+  }
+
+  public async setPresence(presence: WAHAPresenceStatus, chatId?: string) {
+    const enginePresence = ToEnginePresenceStatus[presence];
+    if (!enginePresence) {
+      throw new NotImplementedByEngineError(
+        `NOWEB engine doesn't support '${presence}' presence.`,
+      );
+    }
+    await this.sock.sendPresenceUpdate(enginePresence, chatId);
   }
 
   public async getPresences(): Promise<WAHAChatPresences[]> {

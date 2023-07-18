@@ -22,6 +22,7 @@ import { ContactQuery, ContactRequest } from '../../structures/contacts.dto';
 import {
   WAHAEngine,
   WAHAEvents,
+  WAHAPresenceStatus,
   WAHASessionStatus,
 } from '../../structures/enums.dto';
 import {
@@ -42,6 +43,7 @@ export function getBrowserExecutablePath() {
   }
   return CHROMIUM_PATH;
 }
+
 export function ensureSuffix(phone) {
   const suffix = '@c.us';
   if (phone.includes('@')) {
@@ -167,9 +169,34 @@ export abstract class WhatsappSession {
 
   abstract stopTyping(chat: ChatRequest);
 
-  abstract getMessages(query: GetMessageQuery);
+  getMessages(query: GetMessageQuery) {
+    throw new NotImplementedByEngineError();
+  }
 
   abstract setReaction(request: MessageReactionRequest);
+
+  /**
+   * Chats methods
+   */
+  public getChats() {
+    throw new NotImplementedByEngineError();
+  }
+
+  public deleteChat(chatId) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public getChatMessages(
+    chatId: string,
+    limit: number,
+    downloadMedia: boolean,
+  ) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public clearMessages(chatId) {
+    throw new NotImplementedByEngineError();
+  }
 
   /**
    * Contacts methods
@@ -258,6 +285,10 @@ export abstract class WhatsappSession {
   }
 
   public demoteParticipantsToUser(id, request: ParticipantsRequest) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public setPresence(presence: WAHAPresenceStatus, chatId?: string) {
     throw new NotImplementedByEngineError();
   }
 

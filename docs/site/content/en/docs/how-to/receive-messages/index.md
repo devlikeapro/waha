@@ -155,7 +155,10 @@ If you want to limit files lifetime, specify file types for download or change d
 ## Endpoints
 
 ### Get messages
-You can read messages from the history by using `GET /api/messages` endpoint.
+Read messages from the history - use `GET /api/messages` endpoint.
+
+You also can get messages for chats by using
+[**Get messages from chat ->**]({{< relref "/docs/how-to/chats" >}}) endpoint.
 
 {{< alert icon="👉" text="We do not recommend using this method in production, consider using webhooks instead!" />}}
 

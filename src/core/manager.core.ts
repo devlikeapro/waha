@@ -107,9 +107,6 @@ export class SessionManagerCore extends SessionManager {
     const storage = new this.MediaStorageClass();
     const webhookLog = new ConsoleLogger(`Webhook - ${name}`);
     const webhook = new this.WebhookConductorClass(webhookLog);
-
-    await this.sessionStorage.init();
-
     const proxyConfig = this.getProxyConfig(request);
     const sessionConfig: SessionParams = {
       name,
@@ -119,6 +116,7 @@ export class SessionManagerCore extends SessionManager {
       proxyConfig: proxyConfig,
       sessionConfig: request.config,
     };
+    await this.sessionStorage.init(name);
     // @ts-ignore
     const session = new this.EngineClass(sessionConfig);
     this.session = session;

@@ -1,16 +1,57 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
-import { WAHAChatPresences } from '../structures/presence.dto';
+import {
+  WAHAChatPresences,
+  WAHASessionPresence,
+} from '../structures/presence.dto';
 import { SessionApiParam, SessionParam } from './helpers';
+import { WAHAPresenceStatus } from '../structures/enums.dto';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/presence')
 @ApiTags('presence')
 export class PresenceController {
   constructor(private manager: SessionManager) {}
+
+  @Post('')
+  @SessionApiParam
+  @ApiOperation({ summary: 'Set session presence' })
+  setPresence(
+    @SessionParam session: WhatsappSession,
+    @Body() request: WAHASessionPresence,
+  ) {
+    // Validate request
+    const presencesWithoutChatId = [
+      WAHAPresenceStatus.ONLINE,
+      WAHAPresenceStatus.OFFLINE,
+    ];
+    const requiresNoChatId = presencesWithoutChatId.includes(request.presence);
+    const requiresChatId = !requiresNoChatId;
+
+    if (requiresNoChatId && request.chatId) {
+      const msg = {
+        detail: `'${request.presence}' presence works on the global scope and doesn't require 'chatId' field.`,
+      };
+      throw new BadRequestException(msg);
+    } else if (requiresChatId && !request.chatId) {
+      const msg = {
+        detail: `'${request.presence}' presence requires 'chatId' field.`,
+      };
+      throw new BadRequestException(msg);
+    }
+
+    return session.setPresence(request.presence, request.chatId);
+  }
 
   @Get('')
   @SessionApiParam

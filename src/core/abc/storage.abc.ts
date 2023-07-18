@@ -19,7 +19,7 @@ abstract class SessionStorage {
     this.engine = engine;
   }
 
-  abstract init(): Promise<void>;
+  abstract init(sessionName?: string): Promise<void>;
 
   abstract clean(sessionName: string): Promise<void>;
 

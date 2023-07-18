@@ -1,4 +1,4 @@
-export function parseBool(value: any): boolean {
+function parseBool(value: any): boolean {
   if (!value) {
     return false;
   }
@@ -18,3 +18,11 @@ export function parseBool(value: any): boolean {
     'Error: parseBool got unexpected value - use "true" or "false" values',
   );
 }
+
+function flipObject(object) {
+  return Object.fromEntries(
+    Object.entries(object).map(([key, value]) => [value, key]),
+  );
+}
+
+export { flipObject, parseBool };
