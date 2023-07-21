@@ -84,6 +84,17 @@ Request:
 }
 ```
 
+## Settings
+### Security for group info
+Updates the group settings to only allow admins to edit group info (title, description, photo).
+
+`PUT /api/{session}/groups/{groupId}/settings/security/info-admin-only`
+
+The request doesn't require any request's body and
+**can't be used to disable the security setting (allow ANY to edit group info)**.
+If you wish to have that ability - please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues)
+
+
 ## Participants
 
 ### Get participants
