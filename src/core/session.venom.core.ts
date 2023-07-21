@@ -39,6 +39,7 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
 
   protected buildClient() {
     const venomOptions: CreateConfig = {
+      headless: true,
       devtools: false,
       debug: false,
       logQR: true,
