@@ -240,6 +240,10 @@ export abstract class WhatsappSession {
     throw new NotImplementedByEngineError();
   }
 
+  public setInfoAdminsOnly(id, value) {
+    throw new NotImplementedByEngineError();
+  }
+
   public deleteGroup(id) {
     throw new NotImplementedByEngineError();
   }

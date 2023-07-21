@@ -311,6 +311,11 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     return this.whatsapp.createGroup(request.name, participantIds);
   }
 
+  public async setInfoAdminsOnly(id, value) {
+    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    return groupChat.setInfoAdminsOnly(value);
+  }
+
   public getGroups() {
     return this.whatsapp
       .getChats()
