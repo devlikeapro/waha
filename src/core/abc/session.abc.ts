@@ -240,7 +240,7 @@ export abstract class WhatsappSession {
     throw new NotImplementedByEngineError();
   }
 
-  public setInfoAdminsOnly(id) {
+  public setInfoAdminsOnly(id, value) {
     throw new NotImplementedByEngineError();
   }
 

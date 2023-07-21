@@ -304,17 +304,16 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   /**
    * Group methods
    */
-  public async createGroup(request: CreateGroupRequest) {
+  public createGroup(request: CreateGroupRequest) {
     const participantIds = request.participants.map(
       (participant) => participant.id,
     );
-    const groupInfo = await this.whatsapp.createGroup(request.name, participantIds);
-    return groupInfo;
+    return this.whatsapp.createGroup(request.name, participantIds);
   }
 
-  public async setInfoAdminsOnly(id) {
+  public async setInfoAdminsOnly(id, value) {
     const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
-    return groupChat.setInfoAdminsOnly(true);
+    return groupChat.setInfoAdminsOnly(value);
   }
 
   public getGroups() {
