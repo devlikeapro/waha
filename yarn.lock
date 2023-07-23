@@ -6,16 +6,17 @@ __metadata:
   cacheKey: 8
 
 "@adiwajshing/baileys@github:WhiskeySockets/Baileys":
-  version: 6.3.0
-  resolution: "@adiwajshing/baileys@https://github.com/WhiskeySockets/Baileys.git#commit=2dad94b1f032d38b0965402dee5c3c39b12fa7f4"
+  version: 6.4.0
+  resolution: "@adiwajshing/baileys@https://github.com/WhiskeySockets/Baileys.git#commit=44ec598ad234979b9fb57b2158d4ed79275b2ebc"
   dependencies:
     "@adiwajshing/keyed-db": ^0.2.4
     "@hapi/boom": ^9.1.3
+    audio-decode: ^2.1.3
     axios: ^1.3.3
     cache-manager: ^5.2.2
     futoin-hkdf: ^1.5.1
     libphonenumber-js: ^1.10.20
-    libsignal: "https://github.com/adiwajshing/libsignal-node.git"
+    libsignal: "github:adiwajshing/libsignal-node"
     music-metadata: ^7.12.3
     node-cache: ^5.1.2
     pino: ^7.0.0
@@ -36,7 +37,7 @@ __metadata:
       optional: true
     sharp:
       optional: true
-  checksum: f563f3384be16d4a16f9f27c300a3e289fbb9375dcab518fab4312ce71a860236ea697fb0b511e84141c8bc2d3542ab56e5d96c43dd5a46ca38a19cac0c7b4f0
+  checksum: 7866a7874271415900c6db706e931ac31d18f7acf9bf8e546b97eb5c8efac28bffd1f0fcdca86879018470c77834b84b2589963f13e6c1336ccd9583a45791d9
   languageName: node
   linkType: hard
 
@@ -631,6 +632,13 @@ __metadata:
     enabled: 2.0.x
     kuler: ^2.0.0
   checksum: 4879600c55c8315a0fb85fbb19057bad1adc08f0a080a8cb4e2b63f723c379bfc4283b68123a2b078d367b327dd8df12fcb27464efe791addc0a48b9df6d79a1
+  languageName: node
+  linkType: hard
+
+"@eshaz/web-worker@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@eshaz/web-worker@npm:1.2.1"
+  checksum: 515dd7d4ad28116c843e79f9092b673de5c0414739f95b095338db50d136eb912ec6a8b9e3e0ec336e8e9880a52aa2081a564a9e13dfc343c5e80b367b7c44d6
   languageName: node
   linkType: hard
 
@@ -1397,6 +1405,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@thi.ng/bitstream@npm:^2.2.12":
+  version: 2.2.22
+  resolution: "@thi.ng/bitstream@npm:2.2.22"
+  dependencies:
+    "@thi.ng/errors": ^2.2.17
+  checksum: d93ff9c099d72cab46cac1beaee0b6c7478a8b0dddf8915bd8f288fed37e3a28d382c3a8e019504e951c9252fdd27e3097c9774621f51a08b4380add20d2e8e3
+  languageName: node
+  linkType: hard
+
+"@thi.ng/errors@npm:^2.2.17":
+  version: 2.2.17
+  resolution: "@thi.ng/errors@npm:2.2.17"
+  checksum: 3ad87cb5d04d811bf69c1caefd2443e8c0327014f028e989fef4ee30c2cce831066487a4773ec078b61298a7d6395a4c3b3dcd1de9d14e56fc03b4fab2142bef
+  languageName: node
+  linkType: hard
+
 "@tokenizer/token@npm:^0.3.0":
   version: 0.3.0
   resolution: "@tokenizer/token@npm:0.3.0"
@@ -2118,6 +2142,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@wasm-audio-decoders/common@npm:9.0.1":
+  version: 9.0.1
+  resolution: "@wasm-audio-decoders/common@npm:9.0.1"
+  dependencies:
+    "@eshaz/web-worker": 1.2.1
+  checksum: 69cdd2e422f2792c21ca836ead308f7f7c778a3451d741aa3aba7c07f721995c3b870c7d25deec6559a4ce0d8d372b2688e5ec3a0b0193e8cd0149564704172f
+  languageName: node
+  linkType: hard
+
+"@wasm-audio-decoders/flac@npm:^0.1.12":
+  version: 0.1.12
+  resolution: "@wasm-audio-decoders/flac@npm:0.1.12"
+  dependencies:
+    "@wasm-audio-decoders/common": 9.0.1
+    codec-parser: 2.4.2
+  checksum: c7b4793476233146de640add2edc6a40cc29f02d077ebc327f9f897f24e36b587cadeddc7342e6a58ea6bff6cb73e2e279374d958e3034e47a23c9786a5e45ce
+  languageName: node
+  linkType: hard
+
+"@wasm-audio-decoders/ogg-vorbis@npm:^0.1.7":
+  version: 0.1.7
+  resolution: "@wasm-audio-decoders/ogg-vorbis@npm:0.1.7"
+  dependencies:
+    "@wasm-audio-decoders/common": 9.0.1
+    codec-parser: 2.4.2
+  checksum: c467e1d81848cb77f9745e9c6258f4f9928089491f68d7c17a4eb852685024e2e5b1873b4f56f3e3215261c6da567cba9f4b4c357f33dabe607c8c06971fc721
+  languageName: node
+  linkType: hard
+
 "@webassemblyjs/ast@npm:1.11.1":
   version: 1.11.1
   resolution: "@webassemblyjs/ast@npm:1.11.1"
@@ -2827,6 +2880,36 @@ __metadata:
   version: 1.0.0
   resolution: "atomic-sleep@npm:1.0.0"
   checksum: b95275afb2f80732f22f43a60178430c468906a415a7ff18bcd0feeebc8eec3930b51250aeda91a476062a90e07132b43a1794e8d8ffcf9b650e8139be75fa36
+  languageName: node
+  linkType: hard
+
+"audio-buffer@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "audio-buffer@npm:5.0.0"
+  checksum: cba9c85611ff28d4ab238dfadc698bd7d6c9b1c25bf6710b0289f645afb23c512a93bcbe99115d5f50412d450797a669e0ef14c45738943cef914bda1d226c60
+  languageName: node
+  linkType: hard
+
+"audio-decode@npm:^2.1.3":
+  version: 2.1.4
+  resolution: "audio-decode@npm:2.1.4"
+  dependencies:
+    "@wasm-audio-decoders/flac": ^0.1.12
+    "@wasm-audio-decoders/ogg-vorbis": ^0.1.7
+    audio-buffer: ^5.0.0
+    audio-type: ^2.2.0
+    mpg123-decoder: ^0.4.8
+    node-wav: ^0.0.2
+    ogg-opus-decoder: ^1.6.4
+    qoa-format: ^1.0.0
+  checksum: f467a980c8eab8a2b0120b21a12dcdc7e43c3af4b9aef5ea8ce220a1c842d756b7e46c4fd5ae58f26a7cdf44eceea35ad176ff3228bcbc27c20bfef405cc29ef
+  languageName: node
+  linkType: hard
+
+"audio-type@npm:^2.2.0":
+  version: 2.2.1
+  resolution: "audio-type@npm:2.2.1"
+  checksum: da588e69383321321eb951055436795906ed916a6cc10ea8c7eca82531d8a1a17d4cf287e9ca3aa3cc0932724b81f3e639da42dd358ee6f87818b9ced1db97ea
   languageName: node
   linkType: hard
 
@@ -3724,6 +3807,13 @@ __metadata:
   version: 4.6.0
   resolution: "co@npm:4.6.0"
   checksum: 5210d9223010eb95b29df06a91116f2cf7c8e0748a9013ed853b53f362ea0e822f1e5bb054fb3cefc645239a4cf966af1f6133a3b43f40d591f3b68ed6cf0510
+  languageName: node
+  linkType: hard
+
+"codec-parser@npm:2.4.2":
+  version: 2.4.2
+  resolution: "codec-parser@npm:2.4.2"
+  checksum: 5bab5db5020ca11debc989d6539bf464325a90913cb049df1b74bfc513a9f4558871cbb340c024273939969e9fe68c3693593f154345423187c3da4e3d9af86f
   languageName: node
   linkType: hard
 
@@ -8192,7 +8282,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"libsignal@https://github.com/adiwajshing/libsignal-node.git":
+"libsignal@github:adiwajshing/libsignal-node":
   version: 2.0.1
   resolution: "libsignal@https://github.com/adiwajshing/libsignal-node.git#commit=11dbd962ea108187c79a7c46fe4d6f790e23da97"
   dependencies:
@@ -8948,6 +9038,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mpg123-decoder@npm:^0.4.8":
+  version: 0.4.8
+  resolution: "mpg123-decoder@npm:0.4.8"
+  dependencies:
+    "@wasm-audio-decoders/common": 9.0.1
+  checksum: 66d02e91d8b68c2f66ef3740f7288d08f0cdbfed466b9966ad0f3374a6054b2e5b1c2481b3e872e16aa09cfe822859ff1d64d7bdd74347138a2105508953c771
+  languageName: node
+  linkType: hard
+
 "ms@npm:2.0.0":
   version: 2.0.0
   resolution: "ms@npm:2.0.0"
@@ -9217,6 +9316,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-wav@npm:^0.0.2":
+  version: 0.0.2
+  resolution: "node-wav@npm:0.0.2"
+  checksum: b2c855d3dc9b9a31cb9e5d6fb5cb852c540d084ac0a9b9174023406fb98e9c23b9327f699923a839a6c9a423a36d310a7c8382375fd9f2d41c0720c125b47195
+  languageName: node
+  linkType: hard
+
 "node-webpmux@npm:^3.1.0":
   version: 3.1.7
   resolution: "node-webpmux@npm:3.1.7"
@@ -9396,6 +9502,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ogg-opus-decoder@npm:^1.6.4":
+  version: 1.6.4
+  resolution: "ogg-opus-decoder@npm:1.6.4"
+  dependencies:
+    "@wasm-audio-decoders/common": 9.0.1
+    codec-parser: 2.4.2
+    opus-decoder: 0.7.1
+  checksum: d3207ce61332aa972431c1ca4fa633c859538f41d0dd79cab0b57cbebc94b17aa8228f3afc9036b0d219abe6a435595a25b588ec052ca1bcfefeb64680816cc3
+  languageName: node
+  linkType: hard
+
 "on-exit-leak-free@npm:^0.2.0":
   version: 0.2.0
   resolution: "on-exit-leak-free@npm:0.2.0"
@@ -9464,6 +9581,15 @@ __metadata:
     type-check: ^0.4.0
     word-wrap: ^1.2.3
   checksum: dbc6fa065604b24ea57d734261914e697bd73b69eff7f18e967e8912aa2a40a19a9f599a507fa805be6c13c24c4eae8c71306c239d517d42d4c041c942f508a0
+  languageName: node
+  linkType: hard
+
+"opus-decoder@npm:0.7.1":
+  version: 0.7.1
+  resolution: "opus-decoder@npm:0.7.1"
+  dependencies:
+    "@wasm-audio-decoders/common": 9.0.1
+  checksum: 015b6a16d4dd8764bd6ef3b2f0010fd7553fe8d7d32aadb2154543563bd68a8bb7df7fe7407ec8b58e6451b241750f8f5a110928130012ec948f68ca4f4ab426
   languageName: node
   linkType: hard
 
@@ -10280,6 +10406,15 @@ __metadata:
     cosmiconfig: 8.2.0
     puppeteer-core: 20.7.3
   checksum: 802ffddac4e84a0e39c01d41b0885866baf6eefe6d416c36c9518f21234d81f894f402e50b62e3487fb235ade4e91cd2c55cb88cb0aae9b92c114ebe29eb4645
+  languageName: node
+  linkType: hard
+
+"qoa-format@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "qoa-format@npm:1.0.0"
+  dependencies:
+    "@thi.ng/bitstream": ^2.2.12
+  checksum: 666fbaa73b6bdbd25d4729557d15d3412195bb51667477556f0c6d93ff9b1e099c6983de20f601423ef206b0bcc87eb7542f19a36f8754ab6ff92d5c2cfc2f0b
   languageName: node
   linkType: hard
 
