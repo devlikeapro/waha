@@ -14,6 +14,7 @@ import { WhatsappConfigService } from '../config.service';
 import { SessionManager } from './abc/manager.abc';
 import { SessionManagerCore } from './manager.core';
 import { ChatsController } from '../api/chats.controller';
+import { StatusController } from '../api/status.controller';
 
 export const IMPORTS = [
   ConfigModule.forRoot({
@@ -38,6 +39,7 @@ export const CONTROLLERS = [
   SessionsController,
   ChattingController,
   ChatsController,
+  StatusController,
   ContactsController,
   GroupsController,
   PresenceController,

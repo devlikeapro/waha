@@ -58,6 +58,7 @@ import {
 } from './exceptions';
 import { createAgentProxy } from './helpers.proxy';
 import { QR } from './QR';
+import { BROADCAST_ID, TextStatus } from '../structures/status.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -449,6 +450,19 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   /**
+   * Status methods
+   */
+  public sendTextStatus(status: TextStatus) {
+    const message = { text: status.text };
+    const options = {
+      backgroundColor: status.backgroundColor,
+      font: status.font,
+      statusJidList: status.contacts.map(toJID),
+    };
+    return this.sock.sendMessage(BROADCAST_ID, message, options);
+  }
+
+  /**
    * END - Methods for API
    */
 
@@ -582,7 +596,7 @@ function toCusFormat(remoteJid) {
  * Convert from 11111111111@c.us to 11111111111@s.whatsapp.net
  * @param chatId
  */
-function toJID(chatId) {
+export function toJID(chatId) {
   if (isJidGroup(chatId)) {
     return chatId;
   }

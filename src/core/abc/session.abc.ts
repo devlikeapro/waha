@@ -33,6 +33,12 @@ import { WAHAChatPresences } from '../../structures/presence.dto';
 import { ProxyConfig, SessionConfig } from '../../structures/sessions.dto';
 import { NotImplementedByEngineError } from '../exceptions';
 import { LocalSessionStorage, MediaStorage } from './storage.abc';
+import {
+  ImageStatus,
+  TextStatus,
+  VideoStatus,
+  VoiceStatus,
+} from '../../structures/status.dto';
 
 const CHROME_PATH = '/usr/bin/google-chrome-stable';
 const CHROMIUM_PATH = '/usr/bin/chromium';
@@ -301,6 +307,25 @@ export abstract class WhatsappSession {
   }
 
   public subscribePresence(id: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  /**
+   * Status methods
+   */
+  public sendTextStatus(status: TextStatus) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public sendImageStatus(status: ImageStatus) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public sendVoiceStatus(status: VoiceStatus) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public sendVideoStatus(status: VideoStatus) {
     throw new NotImplementedByEngineError();
   }
 
