@@ -1,4 +1,5 @@
 import makeWASocket, {
+  Browsers,
   DisconnectReason,
   isJidGroup,
   makeInMemoryStore,
@@ -47,6 +48,7 @@ import {
   WAHAPresenceData,
 } from '../structures/presence.dto';
 import { WAMessage, WANumberExistResult } from '../structures/responses.dto';
+import { BROADCAST_ID, TextStatus } from '../structures/status.dto';
 import {
   ensureSuffix,
   WAHAInternalEvent,
@@ -58,7 +60,6 @@ import {
 } from './exceptions';
 import { createAgentProxy } from './helpers.proxy';
 import { QR } from './QR';
-import { BROADCAST_ID, TextStatus } from '../structures/status.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -104,7 +105,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       fetchAgent: agent,
       auth: state,
       printQRInTerminal: true,
-      browser: ['Linux', 'Chrome', '111.0.5563.64'] as WABrowserDescription,
+      browser: Browsers.macOS('Chrome'),
       logger: logger,
       mobile: false,
     };
