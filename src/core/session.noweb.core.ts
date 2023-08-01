@@ -108,6 +108,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       browser: Browsers.macOS('Chrome'),
       logger: logger,
       mobile: false,
+      defaultQueryTimeoutMs: undefined,
     };
   }
 
