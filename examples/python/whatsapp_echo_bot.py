@@ -82,7 +82,7 @@ def whatsapp_webhook():
     # Send a text back via WhatsApp HTTP API
     send_message(chat_id=chat_id, text=text)
     # OR reply on the message
-    # reply(chat_id=chat_id, message_id=message_id, text=text)
+    reply(chat_id=chat_id, message_id=message_id, text=text)
 
     # Send OK back
     return "OK"
