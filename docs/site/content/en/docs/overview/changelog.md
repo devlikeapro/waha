@@ -14,7 +14,7 @@ toc: true
 ---
 ## 2023.8
 August 2023
-- Added [status endpoints](https://waha.devlike.pro/docs/how-to/send-messages/#send-status-aka-stories) to **NOWEB** engine!
+- Added [stories (aka status) endpoints](https://waha.devlike.pro/docs/how-to/send-messages/#send-status-aka-stories) to **NOWEB** engine!
   - `POST /api/{session}/status/text|image|voice|video` - choose one that suites your!
 - Added [chats endpoints](https://waha.devlike.pro/docs/how-to/chats)
   - Get all chats - `GET /api/{session/chats`
