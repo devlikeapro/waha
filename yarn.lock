@@ -7,7 +7,7 @@ __metadata:
 
 "@adiwajshing/baileys@github:WhiskeySockets/Baileys":
   version: 6.4.0
-  resolution: "@adiwajshing/baileys@https://github.com/WhiskeySockets/Baileys.git#commit=44ec598ad234979b9fb57b2158d4ed79275b2ebc"
+  resolution: "@adiwajshing/baileys@https://github.com/WhiskeySockets/Baileys.git#commit=555cc9b3145ea2a94aeb34eec30eb966154b16f8"
   dependencies:
     "@adiwajshing/keyed-db": ^0.2.4
     "@hapi/boom": ^9.1.3
@@ -37,7 +37,7 @@ __metadata:
       optional: true
     sharp:
       optional: true
-  checksum: 7866a7874271415900c6db706e931ac31d18f7acf9bf8e546b97eb5c8efac28bffd1f0fcdca86879018470c77834b84b2589963f13e6c1336ccd9583a45791d9
+  checksum: ce07f852b94750d562f4be56aeeaffb35f5df909fc0e38ae1c6b2d3fcefe8078751e49abfc35f1d30ed9dc68baa2d31fc1114624d8f74301ba2ed455110a2d76
   languageName: node
   linkType: hard
 
@@ -13149,8 +13149,8 @@ __metadata:
   linkType: soft
 
 "whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js":
-  version: 1.21.0
-  resolution: "whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js.git#commit=8fc6e6098c88e7280074e4a9bdaabedc0646589e"
+  version: 1.21.1-alpha.0
+  resolution: "whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js.git#commit=776c1b152ec71081914f551eb33c899eff7a9e99"
   dependencies:
     "@pedroslopez/moduleraid": ^5.0.2
     archiver: ^5.3.1
@@ -13169,7 +13169,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 76e6defad7b2e5b8ce69771f7cefab33c5a911d71ac056b4e0c92c9cf4f2e19be5cb85932bce8141e89dd3592325010e7f93093ab2794a3a186d7e4910a69a7b
+  checksum: 3377bd18b73004273a606ba2a804e10ce6c4d3fca486a892628acc703a1e35b2d5c28caf7ff4fa1c208542ec19234354b382d763ba66c469ed5c787ac43814a5
   languageName: node
   linkType: hard
 
