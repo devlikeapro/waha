@@ -13149,8 +13149,8 @@ __metadata:
   linkType: soft
 
 "whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js":
-  version: 1.21.1-alpha.1
-  resolution: "whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js.git#commit=9a6466edbc4af5b5eeea060917c15f86b283f510"
+  version: 1.22.1
+  resolution: "whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js.git#commit=b47998878ae62732832986793f8e7ceae9ddb96f"
   dependencies:
     "@pedroslopez/moduleraid": ^5.0.2
     archiver: ^5.3.1
@@ -13169,7 +13169,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 49b6bb777e536e8a91870100ef6b02a47c6574d38174bdf1c0ce64b3a9b57a8db876066ab83cee8ad7a6da4e21a35228005973e8b694e2152c00b32dd71c7920
+  checksum: 8084bde72fb558dbf541e51862c39c74f5dd0b29a99b753fd51589d066b305d05bb5a9593a86b2b20c49b38754e365443bc14be824134a4dc170985b6ed36d19
   languageName: node
   linkType: hard
 
