@@ -13,6 +13,7 @@ import { VersionController } from '../api/version.controller';
 import { WhatsappConfigService } from '../config.service';
 import { SessionManager } from './abc/manager.abc';
 import { SessionManagerCore } from './manager.core';
+import { AuthController } from '../api/auth.controller';
 import { ChatsController } from '../api/chats.controller';
 import { StatusController } from '../api/status.controller';
 
@@ -36,6 +37,7 @@ export const IMPORTS = [
   PassportModule,
 ];
 export const CONTROLLERS = [
+  AuthController,
   SessionsController,
   ChattingController,
   ChatsController,

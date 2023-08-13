@@ -25,4 +25,10 @@ function flipObject(object) {
   );
 }
 
-export { flipObject, parseBool };
+function splitAt(str: string, index) {
+  const fst = [...str];
+  const snd = fst.splice(index);
+  return [fst.join(''), snd.join('')];
+}
+
+export { flipObject, parseBool, splitAt };

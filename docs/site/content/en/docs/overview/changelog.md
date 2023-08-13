@@ -12,6 +12,11 @@ menu:
 weight: 199
 toc: true
 ---
+## 2023.9
+September 2023
+- Add dedicated [Get QR](https://waha.devlike.pro/docs/how-to/sessions/#get-qr) endpoint!
+- Support [pairing method (NOWEB)](http://localhost:1313/docs/how-to/sessions/#get-pairing-code) - you can connect with a code instead of QR.
+
 ## 2023.8
 August 2023
 - Added [stories (aka status) endpoints](https://waha.devlike.pro/docs/how-to/send-messages/#send-status-aka-stories) to **NOWEB** engine!

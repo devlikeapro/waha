@@ -7,7 +7,7 @@ __metadata:
 
 "@adiwajshing/baileys@github:WhiskeySockets/Baileys":
   version: 6.4.0
-  resolution: "@adiwajshing/baileys@https://github.com/WhiskeySockets/Baileys.git#commit=555cc9b3145ea2a94aeb34eec30eb966154b16f8"
+  resolution: "@adiwajshing/baileys@https://github.com/WhiskeySockets/Baileys.git#commit=49ab16f5925789b85219bec2f35686234dab08a0"
   dependencies:
     "@adiwajshing/keyed-db": ^0.2.4
     "@hapi/boom": ^9.1.3
@@ -37,7 +37,7 @@ __metadata:
       optional: true
     sharp:
       optional: true
-  checksum: ce07f852b94750d562f4be56aeeaffb35f5df909fc0e38ae1c6b2d3fcefe8078751e49abfc35f1d30ed9dc68baa2d31fc1114624d8f74301ba2ed455110a2d76
+  checksum: 0faf172db4dcfb9d6df9ff2ef7d2fe5d66aeb7c24e516197a59cbf2bb54648734d5601b992986b9be71e0774bab552be279633d79ea1fc9c8b02426b788973a1
   languageName: node
   linkType: hard
 
@@ -8275,7 +8275,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"libphonenumber-js@npm:^1.10.20":
+"libphonenumber-js@npm:^1.10.20, libphonenumber-js@npm:^1.10.36":
   version: 1.10.36
   resolution: "libphonenumber-js@npm:1.10.36"
   checksum: e5a52e13add03db3cb8c0b7401f4cc5a4167a78965954a6e61b64bf412aacd5424e37ea6ab6ef9f77fc8994e7812bd758585f78b8fb871ca75e2c6b6507982fb
@@ -13123,6 +13123,7 @@ __metadata:
     file-type: 16.5.4
     https-proxy-agent: ^7.0.0
     jest: 26.4.2
+    libphonenumber-js: ^1.10.36
     link-preview-js: ^3.0.4
     lodash: ^4.17.21
     mime-types: ^2.1.27

@@ -6,19 +6,18 @@ import makeWASocket, {
   PresenceData,
   useMultiFileAuthState,
 } from '@adiwajshing/baileys';
-import { WABrowserDescription } from '@adiwajshing/baileys';
 import { UnprocessableEntityException } from '@nestjs/common';
 import * as fs from 'fs/promises';
 import { Agent } from 'https';
 import * as lodash from 'lodash';
+import { PairingCodeResponse } from 'src/structures/auth.dto';
 import { Message } from 'whatsapp-web.js';
 
-import { flipObject } from '../helpers';
+import { flipObject, splitAt } from '../helpers';
 import {
   Button,
   ChatRequest,
   CheckNumberStatusQuery,
-  GetMessageQuery,
   MessageContactVcardRequest,
   MessageFileRequest,
   MessageImageRequest,
@@ -131,9 +130,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   connectStore() {
+    this.log.debug(`Connecting store...`);
     if (!this.store) {
+      this.log.debug(`Making a new auth store...`);
       this.store = makeInMemoryStore({});
     }
+    this.log.debug(`Binding store to socket...`);
     this.store.bind(this.sock.ev);
   }
 
@@ -146,6 +148,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   async buildClient() {
     this.sock = await this.makeSocket();
     this.connectStore();
+    this.listenConnectionEvents();
+    this.events.emit(WAHAInternalEvent.engine_start);
+  }
+
+  protected listenConnectionEvents() {
+    this.log.debug(`Start listening ${BaileysEvents.CONNECTION_UPDATE}...`);
     this.sock.ev.on(BaileysEvents.CONNECTION_UPDATE, async (update) => {
       const { connection, lastDisconnect, qr } = update;
       if (connection === 'connecting') {
@@ -179,7 +187,6 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         });
       }
     });
-    this.events.emit(WAHAInternalEvent.engine_start);
   }
 
   stop() {
@@ -192,6 +199,42 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   /**
    * START - Methods for API
    */
+
+  /**
+   * Auth methods
+   */
+  public async getQR(): Promise<Buffer> {
+    return Promise.resolve(this.qr.get());
+  }
+
+  public async requestCode(
+    phoneNumber: string,
+    method: string,
+  ): Promise<PairingCodeResponse> {
+    if (method) {
+      const err = `NOWEB engine doesn't support any 'method', remove it and try again`;
+      throw new UnprocessableEntityException(err);
+    }
+
+    if (this.status == WAHASessionStatus.STARTING) {
+      this.log.debug('Waiting for connection update...');
+      await this.sock.waitForConnectionUpdate((update) => !!update.qr);
+    }
+
+    if (this.status != WAHASessionStatus.SCAN_QR_CODE) {
+      const err = `Can request code only in SCAN_QR_CODE status. The current status is ${this.status}`;
+      throw new UnprocessableEntityException(err);
+    }
+
+    this.log.debug('Requesting pairing code...');
+    const code: string = await this.sock.requestPairingCode(phoneNumber);
+    // show it as ABCD-ABCD
+    const parts = splitAt(code, 4);
+    const codeRepr = parts.join('-');
+    this.log.debug(`Your code: ${codeRepr}`);
+    return { code: codeRepr };
+  }
+
   async getScreenshot(): Promise<Buffer | string> {
     if (this.status === WAHASessionStatus.STARTING) {
       throw new UnprocessableEntityException(
@@ -208,6 +251,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     }
   }
 
+  /**
+   * Other methods
+   */
   async checkNumberStatus(
     request: CheckNumberStatusQuery,
   ): Promise<WANumberExistResult> {

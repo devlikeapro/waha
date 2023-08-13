@@ -46,6 +46,10 @@ import {
   AvailableInPlusVersion,
   NotImplementedByEngineError,
 } from './exceptions';
+import { QR } from './QR';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const QRCode = require('qrcode');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const qrcode = require('qrcode-terminal');
@@ -54,6 +58,12 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   engine = WAHAEngine.WEBJS;
 
   whatsapp: Client;
+  protected qr: QR;
+
+  public constructor(config) {
+    super(config);
+    this.qr = new QR();
+  }
 
   protected buildClient() {
     const clientOptions: ClientOptions = {
@@ -86,23 +96,12 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   async start() {
     this.whatsapp = this.buildClient();
-
     this.whatsapp.initialize().catch((error) => {
       this.status = WAHASessionStatus.FAILED;
       this.log.error(error);
       return;
     });
-
-    // Connect events
-    this.whatsapp.on(Events.QR_RECEIVED, (qr) => {
-      qrcode.generate(qr, { small: true });
-      this.status = WAHASessionStatus.SCAN_QR_CODE;
-    });
-
-    this.whatsapp.on(Events.AUTHENTICATED, () => {
-      this.status = WAHASessionStatus.WORKING;
-      this.log.log(`Session '${this.name}' has been authenticated!`);
-    });
+    this.listenConnectionEvents();
     this.events.emit(WAHAInternalEvent.engine_start);
     return this;
   }
@@ -111,9 +110,36 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     return this.whatsapp.destroy();
   }
 
+  protected listenConnectionEvents() {
+    this.whatsapp.on(Events.QR_RECEIVED, (qr) => {
+      this.log.debug('QR received');
+      // Convert to image and save
+      QRCode.toDataURL(qr).then((url) => {
+        this.qr.save(url);
+      });
+      // Print in terminal
+      qrcode.generate(qr, { small: true });
+      this.status = WAHASessionStatus.SCAN_QR_CODE;
+    });
+
+    this.whatsapp.on(Events.AUTHENTICATED, () => {
+      this.status = WAHASessionStatus.WORKING;
+      this.qr.save('');
+      this.log.log(`Session '${this.name}' has been authenticated!`);
+    });
+  }
+
   /**
    * START - Methods for API
    */
+
+  /**
+   * Auth methods
+   */
+  public async getQR(): Promise<Buffer> {
+    return Promise.resolve(this.qr.get());
+  }
+
   async getScreenshot(): Promise<Buffer | string> {
     if (this.status === WAHASessionStatus.FAILED) {
       throw new UnprocessableEntityException(

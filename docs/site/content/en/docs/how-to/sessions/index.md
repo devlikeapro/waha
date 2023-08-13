@@ -9,7 +9,7 @@ images: [ ]
 weight: 125
 ---
 
-## Endpoints
+## Sessions
 
 ### Start
 
@@ -127,6 +127,38 @@ In order to log out the session - call `POST /api/sessions/logout`
   "logout": true
 }
 ```
+
+
+## Authentication
+### Get QR
+The simplest way to authenticate a new session - get QR code and scan it on your device.
+```bash
+GET /api/{session}/auth/qr
+```
+You'll get QR image that you can scan and get authenticated
+
+### Get pairing code
+{{< alert icon="👉" text="Available in **NOWEB** engine only." />}}
+
+You can [link a session with phone number](https://faq.whatsapp.com/1324084875126592) - make a request to the endpoint.
+```bash
+POST /api/{session}/auth/request-code
+```
+
+Body example:
+```json
+{
+  "phoneNumber": "12132132130"
+}
+```
+
+You'll get code in the response that you can use on your WhatsApp app to connect the session:
+```json
+{
+  "code": "ABCD-ABCD"
+}
+```
+
 
 
 

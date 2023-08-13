@@ -1,4 +1,5 @@
 .yarn
+example.ts
 .*sessions
 tokens
 files

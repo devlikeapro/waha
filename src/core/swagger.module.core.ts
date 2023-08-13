@@ -15,6 +15,7 @@ export class SwaggerModuleCore {
       .setExternalDoc('Documentation', 'https://waha.devlike.pro/')
       .setVersion(VERSION.version)
       .addTag('sessions', 'Control WhatsApp sessions')
+      .addTag('auth', 'Authentication')
       .addTag('screenshot', 'Get screenshot of WhatsApp and show QR code')
       .addTag('chatting', 'Chatting methods')
       .addTag(

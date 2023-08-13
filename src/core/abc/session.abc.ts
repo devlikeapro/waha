@@ -33,6 +33,7 @@ import { WAHAChatPresences } from '../../structures/presence.dto';
 import { ProxyConfig, SessionConfig } from '../../structures/sessions.dto';
 import { NotImplementedByEngineError } from '../exceptions';
 import { LocalSessionStorage, MediaStorage } from './storage.abc';
+import { OTPRequest, RequestCodeRequest } from '../../structures/auth.dto';
 import {
   ImageStatus,
   TextStatus,
@@ -147,8 +148,28 @@ export abstract class WhatsappSession {
   /**
    * START - Methods for API
    */
+
+  /**
+   * Auth methods
+   */
+
+  public getQR(): Promise<Buffer> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public requestCode(phoneNumber: string, method: string) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public authorizeCode(code: string) {
+    throw new NotImplementedByEngineError();
+  }
+
   abstract getScreenshot(): Promise<Buffer | string>;
 
+  /**
+   * Other methods
+   */
   abstract checkNumberStatus(request: CheckNumberStatusQuery);
 
   abstract sendText(request: MessageTextRequest);
