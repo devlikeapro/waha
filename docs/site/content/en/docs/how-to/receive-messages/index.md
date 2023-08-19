@@ -116,6 +116,9 @@ Fired on all message creations, including your own. The payload is the same as f
 ```
 
 ### message.ack
+Receive events when server or recipient gets the message, read or played it.
+
+[See details on Webhooks page ->]({{< relref "webhooks#messageack" >}}).
 
 ```json
 {

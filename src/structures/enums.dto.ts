@@ -32,3 +32,13 @@ export enum WAHAPresenceStatus {
   RECORDING = 'recording',
   PAUSED = 'paused',
 }
+
+export enum WAMessageAck {
+  ERROR = -1,
+  PENDING = 0,
+  SERVER = 1,
+  DEVICE = 2,
+  READ = 3,
+  PLAYED = 4,
+}
+export const ACK_UNKNOWN = 'UNKNOWN';

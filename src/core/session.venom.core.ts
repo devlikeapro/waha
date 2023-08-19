@@ -15,13 +15,14 @@ import {
   MessageReplyRequest,
   MessageTextButtonsRequest,
   MessageTextRequest,
+  WANumberExistResult,
 } from '../structures/chatting.dto';
 import {
   WAHAEngine,
   WAHAEvents,
   WAHASessionStatus,
 } from '../structures/enums.dto';
-import { WAMessage, WANumberExistResult } from '../structures/responses.dto';
+import { WAMessage } from '../structures/responses.dto';
 import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
 import { NotImplementedByEngineError } from './exceptions';
 import { QR } from './QR';

@@ -1,12 +1,12 @@
 import { ConsoleLogger } from '@nestjs/common';
 
 import { WAHAEvents } from '../structures/enums.dto';
-import { WAWebhook } from '../structures/responses.dto';
-import { WebhookConfig } from '../structures/webhooks.dto';
+import { WebhookConfig } from '../structures/webhooks.config.dto';
 import { WhatsappSession } from './abc/session.abc';
 import { WebhookConductor, WebhookSender } from './abc/webhooks.abc';
 import { NotImplementedByEngineError } from './exceptions';
 import request = require('request');
+import { WAWebhook } from '../structures/webhooks.dto';
 
 export class WebhookSenderCore extends WebhookSender {
   send(json) {

@@ -1,6 +1,6 @@
 import { ConsoleLogger } from '@nestjs/common';
 
-import { WebhookConfig } from '../../structures/webhooks.dto';
+import { WebhookConfig } from '../../structures/webhooks.config.dto';
 import { WhatsappSession } from './session.abc';
 
 export abstract class WebhookSender {

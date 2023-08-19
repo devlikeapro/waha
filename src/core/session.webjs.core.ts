@@ -28,19 +28,22 @@ import {
   MessageTextRequest,
   MessageVoiceRequest,
   SendSeenRequest,
+  WANumberExistResult,
 } from '../structures/chatting.dto';
 import { ContactQuery, ContactRequest } from '../structures/contacts.dto';
 import {
+  ACK_UNKNOWN,
   WAHAEngine,
   WAHAEvents,
   WAHAPresenceStatus,
   WAHASessionStatus,
+  WAMessageAck,
 } from '../structures/enums.dto';
 import {
   CreateGroupRequest,
   ParticipantsRequest,
 } from '../structures/groups.dto';
-import { WAMessage, WANumberExistResult } from '../structures/responses.dto';
+import { WAMessage } from '../structures/responses.dto';
 import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
 import {
   AvailableInPlusVersion,
@@ -504,8 +507,8 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       hasMedia: Boolean(message.mediaUrl),
       // @ts-ignore
       mediaUrl: message.mediaUrl,
-      // @ts-ignore
       ack: message.ack,
+      ackName: WAMessageAck[message.ack] || ACK_UNKNOWN,
       location: message.location,
       vCards: message.vCards,
       _data: message.rawData,

@@ -15,7 +15,9 @@ toc: true
 ## 2023.9
 September 2023
 - Add dedicated [Get QR](https://waha.devlike.pro/docs/how-to/sessions/#get-qr) endpoint!
-- Support [pairing method (NOWEB)](http://localhost:1313/docs/how-to/sessions/#get-pairing-code) - you can connect with a code instead of QR.
+- Support [pairing method (NOWEB)](https://waha.devlike.pro/docs/how-to/sessions/#get-pairing-code) - you can connect with a code instead of QR.
+- Add string field `ackName: DEVICE|READ|...` in [message.ack payload](https://waha.devlike.pro/docs/how-to/webhooks/#messageack)
+- Support `message.ack` event webhook in **NOWEB** engine
 
 ## 2023.8
 August 2023

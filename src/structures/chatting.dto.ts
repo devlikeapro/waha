@@ -163,3 +163,7 @@ export class MessageReactionRequest extends MessageRequest {
   })
   reaction: string;
 }
+
+export class WANumberExistResult {
+  numberExists: boolean;
+}

@@ -190,14 +190,32 @@ Fired on all message creations, including your own. The payload is the same as f
 ```
 
 ### message.ack
+Receive events when server or recipient gets the message, read or played it.
 
+`ackName` field contains message status (`ack` has the same meaning, but show the value in int, but we keep it for backward compatability, they much to each other)
+
+Possible message ack statuses:
+- `ackName: ERROR, ack: -1`
+- `ackName: PENDING, ack: 0`
+- `ackName: SERVER, ack: 1`
+- `ackName: DEVICE, ack: 2`
+- `ackName: READ, ack: 3`
+- `ackName: PLAYED, ack: 4`
+
+
+The payload may have more fields, it depends on the engine you use, but here's a minimum amount that all engines send:
 ```json
 {
   "event": "message.ack",
   "session": "default",
   "engine": "WEBJS",
   "payload": {
-    ...
+    "id":"true_11111111111@c.us_4CC5EDD64BC22EBA6D639F2AF571346C",
+    "from":"11111111111@c.us",
+    "participant": null,
+    "fromMe":true,
+    "ack":3,
+    "ackName":"READ"
   }
 }
 ```

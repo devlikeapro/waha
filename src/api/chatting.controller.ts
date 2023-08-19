@@ -18,8 +18,9 @@ import {
   MessageTextRequest,
   MessageVoiceRequest,
   SendSeenRequest,
+  WANumberExistResult,
 } from '../structures/chatting.dto';
-import { WAMessage, WANumberExistResult } from '../structures/responses.dto';
+import { WAMessage } from '../structures/responses.dto';
 
 @ApiSecurity('api_key')
 @Controller('api')

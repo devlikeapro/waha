@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { WAHASessionStatus } from './enums.dto';
-import { WebhookConfig } from './webhooks.dto';
+import { WebhookConfig } from './webhooks.config.dto';
 
 /**
  * Queries

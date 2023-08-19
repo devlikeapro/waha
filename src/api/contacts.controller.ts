@@ -3,9 +3,11 @@ import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { SessionQuery } from '../structures/base.dto';
-import { CheckNumberStatusQuery } from '../structures/chatting.dto';
+import {
+  CheckNumberStatusQuery,
+  WANumberExistResult,
+} from '../structures/chatting.dto';
 import { ContactQuery, ContactRequest } from '../structures/contacts.dto';
-import { WANumberExistResult } from '../structures/responses.dto';
 
 @ApiSecurity('api_key')
 @Controller('api/contacts')

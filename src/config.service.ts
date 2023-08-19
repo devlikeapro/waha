@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { parseBool } from './helpers';
 import { WAHAEngine } from './structures/enums.dto';
-import { WebhookConfig } from './structures/webhooks.dto';
+import { WebhookConfig } from './structures/webhooks.config.dto';
 
 @Injectable()
 export class WhatsappConfigService {

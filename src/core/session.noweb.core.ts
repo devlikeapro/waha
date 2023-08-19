@@ -29,14 +29,17 @@ import {
   MessageTextRequest,
   MessageVoiceRequest,
   SendSeenRequest,
+  WANumberExistResult,
 } from '../structures/chatting.dto';
 import { ContactQuery, ContactRequest } from '../structures/contacts.dto';
 import {
+  ACK_UNKNOWN,
   SECOND,
   WAHAEngine,
   WAHAEvents,
   WAHAPresenceStatus,
   WAHASessionStatus,
+  WAMessageAck,
 } from '../structures/enums.dto';
 import {
   CreateGroupRequest,
@@ -46,7 +49,7 @@ import {
   WAHAChatPresences,
   WAHAPresenceData,
 } from '../structures/presence.dto';
-import { WAMessage, WANumberExistResult } from '../structures/responses.dto';
+import { WAMessage } from '../structures/responses.dto';
 import { BROADCAST_ID, TextStatus } from '../structures/status.dto';
 import {
   ensureSuffix,
@@ -59,6 +62,8 @@ import {
 } from './exceptions';
 import { createAgentProxy } from './helpers.proxy';
 import { QR } from './QR';
+import { WAMessageAckBody } from '../structures/webhooks.dto';
+import { update } from 'lodash';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -68,7 +73,9 @@ const logger = require('pino')();
 export const BaileysEvents = {
   CONNECTION_UPDATE: 'connection.update',
   CREDS_UPDATE: 'creds.update',
+  MESSAGES_UPDATE: 'messages.update',
   MESSAGES_UPSERT: 'messages.upsert',
+  MESSAGE_RECEIPT_UPDATE: 'message-receipt.update',
   GROUPS_UPSERT: 'groups.upsert',
   PRESENCE_UPDATE: 'presence.update',
 };
@@ -516,19 +523,34 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   subscribe(event, handler) {
     if (event === WAHAEvents.MESSAGE) {
-      return this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) =>
+      this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) =>
         this.handleIncomingMessages(messages, handler, false),
       );
     } else if (event === WAHAEvents.MESSAGE_ANY) {
-      return this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) =>
+      this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) =>
         this.handleIncomingMessages(messages, handler, true),
       );
+    } else if (event === WAHAEvents.MESSAGE_ACK) {
+      // Direct message ack
+      this.sock.ev.on(BaileysEvents.MESSAGES_UPDATE, (events) => {
+        events
+          .filter(isMine)
+          .map(this.convertMessageUpdateToMessageAck)
+          .forEach(handler);
+      });
+      // Group message ack
+      this.sock.ev.on(BaileysEvents.MESSAGE_RECEIPT_UPDATE, (events) => {
+        events
+          .filter(isMine)
+          .map(this.convertMessageReceiptUpdateToMessageAck)
+          .forEach(handler);
+      });
     } else if (event === WAHAEvents.STATE_CHANGE) {
-      return this.sock.ev.on(BaileysEvents.CONNECTION_UPDATE, handler);
+      this.sock.ev.on(BaileysEvents.CONNECTION_UPDATE, handler);
     } else if (event === WAHAEvents.GROUP_JOIN) {
-      return this.sock.ev.on(BaileysEvents.GROUPS_UPSERT, handler);
+      this.sock.ev.on(BaileysEvents.GROUPS_UPSERT, handler);
     } else if (event === WAHAEvents.PRESENCE_UPDATE) {
-      return this.sock.ev.on(BaileysEvents.PRESENCE_UPDATE, (data) =>
+      this.sock.ev.on(BaileysEvents.PRESENCE_UPDATE, (data) =>
         handler(this.toWahaPresences(data.id, data.presences)),
       );
     } else {
@@ -556,14 +578,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   protected toWAMessage(message): Promise<WAMessage> {
-    const isGroupMessage = Boolean(message.key.participant);
-    let participant: string;
-    let to: string;
-    if (isGroupMessage) {
-      participant = message.key.participant;
-      to = message.key.remoteJid;
-    }
-    const from = message.key.remoteJid;
+    const destination = getDestination(message);
     const id = buildMessageId(message.key);
     let body = message.message.conversation;
     if (!body) {
@@ -574,21 +589,63 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return Promise.resolve({
       id: id,
       timestamp: message.messageTimestamp,
-      from: toCusFormat(from),
+      from: toCusFormat(destination.from),
       fromMe: message.key.fromMe,
       body: body,
-      to: toCusFormat(to),
-      participant: toCusFormat(participant),
+      to: toCusFormat(destination.to),
+      participant: toCusFormat(destination.participant),
       // @ts-ignore
       hasMedia: Boolean(message.mediaUrl),
       // @ts-ignore
       mediaUrl: message.mediaUrl,
       // @ts-ignore
       ack: message.ack,
+      // @ts-ignore
+      ackName: WAMessageAck[message.ack] || ACK_UNKNOWN,
       location: message.location,
       vCards: message.vCards,
       _data: message,
     });
+  }
+  protected convertMessageUpdateToMessageAck(event): WAMessageAckBody {
+    const message = event;
+    const destination = getDestination(message);
+    const id = buildMessageId(message.key);
+    const ack = message.update.status - 1;
+    const body: WAMessageAckBody = {
+      id: id,
+      from: toCusFormat(destination.from),
+      to: toCusFormat(destination.to),
+      participant: toCusFormat(destination.participant),
+      fromMe: message.key.fromMe,
+      ack: ack,
+      ackName: WAMessageAck[ack] || ACK_UNKNOWN,
+    };
+    return body;
+  }
+  protected convertMessageReceiptUpdateToMessageAck(event): WAMessageAckBody {
+    const destination = getDestination(event);
+    const id = buildMessageId(event.key);
+
+    const receipt = event.receipt;
+    let ack;
+    if (receipt.receiptTimestamp) {
+      ack = WAMessageAck.SERVER;
+    } else if (receipt.playedTimestamp) {
+      ack = WAMessageAck.PLAYED;
+    } else if (receipt.readTimestamp) {
+      ack = WAMessageAck.READ;
+    }
+    const body: WAMessageAckBody = {
+      id: id,
+      from: toCusFormat(destination.from),
+      to: toCusFormat(destination.to),
+      participant: toCusFormat(destination.participant),
+      fromMe: event.key.fromMe,
+      ack: ack,
+      ackName: WAMessageAck[ack] || ACK_UNKNOWN,
+    };
+    return body;
   }
 
   private toWahaPresences(
@@ -683,4 +740,24 @@ function parseMessageId(messageId) {
 
 function getId(object) {
   return object.id;
+}
+
+function isMine(message) {
+  return message?.key?.fromMe;
+}
+
+function getDestination(message) {
+  const isGroupMessage = Boolean(message.key.participant);
+  let participant: string;
+  let to: string;
+  if (isGroupMessage) {
+    participant = message.key.participant;
+    to = message.key.remoteJid;
+  }
+  const from = message.key.remoteJid;
+  return {
+    from: from,
+    to: to,
+    participant: participant,
+  };
 }

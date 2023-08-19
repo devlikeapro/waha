@@ -1,52 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { WAHAEngine, WAHAEvents } from './enums.dto';
-
-export class WANumberExistResult {
-  numberExists: boolean;
-}
-
-export class WAGroupNotification {
-  @ApiProperty({
-    description: 'ID that represents the groupNotification',
-  })
-  id: any;
-
-  @ApiProperty({
-    description: 'Unix timestamp for when the groupNotification was created',
-  })
-  timestamp: number;
-
-  @ApiProperty({
-    description: 'ID for the Chat that this groupNotification was sent for',
-  })
-  chatId: string;
-
-  @ApiProperty({
-    description: 'ContactId for the user that produced the GroupNotification',
-  })
-  author: string;
-
-  @ApiProperty({
-    description: 'Extra content',
-  })
-  body: string;
-
-  @ApiProperty({
-    description:
-      'Contact IDs for the users that were affected by this GroupNotification',
-  })
-  recipientIds: string[];
-}
-
-export enum WAMessageAck {
-  ACK_ERROR = -1,
-  ACK_PENDING = 0,
-  ACK_SERVER = 1,
-  ACK_DEVICE = 2,
-  ACK_READ = 3,
-  ACK_PLAYED = 4,
-}
+import { WAMessageAck } from './enums.dto';
 
 export class WALocation {
   description?: string | null;
@@ -116,6 +70,11 @@ export class WAMessage {
   ack: WAMessageAck;
 
   @ApiProperty({
+    description: 'ACK status name for the message',
+  })
+  ackName: string;
+
+  @ApiProperty({
     description:
       'If the message was sent to a group, this field will contain the user that sent the message.',
   })
@@ -138,12 +97,4 @@ export class WAMessage {
       'Message in a raw format that we get from WhatsApp. May be changed anytime, use it with caution! It depends a lot on the underlying backend.',
   })
   _data?: any;
-}
-
-export class WAWebhook {
-  event: WAHAEvents;
-  session: string;
-  engine: WAHAEngine;
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  payload: WAMessage | WAGroupNotification | object;
 }

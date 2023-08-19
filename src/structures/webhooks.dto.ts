@@ -1,60 +1,59 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class RetriesConfiguration {
-  @ApiProperty({
-    example: 2,
-  })
-  delaySeconds: number;
+import { WAHAEngine, WAHAEvents, WAMessageAck } from './enums.dto';
+import { WAMessage } from './responses.dto';
 
+export class WAMessageAckBody {
   @ApiProperty({
-    example: 15,
+    description: 'Message ID',
+    example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
   })
-  attempts: number;
-}
-export class CustomHeader {
-  @ApiProperty({
-    example: 'X-My-Custom-Header',
-  })
-  name: string;
-
-  @ApiProperty({
-    example: 'Value',
-  })
-  value: string;
+  id: string;
+  from: string;
+  to: string;
+  participant: string;
+  fromMe: boolean;
+  ack: WAMessageAck;
+  ackName: string;
 }
 
-export class HmacConfiguration {
+export class WAGroupPayload {
   @ApiProperty({
-    example: 'your-secret-key',
+    description: 'ID that represents the groupNotification',
   })
-  key: string;
+  id: any;
+
+  @ApiProperty({
+    description: 'Unix timestamp for when the groupNotification was created',
+  })
+  timestamp: number;
+
+  @ApiProperty({
+    description: 'ID for the Chat that this groupNotification was sent for',
+  })
+  chatId: string;
+
+  @ApiProperty({
+    description: 'ContactId for the user that produced the GroupNotification',
+  })
+  author: string;
+
+  @ApiProperty({
+    description: 'Extra content',
+  })
+  body: string;
+
+  @ApiProperty({
+    description:
+      'Contact IDs for the users that were affected by this GroupNotification',
+  })
+  recipientIds: string[];
 }
 
-export class WebhookConfig {
-  @ApiProperty({
-    example: 'https://httpbin.org/post',
-    required: true,
-  })
-  url: string;
-
-  @ApiProperty({
-    example: ['message'],
-    required: true,
-  })
-  events: string[];
-
-  @ApiProperty({
-    example: null,
-  })
-  hmac?: HmacConfiguration;
-
-  @ApiProperty({
-    example: null,
-  })
-  retries?: RetriesConfiguration;
-
-  @ApiProperty({
-    example: null,
-  })
-  customHeaders?: CustomHeader[];
+export class WAWebhook {
+  event: WAHAEvents;
+  session: string;
+  engine: WAHAEngine;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  payload: WAMessage | WAGroupPayload | WAMessageAckBody | object;
 }
