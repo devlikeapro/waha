@@ -574,7 +574,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   private processIncomingMessage(message) {
-    return this.downloadMedia(message).then(this.toWAMessage);
+    return this.downloadMedia(message)
+      .then(this.toWAMessage)
+      .catch((error) => {
+        this.log.error('Failed to process incoming message');
+        this.log.error(error);
+        console.trace(error);
+      });
   }
 
   protected toWAMessage(message): Promise<WAMessage> {
