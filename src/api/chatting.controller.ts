@@ -11,6 +11,7 @@ import {
   MessageImageRequest,
   MessageLinkPreviewRequest,
   MessageLocationRequest,
+  MessagePollRequest,
   MessageReactionRequest,
   MessageReplyRequest,
   MessageTextButtonsRequest,
@@ -65,6 +66,13 @@ export class ChattingController {
   sendTextButtons(@Body() request: MessageTextButtonsRequest) {
     const whatsapp = this.manager.getSession(request.session);
     return whatsapp.sendTextButtons(request);
+  }
+
+  @Post('/sendPoll')
+  @ApiOperation({ summary: 'Send a poll with options' })
+  sendPoll(@Body() request: MessagePollRequest) {
+    const whatsapp = this.manager.getSession(request.session);
+    return whatsapp.sendPoll(request);
   }
 
   @Post('/sendLocation')

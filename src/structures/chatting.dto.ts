@@ -167,3 +167,17 @@ export class MessageReactionRequest extends MessageRequest {
 export class WANumberExistResult {
   numberExists: boolean;
 }
+
+export class MessagePollRequest extends ChatRequest {
+  @ApiProperty({
+    example: 'How are you?',
+  })
+  name: string;
+
+  @ApiProperty({
+    example: ['Awesome!', 'Good!', 'Not bad!'],
+  })
+  options: string[];
+
+  multipleAnswers = false;
+}

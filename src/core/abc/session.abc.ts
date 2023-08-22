@@ -12,6 +12,7 @@ import {
   MessageImageRequest,
   MessageLinkPreviewRequest,
   MessageLocationRequest,
+  MessagePollRequest,
   MessageReactionRequest,
   MessageReplyRequest,
   MessageTextButtonsRequest,
@@ -177,6 +178,10 @@ export abstract class WhatsappSession {
   abstract sendContactVCard(request: MessageContactVcardRequest);
 
   abstract sendTextButtons(request: MessageTextButtonsRequest);
+
+  sendPoll(request: MessagePollRequest) {
+    throw new NotImplementedByEngineError();
+  }
 
   abstract sendLocation(request: MessageLocationRequest);
 

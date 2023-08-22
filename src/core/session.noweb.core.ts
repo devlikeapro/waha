@@ -23,6 +23,7 @@ import {
   MessageImageRequest,
   MessageLinkPreviewRequest,
   MessageLocationRequest,
+  MessagePollRequest,
   MessageReactionRequest,
   MessageReplyRequest,
   MessageTextButtonsRequest,
@@ -64,6 +65,7 @@ import { createAgentProxy } from './helpers.proxy';
 import { QR } from './QR';
 import { WAMessageAckBody } from '../structures/webhooks.dto';
 import { update } from 'lodash';
+import { request } from 'express';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -297,6 +299,16 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     };
 
     return this.sock.sendMessage(request.chatId, buttonMessage);
+  }
+
+  sendPoll(request: MessagePollRequest) {
+    const poll = {
+      name: request.name,
+      values: request.options,
+      selectableCount: request.multipleAnswers ? request.options.length : 1,
+    };
+    const message = { poll: poll };
+    return this.sock.sendMessage(request.chatId, message);
   }
 
   sendContactVCard(request: MessageContactVcardRequest) {
