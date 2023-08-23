@@ -168,7 +168,7 @@ export class WANumberExistResult {
   numberExists: boolean;
 }
 
-export class MessagePollRequest extends ChatRequest {
+export class MessagePoll {
   @ApiProperty({
     example: 'How are you?',
   })
@@ -180,4 +180,19 @@ export class MessagePollRequest extends ChatRequest {
   options: string[];
 
   multipleAnswers = false;
+}
+
+export class MessagePollRequest extends ChatRequest {
+  poll: MessagePoll;
+}
+
+export class MessageDestination {
+  @ApiProperty({
+    description: 'Message ID',
+    example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
+  })
+  id: string;
+  to: string;
+  from: string;
+  fromMe: boolean;
 }

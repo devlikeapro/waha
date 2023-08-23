@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { WAHAEngine, WAHAEvents, WAMessageAck } from './enums.dto';
 import { WAMessage } from './responses.dto';
+import { MessageDestination } from './chatting.dto';
 
 export class WAMessageAckBody {
   @ApiProperty({
@@ -50,10 +51,34 @@ export class WAGroupPayload {
   recipientIds: string[];
 }
 
+export class PollVote extends MessageDestination {
+  @ApiProperty({
+    description: 'Option that user has selected',
+    example: ['Awesome!'],
+  })
+  selectedOptions: string[];
+
+  @ApiProperty({
+    description: 'Timestamp, ms',
+    example: 1692861369,
+  })
+  timestamp: number;
+}
+
+export class PollVotePayload {
+  vote: PollVote;
+  poll: MessageDestination;
+}
+
 export class WAWebhook {
   event: WAHAEvents;
   session: string;
   engine: WAHAEngine;
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  payload: WAMessage | WAGroupPayload | WAMessageAckBody | object;
+  payload:
+    | WAMessage
+    | WAGroupPayload
+    | WAMessageAckBody
+    | PollVotePayload
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    | object;
 }
