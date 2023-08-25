@@ -9,6 +9,7 @@ export enum WAHAEvents {
   GROUP_LEAVE = 'group.leave',
   PRESENCE_UPDATE = 'presence.update',
   POLL_VOTE = 'poll.vote',
+  POLL_VOTE_FAILED = 'poll.vote.failed',
 }
 
 export enum WAHASessionStatus {

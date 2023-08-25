@@ -597,7 +597,15 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       );
     } else if (event === WAHAEvents.POLL_VOTE) {
       this.sock.ev.on(BaileysEvents.MESSAGES_UPDATE, (events) => {
-        events.forEach((event) => this.handlePollUpdateMessage(event, handler));
+        events.forEach((event) =>
+          this.handleMessagesUpdatePollVote(event, handler),
+        );
+      });
+    } else if (event === WAHAEvents.POLL_VOTE_FAILED) {
+      this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) => {
+        messages.forEach((message) =>
+          this.handleMessageUpsertPollVoteFailed(message, handler),
+        );
       });
     } else {
       throw new NotImplementedByEngineError(
@@ -704,7 +712,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return body;
   }
 
-  protected async handlePollUpdateMessage(event, handler) {
+  protected async handleMessagesUpdatePollVote(event, handler) {
     const { key, update } = event;
     const pollUpdates = update?.pollUpdates;
     if (!pollUpdates) {
@@ -743,6 +751,36 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       };
       handler(payload);
     }
+  }
+  protected async handleMessageUpsertPollVoteFailed(message, handler) {
+    const pollUpdateMessage = message.message?.pollUpdateMessage;
+    if (!pollUpdateMessage) {
+      return;
+    }
+    const pollCreationMessageKey = pollUpdateMessage.pollCreationMessageKey;
+    const pollCreationMessage = await this.getMessage(pollCreationMessageKey);
+    if (pollCreationMessage) {
+      // We found message, so later the engine will issue a message.update message
+      return;
+    }
+
+    // We don't found creation message, so send failed one
+    const pollUpdateMessageKey = message.key;
+    const voteDestination = getDestination(pollUpdateMessageKey);
+    const pollVote: PollVote = {
+      ...voteDestination,
+      selectedOptions: [],
+      // change to below line when the PR merged, so we have the same timestamps
+      // https://github.com/WhiskeySockets/Baileys/pull/348
+      // Or without toNumber() - it depends on the PR above
+      // timestamp: pollUpdateMessage.senderTimestampMs.toNumber()
+      timestamp: message.messageTimestamp,
+    };
+    const payload: PollVotePayload = {
+      vote: pollVote,
+      poll: getDestination(pollCreationMessageKey),
+    };
+    handler(payload);
   }
 
   private toWahaPresences(
