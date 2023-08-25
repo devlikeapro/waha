@@ -284,6 +284,60 @@ It's an internal engine's state, not **session** `status`.
 }
 ```
 
+### poll.vote
+We have a dedicated page [how to send polls and receive votes]({{< relref "/docs/how-to/polls" >}})!
+
+```json
+{
+  "event": "poll.vote",
+  "session": "default",
+  "payload": {
+    "vote": {
+      "id": "false_1111111111@c.us_83ACBE602A05C79B234B54415E95EE8A",
+      "to": "me",
+      "from": "1111111@c.us",
+      "fromMe": false,
+      "selectedOptions": ["Awesome!"],
+      "timestamp": 1692861427
+    },
+    "poll": {
+      "id": "true_1111111111@c.us_BAE5F2EF5C69001E",
+      "to": "1111111111@c.us",
+      "from": "me",
+      "fromMe": true
+    }
+  },
+  "engine": "NOWEB"
+}
+```
+
+### poll.vote.failed
+We have a dedicated page [how to send polls and receive votes]({{< relref "/docs/how-to/polls" >}})!
+
+```json
+{
+  "event": "poll.vote.failed",
+  "session": "default",
+  "payload": {
+    "vote": {
+      "id": "false_11111111111@c.us_2E8C4CDA89EDE3BC0BC7F605364B8451",
+      "to": "me",
+      "from": "111111111@c.us",
+      "fromMe": false,
+      "selectedOptions": [],
+      "timestamp": 1692956972
+    },
+    "poll": {
+      "id": "true_1111111111@c.us_BAE595F4E0A2042C",
+      "to": "111111111@c.us",
+      "from": "me",
+      "fromMe": true
+    }
+  },
+  "engine": "NOWEB"
+}
+```
+
 ## Webhooks Advanced ![](/images/versions/plus.png)
 ### HMAC authentication
 

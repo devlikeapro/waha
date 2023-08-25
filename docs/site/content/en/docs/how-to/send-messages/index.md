@@ -31,7 +31,7 @@ When sending media (images, voice, files) you can either use:
 
 ## Endpoints
 
-### Send text ![](/images/versions/core.png)
+### Send text
 To send text message - use `POST /api/sendText` with example payload.
 ```json
 {
@@ -58,7 +58,12 @@ also mention it in `mentions` in format `2132132130@c.us`
 }
 ```
 
-### Reply on message ![](/images/versions/core.png)
+### Send poll
+We have a dedicated page [how to send polls and receive votes]({{< relref "/docs/how-to/polls" >}})!
+
+![](poll-example.jpg)
+
+### Reply on message
 To reply on a message - use `POST /api/reply` with example payload.
 ```json
 {
@@ -72,7 +77,7 @@ To reply on a message - use `POST /api/reply` with example payload.
 #### Reply files ![](/images/versions/plus-soon.png)
 WAHA does not support reply with files (images, voice, etc). If you're interested in it - please create an issue in GitHub.
 
-### Add a reaction ![](/images/versions/core.png)
+### Add a reaction
 Use `PUT /api/reaction` method to set reaction to a message.
 
 {{< alert icon="👉" text="Reaction API uses PUT, not POST request! Please make sure you send right request." />}}
