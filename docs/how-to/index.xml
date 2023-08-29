@@ -18,7 +18,14 @@ In order to start a new session - call POST /api/sessions/start
 { &amp;quot;name&amp;quot;: &amp;quot;default&amp;quot; } Configure webhooks #
 You can configure webhooks for a session:
 { &amp;quot;name&amp;quot;: &amp;quot;default&amp;quot;, &amp;quot;config&amp;quot;: { &amp;quot;webhooks&amp;quot;: [ { &amp;quot;url&amp;quot;: &amp;quot;https://httpbin.org/post&amp;quot;, &amp;quot;events&amp;quot;: [ &amp;quot;message&amp;quot; ] } ] } } Read more about available options on Webhooks page -&amp;gt;
-The configuration is saved and will be applied if the docker container restarts, and you set WHATSAPP_RESTART_ALL_SESSIONS environment variables.</description></item><item><title>Chats</title><link>https://waha.devlike.pro/docs/how-to/chats/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/chats/</guid><description>Chats methods.
+The configuration is saved and will be applied if the docker container restarts, and you set WHATSAPP_RESTART_ALL_SESSIONS environment variables.</description></item><item><title>Polls</title><link>https://waha.devlike.pro/docs/how-to/polls/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/polls/</guid><description>Available on NOWEB engine only.
+Waiting for WEBJS engine to support it, and we&amp;rsquo;ll add it ASAP!
+Endpoints #
+Send poll #
+Use the endpoint to send a poll!
+POST /api/sendPoll The request body is pretty simple:
+{ &amp;quot;session&amp;quot;: &amp;quot;default&amp;quot;, &amp;quot;chatId&amp;quot;: &amp;quot;123123123@c.us&amp;quot;, &amp;quot;poll&amp;quot;: { &amp;quot;name&amp;quot;: &amp;quot;How are you?&amp;quot;, &amp;quot;options&amp;quot;: [ &amp;quot;Awesome!&amp;quot;, &amp;quot;Good!&amp;quot;, &amp;quot;Not bad!&amp;quot; ], &amp;quot;multipleAnswers&amp;quot;: false } } The response you get back:
+{ &amp;quot;id&amp;quot;: &amp;quot;true_321321321@c.us_83ACBAAAAAAAAAAAAAAAAAAAA&amp;quot;, &amp;quot;other-fields-here&amp;quot;: &amp;quot;value&amp;quot; } You must save the id field from the response in your database so that you can identify the poll for which you receive a vote (see webhook events below).</description></item><item><title>Chats</title><link>https://waha.devlike.pro/docs/how-to/chats/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/chats/</guid><description>Chats methods.
 Parameters in path that you can find in below endpoints:
 {session} - use the session name for Whatsapp instance that you created with POST /api/session/start endpoint {chatId} - chat id in format 123123123123@[c.us|g.us], c.us for direct chats and g.us for groups. Methods #
 Get all chats #
@@ -43,7 +50,4 @@ If you want to hide the project Swagger panel under the password - run the follo
 docker run -it -e WHATSAPP_SWAGGER_USERNAME=admin -eWHATSAPP_SWAGGER_PASSWORD=admin devlikeapro/whatsapp-http-api-plus Open http://localhost:3000/ and enter admin / admin in the inputs:</description></item><item><title>Configuration</title><link>https://waha.devlike.pro/docs/how-to/config/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/config/</guid><description>You can configure WhatsApp HTTP API behaviour via environment variables, by adding -e WHATSAPP_VARNAME=value at the begging of the command line or by using other options
 docker run -it -e &amp;quot;WHATSAPP_HOOK_EVENTS=*&amp;quot; -e WHATSAPP_HOOK_URL=https://httpbin.org/post devlikeapro/whatsapp-http-api It&amp;rsquo;s not necessary to always run such a long command - you can save all data in docker-compose.yaml file as described on How to deploy page -&amp;gt;.
 Environment variables #
-The following environment variables can be used to configure the WAHA.</description></item><item><title>Engines</title><link>https://waha.devlike.pro/docs/how-to/engines/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/engines/</guid><description>Under the hood WAHA allows you to use two different engines. You can control what you want to run by settings WHATSAPP_DEFAULT_ENGINE environment variables.
-docker run -it -e &amp;quot;WHATSAPP_DEFAULT_ENGINE=WEBJS&amp;quot; devlikeapro/whatsapp-http-api If you have any problems with one engine - try another!
-👉 API responses and webhook payloads may differ significantly! We do our best to keep requests body stable between engines. All engines are available in Core version WEBJS #
-A WhatsApp API client that connects through the WhatsApp Web browser app.</description></item></channel></rss>
+The following environment variables can be used to configure the WAHA.</description></item></channel></rss>
