@@ -76,7 +76,6 @@ import {
 } from './exceptions';
 import { createAgentProxy } from './helpers.proxy';
 import { QR } from './QR';
-import { requestProvider } from '@nestjs/core/router/request/request-providers';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -573,7 +572,6 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       // Direct message ack
       this.sock.ev.on(BaileysEvents.MESSAGES_UPDATE, (events) => {
         events
-          // Send ACK only for My message
           .filter(isMine)
           .filter(isAckUpdateMessageEvent)
           .map(this.convertMessageUpdateToMessageAck)
@@ -582,7 +580,6 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       // Group message ack
       this.sock.ev.on(BaileysEvents.MESSAGE_RECEIPT_UPDATE, (events) => {
         events
-          // Send ACK only for My message
           .filter(isMine)
           .map(this.convertMessageReceiptUpdateToMessageAck)
           .forEach(handler);
@@ -721,8 +718,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
     const pollCreationMessageKey = key;
     const pollCreationMessage = await this.getMessage(key);
+    // Handle updates one by one, so we can get Vote Message for the specific vote
     for (const pollUpdate of pollUpdates) {
-      // Handle it one by one, so we can get Vote Message for the specific vote
       const votes = getAggregateVotesInPollMessage({
         message: pollCreationMessage,
         pollUpdates: [pollUpdate],
@@ -738,7 +735,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         }
       }
 
-      // Send webhook
+      // Build payload and call the handler
       const voteDestination = getDestination(pollUpdate.pollUpdateMessageKey);
       const pollVote: PollVote = {
         ...voteDestination,
@@ -764,7 +761,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       return;
     }
 
-    // We don't found creation message, so send failed one
+    // We didn't find the creation message, so send failed one
     const pollUpdateMessageKey = message.key;
     const voteDestination = getDestination(pollUpdateMessageKey);
     const pollVote: PollVote = {
@@ -909,19 +906,19 @@ function getFromToParticipant(message) {
 }
 
 function getTo(key, meId = undefined) {
-  // For group - always JID
+  // For group - always to group JID
   const isGroupMessage = Boolean(key.participant);
   if (isGroupMessage) {
     return key.remoteJid;
   }
-  if (!key.fromMe) {
-    return meId || 'me';
+  if (key.fromMe) {
+    return key.remoteJid;
   }
-  return key.remoteJid;
+  return meId || 'me';
 }
 
 function getFrom(key, meId) {
-  // For group - always JID
+  // For group - always from participant
   const isGroupMessage = Boolean(key.participant);
   if (isGroupMessage) {
     return key.participant;
