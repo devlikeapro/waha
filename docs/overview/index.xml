@@ -20,6 +20,6 @@ docker login -u devlikeapro -p {PASSWORD} docker pull devlikeapro/whatsapp-http-
 How much CPU and Memory does WhatsApp HTTP API consume? #
 The benchmark has been made on Intel(R) Core(TM) i7-10510U CPU @ 1.</description></item><item><title>Changelog</title><link>https://waha.devlike.pro/docs/overview/changelog/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://waha.devlike.pro/docs/overview/changelog/</guid><description>2023.9 #
 September 2023
-Add polls support in NOWEB engine Add dedicated Get QR endpoint! Support pairing method (NOWEB) - you can connect with a code instead of QR. Add string field ackName: DEVICE|READ|... in message.ack payload Support message.ack event webhook in NOWEB engine 2023.8 #
+Add GET /api/sessions/{session/me endpoint so you can get the phone number associated with the session Add polls support in NOWEB engine Add dedicated Get QR endpoint! Support pairing method (NOWEB) - you can connect with a code instead of QR. Add string field ackName: DEVICE|READ|... in message.ack payload Support message.ack event webhook in NOWEB engine 2023.8 #
 August 2023
-Added stories (aka status) endpoints to NOWEB engine! POST /api/{session}/status/text|image|voice|video - choose one that suites your! Added chats endpoints Get all chats - GET /api/{session/chats Delete chat - DELETE /api/{session/chats/{chatId} Get messages from chat - GET /api/{session/chats/{chatId}/messages?</description></item></channel></rss>
+Added stories (aka status) endpoints to NOWEB engine!</description></item></channel></rss>
