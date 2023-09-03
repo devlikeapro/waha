@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { WAMessageAck } from './enums.dto';
+import { ChatIdProperty, MessageIdProperty } from './properties.dto';
 
 export class WALocation {
   description?: string | null;
@@ -9,10 +10,7 @@ export class WALocation {
 }
 
 export class WAMessage {
-  @ApiProperty({
-    description: 'Message ID',
-    example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
-  })
+  @MessageIdProperty()
   id: string;
 
   /**  */
@@ -22,7 +20,7 @@ export class WAMessage {
   })
   timestamp: number;
 
-  @ApiProperty({
+  @ChatIdProperty({
     description:
       'ID for the Chat that this message was sent to, except if the message was sent by the current user ',
   })
@@ -33,7 +31,7 @@ export class WAMessage {
   })
   fromMe: boolean;
 
-  @ApiProperty({
+  @ChatIdProperty({
     description: `
 * ID for who this message is for.
 * If the message is sent by the current user, it will be the Chat to which the message is being sent.

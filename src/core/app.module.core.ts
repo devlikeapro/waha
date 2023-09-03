@@ -8,7 +8,10 @@ import { ContactsController } from '../api/contacts.controller';
 import { GroupsController } from '../api/groups.controller';
 import { PresenceController } from '../api/presence.controller';
 import { ScreenshotController } from '../api/screenshot.controller';
-import { SessionsController } from '../api/sessions.controller';
+import {
+  SessionController,
+  SessionsController,
+} from '../api/sessions.controller';
 import { VersionController } from '../api/version.controller';
 import { WhatsappConfigService } from '../config.service';
 import { SessionManager } from './abc/manager.abc';
@@ -39,6 +42,7 @@ export const IMPORTS = [
 export const CONTROLLERS = [
   AuthController,
   SessionsController,
+  SessionController,
   ChattingController,
   ChatsController,
   StatusController,

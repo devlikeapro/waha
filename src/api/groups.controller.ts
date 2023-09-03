@@ -51,8 +51,14 @@ export class GroupsController {
 
   @Put(':id/settings/security/info-admin-only')
   @SessionApiParam
-  @ApiOperation({ summary: 'Updates the group settings to only allow admins to edit group info (title, description, photo).' })
-  setGroupAdminOnly(@SessionParam session: WhatsappSession, @Param('id') id: string) {
+  @ApiOperation({
+    summary:
+      'Updates the group settings to only allow admins to edit group info (title, description, photo).',
+  })
+  setGroupAdminOnly(
+    @SessionParam session: WhatsappSession,
+    @Param('id') id: string,
+  ) {
     return session.setInfoAdminsOnly(id, true);
   }
 

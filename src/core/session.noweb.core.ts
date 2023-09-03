@@ -4,6 +4,7 @@ import makeWASocket, {
   getAggregateVotesInPollMessage,
   getKeyAuthor,
   isJidGroup,
+  jidNormalizedUser,
   makeInMemoryStore,
   PresenceData,
   proto,
@@ -76,6 +77,7 @@ import {
 } from './exceptions';
 import { createAgentProxy } from './helpers.proxy';
 import { QR } from './QR';
+import { MeInfo } from '../structures/sessions.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -238,6 +240,19 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.sock.ws.removeAllListeners();
     this.sock.ws.close();
     return;
+  }
+
+  async getSessionMeInfo(): Promise<MeInfo | null> {
+    const me = this.sock.authState?.creds?.me;
+    if (!me) {
+      return null;
+    }
+    const meId = jidNormalizedUser(me.id);
+    const meInfo: MeInfo = {
+      id: toCusFormat(meId),
+      pushName: me.name,
+    };
+    return meInfo;
   }
 
   /**

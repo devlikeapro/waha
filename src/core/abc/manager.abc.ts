@@ -3,6 +3,7 @@ import { OnApplicationShutdown } from '@nestjs/common';
 import { WAHAEngine } from '../../structures/enums.dto';
 import {
   SessionDTO,
+  SessionInfo,
   SessionLogoutRequest,
   SessionStartRequest,
   SessionStopRequest,
@@ -35,5 +36,5 @@ export abstract class SessionManager implements OnApplicationShutdown {
 
   abstract getSession(name: string, error?: boolean): WhatsappSession;
 
-  abstract getSessions(all: boolean): Promise<SessionDTO[]>;
+  abstract getSessions(all: boolean): Promise<SessionInfo[]>;
 }

@@ -31,7 +31,11 @@ import {
   ParticipantsRequest,
 } from '../../structures/groups.dto';
 import { WAHAChatPresences } from '../../structures/presence.dto';
-import { ProxyConfig, SessionConfig } from '../../structures/sessions.dto';
+import {
+  MeInfo,
+  ProxyConfig,
+  SessionConfig,
+} from '../../structures/sessions.dto';
 import { NotImplementedByEngineError } from '../exceptions';
 import { LocalSessionStorage, MediaStorage } from './storage.abc';
 import { OTPRequest, RequestCodeRequest } from '../../structures/auth.dto';
@@ -167,6 +171,10 @@ export abstract class WhatsappSession {
   }
 
   abstract getScreenshot(): Promise<Buffer | string>;
+
+  public getSessionMeInfo(): Promise<MeInfo | null> {
+    throw new NotImplementedByEngineError();
+  }
 
   /**
    * Other methods

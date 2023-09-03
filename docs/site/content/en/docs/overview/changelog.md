@@ -14,6 +14,7 @@ toc: true
 ---
 ## 2023.9
 September 2023
+- Add `GET /api/sessions/{session/me` endpoint so you [can get the phone number associated with the session](https://waha.devlike.pro/docs/how-to/sessions/#get-me)
 - Add [polls support in NOWEB engine](https://waha.devlike.pro/docs/how-to/polls)
 - Add dedicated [Get QR](https://waha.devlike.pro/docs/how-to/sessions/#get-qr) endpoint!
 - Support [pairing method (NOWEB)](https://waha.devlike.pro/docs/how-to/sessions/#get-pairing-code) - you can connect with a code instead of QR.

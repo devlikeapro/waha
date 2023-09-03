@@ -3,16 +3,21 @@ import { ApiProperty } from '@nestjs/swagger';
 import { WAHAEngine, WAHAEvents, WAMessageAck } from './enums.dto';
 import { WAMessage } from './responses.dto';
 import { MessageDestination } from './chatting.dto';
+import { ChatIdProperty, MessageIdProperty } from './properties.dto';
 
 export class WAMessageAckBody {
-  @ApiProperty({
-    description: 'Message ID',
-    example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
-  })
+  @MessageIdProperty()
   id: string;
+
+  @ChatIdProperty()
   from: string;
+
+  @ChatIdProperty()
   to: string;
+
+  @ChatIdProperty()
   participant: string;
+
   fromMe: boolean;
   ack: WAMessageAck;
   ackName: string;
@@ -29,7 +34,7 @@ export class WAGroupPayload {
   })
   timestamp: number;
 
-  @ApiProperty({
+  @ChatIdProperty({
     description: 'ID for the Chat that this groupNotification was sent for',
   })
   chatId: string;

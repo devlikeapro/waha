@@ -8,6 +8,7 @@ import {
   VoiceBinaryFile,
   VoiceRemoteFile,
 } from './files.dto';
+import { ChatIdProperty } from './properties.dto';
 
 /**
  * Queries
@@ -25,9 +26,7 @@ export class MessageTextQuery extends SessionQuery {
 }
 
 export class ChatQuery extends SessionQuery {
-  @ApiProperty({
-    example: '11111111111@c.us',
-  })
+  @ChatIdProperty()
   chatId: string;
 }
 
@@ -48,9 +47,7 @@ export class GetPresenceQuery extends ChatQuery {}
  * Requests
  */
 export class ChatRequest extends SessionBaseRequest {
-  @ApiProperty({
-    example: '11111111111@c.us',
-  })
+  @ChatIdProperty()
   chatId: string;
 }
 

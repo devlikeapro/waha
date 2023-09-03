@@ -128,6 +128,28 @@ In order to log out the session - call `POST /api/sessions/logout`
 }
 ```
 
+### Get me
+
+Get information about the associated account for that session (if any).
+```bash
+GET /api/sessions/{session}/me
+```
+
+**Authenticated and working** session's response:
+```json
+{
+  "id": "11111111111@c.us",
+  "pushName": "string"
+}
+```
+
+**Stopped** or **not authenticated** session returns null:
+```json
+null
+```
+
+
+
 
 ## Authentication
 ### Get QR

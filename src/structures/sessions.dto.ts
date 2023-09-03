@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { WAHASessionStatus } from './enums.dto';
 import { WebhookConfig } from './webhooks.config.dto';
+import { ChatIdProperty } from './properties.dto';
 
 /**
  * Queries
@@ -65,4 +66,14 @@ export class SessionDTO {
   name = 'default';
   status: WAHASessionStatus;
   config: SessionConfig;
+}
+
+export class MeInfo {
+  @ChatIdProperty()
+  id: string;
+  pushName: string;
+}
+
+export class SessionInfo extends SessionDTO {
+  me: MeInfo | null;
 }

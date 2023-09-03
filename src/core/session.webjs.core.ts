@@ -50,6 +50,8 @@ import {
   NotImplementedByEngineError,
 } from './exceptions';
 import { QR } from './QR';
+import { MeInfo } from '../structures/sessions.dto';
+import { jidNormalizedUser } from '@adiwajshing/baileys';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -111,6 +113,19 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   stop() {
     return this.whatsapp.destroy();
+  }
+
+  async getSessionMeInfo(): Promise<MeInfo | null> {
+    const clientInfo = this.whatsapp?.info;
+    if (!clientInfo) {
+      return null;
+    }
+    const wid = clientInfo.wid;
+    const meInfo: MeInfo = {
+      id: wid._serialized,
+      pushName: clientInfo.pushname,
+    };
+    return meInfo;
   }
 
   protected listenConnectionEvents() {

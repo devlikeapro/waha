@@ -10,6 +10,7 @@ import { WAHAEngine, WAHASessionStatus } from '../structures/enums.dto';
 import {
   ProxyConfig,
   SessionDTO,
+  SessionInfo,
   SessionLogoutRequest,
   SessionStartRequest,
   SessionStopRequest,
@@ -191,7 +192,7 @@ export class SessionManagerCore extends SessionManager {
     return session;
   }
 
-  async getSessions(all: boolean): Promise<SessionDTO[]> {
+  async getSessions(all: boolean): Promise<SessionInfo[]> {
     if (!this.session) {
       if (!all) {
         return [];
@@ -201,14 +202,17 @@ export class SessionManagerCore extends SessionManager {
           name: this.DEFAULT,
           status: WAHASessionStatus.STOPPED,
           config: undefined,
+          me: null,
         },
       ];
     }
+    const me = await this.session.getSessionMeInfo().catch((err) => null);
     return [
       {
         name: this.session.name,
         status: this.session.status,
         config: this.session.sessionConfig,
+        me: me,
       },
     ];
   }

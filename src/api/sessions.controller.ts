@@ -6,16 +6,21 @@ import { SessionManager } from '../core/abc/manager.abc';
 import { parseBool } from '../helpers';
 import {
   ListSessionsQuery,
+  MeInfo,
   SessionDTO,
+  SessionInfo,
   SessionLogoutRequest,
   SessionStartRequest,
   SessionStopRequest,
 } from '../structures/sessions.dto';
+import { SessionApiParam, SessionParam } from './helpers';
+import { WhatsappSession } from '../core/abc/session.abc';
+import { WAHAChatPresences } from '../structures/presence.dto';
 
 @ApiSecurity('api_key')
 @Controller('api/sessions')
 @ApiTags('sessions')
-export class SessionsController {
+class SessionsController {
   constructor(private manager: SessionManager) {}
 
   @Post('/start/')
@@ -45,8 +50,24 @@ export class SessionsController {
   }
 
   @Get('/')
-  async list(@Query() query: ListSessionsQuery): Promise<SessionDTO[]> {
+  async list(@Query() query: ListSessionsQuery): Promise<SessionInfo[]> {
     const all = parseBool(query.all);
     return this.manager.getSessions(all);
   }
 }
+
+@ApiSecurity('api_key')
+@Controller('api/sessions/:session')
+@ApiTags('sessions')
+class SessionController {
+  constructor(private manager: SessionManager) {}
+
+  @Get('me')
+  @SessionApiParam
+  @ApiOperation({ summary: 'Get information about the authenticated account' })
+  getMe(@SessionParam session: WhatsappSession): Promise<MeInfo> {
+    return session.getSessionMeInfo();
+  }
+}
+
+export { SessionController, SessionsController };
