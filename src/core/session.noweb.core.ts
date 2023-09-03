@@ -139,6 +139,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     const socketConfig = this.getSocketConfig(agent, state);
     const sock: any = makeWASocket(socketConfig);
     sock.ev.on(BaileysEvents.CREDS_UPDATE, saveCreds);
+    this.debugLogEnginesEvents(sock);
     return sock;
   }
 
@@ -216,6 +217,19 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
           this.qr.save(url);
         });
       }
+    });
+  }
+
+  protected debugLogEnginesEvents(sock) {
+    if (!process.env.DEBUG) {
+      return;
+    }
+
+    sock.ev.process((events) => {
+      this.log.debug('Engine events');
+      this.log.debug('=============');
+      console.log(JSON.stringify(events));
+      this.log.debug('=============');
     });
   }
 
