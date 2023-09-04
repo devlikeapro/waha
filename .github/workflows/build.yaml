@@ -6,17 +6,12 @@ on:
       - "*"
 
 jobs:
-  deploy-docker:
+  docker-amd64:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        with:
-          platforms: 'amd64'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -26,9 +21,10 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ secrets.DOCKER_IMAGE }}
-          flavor: latest=true
+          flavor: latest=false
           tags: |
             type=semver,pattern={{version}}
+            type=raw,value=latest
 
       - name: Login to image repository
         if: github.ref_type == 'tag'
