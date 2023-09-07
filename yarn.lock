@@ -13145,13 +13145,13 @@ __metadata:
     tsconfig-paths: ^4.1.0
     typescript: ^4.8.4
     venom-bot: 5.0.1
-    whatsapp-web.js: "https://github.com/pedroslopez/whatsapp-web.js"
+    whatsapp-web.js: "https://github.com/elhumbertoz/whatsapp-web.js#patch-2"
   languageName: unknown
   linkType: soft
 
-"whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js":
-  version: 1.22.1
-  resolution: "whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js.git#commit=abac063b779570729476cf42e29dc694e5345ca6"
+"whatsapp-web.js@https://github.com/elhumbertoz/whatsapp-web.js#patch-2":
+  version: 1.22.2-alpha.0
+  resolution: "whatsapp-web.js@https://github.com/elhumbertoz/whatsapp-web.js.git#commit=3a6f2a3d4b2005ba894de663585305e633663edb"
   dependencies:
     "@pedroslopez/moduleraid": ^5.0.2
     archiver: ^5.3.1
@@ -13170,7 +13170,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 2100a4c826d25c5697fe304f6e036556b4c1c28f310262389c17b10344a182b0203eac6ac8823e3624c1e0c1b93187bd9447a1775aa69e01c7329659a6edcebc
+  checksum: c163fb12fc59e5c52ea80ee03a25009d008370e3a329f2e3cf4c99addeaa19b42157dd10393807b45910ea8efd1a3e8148b141e74d9b40e66c519a944be11c81
   languageName: node
   linkType: hard
 
