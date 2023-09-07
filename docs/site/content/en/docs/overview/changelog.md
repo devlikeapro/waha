@@ -1,7 +1,7 @@
 ---
 title: "Changelog"
 description: "WAHA's changelog"
-lead: "Changelog"
+lead: "You can find here the list of changes made to WAHA."
 date: 2020-10-06T08:49:31+00:00
 lastmod: 2020-10-06T08:49:31+00:00
 draft: false
@@ -12,6 +12,13 @@ menu:
 weight: 199
 toc: true
 ---
+
+If you wish to get and read Release Notes - read them on one of our platforms, **these posts are FREE**.
+- [**Boosty ->**](https://boosty.to/wa-http-api)
+- [**Patreon ->**](patreon.com/wa_http_api)
+
+You even can **subscribe to get new updates** there!
+
 ## 2023.9
 September 2023
 - Add `GET /api/sessions/{session/me` endpoint so you [can get the phone number associated with the session](https://waha.devlike.pro/docs/how-to/sessions/#get-me)
