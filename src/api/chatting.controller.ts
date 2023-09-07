@@ -14,7 +14,6 @@ import {
   MessagePollRequest,
   MessageReactionRequest,
   MessageReplyRequest,
-  MessageTextButtonsRequest,
   MessageTextQuery,
   MessageTextRequest,
   MessageVoiceRequest,
@@ -61,15 +60,10 @@ export class ChattingController {
     return whatsapp.sendText(request);
   }
 
-  @Post('/sendTextButtons')
-  @ApiOperation({ summary: 'Send a text message with buttons' })
-  sendTextButtons(@Body() request: MessageTextButtonsRequest) {
-    const whatsapp = this.manager.getSession(request.session);
-    return whatsapp.sendTextButtons(request);
-  }
-
   @Post('/sendPoll')
-  @ApiOperation({ summary: 'Send a poll with options' })
+  @ApiOperation({
+    summary: 'Send a poll with options. You can use it as buttons replace',
+  })
   sendPoll(@Body() request: MessagePollRequest) {
     const whatsapp = this.manager.getSession(request.session);
     return whatsapp.sendPoll(request);

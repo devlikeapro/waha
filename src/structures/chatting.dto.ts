@@ -92,17 +92,6 @@ export class MessageTextRequest extends ChatRequest {
   mentions?: string[];
 }
 
-export class Button {
-  id: string;
-  text: string;
-}
-
-export class MessageTextButtonsRequest extends ChatRequest {
-  title: string;
-  footer?: string;
-  buttons?: Array<Button>;
-}
-
 export class MessageReplyRequest extends MessageTextRequest {
   text = 'Reply text';
   @ApiProperty({

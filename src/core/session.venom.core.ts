@@ -2,7 +2,6 @@ import { UnprocessableEntityException } from '@nestjs/common/exceptions/unproces
 import { create, CreateConfig, Message, Whatsapp } from 'venom-bot';
 
 import {
-  Button,
   ChatRequest,
   CheckNumberStatusQuery,
   GetMessageQuery,
@@ -13,7 +12,6 @@ import {
   MessageLocationRequest,
   MessageReactionRequest,
   MessageReplyRequest,
-  MessageTextButtonsRequest,
   MessageTextRequest,
   WANumberExistResult,
 } from '../structures/chatting.dto';
@@ -200,23 +198,6 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
 
   sendSeen(chat: ChatRequest) {
     return this.whatsapp.markMarkSeenMessage(chat.chatId);
-  }
-
-  sendTextButtons(request: MessageTextButtonsRequest) {
-    const buttons = request.buttons.map((button: Button) => {
-      return {
-        buttonId: button.id,
-        buttonText: {
-          displayText: button.text,
-        },
-      };
-    });
-    return this.whatsapp.sendButtons(
-      this.ensureSuffix(request.chatId),
-      request.title,
-      request.footer,
-      buttons,
-    );
   }
 
   startTyping(chat: ChatRequest) {

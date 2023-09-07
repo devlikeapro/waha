@@ -40,7 +40,6 @@
 - Receive messages  
 - Message replies  
 - Send location  
-- Send buttons  
 - Receive location  
 - React to messages  
 - Send media (images/documents/files) 

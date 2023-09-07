@@ -23,7 +23,6 @@ import { Message } from 'whatsapp-web.js';
 
 import { flipObject, splitAt } from '../helpers';
 import {
-  Button,
   ChatRequest,
   CheckNumberStatusQuery,
   MessageContactVcardRequest,
@@ -35,7 +34,6 @@ import {
   MessagePollRequest,
   MessageReactionRequest,
   MessageReplyRequest,
-  MessageTextButtonsRequest,
   MessageTextRequest,
   MessageVoiceRequest,
   SendSeenRequest,
@@ -331,24 +329,6 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       mentions: request.mentions?.map(toJID),
     };
     return this.sock.sendMessage(chatId, message);
-  }
-
-  sendTextButtons(request: MessageTextButtonsRequest) {
-    const buttons = request.buttons.map((button: Button) => {
-      return {
-        buttonId: button.id,
-        buttonText: { displayText: button.text },
-        type: 1,
-      };
-    });
-
-    const buttonMessage = {
-      text: request.title,
-      buttons: buttons,
-      headerType: 1,
-    };
-
-    return this.sock.sendMessage(request.chatId, buttonMessage);
   }
 
   async sendPoll(request: MessagePollRequest) {

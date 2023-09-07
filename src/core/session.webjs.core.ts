@@ -1,6 +1,5 @@
 import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
 import {
-  Buttons,
   Chat,
   Client,
   ClientOptions,
@@ -13,7 +12,6 @@ import {
 import { Message as MessageInstance } from 'whatsapp-web.js/src/structures';
 
 import {
-  Button,
   ChatRequest,
   CheckNumberStatusQuery,
   GetMessageQuery,
@@ -24,7 +22,6 @@ import {
   MessageLocationRequest,
   MessageReactionRequest,
   MessageReplyRequest,
-  MessageTextButtonsRequest,
   MessageTextRequest,
   MessageVoiceRequest,
   SendSeenRequest,
@@ -185,20 +182,6 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       this.ensureSuffix(request.chatId),
       request.text,
       options,
-    );
-  }
-
-  sendTextButtons(request: MessageTextButtonsRequest) {
-    const buttons = request.buttons.map((button: Button) => {
-      return {
-        id: button.id,
-        body: button.text,
-      };
-    });
-    const message = new Buttons('', buttons, request.title, request.footer);
-    return this.whatsapp.sendMessage(
-      this.ensureSuffix(request.chatId),
-      message,
     );
   }
 

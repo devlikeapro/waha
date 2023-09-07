@@ -15,7 +15,6 @@ import {
   MessagePollRequest,
   MessageReactionRequest,
   MessageReplyRequest,
-  MessageTextButtonsRequest,
   MessageTextRequest,
   MessageVoiceRequest,
 } from '../../structures/chatting.dto';
@@ -184,8 +183,6 @@ export abstract class WhatsappSession {
   abstract sendText(request: MessageTextRequest);
 
   abstract sendContactVCard(request: MessageContactVcardRequest);
-
-  abstract sendTextButtons(request: MessageTextButtonsRequest);
 
   sendPoll(request: MessagePollRequest) {
     throw new NotImplementedByEngineError();
