@@ -86,6 +86,7 @@ Here's available tiers for our supporters:
 | Access to WAHA Plus  ![](/images/versions/plus.png) docker image.                   |   ✔️    |    ✔️    |   ✔️    |
 | An invitation to a private Github repository so you have the WAHA Plus source code. |   ➖️    |    ✔️    |   ✔️️   |
 | Access to a Telegram group where we provide support and assistance.                 |   ➖️    |    ➖     |   ✔️    |
+| Personal key to Docker Hub.                                                         |   ➖️    |    ➖     |   ✔️    |
 | **Donation**                                                                        | **$19** | **$39**  | **$99** |
 
 For **$19** donation you get:
