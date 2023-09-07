@@ -131,7 +131,7 @@ Go ahead and get your own WhatsApp HTTP API!
 ### Install Plus
 After you get the password, use it to login and download docker image:
 ```bash
-docker login -u devlikeapro -p {PASSWORD}
+docker login -u devlikeapro -p {KEY}
 docker pull devlikeapro/whatsapp-http-api-plus
 docker logout
 ```

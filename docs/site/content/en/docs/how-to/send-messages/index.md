@@ -75,7 +75,7 @@ To reply on a message - use `POST /api/reply` with example payload.
 ```
 
 #### Reply files ![](/images/versions/plus-soon.png)
-WAHA does not support reply with files (images, voice, etc). If you're interested in it - please create an issue in GitHub.
+WAHA does not support reply with files (images, voice, etc.). If you're interested in it - please create an issue in GitHub.
 
 ### Add a reaction
 Use `PUT /api/reaction` method to set reaction to a message.

@@ -109,7 +109,7 @@ docker pull devlikeapro/whatsapp-http-api
 ![](./docs/site/content/en/docs/overview/quick-start//images/versions/plus.png) For Plus version, we use login to get the image before:
 
 ```bash
-docker login -u devlikeapro -p {PASSWORD}
+docker login -u devlikeapro -p {KEY}
 docker pull devlikeapro/whatsapp-http-api-plus
 docker logout
 ```

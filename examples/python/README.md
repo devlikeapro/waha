@@ -28,7 +28,7 @@ docker run -it --rm --network=host -e WHATSAPP_HOOK_URL=http://localhost:5000/bo
 
 #### Download image - ARM
 
-If you're using ARM (like Apple Silicon, Apple M1, etc) - use following commands to download the image
+If you're using ARM (like Apple Silicon, Apple M1, etc.) - use following commands to download the image
 
 ![](/images/versions/core.png) For Core version the command is
 ```bash

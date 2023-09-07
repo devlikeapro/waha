@@ -29,7 +29,7 @@ When you are ready - come back and follows the below steps to send the first tex
 Docker makes it easy to ship all-in-one solution with the runtime and dependencies. You don't have to worry about
 language-specific libraries or chrome installation.
 
-Also Docker makes installation and update processes so simple, just one command!
+Also, Docker makes installation and update processes so simple, just one command!
 {{< /details >}}
 
 ## Send your first message
@@ -63,7 +63,7 @@ docker pull devlikeapro/whatsapp-http-api
 ![](/images/versions/plus.png) For Plus version, we use login to get the image before:
 
 ```bash
-docker login -u devlikeapro -p {PASSWORD}
+docker login -u devlikeapro -p {KEY}
 docker pull devlikeapro/whatsapp-http-api-plus
 docker logout
 ```
@@ -72,7 +72,7 @@ Read more about how to get `PASSWORD` for [Plus Version →]({{< relref "plus-ve
 
 #### 1.1 Download image on ARM
 
-If you're using ARM (like Apple Silicon, Apple M1, etc) - use following commands to download the image
+If you're using ARM (like Apple Silicon, Apple M1, etc.) - use following commands to download the image
 
 ![](/images/versions/core.png) For Core version the command is
 ```bash
@@ -84,12 +84,12 @@ docker tag devlikeapro/whatsapp-http-api:arm devlikeapro/whatsapp-http-api
 
 ![](/images/versions/plus.png) For Plus version the command is:
 ```bash
-docker login -u devlikeapro -p {PASSWORD}
+docker login -u devlikeapro -p {KEY}
 docker pull devlikeapro/whatsapp-http-api-plus:arm
 docker logout
 
 # Rename it, so you can use devlikeapro/whatsapp-http-api image in other place
-docker tag devlikeapro/whatsapp-http-api-plus:arm devlikeapro/whatsapp-http-api
+docker tag devlikeapro/whatsapp-http-api-plus:arm devlikeapro/whatsapp-http-api-plus
 ```
 
 ### 2. Run WhatsApp HTTP API
