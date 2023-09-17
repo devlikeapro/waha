@@ -129,7 +129,7 @@ You can subscribe to presence information by calling `POST /api/{session}/presen
 You can get later presence information for the chat with above `GET` endpoints or by listening to `presence.update`
 webhook.
 
-## Events
+## Webhooks
 ### presence.update
 
 You can subscribe to `presence.update` webhook event to get the most recent presence information.

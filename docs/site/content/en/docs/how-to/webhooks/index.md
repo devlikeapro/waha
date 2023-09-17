@@ -108,7 +108,7 @@ docker run -it -e "WHATSAPP_HOOK_EVENTS=*" -e WHATSAPP_HOOK_URL=https://httpbin.
 
 
 
-## Events
+## Webhooks
 
 ### message
 

@@ -15,7 +15,7 @@ Parameters in path that you can find in below endpoints:
 - `{session}` - use the session name for Whatsapp instance that you created with `POST /api/session/start` endpoint
 - `{chatId}` - chat id in format `123123123123@[c.us|g.us]`, `c.us` for direct chats and `g.us` for groups.
 
-## Methods
+## Endpoints
 ### Get all chats
 Get all chats
 `GET /api/{session}/chats`

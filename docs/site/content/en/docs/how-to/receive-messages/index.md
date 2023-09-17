@@ -36,7 +36,7 @@ Start a new session with configured `message` event in webhooks - call `POST /ap
 After that WAHA'll send events (see below) about new messages to an endpoint you provided.
 
 
-## Events
+## Webhooks
 Here's examples of message-related events.
 Read [Webhooks ->]({{< relref "/docs/how-to/webhooks" >}}) to find how to set them up.
 
