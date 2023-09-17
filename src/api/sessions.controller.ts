@@ -1,6 +1,11 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
-import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import {
+  ApiExtraModels,
+  ApiOperation,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { parseBool } from '../helpers';
@@ -16,6 +21,7 @@ import {
 import { SessionApiParam, SessionParam } from './helpers';
 import { WhatsappSession } from '../core/abc/session.abc';
 import { WAHAChatPresences } from '../structures/presence.dto';
+import { WAHAWebhook } from '../structures/webhooks.dto';
 
 @ApiSecurity('api_key')
 @Controller('api/sessions')

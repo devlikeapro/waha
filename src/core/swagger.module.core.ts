@@ -1,11 +1,12 @@
 import { INestApplication } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 
 import { WhatsappConfigService } from '../config.service';
 import { VERSION } from '../version';
+import { DECORATORS } from '@nestjs/swagger/dist/constants';
 
 export class SwaggerModuleCore {
-  configure(app: INestApplication) {
+  configure(app: INestApplication, webhooks: any[]) {
     this.setUpAuth(app);
     const builder = new DocumentBuilder();
 
@@ -63,11 +64,56 @@ export class SwaggerModuleCore {
       });
     }
 
-    const options = builder.build();
-    const document = SwaggerModule.createDocument(app, options);
+    const swaggerDocumentConfig = builder.build();
+    const swaggerDocumentOptions = {
+      extraModels: webhooks,
+    };
+    let document = SwaggerModule.createDocument(
+      app,
+      swaggerDocumentConfig,
+      swaggerDocumentOptions,
+    );
+    document = this.configureWebhooks(document, webhooks);
     SwaggerModule.setup('', app, document, {
       customSiteTitle: 'WAHA - WhatsApp HTTP API',
     });
+  }
+
+  private configureWebhooks(document: OpenAPIObject, supportedWebhooks) {
+    document.openapi = '3.1.0';
+    const webhooks = {};
+    for (const webhook of supportedWebhooks) {
+      const eventMetadata = Reflect.getMetadata(
+        DECORATORS.API_MODEL_PROPERTIES,
+        webhook.prototype,
+        'event',
+      );
+      const event = new webhook().event;
+      const schemaName = webhook.name;
+      webhooks[event] = {
+        post: {
+          summary: eventMetadata.description,
+          requestBody: {
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: `#/components/schemas/${schemaName}`,
+                },
+              },
+            },
+          },
+          responses: {
+            '200': {
+              description:
+                'Return a 200 status to indicate that the data was received successfully',
+            },
+          },
+        },
+      };
+    }
+    // @ts-ignore
+    document.webhooks = webhooks;
+    return document;
   }
 
   protected setUpAuth(app: INestApplication) {

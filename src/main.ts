@@ -6,6 +6,7 @@ import { WhatsappConfigService } from './config.service';
 import { AppModuleCore } from './core/app.module.core';
 import { SwaggerModuleCore } from './core/swagger.module.core';
 import { getWAHAVersion, WAHAVersion } from './version';
+import { WAHA_WEBHOOKS } from './structures/webhooks.dto';
 
 async function loadModules(): Promise<
   [typeof AppModuleCore, typeof SwaggerModuleCore]
@@ -44,7 +45,7 @@ async function bootstrap() {
 
   // Configure swagger
   const swagger = new SwaggerModule();
-  swagger.configure(app);
+  swagger.configure(app, WAHA_WEBHOOKS);
 
   const config = app.get(WhatsappConfigService);
   await app.listen(config.port);

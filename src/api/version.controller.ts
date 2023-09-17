@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiExtraModels, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 import { VERSION } from '../version';
 

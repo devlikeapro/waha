@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { WAHAEvents } from './enums.dto';
 
 function ChatIdProperty(options = undefined) {
   options = options || {};
