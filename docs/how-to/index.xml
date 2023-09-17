@@ -30,7 +30,7 @@ POST /api/sendPoll The request body is pretty simple:
 { &amp;quot;session&amp;quot;: &amp;quot;default&amp;quot;, &amp;quot;chatId&amp;quot;: &amp;quot;123123123@c.us&amp;quot;, &amp;quot;poll&amp;quot;: { &amp;quot;name&amp;quot;: &amp;quot;How are you?&amp;quot;, &amp;quot;options&amp;quot;: [ &amp;quot;Awesome!&amp;quot;, &amp;quot;Good!&amp;quot;, &amp;quot;Not bad!&amp;quot; ], &amp;quot;multipleAnswers&amp;quot;: false } } The response you get back:
 { &amp;quot;id&amp;quot;: &amp;quot;true_321321321@c.us_83ACBAAAAAAAAAAAAAAAAAAAA&amp;quot;, &amp;quot;other-fields-here&amp;quot;: &amp;quot;value&amp;quot; } You must save the id field from the response in your database so that you can identify the poll for which you receive a vote (see webhook events below).</description></item><item><title>Chats</title><link>https://waha.devlike.pro/docs/how-to/chats/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/chats/</guid><description>Chats methods.
 Parameters in path that you can find in below endpoints:
-{session} - use the session name for Whatsapp instance that you created with POST /api/session/start endpoint {chatId} - chat id in format 123123123123@[c.us|g.us], c.us for direct chats and g.us for groups. Methods #
+{session} - use the session name for Whatsapp instance that you created with POST /api/session/start endpoint {chatId} - chat id in format 123123123123@[c.us|g.us], c.us for direct chats and g.us for groups. Endpoints #
 Get all chats #
 Get all chats GET /api/{session}/chats
 Get messages from chat #
