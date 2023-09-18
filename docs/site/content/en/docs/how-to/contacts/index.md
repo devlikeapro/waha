@@ -13,7 +13,10 @@ Methods for contacts.
 
 {{< alert icon="👉" text="WhatsApp Web does not support adding contacts, so the API doesn't support it too." />}}
 
-## Get all contacts
+## Endpoints
+See the list of engines [**that support the feature ->**]({{< relref "/docs/how-to/engines#features" >}}).
+
+### Get all contacts
 
 Get your contacts - `GET /api/contacts/all`
 
@@ -34,7 +37,7 @@ Get your contacts - `GET /api/contacts/all`
 ]
 ```
 
-## Get contact
+### Get contact
 
 Get contact
 
@@ -56,7 +59,7 @@ Get contact
 }
 ```
 
-## Check phone number exists
+### Check phone number exists
 
 If you want to check if phone number is registered in WhatsApp (even if the number is not in your contact list) - use
 this endpoint for that.
@@ -68,7 +71,7 @@ this endpoint for that.
 }
 ```
 
-## Get "about" contact
+### Get "about" contact
 
 - `GET /api/contacts/about?contactId=11231231231&session=default`
 
@@ -78,7 +81,7 @@ this endpoint for that.
 }
 ```
 
-## Get contact profile picture
+### Get contact profile picture
 
 - `GET /api/contacts/profile-picture?contactId=11231231231&session=default`
 
@@ -88,7 +91,7 @@ this endpoint for that.
 }
 ```
 
-## Block (unblock) contact
+### Block (unblock) contact
 - To block contact - `POST /api/contacts/block`
 - To unblock contact - `POST /api/contacts/unblock`
 

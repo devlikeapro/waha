@@ -16,6 +16,8 @@ Parameters in path that you can find in below endpoints:
 - `{chatId}` - chat id in format `123123123123@[c.us|g.us]`, `c.us` for direct chats and `g.us` for groups.
 
 ## Endpoints
+See the list of engines [**that support the feature ->**]({{< relref "/docs/how-to/engines#features" >}}).
+
 ### Get all chats
 Get all chats
 `GET /api/{session}/chats`

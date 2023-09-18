@@ -9,7 +9,10 @@ images: []
 weight: 140
 ---
 
-Methods for groups. Please look at swagger for details.
+## Endpoints
+See the list of engines [**that support the feature ->**]({{< relref "/docs/how-to/engines#features" >}}).
+
+Endpoints for groups. Please look at swagger for details.
 
 - `{session}` - use the session name for Whatsapp instance that you created with `POST /api/session/start` endpoint
 - `{groupId}` - group id in format `123123123123@g.us`. You can get the id in a few ways:
@@ -17,7 +20,7 @@ Methods for groups. Please look at swagger for details.
   - By getting all groups (see below).
   - By creating a new group and saving the id.
 
-## Create a new group
+### Create a new group
 
 `POST /api/{session}/groups`
 
@@ -34,23 +37,23 @@ Request:
 }
 ```
 
-## Get all groups
+### Get all groups
 
 `GET /api/{session}/groups`
 
-## Get the group
+### Get the group
 
 `GET /api/{session}/groups/{groupId}`
 
-## Delete the group
+### Delete the group
 
 `DELETE /api/{session}/groups/{groupId}`
 
-## Leave the group
+### Leave the group
 
 `POST /api/{session}/groups/{groupId}/leave`
 
-## Set group subject
+### Set group subject
 
 Updates the group subject.
 
@@ -67,7 +70,7 @@ Request:
 }
 ```
 
-## Set group description
+### Set group description
 
 Updates the group description.
 
@@ -84,8 +87,8 @@ Request:
 }
 ```
 
-## Settings
-### Security for group info
+### Settings
+#### Security for group info
 Updates the group settings to only allow admins to edit group info (title, description, photo).
 
 `PUT /api/{session}/groups/{groupId}/settings/security/info-admin-only`
@@ -95,13 +98,13 @@ The request doesn't require any request's body and
 If you wish to have that ability - please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues)
 
 
-## Participants
+### Participants
 
-### Get participants
+#### Get participants
 
 `GET /api/{session}/groups/{groupId}/participants`
 
-### Add participants
+#### Add participants
 
 `POST /api/{session}/groups/{groupId}/participants/add`
 
@@ -115,7 +118,7 @@ If you wish to have that ability - please [create an issue](https://github.com/d
 }
 ```
 
-### Remove participants
+#### Remove participants
 
 `POST /api/{session}/groups/{groupId}/participants/remove`
 
@@ -129,9 +132,9 @@ If you wish to have that ability - please [create an issue](https://github.com/d
 }
 ```
 
-## Admin
+### Admin
 
-### Promote to admin
+#### Promote to admin
 
 Promote participants to admin users.
 
@@ -147,7 +150,7 @@ Promote participants to admin users.
 }
 ```
 
-### Demote to regular users
+#### Demote to regular users
 
 Demote participants by to regular users.
 
@@ -163,17 +166,45 @@ Demote participants by to regular users.
 }
 ```
 
-## Invite code
+### Invite code
 
-### Get invite code
+#### Get invite code
 
 `GET /api/{session}/groups/{groupId}/invite-code`
 
 Then you can put it in the url `https://chat.whatsapp.com/{inviteCode}` and send it to contacts.
 
-### Revoke invite code
+#### Revoke invite code
 
 Invalidates the current group invite code and generates a new one.
 
 `POST /api/{session}/groups/{groupId}/invite-code/revoke`
 
+## Webhooks
+See the list of engines [**that support the feature ->**]({{< relref "/docs/how-to/engines#features" >}}).
+
+### group.join
+
+```json
+{
+  "event": "group.join",
+  "session": "default",
+  "engine": "WEBJS",
+  "payload": {
+    ...
+  }
+}
+```
+
+### group.leave
+
+```json
+{
+  "event": "group.left",
+  "session": "default",
+  "engine": "WEBJS",
+  "payload": {
+    ...
+  }
+}
+```

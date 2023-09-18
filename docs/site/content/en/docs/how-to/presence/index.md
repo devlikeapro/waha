@@ -21,6 +21,7 @@ Possible presence statuses that you can set or get for chats:
 
 
 ## Endpoints
+See the list of engines [**that support the feature ->**]({{< relref "/docs/how-to/engines#features" >}}).
 
 ### Set presence
 You can set your global or chat-related presence with `POST /api/{session}/presence` endpoint
@@ -127,6 +128,8 @@ You can get later presence information for the chat with above `GET` endpoints o
 webhook.
 
 ## Webhooks
+See the list of engines [**that support the feature ->**]({{< relref "/docs/how-to/engines#features" >}}).
+
 ### presence.update
 
 You can subscribe to `presence.update` webhook event to get the most recent presence information.

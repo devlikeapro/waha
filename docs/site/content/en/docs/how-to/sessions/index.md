@@ -10,6 +10,7 @@ weight: 125
 ---
 
 ## Sessions
+See the list of engines [**that support the features ->**]({{< relref "/docs/how-to/engines#features" >}}).
 
 ### Start
 
@@ -152,6 +153,8 @@ null
 
 
 ## Authentication
+See the list of engines [**that support the features ->**]({{< relref "/docs/how-to/engines#features" >}}).
+
 ### Get QR
 The simplest way to authenticate a new session - get QR code and scan it on your device.
 ```bash

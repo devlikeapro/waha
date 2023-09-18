@@ -30,6 +30,7 @@ When sending media (images, voice, files) you can either use:
 - `file.url` field with public available URL for that file
 
 ## Endpoints
+See the list of engines [**that support the feature ->**]({{< relref "/docs/how-to/engines#features" >}}).
 
 ### Send text
 To send text message - use `POST /api/sendText` with example payload.

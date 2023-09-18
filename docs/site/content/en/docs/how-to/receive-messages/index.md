@@ -12,8 +12,6 @@ We consider that you've run docker container and authenticated the session with 
 
 If you haven't yet - please follow the steps from [**Quick Start →**]({{< relref "/docs/overview/quick-start" >}}).
 
-## Webhooks
-
 You must use [Webhooks]({{< relref "/docs/how-to/webhooks" >}}) to receive messages from WhatsApp to your application.
 
 Start a new session with configured `message` event in webhooks - call `POST /api/sessions/start` with the payload:
@@ -37,6 +35,8 @@ After that WAHA'll send events (see below) about new messages to an endpoint you
 
 
 ## Webhooks
+See the list of engines [**that support the feature ->**]({{< relref "/docs/how-to/engines#features" >}}).
+
 Here's examples of message-related events.
 Read [Webhooks ->]({{< relref "/docs/how-to/webhooks" >}}) to find how to set them up.
 
@@ -156,6 +156,7 @@ If you want to limit files lifetime, specify file types for download or change d
 [read more about file storage configuration and variables ->]({{< relref "config" >}}).
 
 ## Endpoints
+See the list of engines [**that support the feature ->**]({{< relref "/docs/how-to/engines#features" >}}).
 
 ### Get messages
 Read messages from the history - use `GET /api/messages` endpoint.

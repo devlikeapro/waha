@@ -30,6 +30,8 @@ WAHA is distributed in two versions:
 - Core ![](/images/versions/core.png) - the basic version that meet almost 80% people's needs. 100% free and [open source ->](https://github.com/devlikeapro/whatsapp-http-api).
 - Plus ![](/images/versions/plus.png) - the version with advanced messages, security, and reliability features. Donations, no license expiration, quick updates, read more about [Plus Version →]({{< relref "plus-version" >}})
 
+See the list of engines [**that support the features ->**]({{< relref "/docs/how-to/engines#features" >}}).
+
 Here's the available features:
 
 ### Messages
