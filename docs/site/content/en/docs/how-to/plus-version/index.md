@@ -17,16 +17,16 @@ weight: 900
 2. Plus ![](/images/versions/plus.png) the version with advanced messages, security, and reliability features.
 
  You support the project and get **WAHA Plus** on
- <a href="https://boosty.to/wa-http-api" target="_blank">
-   <b>
-     Boosty ->
-   </b>
- </a>
-or
  <a href="https://patreon.com/wa_http_api" target="_blank">
    <b>
      Patreon ->
    </b>
+ </a>
+ or
+ <a href="https://boosty.to/wa-http-api" target="_blank">
+     <b>
+         Boosty ->
+     </b>
  </a>
 .
 
@@ -97,23 +97,6 @@ For **$19** donation you get:
 
 {{< alert icon="💡" text="If you stay subscribed - the donation amount will never change for you and always be $19 to get monthly updates!" />}}
 
-
-### Boosty
-<p align="center">
-  <img src="boosty.svg" alt="Patreon" />
-  <br/>
-  <br/>
-</p>
-
-Support the project and get WAHA Plus version on
-<a href="https://boosty.to/wa-http-api" target="_blank">
-  <b>
-    Boosty ->
-  </b>
-</a>
-
-Go ahead and get your own WhatsApp HTTP API!
-
 ### Patreon
 <p align="center">
   <img src="patreon.png" alt="Patreon" />
@@ -128,6 +111,21 @@ Support the project and get WAHA Plus version on
 
 Go ahead and get your own WhatsApp HTTP API!
 
+### Boosty
+<p align="center">
+  <img src="boosty.svg" alt="Patreon" />
+  <br/>
+  <br/>
+</p>
+
+Support the project and get WAHA Plus version on
+<a href="https://boosty.to/wa-http-api" target="_blank">
+<b>
+Boosty ->
+</b>
+</a>
+
+Go ahead and get your own WhatsApp HTTP API!
 
 ### Install Plus
 After you get the password, use it to login and download docker image:
