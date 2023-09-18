@@ -346,10 +346,6 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return this.toWAMessage(result);
   }
 
-  sendContactVCard(request: MessageContactVcardRequest) {
-    throw new NotImplementedByEngineError();
-  }
-
   async reply(request: MessageReplyRequest) {
     const { id } = parseMessageId(request.reply_to);
     const quotedMessage = await this.store.loadMessage(

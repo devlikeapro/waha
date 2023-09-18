@@ -185,10 +185,6 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     );
   }
 
-  sendContactVCard(request: MessageContactVcardRequest) {
-    throw new NotImplementedByEngineError();
-  }
-
   reply(request: MessageReplyRequest) {
     const options = {
       quotedMessageId: request.reply_to,
