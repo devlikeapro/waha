@@ -154,3 +154,13 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 | `POST /api/{session}/groups/{id}/participants/remove`              |  ✔️   |  ✔️   |   ➖   |
 | `POST /api/{session}/groups/{id}/admin/promote`                    |  ✔️   |  ✔️   |   ➖   |
 | `POST /api/{session}/groups/{id}/admin/demote`                     |  ✔️   |  ✔️   |   ➖   |
+
+|                                                   | WEBJS | NOWEB | VENOM |
+|---------------------------------------------------|:-----:|:-----:|:-----:|
+| **Presence**                                      |       |       |       |
+| `POST /api/{session}/presence`                    |   ➖   |  ✔️   |   ➖   |
+| `GET /api/{session}/presence`                     |   ➖   |  ✔️   |   ➖   |
+| `GET /api/{session}/presence/{chatId}`            |   ➖   |  ✔️   |   ➖   |
+| `POST /api/{session}/presence/{chatId}/subscribe` |   ➖   |  ✔️   |   ➖   |
+| **Other**                                         |       |       |       |
+| `POST /api/version`                               |   ➖   |  ✔️   |   ➖   |
