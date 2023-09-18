@@ -12,8 +12,23 @@ export class SwaggerModuleCore {
 
     builder
       .setTitle('WAHA - WhatsApp HTTP API')
-      .setDescription('WhatsApp HTTP API that you can run in a click!')
-      .setExternalDoc('Documentation', 'https://waha.devlike.pro/')
+      .setDescription(
+        'WhatsApp HTTP API that you can run in a click!<br/>' +
+          '<ul>' +
+          '<li><a href="https://waha.devlike.pro/" target="_blank">Documentation</a></li>' +
+          '<li><a href="https://waha.devlike.pro/docs/how-to/engines/#features" target="_blank">Supported features in engines</a></li>' +
+          '<li><a href="https://github.com/devlikeapro/whatsapp-http-api" target="_blank">GitHub - WAHA Core</a></li>' +
+          '<li><a href="https://github.com/devlikeapro/whatsapp-http-api-plu' + // Separate line to pass pre-commit check
+          's" target="_blank">GitHub - WAHA Plus</a></li>' +
+          '</ul>' +
+          '<br/>' +
+          'Support the project and get WAHA Plus version!' +
+          '<ul>' +
+          '<li><a href="https://patreon.com/wa_http_api/" target="_blank">Patreon</a></li>' +
+          '<li><a href="https://boosty.to/wa-http-api/" target="_blank">Boosty</a></li>' +
+          '</ul>',
+      )
+      .setExternalDoc('WAHA', 'https://waha.devlike.pro/')
       .setVersion(VERSION.version)
       .addTag('sessions', 'Control WhatsApp sessions')
       .addTag('auth', 'Authentication')
