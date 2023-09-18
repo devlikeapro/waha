@@ -56,3 +56,83 @@ Not running Chromium saves you CPU and Memory, so you can run more instances on 
 
 It's a high-performance system developed with JavaScript to create a bot for WhatsApp.
 It uses Puppeteer to run a real instance of Whatsapp Web to avoid getting blocked.
+
+## Features
+
+Some engines may not support certain features.
+Here, you will find a list of supported endpoints and webhooks per engine.
+
+|             Symbol             | Meaning                                                                                                                                                                                                                                                                                                                                                                                       |
+|:------------------------------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|               ✔️               | The engines supports the feature.                                                                                                                                                                                                                                                                                                                                                             |
+|               ➖                | The engine does **not** support this feature. <br/>Please search for the issue about the endpoint in [the project's issue](https://github.com/devlikeapro/whatsapp-http-api/issues) and upvote it by using the "👍" reaction on the issue's description. This will help us determine the level of interest in the feature. <br/>If you are unable to find the issue, please create a new one. |
+| ![](/images/versions/plus.png) | The feature available in [WAHA Plus]({{< relref "/docs/how-to/plus-version" >}}).                                                                                                                                                                                                                                                                                                             |
+
+If you don't specify `WHATSAPP_DEFAULT_ENGINE` environment variables - look at **WEBJS** engine,
+it's the engine WAHA runs by default.
+
+### Engine
+
+|                                                              | WEBJS | NOWEB | VENOM |
+|--------------------------------------------------------------|:-----:|:-----:|:-----:|
+| Run a browser (chromium\chrome) to communicate with WhatsApp |  ✔️   |   ➖   |  ✔️   |
+| Communicate with WhatsApp via websocket (no browser)         |   ➖   |  ✔️   |   ➖   |
+
+### Endpoints
+If you find any inconsistency with actual endpoints -
+please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues/new?title=Error+in+engine+features )
+
+|                                           | WEBJS | NOWEB | VENOM |
+|-------------------------------------------|:-----:|:-----:|:-----:|
+| **Session**                               |       |       |       |
+| `POST /api/sessions/start`                |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sessions/stop`                 |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sessions/logout`               |  ✔️   |  ✔️   |  ✔️   |
+| `GET /api/sessions/`                      |  ✔️   |  ✔️   |  ✔️   |
+| `GET /api/sessions/{session}/me`          |  ✔️   |   ➖   |  ✔️   |
+| **Authentication**                        |       |       |       |
+| `POST /api/{session}/auth/qr`             |  ✔️   |  ✔️   |   ➖   |
+| `POST /api/{session}/auth/request-code`   |   ➖   |  ✔️   |   ➖   |
+| `POST /api/{session}/auth/authorize-code` |   ➖   |  ✔️   |   ➖   |
+| **Screenshot**                            |       |       |       |
+| `POST /api/screenshot`                    |  ✔️   |   ➖   |  ✔️   |
+
+| **Chatting**                                         | WEBJS | NOWEB | VENOM |
+|------------------------------------------------------|:-----:|:-----:|:-----:|
+| `GET /api/checkNumberStatus`                         |  ✔️   |  ✔️   |  ✔️   |
+| `GET /api/sendContactVcard`                          |   ➖   |   ➖   |  ✔️   |
+| `GET /api/sendText`                                  |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendText`                                 |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendPoll`                                 |   ➖   |  ✔️   |   ➖   |
+| `POST /api/sendLocation`                             |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendLinkPreview`                          |   ➖   |  ✔️   |  ✔️   |
+| `POST /api/sendImag` ![](/images/versions/plus.png)  |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendFile` ![](/images/versions/plus.png)  |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendVoice` ![](/images/versions/plus.png) |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/reply`                                    |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendSeen`                                 |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/startTyping`                              |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/stopTyping`                               |  ✔️   |  ✔️   |   ➖   |
+| `POST /api/reaction`                                 |  ✔️   |  ✔️   |   ➖   |
+| `GET /api/messages`                                  |  ✔️   |   ➖   |  ✔️   |
+
+|                                                                   | WEBJS | NOWEB | VENOM |
+|-------------------------------------------------------------------|:-----:|:-----:|:-----:|
+| **Status**                                                        |       |       |       |
+| `POST /api/{session}/status/text`                                 |   ➖   |  ✔️   |   ➖   |
+| `POST /api/{session}/status/image` ![](/images/versions/plus.png) |   ➖   |  ✔️   |   ➖   |
+| `POST /api/{session}/status/voice` ![](/images/versions/plus.png) |   ➖   |  ✔️   |   ➖   |
+| `POST /api/{session}/status/video` ![](/images/versions/plus.png) |   ➖   |  ✔️   |   ➖   |
+| **Chats**                                                         |       |       |       |
+| `GET /api/{session}/chats`                                        |  ✔️   |   ➖   |   ➖   |
+| `DELETE /api/{session}/chats/{chatId}`                            |  ✔️   |   ➖   |   ➖   |
+| `GET /api/{session}/chats/{chatId}/messages`                      |  ✔️   |   ➖   |  ✔️   |
+| `DELETE /api/{session}/chats/{chatId}/messages`                   |  ✔️   |   ➖   |   ➖   |
+| **Contacts**                                                      |       |       |       |
+| `GET /api/contacts`                                               |  ✔️   |   ➖   |   ➖   |
+| `GET /api/contacts/all`                                           |  ✔️   |   ➖   |   ➖   |
+| `GET /api/contacts/check-exists`                                  |  ✔️   |  ✔️   |  ✔️   |
+| `GET /api/contacts/about`                                         |  ✔️   |   ➖   |   ➖   |
+| `GET /api/contacts/profile-picture`                               |  ✔️   |   ➖   |   ➖   |
+| `POST /api/contacts/block`                                        |  ✔️   |   ➖   |   ➖   |
+| `POST /api/contacts/unblock`                                      |  ✔️   |   ➖   |   ➖   |
