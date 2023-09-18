@@ -68,7 +68,7 @@ Here, you will find a list of supported endpoints and webhooks per engine.
 |               ➖                | The engine does **not** support this feature. <br/>Please search for the issue about the endpoint in [the project's issue](https://github.com/devlikeapro/whatsapp-http-api/issues) and upvote it by using the "👍" reaction on the issue's description. This will help us determine the level of interest in the feature. <br/>If you are unable to find the issue, please create a new one. |
 | ![](/images/versions/plus.png) | The feature available in [WAHA Plus]({{< relref "/docs/how-to/plus-version" >}}).                                                                                                                                                                                                                                                                                                             |
 
-If you don't specify `WHATSAPP_DEFAULT_ENGINE` environment variables - look at **WEBJS** engine,
+If you don't specify `WHATSAPP_DEFAULT_ENGINE` environment variable - look at **WEBJS** engine,
 it's the engine WAHA runs by default.
 
 ### Engine
@@ -89,7 +89,7 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 | `POST /api/sessions/stop`                 |  ✔️   |  ✔️   |  ✔️   |
 | `POST /api/sessions/logout`               |  ✔️   |  ✔️   |  ✔️   |
 | `GET /api/sessions/`                      |  ✔️   |  ✔️   |  ✔️   |
-| `GET /api/sessions/{session}/me`          |  ✔️   |   ➖   |  ✔️   |
+| `GET /api/sessions/{session}/me`          |  ✔️   |  ✔️   |   ➖   |
 | **Authentication**                        |       |       |       |
 | `POST /api/{session}/auth/qr`             |  ✔️   |  ✔️   |   ➖   |
 | `POST /api/{session}/auth/request-code`   |   ➖   |  ✔️   |   ➖   |
@@ -106,7 +106,7 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 | `POST /api/sendPoll`                                 |   ➖   |  ✔️   |   ➖   |
 | `POST /api/sendLocation`                             |  ✔️   |  ✔️   |  ✔️   |
 | `POST /api/sendLinkPreview`                          |   ➖   |  ✔️   |  ✔️   |
-| `POST /api/sendImag` ![](/images/versions/plus.png)  |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendImage` ![](/images/versions/plus.png) |  ✔️   |  ✔️   |  ✔️   |
 | `POST /api/sendFile` ![](/images/versions/plus.png)  |  ✔️   |  ✔️   |  ✔️   |
 | `POST /api/sendVoice` ![](/images/versions/plus.png) |  ✔️   |  ✔️   |  ✔️   |
 | `POST /api/reply`                                    |  ✔️   |  ✔️   |  ✔️   |
