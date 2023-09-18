@@ -204,7 +204,7 @@ You can send files in two ways:
 
 
 ### Send status (aka stories)
-With [NOWEB engine]({{< relref "/docs/how-to/engines" >}}) you can send statuses (aka stories)!
+You can send statuses (aka stories)!
 
 It is always necessary to inform the list of `contacts` that will have access to the posted status!
 

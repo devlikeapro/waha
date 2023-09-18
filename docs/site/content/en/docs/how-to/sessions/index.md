@@ -160,7 +160,6 @@ GET /api/{session}/auth/qr
 You'll get QR image that you can scan and get authenticated
 
 ### Get pairing code
-{{< alert icon="👉" text="Available in **NOWEB** engine only." />}}
 
 You can [link a session with phone number](https://faq.whatsapp.com/1324084875126592) - make a request to the endpoint.
 ```bash

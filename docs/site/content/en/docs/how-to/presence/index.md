@@ -60,9 +60,6 @@ If you would like to receive said notifications - you need to mark a session's p
 
 ### Get all chats presence
 
-{{< alert icon="👉" text="Get presence endpoints and webhook is available only in **NOWEB** engine." />}}
-[Read more about engines to choose right for you ->]({{< relref "/docs/how-to/engines" >}})
-
 Here's few notes about fields:
 
 - `chatId` - either contact id (`213213213@c.us`) or group chat id (`1111111111111@g.us`).

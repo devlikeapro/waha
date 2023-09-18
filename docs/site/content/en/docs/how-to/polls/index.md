@@ -9,7 +9,6 @@ images: [ ]
 weight: 126
 ---
 
-**Available on NOWEB engine only**.
 
 Waiting for WEBJS engine to support it, and we'll add it ASAP!
 

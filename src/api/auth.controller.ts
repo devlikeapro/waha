@@ -42,7 +42,7 @@ class AuthController {
   @Post('request-code')
   @SessionApiParam
   @ApiOperation({
-    summary: 'Request authentication code. NOWEB and NOWEB_MOBILE engines only',
+    summary: 'Request authentication code.',
   })
   requestCode(
     @SessionParam session: WhatsappSession,
@@ -54,7 +54,7 @@ class AuthController {
   @Post('authorize-code')
   @SessionApiParam
   @ApiOperation({
-    summary: 'Send OTP authentication code. NOWEB_MOBILE engine only',
+    summary: 'Send OTP authentication code.',
   })
   authorizeCode(
     @SessionParam session: WhatsappSession,
