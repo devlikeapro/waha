@@ -215,10 +215,6 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     return this.whatsapp.sendMessage(request.chatId, location);
   }
 
-  sendLinkPreview(request: MessageLinkPreviewRequest) {
-    throw new NotImplementedByEngineError();
-  }
-
   async sendSeen(request: SendSeenRequest) {
     const chat: Chat = await this.whatsapp.getChatById(request.chatId);
     await chat.sendSeen();
