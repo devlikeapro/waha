@@ -164,3 +164,16 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 | `POST /api/{session}/presence/{chatId}/subscribe` |   ➖   |  ✔️   |   ➖   |
 | **Other**                                         |       |       |       |
 | `POST /api/version`                               |   ➖   |  ✔️   |   ➖   |
+
+| **Webhooks**                                        | WEBJS | NOWEB | VENOM |
+|-----------------------------------------------------|:-----:|:-----:|:-----:|
+| `message`                                           |  ✔️   |  ✔️   |  ✔️   |
+| `message` with files ![](/images/versions/plus.png) |  ✔️   |  ✔️   |  ✔️   |
+| `message.any`                                       |  ✔️   |  ✔️   |  ✔️   |
+| `message.ack`                                       |  ✔️   |  ✔️   |  ✔️   |
+| `state.change`                                      |  ✔️   |  ✔️   |  ✔️   |
+| `group.join`                                        |  ✔️   |  ✔️   |  ✔️   |
+| `group.leave`                                       |  ✔️   |   ➖   |   ➖   |
+| `presence.update`                                   |   ➖   |  ✔️   |   ➖   |
+| `poll.vote`                                         |   ➖   |  ✔️   |   ➖   |
+| `poll.vote.failed`                                  |   ➖   |  ✔️   |   ➖   |
