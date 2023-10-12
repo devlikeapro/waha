@@ -17,6 +17,6 @@ When developing a bot for WhatsApp, you should never initiate a conversation. In
 The benchmark has been made on Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz. It may differ from case to case, it depends on usage pattern - how many messages you get, how many send, etc.
 Accounts (sessions) in the container CPU Memory 1 30% 400MB 10 270% 1.5GB The nature of WhatsApp HTTP API and its underlying engines - is to run real WhatsApp Web version in Chrome and communicate with it to prevent blocking from WhatsApp.</description></item><item><title>Changelog</title><link>https://waha.devlike.pro/docs/overview/changelog/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://waha.devlike.pro/docs/overview/changelog/</guid><description>If you wish to get and read Release Notes - read them on one of our platforms, these posts are FREE.
 Boosty -&amp;gt; Patreon -&amp;gt; You even can subscribe to get new updates there!
-2023.9 #
-September 2023
-Add GET /api/sessions/{session/me endpoint so you can get the phone number associated with the session Add polls support in NOWEB engine Add dedicated Get QR endpoint! Support pairing method (NOWEB) - you can connect with a code instead of QR.</description></item></channel></rss>
+2023.10 #
+October 2023
+Add message.revoked event in WEBJS engine Add me field in webhook payload - now you can know which number is associated with the session Add enviroment field in webhook payload - now you can know which environment is used for the session 2023.</description></item></channel></rss>
