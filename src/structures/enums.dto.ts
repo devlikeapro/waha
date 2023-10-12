@@ -4,6 +4,7 @@ export enum WAHAEvents {
   MESSAGE = 'message',
   MESSAGE_ANY = 'message.any',
   MESSAGE_ACK = 'message.ack',
+  MESSAGE_REVOKED = 'message.revoked',
   STATE_CHANGE = 'state.change',
   GROUP_JOIN = 'group.join',
   GROUP_LEAVE = 'group.leave',

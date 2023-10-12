@@ -19,6 +19,10 @@ If you wish to get and read Release Notes - read them on one of our platforms, *
 
 You even can **subscribe to get new updates** there!
 
+## 2023.10
+October 2023
+- Add `message.revoked` event in **WEBJS** engine
+
 ## 2023.9
 September 2023
 - Add `GET /api/sessions/{session/me` endpoint so you [can get the phone number associated with the session](https://waha.devlike.pro/docs/how-to/sessions/#get-me)

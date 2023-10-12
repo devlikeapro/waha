@@ -15,10 +15,8 @@ import {
   ChatRequest,
   CheckNumberStatusQuery,
   GetMessageQuery,
-  MessageContactVcardRequest,
   MessageFileRequest,
   MessageImageRequest,
-  MessageLinkPreviewRequest,
   MessageLocationRequest,
   MessageReactionRequest,
   MessageReplyRequest,
@@ -48,7 +46,6 @@ import {
 } from './exceptions';
 import { QR } from './QR';
 import { MeInfo } from '../structures/sessions.dto';
-import { jidNormalizedUser } from '@adiwajshing/baileys';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -446,29 +443,48 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
    */
 
   subscribe(event, handler) {
-    if (event === WAHAEvents.MESSAGE) {
-      this.whatsapp.on(Events.MESSAGE_RECEIVED, (message) =>
-        this.processIncomingMessage(message).then(handler),
-      );
-    } else if (event === WAHAEvents.MESSAGE_ANY) {
-      this.whatsapp.on(Events.MESSAGE_CREATE, (message) =>
-        this.processIncomingMessage(message).then(handler),
-      );
-    } else if (event === WAHAEvents.STATE_CHANGE) {
-      this.whatsapp.on(Events.STATE_CHANGED, handler);
-    } else if (event === WAHAEvents.MESSAGE_ACK) {
-      // We do not download media here
-      this.whatsapp.on(Events.MESSAGE_ACK, (message) =>
-        this.toWAMessage(message).then(handler),
-      );
-    } else if (event === WAHAEvents.GROUP_JOIN) {
-      this.whatsapp.on(Events.GROUP_JOIN, handler);
-    } else if (event === WAHAEvents.GROUP_LEAVE) {
-      this.whatsapp.on(Events.GROUP_LEAVE, handler);
-    } else {
-      throw new NotImplementedByEngineError(
-        `Engine does not support webhook event: ${event}`,
-      );
+    switch (event) {
+      case WAHAEvents.MESSAGE:
+        this.whatsapp.on(Events.MESSAGE_RECEIVED, (message) =>
+          this.processIncomingMessage(message).then(handler),
+        );
+        break;
+      case WAHAEvents.MESSAGE_REVOKED:
+        this.whatsapp.on(
+          Events.MESSAGE_REVOKED_EVERYONE,
+          async (after, before) => {
+            const afterMessage = after ? await this.toWAMessage(after) : null;
+            const beforeMessage = before
+              ? await this.toWAMessage(before)
+              : null;
+            handler({ after: afterMessage, before: beforeMessage });
+          },
+        );
+        break;
+      case WAHAEvents.MESSAGE_ANY:
+        this.whatsapp.on(Events.MESSAGE_CREATE, (message) =>
+          this.processIncomingMessage(message).then(handler),
+        );
+        break;
+      case WAHAEvents.STATE_CHANGE:
+        this.whatsapp.on(Events.STATE_CHANGED, handler);
+        break;
+      case WAHAEvents.MESSAGE_ACK:
+        // We do not download media here
+        this.whatsapp.on(Events.MESSAGE_ACK, (message) =>
+          this.toWAMessage(message).then(handler),
+        );
+        break;
+      case WAHAEvents.GROUP_JOIN:
+        this.whatsapp.on(Events.GROUP_JOIN, handler);
+        break;
+      case WAHAEvents.GROUP_LEAVE:
+        this.whatsapp.on(Events.GROUP_LEAVE, handler);
+        break;
+      default:
+        throw new NotImplementedByEngineError(
+          `Engine does not support webhook event: ${event}`,
+        );
     }
   }
 

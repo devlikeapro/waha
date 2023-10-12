@@ -171,6 +171,7 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 | `message` with files ![](/images/versions/plus.png) |  ✔️   |  ✔️   |  ✔️   |
 | `message.any`                                       |  ✔️   |  ✔️   |  ✔️   |
 | `message.ack`                                       |  ✔️   |  ✔️   |  ✔️   |
+| `message.revoked`                                   |  ✔️   |   ➖   |   ➖   |
 | `state.change`                                      |  ✔️   |  ✔️   |  ✔️   |
 | `group.join`                                        |  ✔️   |  ✔️   |  ✔️   |
 | `group.leave`                                       |  ✔️   |   ➖   |   ➖   |

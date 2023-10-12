@@ -221,6 +221,35 @@ The payload may have more fields, it depends on the engine you use, but here's a
 }
 ```
 
+### message.revoked
+The `message.revoked` event is triggered when a user, whether it be you or any other participant,
+revokes a previously sent message.
+
+```json
+{
+  "event": "message.ack",
+  "session": "default",
+  "payload": {
+    "before": {
+      "id": "some-id-here",
+      "timestamp": "some-timestamp-here",
+      "body": "Hi there!"
+    },
+    "after": {
+      "id": "some-id-here",
+      "timestamp": "some-timestamp-here",
+      "body": ""
+    }
+  }
+}
+```
+
+**Important notes**:
+1. The above messages' ids don't match any of the ids you'll receive in the `message` event, it's a different id.
+2. In order to find the message that was revoked, you'll need to search for the message with
+   the same timestamp and chat id as the one in the `after` object.
+3. `before` field can be null in some cases.
+
 ### state.change
 
 It's an internal engine's state, not **session** `status`.

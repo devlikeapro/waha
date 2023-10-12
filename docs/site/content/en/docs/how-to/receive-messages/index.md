@@ -128,6 +128,30 @@ Receive events when server or recipient gets the message, read or played it.
 }
 ```
 
+### message.revoked
+
+[See details on Webhooks page ->]({{< relref "webhooks#messageack" >}}).
+
+```json
+{
+  "event": "message.ack",
+  "session": "default",
+  "payload": {
+    "before": {
+      "id": "some-id-here",
+      "timestamp": "some-timestamp-here",
+      "body": "Hi there!"
+    },
+    "after": {
+      "id": "some-id-here",
+      "timestamp": "some-timestamp-here",
+      "body": ""
+    }
+  }
+}
+```
+
+
 ## Files ![](/images/versions/plus.png)
 
 When people send you files - images, voice messages, and documents - WAHA saves it in the file storage.
