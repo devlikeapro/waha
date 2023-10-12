@@ -7,6 +7,7 @@ import { WebhookConductor, WebhookSender } from './abc/webhooks.abc';
 import { NotImplementedByEngineError } from './exceptions';
 import request = require('request');
 import { WAHAWebhook } from '../structures/webhooks.dto';
+import { VERSION } from '../version';
 
 export class WebhookSenderCore extends WebhookSender {
   send(json) {
@@ -90,17 +91,20 @@ export class WebhookConductorCore implements WebhookConductor {
     this.log.log(`Webhooks were configured for ${url}.`);
   }
 
-  public callWebhook(
+  public async callWebhook(
     event,
     session: WhatsappSession,
     data: any,
     sender: WebhookSender,
   ) {
+    const me = await session.getSessionMeInfo().catch((err) => null);
     const json: WAHAWebhook = {
       event: event,
       session: session.name,
+      me: me,
       payload: data,
       engine: session.engine,
+      environment: VERSION,
     };
     sender.send(json);
   }

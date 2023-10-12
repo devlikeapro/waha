@@ -5,6 +5,7 @@ import { WAMessage } from './responses.dto';
 import { MessageDestination } from './chatting.dto';
 import { ChatIdProperty, MessageIdProperty } from './properties.dto';
 import { WAHAChatPresences } from './presence.dto';
+import { MeInfo } from './sessions.dto';
 
 export class WAMessageAckBody {
   @MessageIdProperty()
@@ -86,6 +87,11 @@ export class WAHAWebhook {
     example: WAHAEngine.WEBJS,
   })
   engine: WAHAEngine;
+
+  me: MeInfo | null;
+
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  environment: object;
 
   event: WAHAEvents;
 

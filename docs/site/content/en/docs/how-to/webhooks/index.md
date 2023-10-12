@@ -88,8 +88,15 @@ On the URL that you set you'll receive **HTTP POST** request with a JSON string 
   "event": "message",
   "session": "default",
   "engine": "WEBJS",
+  "environment": {
+    "tier": "PLUS",
+    "version": "2023.10.12"
+  },
+  "me": {
+    "id": "71111111111@c.us",
+    "pushName": "~"
+  },
   "payload": {
-    ...
   }
 }
 ```
