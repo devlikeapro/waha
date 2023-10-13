@@ -46,6 +46,7 @@ import {
 } from './exceptions';
 import { QR } from './QR';
 import { MeInfo } from '../structures/sessions.dto';
+import { WAMessageRevokedBody } from '../structures/webhooks.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -457,7 +458,11 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
             const beforeMessage = before
               ? await this.toWAMessage(before)
               : null;
-            handler({ after: afterMessage, before: beforeMessage });
+            const body: WAMessageRevokedBody = {
+              after: afterMessage,
+              before: beforeMessage,
+            };
+            handler(body);
           },
         );
         break;

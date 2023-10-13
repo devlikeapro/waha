@@ -76,6 +76,10 @@ export class PollVotePayload {
   vote: PollVote;
   poll: MessageDestination;
 }
+export class WAMessageRevokedBody {
+  after: WAMessage | null;
+  before: WAMessage | null;
+}
 
 export class WAHAWebhook {
   @ApiProperty({
@@ -122,6 +126,16 @@ class WAHAWebhookMessageAck extends WAHAWebhook {
   })
   event = WAHAEvents.MESSAGE_ACK;
   payload: WAMessageAckBody;
+}
+
+class WAHAWebhookMessageRevoked extends WAHAWebhook {
+  @ApiProperty({
+    description:
+      'The event is triggered when a user, whether it be you or any other participant, ' +
+      'revokes a previously sent message.',
+  })
+  event = WAHAEvents.MESSAGE_REVOKED;
+  payload: WAMessageRevokedBody;
 }
 
 class WAHAWebhookStateChange extends WAHAWebhook {
@@ -178,6 +192,7 @@ const WAHA_WEBHOOKS = [
   WAHAWebhookMessage,
   WAHAWebhookMessageAny,
   WAHAWebhookMessageAck,
+  WAHAWebhookMessageRevoked,
   WAHAWebhookStateChange,
   WAHAWebhookGroupJoin,
   WAHAWebhookGroupLeave,
