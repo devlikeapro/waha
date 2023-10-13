@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiExtraModels, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
+import { WAHAEnvironment } from '../structures/environment.dto';
 import { VERSION } from '../version';
 
 @ApiSecurity('api_key')
@@ -8,7 +9,7 @@ import { VERSION } from '../version';
 @ApiTags('other')
 export class VersionController {
   @Get('')
-  async get() {
+  get(): WAHAEnvironment {
     return VERSION;
   }
 }

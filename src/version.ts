@@ -1,6 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import { getBrowserExecutablePath } from './core/abc/session.abc';
 import { WAHAEngine } from './structures/enums.dto';
+import { WAHAEnvironment } from './structures/environment.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require('fs');
@@ -31,7 +32,7 @@ export function getEngineName(): string {
   return process.env.WHATSAPP_DEFAULT_ENGINE || WAHAEngine.WEBJS;
 }
 
-export const VERSION = {
+export const VERSION: WAHAEnvironment = {
   version: '2023.10.12',
   engine: getEngineName(),
   tier: getWAHAVersion(),
