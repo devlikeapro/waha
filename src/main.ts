@@ -5,7 +5,7 @@ import { AllExceptionsFilter } from './api/exception.filter';
 import { WhatsappConfigService } from './config.service';
 import { AppModuleCore } from './core/app.module.core';
 import { SwaggerModuleCore } from './core/swagger.module.core';
-import { getWAHAVersion, WAHAVersion } from './version';
+import { getWAHAVersion, VERSION, WAHAVersion } from './version';
 import { WAHA_WEBHOOKS } from './structures/webhooks.dto';
 
 async function loadModules(): Promise<
@@ -50,6 +50,7 @@ async function bootstrap() {
   const config = app.get(WhatsappConfigService);
   await app.listen(config.port);
   console.log(`WhatsApp HTTP API is running on: ${await app.getUrl()}`);
+  console.log(`Environment:`, VERSION);
 }
 
 bootstrap();
