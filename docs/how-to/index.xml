@@ -14,7 +14,7 @@ Start a new session with configured message event in webhooks - call POST /api/s
 Webhooks are a way for two different applications to communicate with each other in real-time. When a certain event happens in one application, it sends a message to another application through a webhook URL. The receiving application can then take action based on the information received.
 Setup webhooks #
 Session webhooks #
-You can define webhooks configuration per session when you start it with POST /api/sessions/start request data.</description></item><item><title>Sessions</title><link>https://waha.devlike.pro/docs/how-to/sessions/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/sessions/</guid><description>Sessions #
+You can define webhooks configuration per session when you start it with POST /api/sessions/start request data.</description></item><item><title>Sessions</title><link>https://waha.devlike.pro/docs/how-to/sessions/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/sessions/</guid><description>Endpoints #
 See the list of engines that support the features -&amp;gt;.
 Start #
 In order to start a new session - call POST /api/sessions/start
