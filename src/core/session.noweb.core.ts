@@ -13,11 +13,9 @@ import makeWASocket, {
   WAMessageKey,
 } from '@adiwajshing/baileys';
 import { UnprocessableEntityException } from '@nestjs/common';
-import { request } from 'express';
 import * as fs from 'fs/promises';
 import { Agent } from 'https';
 import * as lodash from 'lodash';
-import { update } from 'lodash';
 import { PairingCodeResponse } from 'src/structures/auth.dto';
 import { Message } from 'whatsapp-web.js';
 
@@ -25,7 +23,6 @@ import { flipObject, splitAt } from '../helpers';
 import {
   ChatRequest,
   CheckNumberStatusQuery,
-  MessageContactVcardRequest,
   MessageDestination,
   MessageFileRequest,
   MessageImageRequest,
@@ -114,7 +111,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   start() {
-    return this.buildClient();
+    this.status = WAHASessionStatus.STARTING;
+    this.buildClient();
   }
 
   getSocketConfig(agent, state) {
@@ -139,7 +137,6 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     const socketConfig = this.getSocketConfig(agent, state);
     const sock: any = makeWASocket(socketConfig);
     sock.ev.on(BaileysEvents.CREDS_UPDATE, saveCreds);
-    this.debugLogEnginesEvents(sock);
     return sock;
   }
 
@@ -169,8 +166,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   async buildClient() {
     this.sock = await this.makeSocket();
     this.connectStore();
+    if (this.isDebugEnabled()) {
+      this.listenEngineEventsInDebugMode();
+    }
     this.listenConnectionEvents();
-    this.events.emit(WAHAInternalEvent.engine_start);
+    this.events.emit(WAHAInternalEvent.ENGINE_START);
   }
 
   protected async getMessage(
@@ -183,11 +183,17 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return msg?.message || undefined;
   }
 
+  protected listenEngineEventsInDebugMode() {
+    this.sock.ev.process((events) => {
+      this.log.debug(`Received NOWEB events`, events);
+    });
+  }
+
   protected listenConnectionEvents() {
     this.log.debug(`Start listening ${BaileysEvents.CONNECTION_UPDATE}...`);
     this.sock.ev.on(BaileysEvents.CONNECTION_UPDATE, async (update) => {
       const { connection, lastDisconnect, qr } = update;
-      if (connection === 'connecting') {
+      if (connection === 'open') {
         this.qr.save('');
         this.status = WAHASessionStatus.WORKING;
         this.resubscribeToKnownPresences();
@@ -203,10 +209,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
           shouldReconnect,
         );
         this.qr.save('');
-        this.status = WAHASessionStatus.FAILED;
         // reconnect if not logged out
         if (shouldReconnect) {
           setTimeout(() => this.buildClient(), 2 * SECOND);
+        } else {
+          this.status = WAHASessionStatus.FAILED;
         }
       }
 
@@ -220,23 +227,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     });
   }
 
-  protected debugLogEnginesEvents(sock) {
-    if (!process.env.DEBUG) {
-      return;
-    }
-
-    sock.ev.process((events) => {
-      this.log.debug('Engine events');
-      this.log.debug('=============');
-      console.log(JSON.stringify(events));
-      this.log.debug('=============');
-    });
-  }
-
-  stop() {
+  async stop() {
     this.sock.ev.removeAllListeners();
     this.sock.ws.removeAllListeners();
     this.sock.ws.close();
+    this.status = WAHASessionStatus.STOPPED;
     return;
   }
 
@@ -283,12 +278,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       throw new UnprocessableEntityException(err);
     }
 
-    this.log.debug('Requesting pairing code...');
+    this.log.log('Requesting pairing code...');
     const code: string = await this.sock.requestPairingCode(phoneNumber);
     // show it as ABCD-ABCD
     const parts = splitAt(code, 4);
     const codeRepr = parts.join('-');
-    this.log.debug(`Your code: ${codeRepr}`);
+    this.log.log(`Your code: ${codeRepr}`);
     return { code: codeRepr };
   }
 
@@ -564,55 +559,61 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
    * END - Methods for API
    */
 
-  subscribe(event, handler) {
-    if (event === WAHAEvents.MESSAGE) {
-      this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) => {
-        this.handleIncomingMessages(messages, handler, false);
-      });
-    } else if (event === WAHAEvents.MESSAGE_ANY) {
-      this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) =>
-        this.handleIncomingMessages(messages, handler, true),
-      );
-    } else if (event === WAHAEvents.MESSAGE_ACK) {
-      // Direct message ack
-      this.sock.ev.on(BaileysEvents.MESSAGES_UPDATE, (events) => {
-        events
-          .filter(isMine)
-          .filter(isAckUpdateMessageEvent)
-          .map(this.convertMessageUpdateToMessageAck)
-          .forEach(handler);
-      });
-      // Group message ack
-      this.sock.ev.on(BaileysEvents.MESSAGE_RECEIPT_UPDATE, (events) => {
-        events
-          .filter(isMine)
-          .map(this.convertMessageReceiptUpdateToMessageAck)
-          .forEach(handler);
-      });
-    } else if (event === WAHAEvents.STATE_CHANGE) {
-      this.sock.ev.on(BaileysEvents.CONNECTION_UPDATE, handler);
-    } else if (event === WAHAEvents.GROUP_JOIN) {
-      this.sock.ev.on(BaileysEvents.GROUPS_UPSERT, handler);
-    } else if (event === WAHAEvents.PRESENCE_UPDATE) {
-      this.sock.ev.on(BaileysEvents.PRESENCE_UPDATE, (data) =>
-        handler(this.toWahaPresences(data.id, data.presences)),
-      );
-    } else if (event === WAHAEvents.POLL_VOTE) {
-      this.sock.ev.on(BaileysEvents.MESSAGES_UPDATE, (events) => {
-        events.forEach((event) =>
-          this.handleMessagesUpdatePollVote(event, handler),
+  subscribeEngineEvent(event, handler): boolean {
+    switch (event) {
+      case WAHAEvents.MESSAGE:
+        this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) => {
+          this.handleIncomingMessages(messages, handler, false);
+        });
+        return true;
+      case WAHAEvents.MESSAGE_ANY:
+        this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) =>
+          this.handleIncomingMessages(messages, handler, true),
         );
-      });
-    } else if (event === WAHAEvents.POLL_VOTE_FAILED) {
-      this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) => {
-        messages.forEach((message) =>
-          this.handleMessageUpsertPollVoteFailed(message, handler),
+        return true;
+      case WAHAEvents.MESSAGE_ACK: // Direct message ack
+        this.sock.ev.on(BaileysEvents.MESSAGES_UPDATE, (events) => {
+          events
+            .filter(isMine)
+            .filter(isAckUpdateMessageEvent)
+            .map(this.convertMessageUpdateToMessageAck)
+            .forEach(handler);
+        });
+        // Group message ack
+        this.sock.ev.on(BaileysEvents.MESSAGE_RECEIPT_UPDATE, (events) => {
+          events
+            .filter(isMine)
+            .map(this.convertMessageReceiptUpdateToMessageAck)
+            .forEach(handler);
+        });
+        return true;
+      case WAHAEvents.STATE_CHANGE:
+        this.sock.ev.on(BaileysEvents.CONNECTION_UPDATE, handler);
+        return true;
+      case WAHAEvents.GROUP_JOIN:
+        this.sock.ev.on(BaileysEvents.GROUPS_UPSERT, handler);
+        return true;
+      case WAHAEvents.PRESENCE_UPDATE:
+        this.sock.ev.on(BaileysEvents.PRESENCE_UPDATE, (data) =>
+          handler(this.toWahaPresences(data.id, data.presences)),
         );
-      });
-    } else {
-      throw new NotImplementedByEngineError(
-        `Engine does not support webhook event: ${event}`,
-      );
+        return true;
+      case WAHAEvents.POLL_VOTE:
+        this.sock.ev.on(BaileysEvents.MESSAGES_UPDATE, (events) => {
+          events.forEach((event) =>
+            this.handleMessagesUpdatePollVote(event, handler),
+          );
+        });
+        return true;
+      case WAHAEvents.POLL_VOTE_FAILED:
+        this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) => {
+          messages.forEach((message) =>
+            this.handleMessageUpsertPollVoteFailed(message, handler),
+          );
+        });
+        return true;
+      default:
+        return false;
     }
   }
 
@@ -754,6 +755,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       handler(payload);
     }
   }
+
   protected async handleMessageUpsertPollVoteFailed(message, handler) {
     const pollUpdateMessage = message.message?.pollUpdateMessage;
     if (!pollUpdateMessage) {

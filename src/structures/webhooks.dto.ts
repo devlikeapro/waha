@@ -1,6 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { WAHAEngine, WAHAEvents, WAMessageAck } from './enums.dto';
+import {
+  WAHAEngine,
+  WAHAEvents,
+  WAHASessionStatus,
+  WAMessageAck,
+} from './enums.dto';
 import { WAMessage } from './responses.dto';
 import { MessageDestination } from './chatting.dto';
 import { ChatIdProperty, MessageIdProperty } from './properties.dto';
@@ -77,9 +82,17 @@ export class PollVotePayload {
   vote: PollVote;
   poll: MessageDestination;
 }
+
 export class WAMessageRevokedBody {
   after: WAMessage | null;
   before: WAMessage | null;
+}
+export class WASessionStatusBody {
+  @ApiProperty({
+    example: 'default',
+  })
+  name: string;
+  status: WAHASessionStatus;
 }
 
 export class WAHAWebhook {
@@ -103,6 +116,13 @@ export class WAHAWebhook {
     | WAGroupPayload
     // eslint-disable-next-line @typescript-eslint/ban-types
     | object;
+}
+class WAHAWebhookSessionStatus extends WAHAWebhook {
+  @ApiProperty({
+    description: 'The event is triggered when the session status changes.',
+  })
+  event = WAHAEvents.SESSION_STATUS;
+  payload: WASessionStatusBody;
 }
 
 class WAHAWebhookMessage extends WAHAWebhook {
@@ -189,6 +209,7 @@ class WAHAWebhookPollVoteFailed extends WAHAWebhook {
 }
 
 const WAHA_WEBHOOKS = [
+  WAHAWebhookSessionStatus,
   WAHAWebhookMessage,
   WAHAWebhookMessageAny,
   WAHAWebhookMessageAck,

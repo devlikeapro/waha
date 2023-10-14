@@ -75,6 +75,7 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
   }
 
   async start() {
+    this.status = WAHASessionStatus.STARTING;
     try {
       this.whatsapp = await this.buildClient();
     } catch (error) {
@@ -85,33 +86,38 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
     }
 
     this.status = WAHASessionStatus.WORKING;
-    this.events.emit(WAHAInternalEvent.engine_start);
+    this.events.emit(WAHAInternalEvent.ENGINE_START);
     return this;
   }
 
-  stop() {
-    return this.whatsapp.close();
+  async stop() {
+    await this.whatsapp.close();
+    this.status = WAHASessionStatus.STOPPED;
   }
 
-  subscribe(event: WAHAEvents | string, handler: (message) => void) {
-    if (event === WAHAEvents.MESSAGE) {
-      return this.whatsapp.onMessage((message: Message) =>
-        this.processIncomingMessage(message).then(handler),
-      );
-    } else if (event === WAHAEvents.MESSAGE_ANY) {
-      return this.whatsapp.onAnyMessage((message: Message) =>
-        this.processIncomingMessage(message).then(handler),
-      );
-    } else if (event === WAHAEvents.STATE_CHANGE) {
-      return this.whatsapp.onStateChange(handler);
-    } else if (event === WAHAEvents.MESSAGE_ACK) {
-      return this.whatsapp.onAck(handler);
-    } else if (event === WAHAEvents.GROUP_JOIN) {
-      return this.whatsapp.onAddedToGroup(handler);
-    } else {
-      throw new NotImplementedByEngineError(
-        `Engine does not support webhook event: ${event}`,
-      );
+  subscribeEngineEvent(event: WAHAEvents | string, handler: (message) => void) {
+    switch (event) {
+      case WAHAEvents.MESSAGE:
+        this.whatsapp.onMessage((message: Message) =>
+          this.processIncomingMessage(message).then(handler),
+        );
+        return true;
+      case WAHAEvents.MESSAGE_ANY:
+        this.whatsapp.onAnyMessage((message: Message) =>
+          this.processIncomingMessage(message).then(handler),
+        );
+        return true;
+      case WAHAEvents.STATE_CHANGE:
+        this.whatsapp.onStateChange(handler);
+        return true;
+      case WAHAEvents.MESSAGE_ACK:
+        this.whatsapp.onAck(handler);
+        return true;
+      case WAHAEvents.GROUP_JOIN:
+        this.whatsapp.onAddedToGroup(handler);
+        return true;
+      default:
+        return false;
     }
   }
 

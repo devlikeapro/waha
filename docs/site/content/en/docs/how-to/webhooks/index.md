@@ -118,6 +118,35 @@ docker run -it -e "WHATSAPP_HOOK_EVENTS=*" -e WHATSAPP_HOOK_URL=https://httpbin.
 ## Webhooks
 See the list of engines [**that support the features ->**]({{< relref "/docs/how-to/engines#features" >}}).
 
+### session.status
+The `session.status` event is triggered when the session status changes.
+- `STOPPED` - session is stopped
+- `STARTING` - session is starting
+- `SCAN_QR_CODE` - session is required to scan QR code or login via phone number
+- `WORKING` - session is working and ready to use
+- `FAILED` - session is failed due to some error. It's likely that authorization is required again or device has been disconnected from that account.
+Try to restart the session and if it doesn't help - logout and start the session again.
+
+```json
+{
+    "event": "session.status",
+    "session": "default",
+    "me": {
+        "id": "7911111@c.us",
+        "pushName": "~"
+    },
+    "payload": {
+        "status": "WORKING"
+    },
+    "engine": "WEBJS",
+    "environment": {
+        "version": "2023.10.12",
+        "engine": "WEBJS",
+        "tier": "PLUS"
+    }
+}
+```
+
 ### message
 
 Incoming message (text/audio/files)

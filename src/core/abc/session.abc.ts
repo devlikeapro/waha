@@ -44,6 +44,7 @@ import {
   VideoStatus,
   VoiceStatus,
 } from '../../structures/status.dto';
+import { WASessionStatusBody } from '../../structures/webhooks.dto';
 
 const CHROME_PATH = '/usr/bin/google-chrome-stable';
 const CHROMIUM_PATH = '/usr/bin/chromium';
@@ -64,7 +65,8 @@ export function ensureSuffix(phone) {
 }
 
 export enum WAHAInternalEvent {
-  engine_start = 'engine.start',
+  ENGINE_START = 'engine.start',
+  SESSION_STATUS_CHANGED = 'session.status.changed',
 }
 
 export interface SessionParams {
@@ -77,7 +79,6 @@ export interface SessionParams {
 }
 
 export abstract class WhatsappSession {
-  public status: WAHASessionStatus;
   public events: EventEmitter;
   public engine: WAHAEngine;
 
@@ -88,6 +89,8 @@ export abstract class WhatsappSession {
   protected proxyConfig?: ProxyConfig;
   public sessionConfig: SessionConfig;
 
+  private _status: WAHASessionStatus;
+
   public constructor({
     name,
     log,
@@ -96,14 +99,22 @@ export abstract class WhatsappSession {
     storage,
     sessionConfig,
   }: SessionParams) {
+    this.events = new EventEmitter();
     this.name = name;
     this.proxyConfig = proxyConfig;
-    this.status = WAHASessionStatus.STARTING;
     this.log = log;
     this.sessionStorage = sessionStorage;
-    this.events = new EventEmitter();
     this.storage = storage;
     this.sessionConfig = sessionConfig;
+  }
+
+  protected set status(value: WAHASessionStatus) {
+    this._status = value;
+    this.events.emit(WAHAInternalEvent.SESSION_STATUS_CHANGED, value);
+  }
+
+  public get status() {
+    return this._status;
   }
 
   getBrowserExecutablePath() {
@@ -140,14 +151,37 @@ export abstract class WhatsappSession {
     ];
   }
 
+  protected isDebugEnabled() {
+    return this.log.isLevelEnabled('debug');
+  }
+
   /** Start the session */
   abstract start();
 
   /** Stop the session */
-  abstract stop(): void;
+  abstract stop(): Promise<void>;
 
   /** Subscribe the handler to specific hook */
-  abstract subscribe(hook: WAHAEvents | string, handler: (message) => void);
+  subscribeSessionEvent(
+    hook: WAHAEvents | string,
+    handler: (message) => void,
+  ): boolean {
+    switch (hook) {
+      case WAHAEvents.SESSION_STATUS:
+        this.events.on(WAHAInternalEvent.SESSION_STATUS_CHANGED, (value) => {
+          const body: WASessionStatusBody = { name: this.name, status: value };
+          handler(body);
+        });
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  abstract subscribeEngineEvent(
+    hook: WAHAEvents | string,
+    handler: (message) => void,
+  ): boolean;
 
   /**
    * START - Methods for API

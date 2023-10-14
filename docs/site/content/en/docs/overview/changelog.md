@@ -21,6 +21,7 @@ You even can **subscribe to get new updates** there!
 
 ## 2023.10
 October 2023
+- Add `session.status` event for all engines! Now you can get the latest session's status immediately after it changes.
 - Add `message.revoked` event in **WEBJS** engine
 - Add `me` field in webhook payload - now you can know which number is associated with the session
 - Add `enviroment` field in webhook payload - now you can know which environment is used for the session

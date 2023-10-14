@@ -95,19 +95,24 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   async start() {
+    this.status = WAHASessionStatus.STARTING;
     this.whatsapp = this.buildClient();
     this.whatsapp.initialize().catch((error) => {
       this.status = WAHASessionStatus.FAILED;
       this.log.error(error);
       return;
     });
+    if (this.isDebugEnabled()) {
+      this.listenEngineEventsInDebugMode();
+    }
     this.listenConnectionEvents();
-    this.events.emit(WAHAInternalEvent.engine_start);
+    this.events.emit(WAHAInternalEvent.ENGINE_START);
     return this;
   }
 
-  stop() {
-    return this.whatsapp.destroy();
+  async stop() {
+    await this.whatsapp.destroy();
+    this.status = WAHASessionStatus.STOPPED;
   }
 
   async getSessionMeInfo(): Promise<MeInfo | null> {
@@ -123,6 +128,17 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     return meInfo;
   }
 
+  protected listenEngineEventsInDebugMode() {
+    // Iterate over Events enum and log with debug level all incoming events
+    // This is useful for debugging
+    for (const key in Events) {
+      const event = Events[key];
+      this.whatsapp.on(event, (...data: any[]) => {
+        this.log.debug(`Received WEBJS event`, { event: event, data: data });
+      });
+    }
+  }
+
   protected listenConnectionEvents() {
     this.whatsapp.on(Events.QR_RECEIVED, (qr) => {
       this.log.debug('QR received');
@@ -135,10 +151,16 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       this.status = WAHASessionStatus.SCAN_QR_CODE;
     });
 
-    this.whatsapp.on(Events.AUTHENTICATED, () => {
+    this.whatsapp.on(Events.READY, () => {
       this.status = WAHASessionStatus.WORKING;
       this.qr.save('');
       this.log.log(`Session '${this.name}' has been authenticated!`);
+    });
+
+    this.whatsapp.on(Events.DISCONNECTED, () => {
+      this.status = WAHASessionStatus.FAILED;
+      this.qr.save('');
+      this.log.log(`Session '${this.name}' has been disconnected!`);
     });
   }
 
@@ -443,13 +465,13 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
    * END - Methods for API
    */
 
-  subscribe(event, handler) {
+  subscribeEngineEvent(event, handler): boolean {
     switch (event) {
       case WAHAEvents.MESSAGE:
         this.whatsapp.on(Events.MESSAGE_RECEIVED, (message) =>
           this.processIncomingMessage(message).then(handler),
         );
-        break;
+        return true;
       case WAHAEvents.MESSAGE_REVOKED:
         this.whatsapp.on(
           Events.MESSAGE_REVOKED_EVERYONE,
@@ -465,31 +487,29 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
             handler(body);
           },
         );
-        break;
+        return true;
       case WAHAEvents.MESSAGE_ANY:
         this.whatsapp.on(Events.MESSAGE_CREATE, (message) =>
           this.processIncomingMessage(message).then(handler),
         );
-        break;
+        return true;
       case WAHAEvents.STATE_CHANGE:
         this.whatsapp.on(Events.STATE_CHANGED, handler);
-        break;
+        return true;
       case WAHAEvents.MESSAGE_ACK:
         // We do not download media here
         this.whatsapp.on(Events.MESSAGE_ACK, (message) =>
           this.toWAMessage(message).then(handler),
         );
-        break;
+        return true;
       case WAHAEvents.GROUP_JOIN:
         this.whatsapp.on(Events.GROUP_JOIN, handler);
-        break;
+        return true;
       case WAHAEvents.GROUP_LEAVE:
         this.whatsapp.on(Events.GROUP_LEAVE, handler);
-        break;
+        return true;
       default:
-        throw new NotImplementedByEngineError(
-          `Engine does not support webhook event: ${event}`,
-        );
+        return false;
     }
   }
 

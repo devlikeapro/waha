@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 
 import { WhatsappConfigService } from '../config.service';
+import { getLogLevels } from '../helpers';
 import { WAHAEngine, WAHASessionStatus } from '../structures/enums.dto';
 import {
   ProxyConfig,
@@ -36,6 +37,10 @@ export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
       `WAHA Core support only 'default' session. If you want to run more then one WhatsApp account - please get WAHA PLUS version. Check this out: ${DOCS_URL}`,
     );
   }
+}
+
+export function buildLogger(name) {
+  return new ConsoleLogger(name, { logLevels: getLogLevels() });
 }
 
 @Injectable()
@@ -104,9 +109,9 @@ export class SessionManagerCore extends SessionManager {
 
     const name = request.name;
     this.log.log(`'${name}' - starting session...`);
-    const log = new ConsoleLogger(`WhatsappSession - ${name}`);
+    const log = buildLogger(`WhatsappSession - ${name}`);
     const storage = new this.MediaStorageClass();
-    const webhookLog = new ConsoleLogger(`Webhook - ${name}`);
+    const webhookLog = buildLogger(`Webhook - ${name}`);
     const webhook = new this.WebhookConductorClass(webhookLog);
     const proxyConfig = this.getProxyConfig(request);
     const sessionConfig: SessionParams = {
@@ -124,9 +129,7 @@ export class SessionManagerCore extends SessionManager {
 
     // configure webhooks
     const webhooks = this.getWebhooks(request);
-    session.events.on(WAHAInternalEvent.engine_start, () =>
-      webhook.configure(session, webhooks),
-    );
+    webhook.configure(session, webhooks);
 
     // start session
     await session.start();

@@ -9,7 +9,7 @@ images: [ ]
 weight: 125
 ---
 
-## Sessions
+## Endpoints
 See the list of engines [**that support the features ->**]({{< relref "/docs/how-to/engines#features" >}}).
 
 ### Start
@@ -151,11 +151,9 @@ null
 
 
 
-
-## Authentication
+### Get QR
 See the list of engines [**that support the features ->**]({{< relref "/docs/how-to/engines#features" >}}).
 
-### Get QR
 The simplest way to authenticate a new session - get QR code and scan it on your device.
 ```bash
 GET /api/{session}/auth/qr
@@ -163,6 +161,7 @@ GET /api/{session}/auth/qr
 You'll get QR image that you can scan and get authenticated
 
 ### Get pairing code
+See the list of engines [**that support the features ->**]({{< relref "/docs/how-to/engines#features" >}}).
 
 You can [link a session with phone number](https://faq.whatsapp.com/1324084875126592) - make a request to the endpoint.
 ```bash
@@ -184,6 +183,37 @@ You'll get code in the response that you can use on your WhatsApp app to connect
 ```
 
 
+## Webhooks
+See the list of engines [**that support the feature ->**]({{< relref "/docs/how-to/engines#features" >}}).
+
+### session.status
+The `session.status` event is triggered when the session status changes.
+- `STOPPED` - session is stopped
+- `STARTING` - session is starting
+- `SCAN_QR_CODE` - session is required to scan QR code or login via phone number
+- `WORKING` - session is working and ready to use
+- `FAILED` - session is failed due to some error. It's likely that authorization is required again or device has been disconnected from that account.
+  Try to restart the session and if it doesn't help - logout and start the session again.
+
+```json
+{
+    "event": "session.status",
+    "session": "default",
+    "me": {
+        "id": "7911111@c.us",
+        "pushName": "~"
+    },
+    "payload": {
+        "status": "WORKING"
+    },
+    "engine": "WEBJS",
+    "environment": {
+        "version": "2023.10.12",
+        "engine": "WEBJS",
+        "tier": "PLUS"
+    }
+}
+```
 
 
 ## Advanced sessions ![](/images/versions/plus.png)

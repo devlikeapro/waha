@@ -2,17 +2,16 @@ import { ConsoleLogger } from '@nestjs/common';
 
 import { WAHAEvents } from '../structures/enums.dto';
 import { WebhookConfig } from '../structures/webhooks.config.dto';
-import { WhatsappSession } from './abc/session.abc';
-import { WebhookConductor, WebhookSender } from './abc/webhooks.abc';
-import { NotImplementedByEngineError } from './exceptions';
-import request = require('request');
 import { WAHAWebhook } from '../structures/webhooks.dto';
 import { VERSION } from '../version';
+import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
+import { WebhookConductor, WebhookSender } from './abc/webhooks.abc';
+import request = require('request');
 
 export class WebhookSenderCore extends WebhookSender {
   send(json) {
     this.log.log(`Sending POST to ${this.url}...`);
-    this.log.debug(`POST DATA: ${JSON.stringify(json)}`);
+    this.log.verbose(`POST DATA: ${JSON.stringify(json)}`);
 
     request.post(this.url, { json: json }, (error, res, body) => {
       if (error) {
@@ -75,20 +74,51 @@ export class WebhookConductorCore implements WebhookConductor {
     const events = this.getSuitableEvents(webhook.events);
     const sender = this.buildSender(webhook);
     for (const event of events) {
-      try {
-        session.subscribe(event, (data: any) =>
-          this.callWebhook(event, session, data, sender),
-        );
-      } catch (error) {
-        if (error instanceof NotImplementedByEngineError) {
-          this.log.error(error);
-        } else {
-          throw error;
-        }
+      const found = this.configureSingleEvent(
+        session.subscribeSessionEvent,
+        session,
+        event,
+        sender,
+        url,
+      );
+
+      if (!found) {
+        // Postpone for ENGINE_START event and configure engine events
+        session.events.on(WAHAInternalEvent.ENGINE_START, () => {
+          const found = this.configureSingleEvent(
+            session.subscribeEngineEvent,
+            session,
+            event,
+            sender,
+            url,
+          );
+          if (!found) {
+            this.log.error(
+              `Engine does not support webhook event: '${event}' for url '${url}'`,
+            );
+          }
+        });
       }
-      this.log.log(`Event '${event}' is enabled for url: ${url}`);
     }
     this.log.log(`Webhooks were configured for ${url}.`);
+  }
+
+  private configureSingleEvent(
+    subscribeMethod,
+    session: WhatsappSession,
+    event: WAHAEvents,
+    sender: WebhookSender,
+    url: string,
+  ) {
+    const found = subscribeMethod.apply(session, [
+      event,
+      (data: any) => this.callWebhook(event, session, data, sender),
+    ]);
+    if (!found) {
+      return false;
+    }
+    this.log.log(`Event '${event}' is enabled for url: ${url}`);
+    return true;
   }
 
   public async callWebhook(
