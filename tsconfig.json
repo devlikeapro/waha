@@ -12,5 +12,6 @@
     "baseUrl": "./",
     "incremental": true,
     "resolveJsonModule": true,
+    "skipLibCheck": true,
   }
 }

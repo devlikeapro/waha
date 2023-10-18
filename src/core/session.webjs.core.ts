@@ -227,11 +227,9 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   async sendLocation(request: MessageLocationRequest) {
-    const location = new Location(
-      request.latitude,
-      request.longitude,
-      request.title,
-    );
+    const location = new Location(request.latitude, request.longitude, {
+      name: request.title,
+    });
     return this.whatsapp.sendMessage(request.chatId, location);
   }
 
