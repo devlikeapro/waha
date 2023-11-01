@@ -215,11 +215,19 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   sendImage(request: MessageImageRequest) {
-    throw new AvailableInPlusVersion();
+    return this.whatsapp.sendMessage(
+      this.ensureSuffix(request.chatId),
+      request.caption,
+      request.file,
+    );
   }
 
   sendFile(request: MessageFileRequest) {
-    throw new AvailableInPlusVersion();
+    return this.whatsapp.sendMessage(
+      this.ensureSuffix(request.chatId),
+      request.caption,
+      request.file,
+    );
   }
 
   sendVoice(request: MessageVoiceRequest) {
