@@ -174,11 +174,19 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
   }
 
   sendFile(request: MessageFileRequest) {
-    throw new NotImplementedByEngineError();
+    return this.whatsapp.sendText(
+      this.ensureSuffix(request.chatId),
+      request.caption,
+      request.file,
+    );
   }
 
   sendImage(request: MessageImageRequest) {
-    throw new NotImplementedByEngineError();
+    return this.whatsapp.sendText(
+      this.ensureSuffix(request.chatId),
+      request.caption,
+      request.file,
+    );
   }
 
   async sendVoice(request) {
