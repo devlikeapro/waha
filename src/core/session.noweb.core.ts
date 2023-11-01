@@ -357,11 +357,21 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   sendImage(request: MessageImageRequest) {
-    throw new AvailableInPlusVersion();
+    const chatId = this.ensureSuffix(request.chatId);
+    const image = {
+      caption: request.caption,
+      file: request.file,
+    };
+    return this.sock.sendMessage(chatId, image);
   }
 
   sendFile(request: MessageFileRequest) {
-    throw new AvailableInPlusVersion();
+    const chatId = this.ensureSuffix(request.chatId);
+    const image = {
+      caption: request.caption,
+      file: request.file,
+    };
+    return this.sock.sendFile(chatId, image);
   }
 
   sendVoice(request: MessageVoiceRequest) {
