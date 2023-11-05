@@ -1,6 +1,14 @@
 build:
 	docker build . -t devlikeapro/whatsapp-http-api
 
+build-chrome:
+	docker build . -t devlikeapro/whatsapp-http-api:chrome --build-arg USE_BROWSER=chrome
+
+build-noweb:
+	docker build . -t devlikeapro/whatsapp-http-api:noweb --build-arg USE_BROWSER=none
+
+build-all: build build-chrome build-noweb
+
 build-plus:
 	docker build . -t devlikeapro/whatsapp-http-api-plus
 
