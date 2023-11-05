@@ -25,10 +25,11 @@ jobs:
             tag: "chrome"
             platform: "amd64"
             browser: "chrome"
-          - runner: "buildjet-4vcpu-ubuntu-2204-arm"
-            tag: "chrome-arm"
-            platform: "linux/arm64"
-            browser: "chrome"
+          # Chrome is not supported on arm64
+#          - runner: "buildjet-4vcpu-ubuntu-2204-arm"
+#            tag: "chrome-arm"
+#            platform: "linux/arm64"
+#            browser: "chrome"
           # No browser
           - runner: "buildjet-4vcpu-ubuntu-2204"
             tag: "noweb"
