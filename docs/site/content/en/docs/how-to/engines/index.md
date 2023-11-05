@@ -79,6 +79,7 @@ it's the engine WAHA runs by default.
 | Communicate with WhatsApp via websocket (no browser)         |   ➖   |  ✔️   |   ➖   |
 
 ### Endpoints
+
 If you find any inconsistency with actual endpoints -
 please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues/new?title=Error+in+engine+features )
 
@@ -109,6 +110,7 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 | `POST /api/sendImage` ![](/images/versions/plus.png) |  ✔️   |  ✔️   |  ✔️   |
 | `POST /api/sendFile` ![](/images/versions/plus.png)  |  ✔️   |  ✔️   |  ✔️   |
 | `POST /api/sendVoice` ![](/images/versions/plus.png) |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendVideo` ![](/images/versions/plus.png) |  ✔️   |  ✔️   |   ➖   |
 | `POST /api/reply`                                    |  ✔️   |  ✔️   |  ✔️   |
 | `POST /api/sendSeen`                                 |  ✔️   |  ✔️   |  ✔️   |
 | `POST /api/startTyping`                              |  ✔️   |  ✔️   |  ✔️   |
