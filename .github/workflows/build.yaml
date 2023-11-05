@@ -8,6 +8,7 @@ on:
 jobs:
   docker-build:
     runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.platform }} - ${{ matrix.browser }} - ${{ matrix.tag }}
     strategy:
       matrix:
         include:
