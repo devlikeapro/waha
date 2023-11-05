@@ -14,9 +14,11 @@ jobs:
           - runner: "buildjet-4vcpu-ubuntu-2204"
             tag: "latest"
             platform: "amd64"
+            browser: "chromium"
           - runner: "buildjet-4vcpu-ubuntu-2204-arm"
             tag: "arm"
             platform: "linux/arm64"
+            browser: "chromium"
 
     steps:
       - name: Checkout
@@ -46,6 +48,8 @@ jobs:
           context: .
           file: Dockerfile
           platforms: ${{ matrix.platform }}
+          build-args: |
+            USE_BROWSER=${{ matrix.browser }}
           push: ${{ github.ref_type == 'tag' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
