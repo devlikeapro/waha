@@ -16,6 +16,7 @@ import {
   MessageReplyRequest,
   MessageTextQuery,
   MessageTextRequest,
+  MessageVideoRequest,
   MessageVoiceRequest,
   SendSeenRequest,
   WANumberExistResult,
@@ -109,6 +110,16 @@ export class ChattingController {
   sendVoice(@Body() request: MessageVoiceRequest) {
     const whatsapp = this.manager.getSession(request.session);
     return whatsapp.sendVoice(request);
+  }
+
+  @Post('/sendVideo')
+  @ApiOperation({
+    summary:
+      'Send a video. Either from an URL or base64 data - look at the request schemas for details.',
+  })
+  sendVideo(@Body() request: MessageVideoRequest) {
+    const whatsapp = this.manager.getSession(request.session);
+    return whatsapp.sendVideo(request);
   }
 
   @Post('/reply')

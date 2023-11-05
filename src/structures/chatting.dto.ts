@@ -5,6 +5,8 @@ import { SessionBaseRequest, SessionQuery } from './base.dto';
 import {
   BinaryFile,
   RemoteFile,
+  VideoBinaryFile,
+  VideoRemoteFile,
   VoiceBinaryFile,
   VoiceRemoteFile,
 } from './files.dto';
@@ -134,6 +136,18 @@ export class MessageVoiceRequest extends ChatRequest {
     ],
   })
   file: VoiceBinaryFile | VoiceRemoteFile;
+}
+
+@ApiExtraModels(VideoRemoteFile, VideoBinaryFile)
+export class MessageVideoRequest extends ChatRequest {
+  @ApiProperty({
+    oneOf: [
+      { $ref: getSchemaPath(VideoRemoteFile) },
+      { $ref: getSchemaPath(VideoBinaryFile) },
+    ],
+  })
+  file: VideoRemoteFile | VideoBinaryFile;
+  caption: string = 'Just watch at this!';
 }
 
 export class MessageLinkPreviewRequest extends ChatRequest {

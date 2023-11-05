@@ -16,6 +16,7 @@ import {
   MessageReactionRequest,
   MessageReplyRequest,
   MessageTextRequest,
+  MessageVideoRequest,
   MessageVoiceRequest,
 } from '../../structures/chatting.dto';
 import { ContactQuery, ContactRequest } from '../../structures/contacts.dto';
@@ -235,6 +236,10 @@ export abstract class WhatsappSession {
   abstract sendFile(request: MessageFileRequest);
 
   abstract sendVoice(request: MessageVoiceRequest);
+
+  sendVideo(request: MessageVideoRequest) {
+    throw new NotImplementedByEngineError();
+  }
 
   abstract reply(request: MessageReplyRequest);
 
