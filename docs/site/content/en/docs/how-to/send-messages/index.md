@@ -172,6 +172,9 @@ You can send voice messages in two ways:
 ### Send video ![](/images/versions/plus.png)
 Use `POST /api/sendVideo` to send a message with a video attached.
 
+For **WEBJS** engine please use `devlikeapro/whatsapp-http-api-plus:chrome` docker image.
+Read more about [**Docker images and engines →**]({{< relref "/docs/how-to/engines" >}}).
+
 You can send voice messages in two ways:
 1. Provide a URL for the file and the API will download it and send it in the request body.
 2. Provide the file as a base64 string in the request body.
