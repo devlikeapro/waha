@@ -19,6 +19,10 @@ If you wish to get and read Release Notes - read them on one of our platforms, *
 
 You even can **subscribe to get new updates** there!
 
+## 2023.11
+November 2023
+- Add `/api/sendVideo` endpoint to **NOWEB** and **WEBJS** engines. Available only in Plus version.
+
 ## 2023.10
 October 2023
 - Add `session.status` event for all engines! Now you can get the latest session's status immediately after it changes.
