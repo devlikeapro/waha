@@ -11,6 +11,7 @@ jobs:
     strategy:
       matrix:
         include:
+          # Chromium
           - runner: "buildjet-4vcpu-ubuntu-2204"
             tag: "latest"
             platform: "amd64"
@@ -19,6 +20,24 @@ jobs:
             tag: "arm"
             platform: "linux/arm64"
             browser: "chromium"
+          # Chrome
+          - runner: "buildjet-4vcpu-ubuntu-2204"
+            tag: "chrome"
+            platform: "amd64"
+            browser: "chrome"
+          - runner: "buildjet-4vcpu-ubuntu-2204-arm"
+            tag: "chrome-arm"
+            platform: "linux/arm64"
+            browser: "chrome"
+          # No browser
+          - runner: "buildjet-4vcpu-ubuntu-2204"
+            tag: "noweb"
+            platform: "amd64"
+            browser: "none"
+          - runner: "buildjet-4vcpu-ubuntu-2204-arm"
+            tag: "noweb-arm"
+            platform: "linux/arm64"
+            browser: "none"
 
     steps:
       - name: Checkout
