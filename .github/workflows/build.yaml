@@ -6,8 +6,17 @@ on:
       - "*"
 
 jobs:
-  docker-amd64:
-    runs-on: buildjet-4vcpu-ubuntu-2204
+  docker-build:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - runner: "buildjet-4vcpu-ubuntu-2204"
+            tag: "latest"
+            platform: "amd64"
+          - runner: "buildjet-4vcpu-ubuntu-2204-arm"
+            tag: "arm"
+            platform: "linux/arm64"
 
     steps:
       - name: Checkout
@@ -22,7 +31,7 @@ jobs:
           images: ${{ secrets.DOCKER_IMAGE }}
           flavor: latest=false
           tags: |
-            type=raw,value=latest
+            type=raw,value=${{ matrix.tag }}
 
       - name: Login to image repository
         if: github.ref_type == 'tag'
@@ -36,42 +45,7 @@ jobs:
         with:
           context: .
           file: Dockerfile
-          platforms: 'amd64'
-          push: ${{ github.ref_type == 'tag' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-  docker-arm:
-    runs-on: buildjet-4vcpu-ubuntu-2204-arm
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ secrets.DOCKER_IMAGE }}
-          flavor: latest=false
-          tags: |
-            type=raw,value=arm
-
-      - name: Login to image repository
-        if: github.ref_type == 'tag'
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: Dockerfile
-          platforms: 'linux/arm64'
+          platforms: ${{ matrix.platform }}
           push: ${{ github.ref_type == 'tag' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
