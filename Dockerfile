@@ -24,6 +24,8 @@ FROM node:20-bullseye as release
 ENV PUPPETEER_SKIP_DOWNLOAD=True
 ARG USE_BROWSER=chromium
 
+RUN echo "USE_BROWSER=$USE_BROWSER"
+
 # Install fonts if using either chromium or chrome
 RUN if [ "$USE_BROWSER" = "chromium" ] || [ "$USE_BROWSER" = "chrome" ]; then \
     apt-get update  \
