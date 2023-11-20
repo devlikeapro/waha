@@ -8,6 +8,10 @@ export class Participant {
   id: string;
 }
 
+export class SettingsSecurityChangeInfo {
+  adminsOnly: boolean;
+}
+
 /**
  * Queries
  */

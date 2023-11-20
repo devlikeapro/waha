@@ -15,6 +15,7 @@ import {
   CreateGroupRequest,
   DescriptionRequest,
   ParticipantsRequest,
+  SettingsSecurityChangeInfo,
   SubjectRequest,
 } from '../structures/groups.dto';
 import { SessionApiParam, SessionParam } from './helpers';
@@ -60,6 +61,19 @@ export class GroupsController {
     @Param('id') id: string,
   ) {
     return session.setInfoAdminsOnly(id, true);
+  }
+
+  @Get(':id/settings/security/info-admin-only')
+  @SessionApiParam
+  @ApiOperation({
+    summary:
+      'Gets the group settings to only allow admins to edit group info (title, description, photo).',
+  })
+  getInfoAdminOnly(
+    @SessionParam session: WhatsappSession,
+    @Param('id') id: string,
+  ): Promise<SettingsSecurityChangeInfo> {
+    return session.getInfoAdminsOnly(id);
   }
 
   @Delete(':id')

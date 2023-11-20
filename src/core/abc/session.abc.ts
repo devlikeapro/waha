@@ -29,6 +29,7 @@ import {
 import {
   CreateGroupRequest,
   ParticipantsRequest,
+  SettingsSecurityChangeInfo,
 } from '../../structures/groups.dto';
 import { WAHAChatPresences } from '../../structures/presence.dto';
 import {
@@ -317,6 +318,10 @@ export abstract class WhatsappSession {
   }
 
   public getGroup(id) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public getInfoAdminsOnly(id): Promise<SettingsSecurityChangeInfo> {
     throw new NotImplementedByEngineError();
   }
 

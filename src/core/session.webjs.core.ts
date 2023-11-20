@@ -37,6 +37,7 @@ import {
 import {
   CreateGroupRequest,
   ParticipantsRequest,
+  SettingsSecurityChangeInfo,
 } from '../structures/groups.dto';
 import { WAMessage } from '../structures/responses.dto';
 import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
@@ -346,6 +347,14 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       (participant) => participant.id,
     );
     return this.whatsapp.createGroup(request.name, participantIds);
+  }
+
+  public async getInfoAdminsOnly(id): Promise<SettingsSecurityChangeInfo> {
+    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    return {
+      // @ts-ignore
+      adminsOnly: groupChat.groupMetadata.restrict,
+    };
   }
 
   public async setInfoAdminsOnly(id, value) {
