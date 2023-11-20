@@ -19,6 +19,4 @@ Accounts (sessions) in the container CPU Memory 1 30% 400MB 10 270% 1.5GB The na
 Boosty -&amp;gt; Patreon -&amp;gt; You even can subscribe to get new updates there!
 2023.11 #
 November 2023
-Add /api/sendVideo endpoint to NOWEB and WEBJS engines. Available only in Plus version. 2023.10 #
-October 2023
-Add session.status event for all engines! Now you can get the latest session&amp;rsquo;s status immediately after it changes.</description></item></channel></rss>
+Add /api/sendVideo endpoint to NOWEB and WEBJS engines. Available only in Plus version. Add security settings for edit group info GET /api/{session}/groups/{groupId}/settings/security/info-admin-only - updates the group settings to only allow admins to edit group info (title, description, photo).</description></item></channel></rss>
