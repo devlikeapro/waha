@@ -160,6 +160,7 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 | `GET /api/{session}/groups`                                        |  ✔️   |  ✔️   |   ➖   |
 | `GET /api/{session}/groups/{id}`                                   |  ✔️   |  ✔️   |   ➖   |
 | `DELETE /api/{session}/groups/{id}`                                |  ✔️   |   ➖   |   ➖   |
+| `GET /api/{session}/groups/{id}/settings/security/info-admin-only` |  ✔️   |   ➖   |   ➖   |
 | `PUT /api/{session}/groups/{id}/settings/security/info-admin-only` |  ✔️   |   ➖   |   ➖   |
 | `POST /api/{session}/groups/{id}/leave`                            |  ✔️   |  ✔️   |   ➖   |
 | `PUT /api/{session}/groups/{id}/description`                       |  ✔️   |  ✔️   |   ➖   |

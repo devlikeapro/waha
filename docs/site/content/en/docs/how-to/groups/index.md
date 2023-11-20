@@ -90,7 +90,12 @@ Request:
 ### Settings
 #### Security for group info
 Updates the group settings to only allow admins to edit group info (title, description, photo).
-
+`GET /api/{session}/groups/{groupId}/settings/security/info-admin-only`
+```json
+{
+  "adminsOnly": true
+}
+```
 `PUT /api/{session}/groups/{groupId}/settings/security/info-admin-only`
 
 The request doesn't require any request's body and
