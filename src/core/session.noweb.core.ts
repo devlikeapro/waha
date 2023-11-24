@@ -663,6 +663,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       hasMedia: Boolean(message.mediaUrl),
       // @ts-ignore
       mediaUrl: message.mediaUrl,
+      filename: message.message?.documentMessage?.fileName,
       // @ts-ignore
       ack: message.ack,
       // @ts-ignore
