@@ -63,6 +63,12 @@ export class WAMessage {
   mediaUrl: string;
 
   @ApiProperty({
+    description: 'The original filename in mediaUrl in the message if any',
+    example: 'example.pdf',
+  })
+  filename: string;
+
+  @ApiProperty({
     description: 'ACK status for the message',
   })
   ack: WAMessageAck;
