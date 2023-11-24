@@ -21,6 +21,7 @@ You even can **subscribe to get new updates** there!
 
 ## 2023.11
 November 2023
+- Add `filename` field for document (file attachments) - the original filename of the document.
 - Add `/api/sendVideo` endpoint to **NOWEB** and **WEBJS** engines. Available only in Plus version.
 - Add security settings for edit group info `GET /api/{session}/groups/{groupId}/settings/security/info-admin-only` - updates the group settings to only allow admins to edit group info (title, description, photo).
 
