@@ -545,6 +545,8 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       hasMedia: Boolean(message.mediaUrl),
       // @ts-ignore
       mediaUrl: message.mediaUrl,
+      // @ts-ignore
+      filename: message.rawData?.filename,
       ack: message.ack,
       ackName: WAMessageAck[message.ack] || ACK_UNKNOWN,
       location: message.location,
