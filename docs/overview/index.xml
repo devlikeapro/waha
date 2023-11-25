@@ -19,4 +19,4 @@ Accounts (sessions) in the container CPU Memory 1 30% 400MB 10 270% 1.5GB The na
 Boosty -&amp;gt; Patreon -&amp;gt; You even can subscribe to get new updates there!
 2023.11 #
 November 2023
-Add dedicated media field in webhook payload - now you can know which media is attached to the message. { &amp;quot;event&amp;quot;: &amp;quot;message&amp;quot;, &amp;quot;session&amp;quot;: &amp;quot;default&amp;quot;, &amp;quot;payload&amp;quot;: { &amp;quot;hasMedia&amp;quot;: true, &amp;quot;media&amp;quot;: { &amp;quot;url&amp;quot;: &amp;quot;http://localhost:3000/api/files/true_11111111111@c.us_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.pdf&amp;quot;, &amp;quot;mimetype&amp;quot;: &amp;quot;application/pdf&amp;quot;, &amp;quot;filename&amp;quot;: &amp;quot;file.</description></item></channel></rss>
+Add WHATSAPP_SWAGGER_ENABLED=false so you can hide Swagger documentation (available only in Plus version). #185 Add dedicated media field in webhook payload - now you can know which media is attached to the message.</description></item></channel></rss>

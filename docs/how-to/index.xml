@@ -47,5 +47,6 @@ Endpoints for groups. Please look at swagger for details.
 {session} - use the session name for Whatsapp instance that you created with POST /api/session/start endpoint {groupId} - group id in format 123123123123@g.us. You can get the id in a few ways: By handling incoming message webhook. By getting all groups (see below). By creating a new group and saving the id.</description></item><item><title>Security</title><link>https://waha.devlike.pro/docs/how-to/security/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/security/</guid><description>💡 Do not expose WhatsApp HTTP API on public networks! We do not recommend exposing the API on any public networks!
 Either protect the API with Api Key or deny access by using firewalls.
 Swagger Security #
+Username and password #
 If you want to hide the project Swagger panel under the password - run the following command to hide under admin/admin login and password.
 docker run -it -e WHATSAPP_SWAGGER_USERNAME=admin -eWHATSAPP_SWAGGER_PASSWORD=admin devlikeapro/whatsapp-http-api-plus Open http://localhost:3000/ and enter admin / admin in the inputs:</description></item></channel></rss>
