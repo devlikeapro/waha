@@ -7,7 +7,6 @@ import { VERSION } from '../version';
 
 export class SwaggerModuleCore {
   configure(app: INestApplication, webhooks: any[]) {
-    this.setUpAuth(app);
     const builder = new DocumentBuilder();
 
     builder
@@ -129,9 +128,5 @@ export class SwaggerModuleCore {
     // @ts-ignore
     document.webhooks = webhooks;
     return document;
-  }
-
-  protected setUpAuth(app: INestApplication): void {
-    return;
   }
 }
