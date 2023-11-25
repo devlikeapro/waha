@@ -127,6 +127,11 @@ export class WhatsappConfigService {
     return this.configService.get('WHATSAPP_API_KEY', '');
   }
 
+  getSwaggerEnabled(): boolean {
+    const value = this.configService.get('WHATSAPP_SWAGGER_ENABLED', 'true');
+    return parseBool(value);
+  }
+
   getSwaggerUsernamePassword(): [string, string] | undefined {
     const user = this.configService.get('WHATSAPP_SWAGGER_USERNAME', undefined);
     const password = this.configService.get(
