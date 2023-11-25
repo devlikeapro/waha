@@ -4,5 +4,6 @@
   "endOfLine": "auto",
   "arrowParens": "always",
   "bracketSpacing": true,
-  "useTabs": false
+  "useTabs": false,
+  "tabWidth": 2
 }
