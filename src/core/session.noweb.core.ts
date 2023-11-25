@@ -180,7 +180,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     if (!this.store) {
       return proto.Message.fromObject({});
     }
-    const msg = await this.store.loadMessage(key.remoteJid!, key.id!);
+    const msg = await this.store.loadMessage(key.remoteJid, key.id);
     return msg?.message || undefined;
   }
 
