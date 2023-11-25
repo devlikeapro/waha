@@ -18,17 +18,14 @@ import {
 } from '../structures/sessions.dto';
 import { WebhookConfig } from '../structures/webhooks.config.dto';
 import { SessionManager } from './abc/manager.abc';
-import {
-  SessionParams,
-  WAHAInternalEvent,
-  WhatsappSession,
-} from './abc/session.abc';
+import { SessionParams, WhatsappSession } from './abc/session.abc';
 import { DOCS_URL } from './exceptions';
 import { getProxyConfig } from './helpers.proxy';
+import { CoreMediaManager, MediaStorageCore } from './media.core';
 import { WhatsappSessionNoWebCore } from './session.noweb.core';
 import { WhatsappSessionVenomCore } from './session.venom.core';
 import { WhatsappSessionWebJSCore } from './session.webjs.core';
-import { MediaStorageCore, SessionStorageCore } from './storage.core';
+import { SessionStorageCore } from './storage.core';
 import { WebhookConductorCore } from './webhooks.core';
 
 export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
@@ -45,11 +42,9 @@ export function buildLogger(name) {
 
 @Injectable()
 export class SessionManagerCore extends SessionManager {
-  private session: WhatsappSession;
+  private session?: WhatsappSession;
   DEFAULT = 'default';
 
-  // @ts-ignore
-  protected MediaStorageClass = MediaStorageCore;
   // @ts-ignore
   protected WebhookConductorClass = WebhookConductorCore;
   protected readonly EngineClass: typeof WhatsappSession;
@@ -110,13 +105,16 @@ export class SessionManagerCore extends SessionManager {
     const name = request.name;
     this.log.log(`'${name}' - starting session...`);
     const log = buildLogger(`WhatsappSession - ${name}`);
-    const storage = new this.MediaStorageClass();
+    const mediaManager = new CoreMediaManager(
+      new MediaStorageCore(),
+      this.config.mimetypes,
+    );
     const webhookLog = buildLogger(`Webhook - ${name}`);
     const webhook = new this.WebhookConductorClass(webhookLog);
     const proxyConfig = this.getProxyConfig(request);
     const sessionConfig: SessionParams = {
       name,
-      storage,
+      mediaManager,
       log,
       sessionStorage: this.sessionStorage,
       proxyConfig: proxyConfig,
@@ -149,7 +147,9 @@ export class SessionManagerCore extends SessionManager {
       webhooks = webhooks.concat(request.config.webhooks);
     }
     const globalWebhookConfig = this.config.getWebhookConfig();
-    webhooks.push(globalWebhookConfig);
+    if (globalWebhookConfig) {
+      webhooks.push(globalWebhookConfig);
+    }
     return webhooks;
   }
 
@@ -161,6 +161,9 @@ export class SessionManagerCore extends SessionManager {
   ): ProxyConfig | undefined {
     if (request.config?.proxy) {
       return request.config.proxy;
+    }
+    if (!this.session) {
+      return undefined;
     }
     const sessions = { [request.name]: this.session };
     return getProxyConfig(this.config, sessions, request.name);
@@ -181,16 +184,13 @@ export class SessionManagerCore extends SessionManager {
     await this.sessionStorage.clean(request.name);
   }
 
-  getSession(name: string, error = true): WhatsappSession {
+  getSession(name: string): WhatsappSession {
     this.onlyDefault(name);
     const session = this.session;
     if (!session) {
-      if (error) {
-        throw new NotFoundException(
-          `We didn't find a session with name '${name}'. Please start it first by using POST /sessions/start request`,
-        );
-      }
-      return;
+      throw new NotFoundException(
+        `We didn't find a session with name '${name}'. Please start it first by using POST /sessions/start request`,
+      );
     }
     return session;
   }

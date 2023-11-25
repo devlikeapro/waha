@@ -36,9 +36,17 @@ export class WhatsappConfigService {
     return this.configService.get<number>('WHATSAPP_FILES_LIFETIME', 180);
   }
 
-  get mimetypes(): string[] | null {
+  get mimetypes(): string[] {
+    if (!this.shouldDownloadMedia) {
+      return ['mimetype/ignore-all-media'];
+    }
     const types = this.configService.get('WHATSAPP_FILES_MIMETYPES', '');
-    return types ? types.split(',') : null;
+    return types ? types.split(',') : [];
+  }
+
+  get shouldDownloadMedia(): boolean {
+    const value = this.configService.get('WHATSAPP_DOWNLOAD_MEDIA', 'true');
+    return parseBool(value);
   }
 
   get startSessions(): string[] {
@@ -111,7 +119,7 @@ export class WhatsappConfigService {
     return WAHAEngine.WEBJS;
   }
 
-  get(name: string, defaultValue = undefined): any {
+  get(name: string, defaultValue: any = undefined): any {
     return this.configService.get(name, defaultValue);
   }
 

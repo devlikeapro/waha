@@ -9,7 +9,7 @@ import { WhatsappSession } from './abc/session.abc';
 export function getProxyConfig(
   config: WhatsappConfigService,
   sessions: Record<string, WhatsappSession>,
-  sessionName?: string,
+  sessionName: string,
 ): ProxyConfig | undefined {
   // Single proxy server configuration
   if (typeof config.proxyServer === 'string') {
@@ -23,7 +23,7 @@ export function getProxyConfig(
   // Multiple proxy server configuration
   if (Array.isArray(config.proxyServer)) {
     const prefix = config.proxyServerIndexPrefix;
-    let indexToUse: number = undefined;
+    let indexToUse: number | undefined = undefined;
     if (prefix && sessionName.includes(prefix)) {
       // match numbers at the end of the string
       const matches = sessionName.match(/\d+$/);
@@ -66,8 +66,8 @@ function getAuthenticatedUrl(
 export function createAgentProxy(proxyConfig: ProxyConfig): Agent | undefined {
   const url = getAuthenticatedUrl(
     proxyConfig.server,
-    proxyConfig.username,
-    proxyConfig.password,
+    proxyConfig.username || '',
+    proxyConfig.password || '',
   );
   return new HttpsProxyAgent(url);
 }

@@ -155,9 +155,9 @@ Receive events when server or recipient gets the message, read or played it.
 ## Files ![](/images/versions/plus.png)
 
 When people send you media - images, voice messages, and documents - WAHA saves it in the file storage.
-In your application you must download it and use it as you want to. You can find the URL in `mediaUrl` field.
+In your application you must download it and use it as you want to. You can find the URL in `media.url` field.
 
-For example, you can get the webhook like this with `mediaUrl` value (we've skipped other fields):
+For example, you can get the webhook like this with `media` value (we've skipped other fields):
 
 ```json
 {
@@ -167,7 +167,12 @@ For example, you can get the webhook like this with `mediaUrl` value (we've skip
     "id": "true_11111111111@c.us_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
     "timestamp": 1667561485,
     "from": "11111111111@c.us",
-    "mediaUrl": "http://localhost:3000/api/files/true_11111111111@c.us_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.jpg"
+    "hasMedia": true,
+    "media": {
+      "url": "http://localhost:3000/api/files/true_11111111111@c.us_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.jpg",
+      "mimetype": "image/jpeg",
+      "filename": null
+    }
   }
 }
 ```
@@ -182,8 +187,11 @@ For documents (file attachments) there's also `filename` field with the original
     "id": "true_11111111111@c.us_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
     "timestamp": 1667561485,
     "from": "11111111111@c.us",
-    "mediaUrl": "http://localhost:3000/api/files/true_11111111111@c.us_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.pdf",
-    "filename": "some-file.pdf"
+    "media": {
+      "url": "http://localhost:3000/api/files/true_11111111111@c.us_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.pdf",
+      "filename": "some-file.pdf",
+      "mimetype": "application/pdf"
+    }
   }
 }
 ```

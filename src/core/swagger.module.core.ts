@@ -131,7 +131,7 @@ export class SwaggerModuleCore {
     return document;
   }
 
-  protected setUpAuth(app: INestApplication) {
-    return undefined;
+  protected setUpAuth(app: INestApplication): void {
+    return;
   }
 }

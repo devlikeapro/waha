@@ -40,14 +40,15 @@ import {
   SettingsSecurityChangeInfo,
 } from '../structures/groups.dto';
 import { WAMessage } from '../structures/responses.dto';
+import { MeInfo } from '../structures/sessions.dto';
+import { WAMessageRevokedBody } from '../structures/webhooks.dto';
+import { IEngineMediaProcessor } from './abc/media.abc';
 import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
 import {
   AvailableInPlusVersion,
   NotImplementedByEngineError,
 } from './exceptions';
 import { QR } from './QR';
-import { MeInfo } from '../structures/sessions.dto';
-import { WAMessageRevokedBody } from '../structures/webhooks.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -541,12 +542,14 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       fromMe: message.fromMe,
       to: message.to,
       body: message.body,
+      // Media
       // @ts-ignore
-      hasMedia: Boolean(message.mediaUrl),
+      hasMedia: Boolean(message.media),
       // @ts-ignore
-      mediaUrl: message.mediaUrl,
+      media: message.media,
       // @ts-ignore
-      filename: message.rawData?.filename,
+      mediaUrl: message.media?.url,
+      // @ts-ignore
       ack: message.ack,
       ackName: WAMessageAck[message.ack] || ACK_UNKNOWN,
       location: message.location,
@@ -561,17 +564,35 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     return contact;
   }
 
-  protected async downloadMedia(message: Message) {
-    if (!message.hasMedia) {
-      return message;
-    }
+  protected downloadMedia(message: Message) {
+    const processor = new EngineMediaProcessor();
+    return this.mediaManager.processMedia(processor, message);
+  }
+}
 
+export class EngineMediaProcessor implements IEngineMediaProcessor<Message> {
+  hasMedia(message: Message): boolean {
+    if (!message.hasMedia) {
+      return false;
+    }
+    // Can't get media for revoked messages
+    return message.type !== 'revoked';
+  }
+
+  getMessageId(message: Message): string {
+    return '';
+  }
+
+  getMimetype(message: Message): string {
+    return '';
+  }
+
+  getMediaBuffer(message: Message): Promise<Buffer | null> {
+    return Promise.resolve(undefined);
+  }
+
+  getFilename(message: Message): string | null {
     // @ts-ignore
-    message.mediaUrl = await this.storage.save(
-      message.id._serialized,
-      '',
-      undefined,
-    );
-    return message;
+    return message.rawData?.filename || null;
   }
 }

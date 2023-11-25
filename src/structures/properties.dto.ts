@@ -1,7 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { WAHAEvents } from './enums.dto';
+import { ApiProperty, ApiPropertyOptions } from '@nestjs/swagger';
 
-function ChatIdProperty(options = undefined) {
+function ChatIdProperty(options: ApiPropertyOptions | null = null) {
   options = options || {};
   if (!options.example) {
     options.example = '11111111111@c.us';

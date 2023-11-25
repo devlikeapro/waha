@@ -65,7 +65,7 @@ export class SessionLogoutRequest {
 export class SessionDTO {
   name = 'default';
   status: WAHASessionStatus;
-  config: SessionConfig;
+  config?: SessionConfig;
 }
 
 export class MeInfo {

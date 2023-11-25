@@ -9,6 +9,27 @@ export class WALocation {
   longitude: string;
 }
 
+export class WAMedia {
+  @ApiProperty({
+    description: 'The URL for the media in the message if any',
+    example:
+      'http://localhost:3000/api/files/false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA.oga',
+  })
+  url: string;
+
+  @ApiProperty({
+    description: 'mimetype for the media in the message if any',
+    example: 'audio/jpeg',
+  })
+  mimetype: string | null;
+
+  @ApiProperty({
+    description: 'The original filename in mediaUrl in the message if any',
+    example: 'example.pdf',
+  })
+  filename: string | null;
+}
+
 export class WAMessage {
   @MessageIdProperty()
   id: string;
@@ -55,18 +76,16 @@ export class WAMessage {
   })
   hasMedia: boolean;
 
+  media: WAMedia | null = null;
+
   @ApiProperty({
-    description: 'The URL for the media in the message if any',
+    description:
+      'Use `media.url` instead! The URL for the media in the message if any',
+    deprecated: true,
     example:
       'http://localhost:3000/api/files/false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA.oga',
   })
   mediaUrl: string;
-
-  @ApiProperty({
-    description: 'The original filename in mediaUrl in the message if any',
-    example: 'example.pdf',
-  })
-  filename: string;
 
   @ApiProperty({
     description: 'ACK status for the message',

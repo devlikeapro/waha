@@ -3,6 +3,7 @@ import { EventEmitter } from 'events';
 import * as fs from 'fs';
 import { MessageId } from 'whatsapp-web.js';
 
+import { OTPRequest, RequestCodeRequest } from '../../structures/auth.dto';
 import {
   ChatRequest,
   CheckNumberStatusQuery,
@@ -37,9 +38,6 @@ import {
   ProxyConfig,
   SessionConfig,
 } from '../../structures/sessions.dto';
-import { NotImplementedByEngineError } from '../exceptions';
-import { LocalSessionStorage, MediaStorage } from './storage.abc';
-import { OTPRequest, RequestCodeRequest } from '../../structures/auth.dto';
 import {
   ImageStatus,
   TextStatus,
@@ -47,6 +45,9 @@ import {
   VoiceStatus,
 } from '../../structures/status.dto';
 import { WASessionStatusBody } from '../../structures/webhooks.dto';
+import { NotImplementedByEngineError } from '../exceptions';
+import { MediaManager } from './media.abc';
+import { LocalSessionStorage } from './storage.abc';
 
 const CHROME_PATH = '/usr/bin/google-chrome-stable';
 const CHROMIUM_PATH = '/usr/bin/chromium';
@@ -73,11 +74,11 @@ export enum WAHAInternalEvent {
 
 export interface SessionParams {
   name: string;
-  storage: MediaStorage;
+  mediaManager: MediaManager;
   log: ConsoleLogger;
   sessionStorage: LocalSessionStorage;
   proxyConfig?: ProxyConfig;
-  sessionConfig: SessionConfig;
+  sessionConfig?: SessionConfig;
 }
 
 export abstract class WhatsappSession {
@@ -85,11 +86,11 @@ export abstract class WhatsappSession {
   public engine: WAHAEngine;
 
   public name: string;
-  protected storage: MediaStorage;
+  protected mediaManager: MediaManager;
   protected log: ConsoleLogger;
   protected sessionStorage: LocalSessionStorage;
   protected proxyConfig?: ProxyConfig;
-  public sessionConfig: SessionConfig;
+  public sessionConfig?: SessionConfig;
 
   private _status: WAHASessionStatus;
 
@@ -98,7 +99,7 @@ export abstract class WhatsappSession {
     log,
     sessionStorage,
     proxyConfig,
-    storage,
+    mediaManager,
     sessionConfig,
   }: SessionParams) {
     this.events = new EventEmitter();
@@ -106,7 +107,7 @@ export abstract class WhatsappSession {
     this.proxyConfig = proxyConfig;
     this.log = log;
     this.sessionStorage = sessionStorage;
-    this.storage = storage;
+    this.mediaManager = mediaManager;
     this.sessionConfig = sessionConfig;
   }
 

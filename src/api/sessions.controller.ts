@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
 import {
   ApiExtraModels,
   ApiOperation,
@@ -8,6 +7,7 @@ import {
 } from '@nestjs/swagger';
 
 import { SessionManager } from '../core/abc/manager.abc';
+import { WhatsappSession } from '../core/abc/session.abc';
 import { parseBool } from '../helpers';
 import {
   ListSessionsQuery,
@@ -19,9 +19,6 @@ import {
   SessionStopRequest,
 } from '../structures/sessions.dto';
 import { SessionApiParam, SessionParam } from './helpers';
-import { WhatsappSession } from '../core/abc/session.abc';
-import { WAHAChatPresences } from '../structures/presence.dto';
-import { WAHAWebhook } from '../structures/webhooks.dto';
 
 @ApiSecurity('api_key')
 @Controller('api/sessions')
@@ -34,7 +31,7 @@ class SessionsController {
     const result = await this.manager.start(request);
     await this.manager.sessionStorage.configRepository.save(
       request.name,
-      request.config,
+      request.config || null,
     );
     return result;
   }
@@ -71,7 +68,7 @@ class SessionController {
   @Get('me')
   @SessionApiParam
   @ApiOperation({ summary: 'Get information about the authenticated account' })
-  getMe(@SessionParam session: WhatsappSession): Promise<MeInfo> {
+  getMe(@SessionParam session: WhatsappSession): Promise<MeInfo | null> {
     return session.getSessionMeInfo();
   }
 }

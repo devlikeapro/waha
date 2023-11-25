@@ -1,17 +1,12 @@
 import { SessionConfig } from '../../structures/sessions.dto';
 
-abstract class MediaStorage {
-  abstract save(
-    messageId: string,
-    mimetype: string,
-    buffer: Buffer,
-  ): Promise<string>;
-}
-
 abstract class SessionConfigRepository {
-  abstract save(sessionName: string, config: SessionConfig): Promise<void>;
+  abstract save(
+    sessionName: string,
+    config: SessionConfig | null,
+  ): Promise<void>;
 
-  abstract get(sessionName: string): Promise<SessionConfig>;
+  abstract get(sessionName: string): Promise<SessionConfig | null>;
 }
 
 abstract class SessionStorage {
@@ -37,4 +32,4 @@ abstract class LocalSessionStorage extends SessionStorage {
   abstract getFolderPath(sessionName: string): string;
 }
 
-export { LocalSessionStorage, MediaStorage, SessionConfigRepository };
+export { LocalSessionStorage, SessionConfigRepository };

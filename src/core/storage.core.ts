@@ -6,22 +6,8 @@ import * as path from 'path';
 import { SessionConfig } from '../structures/sessions.dto';
 import {
   LocalSessionStorage,
-  MediaStorage,
   SessionConfigRepository,
 } from './abc/storage.abc';
-import { DOCS_URL } from './exceptions';
-
-export class MediaStorageCore implements MediaStorage {
-  async save(
-    messageId: string,
-    mimetype: string,
-    buffer: Buffer,
-  ): Promise<string> {
-    return Promise.resolve(
-      `Media attachment's available only in WAHA Plus version. ${DOCS_URL}`,
-    );
-  }
-}
 
 class LocalSessionConfigRepository extends SessionConfigRepository {
   FILENAME = '.waha.session.config.json';
@@ -30,13 +16,13 @@ class LocalSessionConfigRepository extends SessionConfigRepository {
     super();
   }
 
-  async get(sessionName: string): Promise<SessionConfig> {
+  async get(sessionName: string): Promise<SessionConfig | null> {
     const filepath = this.getFilePath(sessionName);
     // Check file exists
     try {
       await fs.access(filepath, fs.constants.F_OK);
     } catch (error) {
-      return undefined;
+      return null;
     }
 
     // Try to load config
@@ -44,13 +30,13 @@ class LocalSessionConfigRepository extends SessionConfigRepository {
     try {
       content = await fs.readFile(filepath, 'utf-8');
     } catch (error) {
-      return undefined;
+      return null;
     }
 
     return JSON.parse(content);
   }
 
-  async save(sessionName: string, config: SessionConfig) {
+  async save(sessionName: string, config: SessionConfig | null) {
     // Create folder if not exist
     const folder = this.storage.getFolderPath(sessionName);
     await fs.mkdir(folder, { recursive: true });

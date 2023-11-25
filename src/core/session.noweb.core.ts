@@ -17,7 +17,6 @@ import * as fs from 'fs/promises';
 import { Agent } from 'https';
 import * as lodash from 'lodash';
 import { PairingCodeResponse } from 'src/structures/auth.dto';
-import { Message } from 'whatsapp-web.js';
 
 import { flipObject, splitAt } from '../helpers';
 import {
@@ -55,12 +54,14 @@ import {
   WAHAPresenceData,
 } from '../structures/presence.dto';
 import { WAMessage } from '../structures/responses.dto';
+import { MeInfo } from '../structures/sessions.dto';
 import { BROADCAST_ID, TextStatus } from '../structures/status.dto';
 import {
   PollVote,
   PollVotePayload,
   WAMessageAckBody,
 } from '../structures/webhooks.dto';
+import { IEngineMediaProcessor } from './abc/media.abc';
 import {
   ensureSuffix,
   WAHAInternalEvent,
@@ -72,7 +73,7 @@ import {
 } from './exceptions';
 import { createAgentProxy } from './helpers.proxy';
 import { QR } from './QR';
-import { MeInfo } from '../structures/sessions.dto';
+import * as Buffer from 'buffer';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -659,11 +660,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       body: body,
       to: toCusFormat(fromToParticipant.to),
       participant: toCusFormat(fromToParticipant.participant),
-      // @ts-ignore
-      hasMedia: Boolean(message.mediaUrl),
-      // @ts-ignore
-      mediaUrl: message.mediaUrl,
-      filename: message.message?.documentMessage?.fileName,
+      // Media
+      hasMedia: Boolean(message.media),
+      media: message.media,
+      mediaUrl: message.media?.url,
       // @ts-ignore
       ack: message.ack,
       // @ts-ignore
@@ -812,14 +812,39 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return { id: chatId, presences: presences };
   }
 
-  protected async downloadMedia(message: Message) {
-    if (!message.hasMedia) {
-      return message;
-    }
+  protected downloadMedia(message) {
+    const processor = new EngineMediaProcessor(this);
+    return this.mediaManager.processMedia(processor, message);
+  }
+}
 
-    // @ts-ignore
-    message.mediaUrl = await this.storage.save(message.key.id, '', undefined);
-    return message;
+export class EngineMediaProcessor implements IEngineMediaProcessor<any> {
+  constructor(public session: WhatsappSessionNoWebCore) {}
+
+  hasMedia(message: any): boolean {
+    const messageType = Object.keys(message.message)[0];
+    const hasMedia =
+      messageType === 'imageMessage' ||
+      messageType == 'audioMessage' ||
+      messageType == 'documentMessage' ||
+      messageType == 'videoMessage';
+    return hasMedia;
+  }
+
+  getMessageId(message: any): string {
+    return '';
+  }
+
+  getMimetype(message: any): string {
+    return '';
+  }
+
+  getMediaBuffer(message: any): Promise<Buffer | null> {
+    return Promise.resolve(undefined);
+  }
+
+  getFilename(message: any): string | null {
+    return message.message?.documentMessage?.fileName || null;
   }
 }
 

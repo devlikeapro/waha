@@ -72,13 +72,33 @@ Keep in mind that session's proxy configuration takes precedence over proxy conf
 
 The following environment variables can be used to configure the file storage options for the WAHA:
 
-- `WHATSAPP_FILES_MIMETYPES`: This variable can be used to download only specific mimetypes from messages. By default,
-  all files are downloaded. The mimetypes must be separated by a comma, without spaces. For
-  example: `audio,image/png,image/gif`. To choose a specific type, use a prefix (like `audio,image`).
+- `WHATSAPP_FILES_MIMETYPES`: This variable can be used to download only specific mimetypes from messages.
+  By default, all files are downloaded. The mimetypes must be separated by a comma, without spaces.
+  For example: `audio,image/png,image/gif`. To choose a specific type, use a prefix (like `audio,image`). See usage below.
+- `WHATSAPP_DOWNLOAD_MEDIA=true` - this variable can be used to **completely** disable downloading media files. By default, all files are downloaded.
+  Set this variable to `WHATSAPP_DOWNLOAD_MEDIA=false` to disable downloading media files.
+  - Under the hood, it sets `WHATSAPP_FILES_MIMETYPES=mimetype/ignore-all-media` to ignore all media files.
 - `WHATSAPP_FILES_LIFETIME`: This variable can be used to set the time (in seconds) after which files will be removed to
   free up space. The default value is `180`.
 - `WHATSAPP_FILES_FOLDER`: This variable can be used to set the folder where files from chats (images, voice messages)
   will be stored. The default value is `/tmp/whatsapp-files`.
+
+💡 Even if WAHA doesn't process the message media because of `WHATSAPP_FILES_MIMETYPES` or `WHATSAPP_DOWNLOAD_MEDIA`
+you'll get a webhook event with `hasMedia: True` field, but with no `media.url`.
+```json
+{
+  "event": "message",
+  "session": "default",
+  "payload": {
+    "hasMedia": true,
+    "media": {
+      "url": null,
+      "mimetype": "video/mp4",
+      "filename": null
+    }
+  }
+}
+```
 
 ## Examples
 
@@ -136,6 +156,13 @@ comma-separated list of mimetypes:
 
 ```
 WHATSAPP_FILES_MIMETYPES=audio,image/png,image/gif
+```
+
+#### Disable Downloading Media Files
+To disable downloading media files, set the `WHATSAPP_DOWNLOAD_MEDIA` environment variable to `false`:
+
+```
+WHATSAPP_DOWNLOAD_MEDIA=false
 ```
 
 #### Setting the File Lifetime

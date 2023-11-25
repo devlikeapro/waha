@@ -21,6 +21,25 @@ You even can **subscribe to get new updates** there!
 
 ## 2023.11
 November 2023
+- Add dedicated `media` field in webhook payload - now you can know which media is attached to the message.
+```json
+{
+  "event": "message",
+  "session": "default",
+  "payload": {
+    "hasMedia": true,
+    "media": {
+      "url": "http://localhost:3000/api/files/true_11111111111@c.us_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.pdf",
+      "mimetype": "application/pdf",
+      "filename": "file.pdf"
+    }
+  }
+}
+
+```
+- Add `WHATSAPP_DOWNLOAD_MEDIA` environment variable to control media download. Available only in Plus version.
+  - `WHATSAPP_DOWNLOAD_MEDIA=True` - download media
+  - `WHATSAPP_DOWNLOAD_MEDIA=False` - do not download media at all.
 - Add `filename` field for document (file attachments) - the original filename of the document.
 - Add `/api/sendVideo` endpoint to **NOWEB** and **WEBJS** engines. Available only in Plus version.
 - Add security settings for edit group info `GET /api/{session}/groups/{groupId}/settings/security/info-admin-only` - updates the group settings to only allow admins to edit group info (title, description, photo).

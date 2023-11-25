@@ -21,9 +21,11 @@ import {
   WAHASessionStatus,
 } from '../structures/enums.dto';
 import { WAMessage } from '../structures/responses.dto';
+import { IEngineMediaProcessor } from './abc/media.abc';
 import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
 import { NotImplementedByEngineError } from './exceptions';
 import { QR } from './QR';
+import * as Buffer from 'buffer';
 
 export class WhatsappSessionVenomCore extends WhatsappSession {
   engine = WAHAEngine.VENOM;
@@ -246,17 +248,13 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
    * END - Methods for API
    */
 
-  protected async downloadAndDecryptMedia(message: Message) {
-    if (!message.isMMS || !message.isMedia) {
-      return message;
-    }
-    // @ts-ignore
-    message.mediaUrl = await this.storage.save(message.id, '', undefined);
-    return message;
+  protected downloadMedia(message: Message) {
+    const processor = new EngineMediaProcessor(this);
+    return this.mediaManager.processMedia(processor, message);
   }
 
   private processIncomingMessage(message: Message) {
-    return this.downloadAndDecryptMedia(message).then(this.toWAMessage);
+    return this.downloadMedia(message).then(this.toWAMessage);
   }
 
   protected toWAMessage(message: Message): Promise<WAMessage> {
@@ -268,15 +266,44 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
       fromMe: message.fromMe,
       to: message.to,
       body: message.body,
+      // Media
       // @ts-ignore
-      hasMedia: Boolean(message.mediaUrl),
+      hasMedia: Boolean(message.media),
       // @ts-ignore
-      mediaUrl: message.mediaUrl,
+      media: message.media,
+      // @ts-ignore
+      mediaUrl: message.media?.url,
       // @ts-ignore
       ack: message.ack,
       location: undefined,
       vCards: undefined,
       _data: message,
     });
+  }
+}
+
+export class EngineMediaProcessor implements IEngineMediaProcessor<Message> {
+  constructor(public session: WhatsappSessionVenomCore) {}
+
+  hasMedia(message: any): boolean {
+    if (!message.isMMS || !message.isMedia) {
+      return message;
+    }
+  }
+
+  getMessageId(message: any): string {
+    return '';
+  }
+
+  getMimetype(message: any): string {
+    return '';
+  }
+
+  getMediaBuffer(message: any): Promise<Buffer | null> {
+    return Promise.resolve(undefined);
+  }
+
+  getFilename(message: Message): string | null {
+    return null;
   }
 }

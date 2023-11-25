@@ -9,7 +9,7 @@ import {
   SessionStopRequest,
 } from '../../structures/sessions.dto';
 import { WhatsappSession } from './session.abc';
-import { LocalSessionStorage, MediaStorage } from './storage.abc';
+import { LocalSessionStorage } from './storage.abc';
 import { WebhookConductor } from './webhooks.abc';
 
 export abstract class SessionManager implements OnApplicationShutdown {
@@ -20,8 +20,6 @@ export abstract class SessionManager implements OnApplicationShutdown {
   protected abstract get EngineClass(): typeof WhatsappSession;
 
   protected abstract get WebhookConductorClass(): typeof WebhookConductor;
-
-  protected abstract get MediaStorageClass(): typeof MediaStorage;
 
   abstract onApplicationShutdown(signal?: string);
 
@@ -34,7 +32,7 @@ export abstract class SessionManager implements OnApplicationShutdown {
 
   abstract logout(request: SessionLogoutRequest): Promise<void>;
 
-  abstract getSession(name: string, error?: boolean): WhatsappSession;
+  abstract getSession(name: string): WhatsappSession;
 
   abstract getSessions(all: boolean): Promise<SessionInfo[]>;
 }
