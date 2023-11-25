@@ -4,7 +4,7 @@ services:
     image: devlikeapro/whatsapp-http-api
     container_name: whatsapp-http-api
     ports:
-      - "3000:3000/tcp"
+      - '3000:3000/tcp'
     environment:
       # Environment variables from https://waha.devlike.pro/docs/how-to/config/
       - WHATSAPP_HOOK_URL=https://httpbin.org/post
@@ -16,9 +16,9 @@ services:
     image: devlikeapro/whatsapp-http-api-plus
     container_name: whatsapp-http-api-plus
     ports:
-      - "3000:3000/tcp"
+      - '3000:3000/tcp'
     volumes:
-      - "./.sessions:/app/.sessions"
+      - './.sessions:/app/.sessions'
     environment:
       # Environment variables from https://waha.devlike.pro/docs/how-to/config/
       - WHATSAPP_RESTART_ALL_SESSIONS=True

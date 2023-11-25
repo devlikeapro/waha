@@ -15,10 +15,10 @@ repos:
     rev: 'v3.1.0'
     hooks:
       - id: prettier
-        types_or: [ javascript, ts ]
-        files: |
+        exclude: |
           (?x)^(
-              src/.*|
+              docs/.*|
+              README.md|
           )$
   - repo: https://github.com/Lucas-C/pre-commit-hooks-nodejs
     rev: v1.1.2

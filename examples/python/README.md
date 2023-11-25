@@ -9,10 +9,11 @@ We assume that you have installed software:
 
 ### Download and start image
 
-First of all, you must run WhatsApp HTTP API locally (which under the hood it runs real WhatsApp Web instance and expose
-HTTP API for interaction).
+First of all, you must run WhatsApp HTTP API locally (which under the hood it
+runs real WhatsApp Web instance and expose HTTP API for interaction).
 
-Here are the steps from [Quick Start](https://waha.devlike.pro/docs/overview/quick-start/):
+Here are the steps from
+[Quick Start](https://waha.devlike.pro/docs/overview/quick-start/):
 
 Download and start WhatsApp HTTP API docker container
 
@@ -28,9 +29,11 @@ docker run -it --rm --network=host -e WHATSAPP_HOOK_URL=http://localhost:5000/bo
 
 #### Download image - ARM
 
-If you're using ARM (like Apple Silicon, Apple M1, etc.) - use following commands to download the image
+If you're using ARM (like Apple Silicon, Apple M1, etc.) - use following
+commands to download the image
 
 ![](/images/versions/core.png) For Core version the command is
+
 ```bash
 # Download the image
 docker pull devlikeapro/whatsapp-http-api:arm
@@ -47,12 +50,16 @@ docker run -it --rm --network=host -e WHATSAPP_HOOK_URL=http://localhost:5000/bo
 
 2. Open Swagger API in the browser http://localhost:3000/
 3. Start session and scan QR code in swagger
-    1. Find `POST /api/session/start` request press **Try it out** and **Execute** it with `default` session name
-    2. Find `GET /api/screenshot` and execute it - it must show QR code
-    3. Scan QR code on your mobile WhatsApp application (that installed on your phone)
-    4. Execute `GET /api/screenshot` once again - it must show the screenshot from WhatsApp Web.
-4. Send test text message - find `POST /api/sendText` and execute it with payload (change `12132132130` in the `chatId`
-   to phone number that is registered in WhatsApp).
+   1. Find `POST /api/session/start` request press **Try it out** and
+      **Execute** it with `default` session name
+   2. Find `GET /api/screenshot` and execute it - it must show QR code
+   3. Scan QR code on your mobile WhatsApp application (that installed on your
+      phone)
+   4. Execute `GET /api/screenshot` once again - it must show the screenshot
+      from WhatsApp Web.
+4. Send test text message - find `POST /api/sendText` and execute it with
+   payload (change `12132132130` in the `chatId` to phone number that is
+   registered in WhatsApp).
 
 ```json
 {
@@ -66,9 +73,9 @@ If you see **Hi there!** message then you're ready to run bots!
 
 ## WhatsApp Echo Bot
 
-The WhatsApp Echo Bot is a sample flask webhook server application that echoes back to you whatever you send it. It can
-serve
-as a basic reference for how to set up webhooks and reply to incoming messages.
+The WhatsApp Echo Bot is a sample flask webhook server application that echoes
+back to you whatever you send it. It can serve as a basic reference for how to
+set up webhooks and reply to incoming messages.
 
 ```bash
 # Clone the git repository with example
@@ -81,16 +88,19 @@ python -mpip install -r requirements.txt
 FLASK_APP=whatsapp_echo_bot.py flask run
 ```
 
-Open http://127.0.0.1:5000/bot - if you see **WhatsApp Echo Bot is ready!** then the bot is ready to receive message!
+Open http://127.0.0.1:5000/bot - if you see **WhatsApp Echo Bot is ready!** then
+the bot is ready to receive message!
 
-Send message to the WhatsApp (that you used to scan QR code) and it'll echo text back to you!
+Send message to the WhatsApp (that you used to scan QR code) and it'll echo text
+back to you!
 
 ## WhatsApp Download Files Bot
 
-The WhatsApp Download Image Bot downloads all files people send to your WhatsApp and log the path for the file.
+The WhatsApp Download Image Bot downloads all files people send to your WhatsApp
+and log the path for the file.
 
-**The bot works only with WAHA Plus version** available with donations.
-Visit [read more about difference between Core and Plus versions](https://waha.devlike.pro/docs/how-to/plus-version/).
+**The bot works only with WAHA Plus version** available with donations. Visit
+[read more about difference between Core and Plus versions](https://waha.devlike.pro/docs/how-to/plus-version/).
 
 Download **WAHA Plus** version:
 
@@ -114,5 +124,5 @@ python -mpip install -r requirements.txt
 FLASK_APP=whatsapp_download_files_bot.py flask run
 ```
 
-Open http://127.0.0.1:5000/bot - if you see **WhatsApp Download Files Bot!** then the bot is ready to receive message
-with files!
+Open http://127.0.0.1:5000/bot - if you see **WhatsApp Download Files Bot!**
+then the bot is ready to receive message with files!
