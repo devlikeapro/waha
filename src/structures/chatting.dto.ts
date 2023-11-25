@@ -1,4 +1,9 @@
-import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import {
+  ApiExtraModels,
+  ApiHideProperty,
+  ApiProperty,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 
 import { SessionBaseRequest, SessionQuery } from './base.dto';
@@ -85,12 +90,7 @@ export class MessageContactVcardRequest extends ChatRequest {
 
 export class MessageTextRequest extends ChatRequest {
   text = 'Hi there!';
-  @ApiProperty({
-    description:
-      'Mention contact in the message. ' +
-      "The message MUST contain '@123456789' text in order to work with 'mentions' field. e.g: ['123456789@c.us']",
-    example: undefined,
-  })
+  @ApiHideProperty()
   mentions?: string[];
 }
 
