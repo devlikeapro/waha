@@ -42,6 +42,11 @@ The following environment variables can be used to configure the WAHA.
 ### Swagger
 - `WHATSAPP_SWAGGER_CONFIG_ADVANCED=true` - enables advanced configuration options for Swagger documentation - you can customize host, port and base URL for the requests.
   Disabled by default.
+- `WHATSAPP_SWAGGER_ENABLED=false` - disables Swagger documentation. Enabled by default. Available in **WAHA Plus** only.
+- `WHATSAPP_SWAGGER_USERNAME=admin` and `WHATSAPP_SWAGGER_PASSWORD=admin` - these variables can be used to protect the Swagger panel
+  with `admin / admin` credentials. This does not affect API access. Available in **WAHA Plus** only.
+
+Read more about security settings for Swagger and API on [**Security page** ->]({{< relref "/docs/how-to/security" >}}).
 
 ### Proxy
 #### Global proxy configuration
