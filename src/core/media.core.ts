@@ -1,5 +1,3 @@
-import * as process from 'process';
-
 import { WAMedia } from '../structures/responses.dto';
 import {
   IEngineMediaProcessor,
@@ -21,7 +19,10 @@ export class MediaStorageCore implements MediaStorage {
 }
 
 export class CoreMediaManager implements MediaManager {
-  constructor(private storage: MediaStorage, private mimetypes: string[]) {}
+  constructor(
+    private storage: MediaStorage,
+    private mimetypes: string[],
+  ) {}
 
   async processMedia<Message>(
     processor: IEngineMediaProcessor<Message>,
