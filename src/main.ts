@@ -7,7 +7,6 @@ import { AppModuleCore } from './core/app.module.core';
 import { SwaggerModuleCore } from './core/swagger.module.core';
 import { getWAHAVersion, VERSION, WAHAVersion } from './version';
 import { WAHA_WEBHOOKS } from './structures/webhooks.dto';
-import { LogLevel } from '@nestjs/common';
 import { getLogLevels } from './helpers';
 
 async function loadModules(): Promise<
