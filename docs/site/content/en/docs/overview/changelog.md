@@ -21,6 +21,7 @@ You even can **subscribe to get new updates** there!
 
 ## 2023.11
 November 2023
+- Add `WHATSAPP_SWAGGER_ENABLED=false` so you can hide Swagger documentation (available only in Plus version). [#185](https://github.com/devlikeapro/whatsapp-http-api/issues/185)
 - Add dedicated `media` field in webhook payload - now you can know which media is attached to the message.
 ```json
 {

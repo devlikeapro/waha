@@ -16,6 +16,7 @@ Either protect the API with [Api Key](https://www.fortinet.com/resources/cybergl
 firewalls.
 
 ## Swagger Security ![](/images/versions/plus.png)
+### Username and password
 If you want to hide the project Swagger panel under the password - run the following command to hide under `admin/admin`
 login and password.
 
@@ -28,6 +29,12 @@ Open http://localhost:3000/ and enter `admin / admin` in the inputs:
 ![](swagger-basic-auth.png)
 
 {{< alert icon="👉" text="Protecting Swagger under the password does not protect your API from other request! Use both techniques to protect your API and Swagger!" />}}
+
+### Disable Swagger
+You also can hide swagger completely by setting `WHATSAPP_SWAGGER_ENABLED=false` environment variable.
+
+{{< alert icon="👉" text="Disabling Swagger does not protect the API, please use API security as well" />}}
+
 
 ## API security ![](/images/versions/plus.png)
 
