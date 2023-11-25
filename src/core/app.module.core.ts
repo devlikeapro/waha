@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { ServeStaticModule } from '@nestjs/serve-static';
 
+import { AuthController } from '../api/auth.controller';
+import { ChatsController } from '../api/chats.controller';
 import { ChattingController } from '../api/chatting.controller';
 import { ContactsController } from '../api/contacts.controller';
 import { GroupsController } from '../api/groups.controller';
@@ -12,13 +14,11 @@ import {
   SessionController,
   SessionsController,
 } from '../api/sessions.controller';
+import { StatusController } from '../api/status.controller';
 import { VersionController } from '../api/version.controller';
 import { WhatsappConfigService } from '../config.service';
 import { SessionManager } from './abc/manager.abc';
 import { SessionManagerCore } from './manager.core';
-import { AuthController } from '../api/auth.controller';
-import { ChatsController } from '../api/chats.controller';
-import { StatusController } from '../api/status.controller';
 
 export const IMPORTS = [
   ConfigModule.forRoot({

@@ -1,11 +1,12 @@
+import * as process from 'process';
+
+import { WAMedia } from '../structures/responses.dto';
 import {
   IEngineMediaProcessor,
   MediaManager,
   MediaStorage,
 } from './abc/media.abc';
 import { DOCS_URL } from './exceptions';
-import { WAMedia } from '../structures/responses.dto';
-import * as process from 'process';
 
 export class MediaStorageCore implements MediaStorage {
   async save(

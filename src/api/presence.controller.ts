@@ -10,12 +10,12 @@ import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
+import { WAHAPresenceStatus } from '../structures/enums.dto';
 import {
   WAHAChatPresences,
   WAHASessionPresence,
 } from '../structures/presence.dto';
 import { SessionApiParam, SessionParam } from './helpers';
-import { WAHAPresenceStatus } from '../structures/enums.dto';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/presence')

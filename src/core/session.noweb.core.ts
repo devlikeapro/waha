@@ -13,6 +13,7 @@ import makeWASocket, {
   WAMessageKey,
 } from '@adiwajshing/baileys';
 import { UnprocessableEntityException } from '@nestjs/common';
+import * as Buffer from 'buffer';
 import * as fs from 'fs/promises';
 import { Agent } from 'https';
 import * as lodash from 'lodash';
@@ -73,7 +74,6 @@ import {
 } from './exceptions';
 import { createAgentProxy } from './helpers.proxy';
 import { QR } from './QR';
-import * as Buffer from 'buffer';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');

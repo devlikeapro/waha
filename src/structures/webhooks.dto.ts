@@ -1,17 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { MessageDestination } from './chatting.dto';
 import {
   WAHAEngine,
   WAHAEvents,
   WAHASessionStatus,
   WAMessageAck,
 } from './enums.dto';
-import { WAMessage } from './responses.dto';
-import { MessageDestination } from './chatting.dto';
-import { ChatIdProperty, MessageIdProperty } from './properties.dto';
-import { WAHAChatPresences } from './presence.dto';
-import { MeInfo } from './sessions.dto';
 import { WAHAEnvironment } from './environment.dto';
+import { WAHAChatPresences } from './presence.dto';
+import { ChatIdProperty, MessageIdProperty } from './properties.dto';
+import { WAMessage } from './responses.dto';
+import { MeInfo } from './sessions.dto';
 
 export class WAMessageAckBody {
   @MessageIdProperty()

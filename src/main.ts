@@ -5,9 +5,9 @@ import { AllExceptionsFilter } from './api/exception.filter';
 import { WhatsappConfigService } from './config.service';
 import { AppModuleCore } from './core/app.module.core';
 import { SwaggerModuleCore } from './core/swagger.module.core';
-import { getWAHAVersion, VERSION, WAHAVersion } from './version';
-import { WAHA_WEBHOOKS } from './structures/webhooks.dto';
 import { getLogLevels } from './helpers';
+import { WAHA_WEBHOOKS } from './structures/webhooks.dto';
+import { getWAHAVersion, VERSION, WAHAVersion } from './version';
 
 async function loadModules(): Promise<
   [typeof AppModuleCore, typeof SwaggerModuleCore]

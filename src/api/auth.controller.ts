@@ -1,14 +1,14 @@
 import { Body, Controller, Get, Post, Res } from '@nestjs/common';
+import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
+import { Readable } from 'stream';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
 import { OTPRequest, RequestCodeRequest } from '../structures/auth.dto';
-import { SessionApiParam, SessionParam } from './helpers';
 import { WAHASessionStatus } from '../structures/enums.dto';
-import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
-import { Readable } from 'stream';
-import { Response } from 'express';
+import { SessionApiParam, SessionParam } from './helpers';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/auth')

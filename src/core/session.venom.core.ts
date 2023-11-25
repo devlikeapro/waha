@@ -1,4 +1,5 @@
 import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
+import * as Buffer from 'buffer';
 import { create, CreateConfig, Message, Whatsapp } from 'venom-bot';
 
 import {
@@ -25,7 +26,6 @@ import { IEngineMediaProcessor } from './abc/media.abc';
 import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
 import { NotImplementedByEngineError } from './exceptions';
 import { QR } from './QR';
-import * as Buffer from 'buffer';
 
 export class WhatsappSessionVenomCore extends WhatsappSession {
   engine = WAHAEngine.VENOM;

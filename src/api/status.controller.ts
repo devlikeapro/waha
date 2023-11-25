@@ -11,13 +11,13 @@ import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
-import { SessionApiParam, SessionParam } from './helpers';
 import {
   ImageStatus,
   TextStatus,
   VideoStatus,
   VoiceStatus,
 } from '../structures/status.dto';
+import { SessionApiParam, SessionParam } from './helpers';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/status')

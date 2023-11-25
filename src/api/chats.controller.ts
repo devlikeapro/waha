@@ -3,9 +3,9 @@ import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
-import { SessionApiParam, SessionParam } from './helpers';
-import { GetChatMessagesQuery } from '../structures/chats.dto';
 import { parseBool } from '../helpers';
+import { GetChatMessagesQuery } from '../structures/chats.dto';
+import { SessionApiParam, SessionParam } from './helpers';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/chats')
