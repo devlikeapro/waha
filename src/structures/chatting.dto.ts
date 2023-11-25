@@ -88,8 +88,8 @@ export class MessageTextRequest extends ChatRequest {
   @ApiProperty({
     description:
       'Mention contact in the message. ' +
-      "The message MUST contain '@123456789' text in order to work with 'mentions' field.",
-    example: ['123456789@c.us'],
+      "The message MUST contain '@123456789' text in order to work with 'mentions' field. e.g: ['123456789@c.us']",
+    example: undefined,
   })
   mentions?: string[];
 }
