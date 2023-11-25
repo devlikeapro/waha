@@ -67,6 +67,7 @@ export class ContactsController {
     const whatsapp = this.manager.getSession(request.session);
     return whatsapp.blockContact(request);
   }
+
   @Post('/unblock')
   @ApiOperation({ summary: 'Unblock contact' })
   unblock(@Body() request: ContactRequest) {

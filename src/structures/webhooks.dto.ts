@@ -92,6 +92,7 @@ export class WASessionStatusBody {
     example: 'default',
   })
   name: string;
+
   status: WAHASessionStatus;
 }
 
@@ -122,12 +123,14 @@ class WAHAWebhookSessionStatus extends WAHAWebhook {
     description: 'The event is triggered when the session status changes.',
   })
   event = WAHAEvents.SESSION_STATUS;
+
   payload: WASessionStatusBody;
 }
 
 class WAHAWebhookMessage extends WAHAWebhook {
   @ApiProperty({ description: 'Incoming message.' })
   event = WAHAEvents.MESSAGE;
+
   payload: WAMessage;
 }
 
@@ -136,6 +139,7 @@ class WAHAWebhookMessageAny extends WAHAWebhook {
     description: 'Fired on all message creations, including your own.',
   })
   event = WAHAEvents.MESSAGE_ANY;
+
   payload: WAMessage;
 }
 
@@ -145,6 +149,7 @@ class WAHAWebhookMessageAck extends WAHAWebhook {
       'Receive events when server or recipient gets the message, read or played it.',
   })
   event = WAHAEvents.MESSAGE_ACK;
+
   payload: WAMessageAckBody;
 }
 
@@ -155,6 +160,7 @@ class WAHAWebhookMessageRevoked extends WAHAWebhook {
       'revokes a previously sent message.',
   })
   event = WAHAEvents.MESSAGE_REVOKED;
+
   payload: WAMessageRevokedBody;
 }
 
@@ -163,6 +169,7 @@ class WAHAWebhookStateChange extends WAHAWebhook {
     description: 'It’s an internal engine’s state, not session status.',
   })
   event = WAHAEvents.STATE_CHANGE;
+
   payload: any;
 }
 
@@ -171,6 +178,7 @@ class WAHAWebhookGroupJoin extends WAHAWebhook {
     description: 'Some one join a group.',
   })
   event = WAHAEvents.GROUP_JOIN;
+
   payload: any;
 }
 
@@ -179,6 +187,7 @@ class WAHAWebhookGroupLeave extends WAHAWebhook {
     description: 'Some one left a group.',
   })
   event = WAHAEvents.GROUP_LEAVE;
+
   payload: any;
 }
 
@@ -187,6 +196,7 @@ class WAHAWebhookPresenceUpdate extends WAHAWebhook {
     description: 'The most recent presence information for a chat.',
   })
   event = WAHAEvents.PRESENCE_UPDATE;
+
   payload: WAHAChatPresences;
 }
 
@@ -195,6 +205,7 @@ class WAHAWebhookPollVote extends WAHAWebhook {
     description: 'With this event, you receive new votes for the poll sent.',
   })
   event = WAHAEvents.POLL_VOTE;
+
   payload: PollVotePayload;
 }
 
@@ -205,6 +216,7 @@ class WAHAWebhookPollVoteFailed extends WAHAWebhook {
       'Read more about how to handle such events: https://waha.devlike.pro/docs/how-to/polls/#pollvotefailed',
   })
   event = WAHAEvents.POLL_VOTE_FAILED;
+
   payload: PollVotePayload;
 }
 

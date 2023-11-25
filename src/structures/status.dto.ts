@@ -33,6 +33,7 @@ export class ImageStatus extends StatusRequest {
     ],
   })
   file: BinaryFile | RemoteFile;
+
   caption: string;
 }
 
@@ -45,6 +46,7 @@ export class VoiceStatus extends StatusRequest {
     ],
   })
   file: VoiceBinaryFile | VoiceRemoteFile;
+
   backgroundColor = '#38b42f';
 }
 
@@ -57,5 +59,6 @@ export class VideoStatus extends StatusRequest {
     ],
   })
   file: BinaryFile | RemoteFile;
+
   caption: string;
 }

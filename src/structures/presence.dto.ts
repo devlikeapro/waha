@@ -8,6 +8,7 @@ export class WAHAPresenceData {
     example: '11111111111@c.us',
   })
   participant: string;
+
   lastKnownPresence: WAHAPresenceStatus;
   @ApiProperty({
     example: 1686568773,
@@ -20,6 +21,7 @@ export class WAHAChatPresences {
     example: '11111111111@c.us',
   })
   id: string;
+
   presences: WAHAPresenceData[];
 }
 

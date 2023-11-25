@@ -6,6 +6,7 @@ export class RequestCodeRequest {
     example: '12132132130',
   })
   phoneNumber: string;
+
   @ApiProperty({
     description:
       'How would you like to receive the one time code for registration? |sms|voice. Leave empty for Web pairing.',

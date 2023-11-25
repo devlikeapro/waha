@@ -25,10 +25,12 @@ export class ProxyConfig {
     example: 'localhost:3128',
   })
   server: string;
+
   @ApiProperty({
     example: null,
   })
   username?: string;
+
   @ApiProperty({
     example: null,
   })
@@ -71,6 +73,7 @@ export class SessionDTO {
 export class MeInfo {
   @ChatIdProperty()
   id: string;
+
   pushName: string;
 }
 

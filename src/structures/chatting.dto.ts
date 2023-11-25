@@ -28,6 +28,7 @@ export class CheckNumberStatusQuery extends SessionQuery {
 export class MessageTextQuery extends SessionQuery {
   @IsString()
   phone: string;
+
   @IsString()
   text: string;
 }
@@ -40,6 +41,7 @@ export class ChatQuery extends SessionQuery {
 export class GetMessageQuery extends ChatQuery {
   @IsNumber()
   limit: number;
+
   @ApiProperty({
     example: true,
     required: false,
@@ -147,6 +149,7 @@ export class MessageVideoRequest extends ChatRequest {
     ],
   })
   file: VideoRemoteFile | VideoBinaryFile;
+
   caption: string = 'Just watch at this!';
 }
 
@@ -192,6 +195,7 @@ export class MessageDestination {
     example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
   })
   id: string;
+
   to: string;
   from: string;
   fromMe: boolean;
