@@ -1,8 +1,14 @@
-import { Body, Controller, Get, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Res,
+  StreamableFile,
+} from '@nestjs/common';
 import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { Readable } from 'stream';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
@@ -21,22 +27,22 @@ class AuthController {
   @ApiOperation({
     summary: 'Get QR code for pairing WhatsApp Web.',
   })
-  async getQR(@Res() res: Response, @SessionParam session: WhatsappSession) {
+  async getQR(
+    @Res({ passthrough: true }) res: Response,
+    @SessionParam session: WhatsappSession,
+  ) {
     if (session.status != WAHASessionStatus.SCAN_QR_CODE) {
       const err = `Can get QR code only in SCAN_QR_CODE status. The current status is '${session.status}'`;
       throw new UnprocessableEntityException(err);
     }
 
     const buffer = await session.getQR();
-    const stream = new Readable();
-    stream.push(buffer);
-    stream.push(null);
-
+    const file = new StreamableFile(buffer);
     res.set({
       'Content-Type': 'image/png',
       'Content-Length': buffer.length,
     });
-    stream.pipe(res);
+    return file;
   }
 
   @Post('request-code')
