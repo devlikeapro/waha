@@ -19,4 +19,4 @@ Accounts (sessions) in the container CPU Memory 1 30% 400MB 10 270% 1.5GB The na
 Boosty -&amp;gt; Patreon -&amp;gt; You even can subscribe to get new updates there!
 2023.11 #
 November 2023
-Add WHATSAPP_SWAGGER_ENABLED=false so you can hide Swagger documentation (available only in Plus version). #185 Add dedicated media field in webhook payload - now you can know which media is attached to the message.</description></item></channel></rss>
+Add different formats for QR code: binary image - GET /api/{session}/auth/qr base64 image - GET /api/{session}/auth/qr and set Accept: application/json header raw - GET /api/{session}/auth/qr?format=raw Add different formats for the screenshot: binary image - GET /api/{session}/screenshot base64 image - GET /api/{session}/screenshot and set Accept: application/json header Add WHATSAPP_SWAGGER_ENABLED=false so you can hide Swagger documentation (available only in Plus version).</description></item></channel></rss>
