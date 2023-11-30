@@ -25,6 +25,9 @@ export const SessionApiParam = ApiParam({
   name: 'session',
   required: true,
   type: 'string',
+  schema: {
+    default: 'default',
+  },
   description: 'WhatsApp session name',
 });
 
