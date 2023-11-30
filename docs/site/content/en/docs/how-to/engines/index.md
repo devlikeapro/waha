@@ -107,7 +107,7 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 | `GET /api/sessions/`                      |  ✔️   |  ✔️   |  ✔️   |
 | `GET /api/sessions/{session}/me`          |  ✔️   |  ✔️   |   ➖   |
 | **Authentication**                        |       |       |       |
-| `POST /api/{session}/auth/qr`             |  ✔️   |  ✔️   |   ➖   |
+| `POST /api/{session}/auth/qr`             |  ✔️   |  ✔️   |  ✔️   |
 | `POST /api/{session}/auth/request-code`   |   ➖   |  ✔️   |   ➖   |
 | `POST /api/{session}/auth/authorize-code` |   ➖   |  ✔️   |   ➖   |
 | **Screenshot**                            |       |       |       |
