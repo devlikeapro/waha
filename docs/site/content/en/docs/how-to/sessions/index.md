@@ -135,6 +135,26 @@ Get screenshot of the session's screen.
 GET /api/screenshot?session=default
 ```
 
+#### Get screenshot in Base64
+You can get screenshot in base64 format by adding `Accept: application/json` header to the request.
+
+```bash
+GET /api/screenshot?session=default
+Accept: application/json
+```
+
+```json
+{
+  "mimetype": "image/png",
+  "data": "base64-encoded-data"
+}
+```
+
+You can change it in Swagger by clicking on **Media Type** dropdown and selecting **application/json**:
+
+![](/images/swagger-media-type.png)
+
+
 ### Get me
 
 Get information about the associated account for that session (if any).
