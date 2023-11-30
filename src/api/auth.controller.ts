@@ -19,10 +19,9 @@ import {
   RequestCodeRequest,
 } from '../structures/auth.dto';
 import { WAHASessionStatus } from '../structures/enums.dto';
+import { Base64File } from '../structures/files.dto';
 import { BufferResponseInterceptor } from './BufferResponseInterceptor';
 import { ApiFileAcceptHeader, SessionApiParam, SessionParam } from './helpers';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const QRCode = require('qrcode');
 
 @ApiSecurity('api_key')
 @Controller('api/:session/auth')
@@ -35,7 +34,7 @@ class AuthController {
     summary: 'Get QR code for pairing WhatsApp Web.',
   })
   @SessionApiParam
-  @ApiFileAcceptHeader()
+  @ApiFileAcceptHeader(Base64File, QRCodeValue)
   @UseInterceptors(new BufferResponseInterceptor())
   async getQR(
     @SessionParam session: WhatsappSession,
