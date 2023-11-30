@@ -21,6 +21,13 @@ You even can **subscribe to get new updates** there!
 
 ## 2023.11
 November 2023
+- Add different formats for QR code:
+  1. **binary image** - `GET /api/{session}/auth/qr`
+  2. **base64 image** - `GET /api/{session}/auth/qr` and set `Accept: application/json` header
+  3. **raw** - `GET /api/{session}/auth/qr?format=raw`
+- Add different formats for the screenshot:
+  1. **binary image** - `GET /api/{session}/screenshot`
+  2. **base64 image** - `GET /api/{session}/screenshot` and set `Accept: application/json` header
 - Add `WHATSAPP_SWAGGER_ENABLED=false` so you can hide Swagger documentation (available only in Plus version). [#185](https://github.com/devlikeapro/whatsapp-http-api/issues/185)
 - Add dedicated `media` field in webhook payload - now you can know which media is attached to the message.
 ```json
