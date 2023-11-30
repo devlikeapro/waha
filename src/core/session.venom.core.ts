@@ -126,7 +126,7 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
   /**
    * START - Methods for API
    */
-  getScreenshot(): Promise<Buffer | string> {
+  getScreenshot(): Promise<Buffer> {
     if (this.status === WAHASessionStatus.STARTING) {
       throw new UnprocessableEntityException(
         `The session is starting, please try again after few seconds`,

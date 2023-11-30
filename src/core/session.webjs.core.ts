@@ -177,13 +177,16 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     return Promise.resolve(this.qr.get());
   }
 
-  async getScreenshot(): Promise<Buffer | string> {
+  async getScreenshot(): Promise<Buffer> {
     if (this.status === WAHASessionStatus.FAILED) {
       throw new UnprocessableEntityException(
         `The session under FAILED status. Please try to restart it.`,
       );
     }
-    return await this.whatsapp.pupPage.screenshot();
+    const screenshot = await this.whatsapp.pupPage.screenshot({
+      encoding: 'binary',
+    });
+    return screenshot as Buffer;
   }
 
   async checkNumberStatus(

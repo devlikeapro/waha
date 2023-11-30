@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import { Controller, Get, Query, Res, StreamableFile } from '@nestjs/common';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { Readable } from 'stream';
@@ -13,17 +13,17 @@ export class ScreenshotController {
   constructor(private manager: SessionManager) {}
 
   @Get('/screenshot')
-  async screenshot(@Res() res: Response, @Query() sessionQuery: SessionQuery) {
+  async screenshot(
+    @Res({ passthrough: true }) res: Response,
+    @Query() sessionQuery: SessionQuery,
+  ) {
     const whatsappService = this.manager.getSession(sessionQuery.session);
     const buffer = await whatsappService.getScreenshot();
-    const stream = new Readable();
-    stream.push(buffer);
-    stream.push(null);
-
+    const file = new StreamableFile(buffer);
     res.set({
       'Content-Type': 'image/png',
       'Content-Length': buffer.length,
     });
-    stream.pipe(res);
+    return file;
   }
 }

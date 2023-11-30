@@ -288,7 +288,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return { code: codeRepr };
   }
 
-  async getScreenshot(): Promise<Buffer | string> {
+  async getScreenshot(): Promise<Buffer> {
     if (this.status === WAHASessionStatus.STARTING) {
       throw new UnprocessableEntityException(
         `The session is starting, please try again after few seconds`,
