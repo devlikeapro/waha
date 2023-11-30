@@ -128,6 +128,12 @@ In order to log out the session - call `POST /api/sessions/logout`
   "logout": true
 }
 ```
+### Get screenshot
+Get screenshot of the session's screen.
+
+```bash
+GET /api/screenshot?session=default
+```
 
 ### Get me
 
