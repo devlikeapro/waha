@@ -13,7 +13,6 @@ import {
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
-import { QRCodeValue } from '../structures/auth.dto';
 import { Base64File } from '../structures/files.dto';
 
 /**
@@ -56,6 +55,7 @@ function getRefSchemaPaths(models) {
 }
 
 export function ApiFileAcceptHeader(...models) {
+  models = models.length ? models : [Base64File];
   return applyDecorators(
     // Add extra models, otherwise it'll give a error
     // $ref not found
