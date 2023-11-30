@@ -1,5 +1,5 @@
 import { Injectable, Param, PipeTransform } from '@nestjs/common';
-import { ApiParam } from '@nestjs/swagger';
+import { ApiParam, ApiResponse } from '@nestjs/swagger';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
@@ -36,3 +36,32 @@ export const SessionApiParam = ApiParam({
  @SessionParam session: WhatsappSession,
  */
 export const SessionParam = Param('session', SessionPipe);
+
+export function ApiFileAcceptHeader() {
+  return ApiResponse({
+    status: 200,
+    content: {
+      'image/png': {
+        schema: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            data: {
+              type: 'string',
+              format: 'base64',
+            },
+            mimetype: {
+              type: 'string',
+              example: 'image/png',
+            },
+          },
+        },
+      },
+    },
+  });
+}

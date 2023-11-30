@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 export class Base64File {
-  data: string;
   mimetype: string;
+  data: string;
 }
 
 export class RemoteFile {
