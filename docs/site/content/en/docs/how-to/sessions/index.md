@@ -186,6 +186,55 @@ GET /api/{session}/auth/qr
 ```
 You'll get QR image that you can scan and get authenticated
 
+#### QR formats
+You can get QR in different formats:
+1. **binary image** - `GET /api/{session}/auth/qr`
+2. **base64 image** - `GET /api/{session}/auth/qr` and set `Accept: application/json` header
+3. **raw** - `GET /api/{session}/auth/qr?format=raw`
+
+Here's detailed information about each format:
+
+1. **binary image**, binary image - **default** format, you'll get image in response
+```bash
+# Get image - binary
+GET /api/{session}/auth/qr
+
+# OR
+GET /api/{session}/auth/qr?format=image
+
+# OR specify Accept header as well
+GET /api/{session}/auth/qr?format=image
+Accept: image/png
+```
+
+2. **base64 image** - you'll get image in base64 format in response if you set `Accept: application/json` header.
+```bash
+GET /api/{session}/auth/qr?format=image
+Accept: application/json
+```
+
+```json
+{
+  "mimetype": "image/png",
+  "data": "base64-encoded-data"
+}
+```
+
+You can change it in Swagger by clicking on **Media Type** dropdown and selecting **application/json**:
+
+![](/images/swagger-media-type.png)
+
+3. **raw** - you'll get raw data in response, you can use it to generate QR code on your side
+```bash
+GET /api/{session}/auth/qr?format=raw
+```
+
+```json
+{
+  "value": "value-that-you-need-to-use-to-generate-qr-code"
+}
+```
+
 ### Get pairing code
 See the list of engines [**that support the features ->**]({{< relref "/docs/how-to/engines#features" >}}).
 
