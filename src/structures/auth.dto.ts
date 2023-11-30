@@ -1,5 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+export enum QRCodeFormat {
+  IMAGE = 'image',
+  RAW = 'raw',
+}
+export class QRCodeQuery {
+  format: QRCodeFormat = QRCodeFormat.IMAGE;
+}
+
+export class QRCodeValue {
+  value: string;
+}
+
 export class RequestCodeRequest {
   @ApiProperty({
     description: 'Mobile phone number in international format',

@@ -146,7 +146,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       this.log.debug('QR received');
       // Convert to image and save
       QRCode.toDataURL(qr).then((url) => {
-        this.qr.save(url);
+        this.qr.save(url, qr);
       });
       // Print in terminal
       qrcode.generate(qr, { small: true });
@@ -173,8 +173,8 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   /**
    * Auth methods
    */
-  public async getQR(): Promise<Buffer> {
-    return Promise.resolve(this.qr.get());
+  public getQR(): QR {
+    return this.qr;
   }
 
   async getScreenshot(): Promise<Buffer> {

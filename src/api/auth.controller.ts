@@ -2,29 +2,27 @@ import {
   Body,
   Controller,
   Get,
-  Headers,
   Post,
-  Req,
-  Res,
-  StreamableFile,
+  Query,
   UseInterceptors,
 } from '@nestjs/common';
 import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
-import {
-  ApiOperation,
-  ApiResponse,
-  ApiSecurity,
-  ApiTags,
-} from '@nestjs/swagger';
-import { Request, Response } from 'express';
+import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
-import { OTPRequest, RequestCodeRequest } from '../structures/auth.dto';
+import {
+  OTPRequest,
+  QRCodeFormat,
+  QRCodeQuery,
+  QRCodeValue,
+  RequestCodeRequest,
+} from '../structures/auth.dto';
 import { WAHASessionStatus } from '../structures/enums.dto';
-import { Base64File } from '../structures/files.dto';
 import { BufferResponseInterceptor } from './BufferResponseInterceptor';
 import { ApiFileAcceptHeader, SessionApiParam, SessionParam } from './helpers';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const QRCode = require('qrcode');
 
 @ApiSecurity('api_key')
 @Controller('api/:session/auth')
@@ -39,12 +37,19 @@ class AuthController {
   @SessionApiParam
   @ApiFileAcceptHeader()
   @UseInterceptors(new BufferResponseInterceptor())
-  async getQR(@SessionParam session: WhatsappSession): Promise<Buffer> {
+  async getQR(
+    @SessionParam session: WhatsappSession,
+    @Query() query: QRCodeQuery,
+  ): Promise<Buffer | QRCodeValue> {
     if (session.status != WAHASessionStatus.SCAN_QR_CODE) {
       const err = `Can get QR code only in SCAN_QR_CODE status. The current status is '${session.status}'`;
       throw new UnprocessableEntityException(err);
     }
-    return await session.getQR();
+    const qr = session.getQR();
+    if (query.format == QRCodeFormat.RAW) {
+      return { value: qr.raw };
+    }
+    return qr.get();
   }
 
   @Post('request-code')

@@ -46,6 +46,7 @@ import {
 } from '../../structures/status.dto';
 import { WASessionStatusBody } from '../../structures/webhooks.dto';
 import { NotImplementedByEngineError } from '../exceptions';
+import { QR } from '../QR';
 import { MediaManager } from './media.abc';
 import { LocalSessionStorage } from './storage.abc';
 
@@ -194,7 +195,7 @@ export abstract class WhatsappSession {
    * Auth methods
    */
 
-  public getQR(): Promise<Buffer> {
+  public getQR(): QR {
     throw new NotImplementedByEngineError();
   }
 

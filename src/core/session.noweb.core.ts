@@ -222,7 +222,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       if (qr) {
         this.status = WAHASessionStatus.SCAN_QR_CODE;
         QRCode.toDataURL(qr).then((url) => {
-          this.qr.save(url);
+          this.qr.save(url, qr);
         });
       }
     });
@@ -256,8 +256,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   /**
    * Auth methods
    */
-  public async getQR(): Promise<Buffer> {
-    return Promise.resolve(this.qr.get());
+  public getQR(): QR {
+    return this.qr;
   }
 
   public async requestCode(
