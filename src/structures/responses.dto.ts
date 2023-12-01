@@ -21,13 +21,13 @@ export class WAMedia {
     description: 'mimetype for the media in the message if any',
     example: 'audio/jpeg',
   })
-  mimetype: string | null;
+  mimetype?: string;
 
   @ApiProperty({
     description: 'The original filename in mediaUrl in the message if any',
     example: 'example.pdf',
   })
-  filename: string | null;
+  filename?: string;
 }
 
 export class WAMessage {
@@ -76,7 +76,7 @@ export class WAMessage {
   })
   hasMedia: boolean;
 
-  media: WAMedia | null = null;
+  media?: WAMedia = null;
 
   @ApiProperty({
     description:

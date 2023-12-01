@@ -84,8 +84,8 @@ export class PollVotePayload {
 }
 
 export class WAMessageRevokedBody {
-  after: WAMessage | null;
-  before: WAMessage | null;
+  after?: WAMessage;
+  before?: WAMessage;
 }
 export class WASessionStatusBody {
   @ApiProperty({
@@ -107,7 +107,7 @@ export class WAHAWebhook {
   })
   engine: WAHAEngine;
 
-  me: MeInfo | null;
+  me?: MeInfo;
 
   environment: WAHAEnvironment;
 
