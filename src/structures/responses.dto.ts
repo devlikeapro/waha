@@ -4,7 +4,7 @@ import { WAMessageAck } from './enums.dto';
 import { ChatIdProperty, MessageIdProperty } from './properties.dto';
 
 export class WALocation {
-  description?: string | null;
+  description?: string;
   latitude: string;
   longitude: string;
 }

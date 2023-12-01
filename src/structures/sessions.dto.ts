@@ -78,5 +78,5 @@ export class MeInfo {
 }
 
 export class SessionInfo extends SessionDTO {
-  me: MeInfo | null;
+  me?: MeInfo;
 }

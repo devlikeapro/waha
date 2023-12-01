@@ -15,7 +15,7 @@ export class RemoteFile {
     description: 'Document file name. Value can be null',
     example: 'filename.jpg',
   })
-  filename?: string | null;
+  filename?: string;
 
   @ApiProperty({
     example:
@@ -35,7 +35,7 @@ export class BinaryFile {
     description: 'Document file name. Optional',
     example: 'filename.jpeg',
   })
-  filename?: string | null;
+  filename?: string;
 
   @ApiProperty({
     description: 'Base64-encoded data of the file',
