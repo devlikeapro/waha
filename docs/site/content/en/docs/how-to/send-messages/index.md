@@ -36,6 +36,10 @@ Read more about [multiple sessions →]({{< relref "/docs/how-to/sessions" >}})
   For phone number `12132132131` the `chatId` is  `12132132131@c.us`.
 - **Groups** use random number with `@g.us` at the end.
 
+> To get the actual `chatId` for **Brazilian phone number** - use `chatId` field from
+> [Check phone number exists ->]({{< relref "/docs/how-to/contacts#check-phone-number-exists" >}})
+> response.
+
 ### file
 When sending media (images, voice, files) you can either use:
 - `file.data` field [with base64 encoded file](https://base64.guru/converter/encode/file)
