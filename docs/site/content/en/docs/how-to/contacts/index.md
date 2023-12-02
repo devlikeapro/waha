@@ -63,13 +63,26 @@ Get contact
 
 If you want to check if phone number is registered in WhatsApp (even if the number is not in your contact list) - use
 this endpoint for that.
-- `GET /api/contacts/check-exists?phone=11231231231&session=default`
+```bash
+GET /api/contacts/check-exists?phone=11231231231&session=default
+```
+It returns `numberExists` field with `true` or `false` value and `chatId` field with chat ID of the number (if exists).
 
 ```json
 {
-  "numberExists": true
+  "numberExists": true,
+  "chatId": "123123123@c.us"
 }
 ```
+**Note for Brazilian Phone Numbers**
+
+You should use the `GET /api/contacts/check-exists` endpoint **before sending a message to a new phone number**
+to get the correct chatId because of the additional 9-digit number added after 2012.
+
+Read more about
+[error sending text to half of Brazilian numbers (every number registered before 2012) ->](https://github.com/devlikeapro/whatsapp-http-api/issues/238)
+
+It's fine to send the response to `chatId` for incoming messages, though - the payload already has the correct `chatId`.
 
 ### Get "about" contact
 
