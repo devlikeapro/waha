@@ -169,6 +169,11 @@ export class MessageReactionRequest extends MessageRequest {
 
 export class WANumberExistResult {
   numberExists: boolean;
+  @ApiProperty({
+    example:
+      'Chat id for the phone number. Undefined if the number does not exist',
+  })
+  chatId?: string;
 }
 
 export class MessagePoll {

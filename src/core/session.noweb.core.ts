@@ -312,10 +312,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   ): Promise<WANumberExistResult> {
     const phone = request.phone.split('@')[0];
     const [result] = await this.sock.onWhatsApp(phone);
-    if (!result) {
+    if (!result || !result.exists) {
       return { numberExists: false };
     }
-    return { numberExists: result.exists };
+    return {
+      numberExists: true,
+      chatId: toCusFormat(result.jid),
+    };
   }
 
   sendText(request: MessageTextRequest) {

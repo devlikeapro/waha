@@ -192,10 +192,17 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   async checkNumberStatus(
     request: CheckNumberStatusQuery,
   ): Promise<WANumberExistResult> {
-    const exist = await this.whatsapp.isRegisteredUser(
-      this.ensureSuffix(request.phone),
-    );
-    return { numberExists: exist };
+    const phone = request.phone.split('@')[0];
+    const result = await this.whatsapp.getNumberId(phone);
+    if (!result) {
+      return {
+        numberExists: false,
+      };
+    }
+    return {
+      numberExists: true,
+      chatId: result._serialized,
+    };
   }
 
   sendText(request: MessageTextRequest) {
