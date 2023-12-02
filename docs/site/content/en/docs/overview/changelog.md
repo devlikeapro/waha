@@ -19,6 +19,12 @@ If you wish to get and read Release Notes - read them on one of our platforms, *
 
 You even can **subscribe to get new updates** there!
 
+## 2023.12
+December 2023
+- Add `chatId` field to `GET /api/contacts/check-exists` to help get the right `chatId` for Brazilian numbers.
+Read more about
+  [error sending text to half of Brazilian numbers (every number registered before 2012) ->](https://github.com/devlikeapro/whatsapp-http-api/issues/238)
+
 ## 2023.11
 November 2023
 - Add different formats for QR code:
