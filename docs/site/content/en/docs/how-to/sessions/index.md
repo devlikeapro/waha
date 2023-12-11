@@ -311,7 +311,7 @@ to the container. WAHA stores authentication information in the directory and re
 The full command would be:
 
 ```bash
-docker run --rm -d -v `pwd`/.sessions:/app/.sessions -p 3000:3000/tcp --name whatsapp-http-api devlikeapro/whatsapp-http-api-plus
+docker run -d -v `pwd`/.sessions:/app/.sessions -p 3000:3000/tcp --name whatsapp-http-api devlikeapro/whatsapp-http-api-plus
 ```
 
 #### Remote storage ![](/images/versions/soon.png)
