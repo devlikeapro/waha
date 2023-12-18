@@ -87,6 +87,7 @@ Send text status #POST /api/{session}/status/text
 It\u0026rsquo;s important to keep in mind that WhatsApp has strict policies in place to prevent spamming and abuse of their platform.
 If you\u0026rsquo;re developing a bot for WhatsApp, it\u0026rsquo;s crucial to follow these guidelines to avoid getting blocked.
 Guidelines to Follow #1. Only Reply to Messages #When developing a bot for WhatsApp, you should never initiate a conversation. Instead, your bot should only reply to messages that it receives. This will prevent your bot from being flagged as spam by WhatsApp\u0026rsquo;s users and algorithms.
+You can use a short link http://wa.me/7911111111?text=Hi so a user can click on it and start the dialog with the bot first
 2. Avoid Spamming and Sending Unnecessary Content #Sending too many messages or sending content that the user did not request can also lead to your bot being blocked. Make sure to only send relevant and useful information to the user. Additionally, do not send too many messages at once, as this can also trigger spam filters.
 3. Other Considerations #There are other guidelines to follow when developing a bot for WhatsApp, such as avoiding the use of banned words and not sharing sensitive or inappropriate content. Make sure to read WhatsApp\u0026rsquo;s policies thoroughly to ensure that your bot complies with all of their rules.
 How to Process Messages #When processing messages in your bot, it\u0026rsquo;s important to follow certain steps to avoid being flagged as spam. Here\u0026rsquo;s a recommended process to follow:
