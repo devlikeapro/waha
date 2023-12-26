@@ -5706,7 +5706,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fluent-ffmpeg@npm:^2.1.2":
+"fluent-ffmpeg@npm:2.1.2":
   version: 2.1.2
   resolution: "fluent-ffmpeg@npm:2.1.2"
   dependencies:
@@ -8063,13 +8063,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsqr@npm:^1.3.1":
-  version: 1.4.0
-  resolution: "jsqr@npm:1.4.0"
-  checksum: 7c572971f90c42772e30d152bde63b84edf1164bde80c53942e6b2068ea31caf00ad704aa46cacc9e71645f52dbeddebc6e84ba15e883c678ee93cde690de339
-  languageName: node
-  linkType: hard
-
 "keyv@npm:^3.0.0":
   version: 3.1.0
   resolution: "keyv@npm:3.1.0"
@@ -9240,10 +9233,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-webpmux@npm:^3.1.0":
-  version: 3.1.8
-  resolution: "node-webpmux@npm:3.1.8"
-  checksum: 96d230f33bf645e93c4e1c16f506571bde91ede320d4a9951ed08a099f5796b68a89a3591815019eee3c385215eaaa6c428008abea65cecabbfbd463b8551b23
+"node-webpmux@npm:3.1.0":
+  version: 3.1.0
+  resolution: "node-webpmux@npm:3.1.0"
+  checksum: 45041b561d21ab88b81b5eaa1761cf1667dc56118b1ecf1ec1774d5f00ab9fbf473cdada7d5e09577f12dbc765fd22841b81ebeee352ddba5db7b6c5f5980056
   languageName: node
   linkType: hard
 
@@ -13130,17 +13123,16 @@ __metadata:
   linkType: soft
 
 "whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js":
-  version: 1.23.1-alpha.0
-  resolution: "whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js.git#commit=58fc39f97d5663f7651faff4c60c12f2e91ce63e"
+  version: 1.23.1-alpha.2
+  resolution: "whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js.git#commit=1e9b82b2011fe1ad70cee8ce7813c352470cb6c4"
   dependencies:
     "@pedroslopez/moduleraid": ^5.0.2
     archiver: ^5.3.1
-    fluent-ffmpeg: ^2.1.2
+    fluent-ffmpeg: 2.1.2
     fs-extra: ^10.1.0
-    jsqr: ^1.3.1
     mime: ^3.0.0
     node-fetch: ^2.6.5
-    node-webpmux: ^3.1.0
+    node-webpmux: 3.1.0
     puppeteer: ^13.0.0
     unzipper: ^0.10.11
   dependenciesMeta:
@@ -13150,7 +13142,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: ac8b24ccc79f26dfe28c6ae3b39fa18dae6e3ea3b3831358eaf84e78fa78e67e05adfa1a37ddb6684c88de89a4244d9b589bad375d0ce2e3e9d197f281d15de6
+  checksum: 425fa37ba93bc42a32609dde9e102a11e2783750119972153593a887200afbdf555dc3b559c346274b72d92ceb00cc363cf714b6ff40c8c35103676234170837
   languageName: node
   linkType: hard
 
