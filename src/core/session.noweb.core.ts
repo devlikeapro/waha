@@ -279,7 +279,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       throw new UnprocessableEntityException(err);
     }
 
-    this.log.log('Requesting pairing code...');
+    this.log.log(`Requesting pairing code for '${phoneNumber}'...`);
     const code: string = await this.sock.requestPairingCode(phoneNumber);
     // show it as ABCD-ABCD
     const parts = splitAt(code, 4);
