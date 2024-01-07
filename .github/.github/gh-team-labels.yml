@@ -1,0 +1,12 @@
+ignore:
+  teams:
+    - no-labels
+  users:
+    - allburov
+teamLabels:
+  - team: waha-patrons-pro
+    label: patron:PRO
+  - team: waha-patrons-advanced
+    label: patron:ADVANCED
+  - team: waha-patrons-plus
+    label: patron:PLUS
