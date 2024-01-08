@@ -1,5 +1,6 @@
 # WhatsApp HTTP API (WAHA)
 
+
 <p align="center">
     <img src="./docs/site/static/images/logo.png" alt="Image" />
 </p>
