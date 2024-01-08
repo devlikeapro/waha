@@ -6,10 +6,10 @@ ignore:
 teamLabels:
   - team: waha-patrons-pro
     label: patron:PRO
-    comment: "![patron:PRO](https://img.shields.io/badge/patron-PRO-188a42)"
+    comment: '[![patron:PRO](https://img.shields.io/badge/patron-PRO-188a42)](https://waha.devlike.pro/docs/how-to/plus-version/#tiers)'
   - team: waha-patrons-advanced
     label: patron:ADVANCED
-    comment: "![patron:ADVANCED](https://img.shields.io/badge/patron-ADVANCED-4cd07d)"
+    comment: '[![patron:ADVANCED](https://img.shields.io/badge/patron-ADVANCED-4cd07d)](https://waha.devlike.pro/docs/how-to/plus-version/#tiers)'
   - team: waha-patrons-plus
     label: patron:PLUS
-    comment: "![patron:PLUS](https://img.shields.io/badge/patron-PLUS-a0e6ba)"
+    comment: '[![patron:PLUS](https://img.shields.io/badge/patron-PLUS-a0e6ba)](https://waha.devlike.pro/docs/how-to/plus-version/#tiers)'
