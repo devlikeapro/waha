@@ -79,15 +79,18 @@ What is the difference between **WAHA Plus** and **other SaaS solutions** for Wh
 
 The more you support the project - the more you get!
 
+### Tiers
+
 Here's available tiers for our supporters:
 
-|                                                                                     |  Plus   | Advanced |   Pro   |
-|-------------------------------------------------------------------------------------|---------|:--------:|:-------:|
-| Access to WAHA Plus  ![](/images/versions/plus.png) docker image.                   |   ✔️    |    ✔️    |   ✔️    |
-| An invitation to a private Github repository so you have the WAHA Plus source code. |   ➖️    |    ✔️    |   ✔️️   |
-| Access to a Telegram group where we provide support and assistance.                 |   ➖️    |    ➖     |   ✔️    |
-| Personal key to Docker Hub.                                                         |   ➖️    |    ➖     |   ✔️    |
-| **Donation**                                                                        | **$19** | **$39**  | **$99** |
+|                                                                                                             |  Plus   | Advanced |   Pro   |
+|-------------------------------------------------------------------------------------------------------------|---------|:--------:|:-------:|
+| Access to WAHA Plus  ![](/images/versions/plus.png) docker image.                                           |   ✔️    |    ✔️    |   ✔️    |
+| Special badge and labels on [Issues, PRs and Discussion](https://github.com/devlikeapro/whatsapp-http-api). |   ✔️    |    ✔️    |   ✔️    |
+| An invitation to a private Github repository so you have the WAHA Plus source code.                         |   ➖️    |    ✔️    |   ✔️️   |
+| Access to a Telegram group where we provide support and assistance.                                         |   ➖️    |    ➖     |   ✔️    |
+| Personal key to Docker Hub.                                                                                 |   ➖️    |    ➖     |   ✔️    |
+| **Donation**                                                                                                | **$19** | **$39**  | **$99** |
 
 For **$19** donation you get:
 1. **Secret password** for Docker Hub to download Plus image: `devlikeapro/whatsapp-http-api-plus`.
