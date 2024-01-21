@@ -5,16 +5,21 @@ FROM node:20-bullseye as build
 ENV PUPPETEER_SKIP_DOWNLOAD=True
 
 # npm packages
+RUN apt-get update \
+    && apt-get install -y openssh-client
+RUN apt install openssh-client
+RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
+
 WORKDIR /src
 COPY package.json .
 COPY yarn.lock .
 RUN yarn set version 3.6.3
-RUN yarn install
+RUN --mount=type=ssh yarn install
 
 # App
 WORKDIR /src
 ADD . /src
-RUN yarn install
+RUN --mount=type=ssh yarn install
 RUN yarn build && find ./dist -name "*.d.ts" -delete
 
 #
