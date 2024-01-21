@@ -101,6 +101,9 @@ const ToEnginePresenceStatus = flipObject(PresenceStatuses);
 
 export class WhatsappSessionNoWebCore extends WhatsappSession {
   engine = WAHAEngine.NOWEB;
+  get listenConnectionEventsFromTheStart() {
+    return true;
+  }
 
   sock: any;
   store: any;
@@ -170,8 +173,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     if (this.isDebugEnabled()) {
       this.listenEngineEventsInDebugMode();
     }
-    this.listenConnectionEvents();
-    this.events.emit(WAHAInternalEvent.ENGINE_START);
+    if (this.listenConnectionEventsFromTheStart) {
+      this.listenConnectionEvents();
+      this.events.emit(WAHAInternalEvent.ENGINE_START);
+    }
   }
 
   protected async getMessage(
