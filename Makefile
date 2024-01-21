@@ -1,6 +1,12 @@
 build:
 	docker build . -t devlikeapro/whatsapp-http-api
 
+build-ssh:
+	eval $(ssh-agent) && \
+	ssh-add ~/.ssh/id_rsa && \
+	docker buildx build --ssh default=${SSH_AUTH_SOCK} . -t devlikeapro/whatsapp-http-api
+
+
 build-chrome:
 	docker build . -t devlikeapro/whatsapp-http-api:chrome --build-arg USE_BROWSER=chrome
 
