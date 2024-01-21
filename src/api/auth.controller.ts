@@ -12,6 +12,7 @@ import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
 import {
+  CaptchaBody,
   OTPRequest,
   QRCodeFormat,
   QRCodeQuery,
@@ -73,6 +74,30 @@ class AuthController {
     @Body() request: OTPRequest,
   ) {
     return session.authorizeCode(request.code);
+  }
+
+  @Get('captcha')
+  @SessionApiParam
+  @ApiFileAcceptHeader()
+  @UseInterceptors(new BufferResponseInterceptor())
+  @ApiOperation({
+    summary: 'Get captcha image.',
+  })
+  async getCaptcha(@SessionParam session: WhatsappSession): Promise<Buffer> {
+    const image = await session.getCaptcha();
+    return image.get();
+  }
+
+  @Post('captcha')
+  @SessionApiParam
+  @ApiOperation({
+    summary: 'Enter captcha code.',
+  })
+  saveCaptcha(
+    @SessionParam session: WhatsappSession,
+    @Body() body: CaptchaBody,
+  ) {
+    return session.saveCaptcha(body.code);
   }
 }
 

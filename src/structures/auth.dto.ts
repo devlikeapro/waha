@@ -32,6 +32,10 @@ export class OTPRequest {
   code: string;
 }
 
+export class CaptchaBody {
+  code: string;
+}
+
 export class PairingCodeResponse {
   code: string;
 }

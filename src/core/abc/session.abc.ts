@@ -213,6 +213,14 @@ export abstract class WhatsappSession {
     throw new NotImplementedByEngineError();
   }
 
+  public getCaptcha(): Promise<QR> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public saveCaptcha(code: string) {
+    throw new NotImplementedByEngineError();
+  }
+
   /**
    * Other methods
    */
