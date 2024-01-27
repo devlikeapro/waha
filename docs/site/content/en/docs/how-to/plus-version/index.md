@@ -85,11 +85,11 @@ Here's available tiers for our supporters:
 
 |                                                                                                             |  Plus   | Advanced |   Pro   |
 |-------------------------------------------------------------------------------------------------------------|---------|:--------:|:-------:|
-| Access to WAHA Plus  ![](/images/versions/plus.png) docker image.                                           |   ✔️    |    ✔️    |   ✔️    |
+| Access to WAHA Plus  ![](/images/versions/plus.png) docker image with a personal key.                       |   ✔️    |    ✔️    |   ✔️    |
 | Special badge and labels on [Issues, PRs and Discussion](https://github.com/devlikeapro/whatsapp-http-api). |   ✔️    |    ✔️    |   ✔️    |
 | An invitation to a private Github repository so you have the WAHA Plus source code.                         |   ➖️    |    ✔️    |   ✔️️   |
 | Access to a Telegram group where we provide support and assistance.                                         |   ➖️    |    ➖     |   ✔️    |
-| Personal key to Docker Hub.                                                                                 |   ➖️    |    ➖     |   ✔️    |
+| Access to an [experimental MOBILE engine]({{< relref "/docs/how-to/plus-version/#tiers" >}})!.              |   ➖️    |    ➖     |   ✔️    |
 | **Donation**                                                                                                | **$19** | **$39**  | **$99** |
 
 For **$19** donation you get:
