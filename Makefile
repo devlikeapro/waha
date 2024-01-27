@@ -1,12 +1,6 @@
 build:
 	docker build . -t devlikeapro/whatsapp-http-api
 
-build-ssh:
-	eval $(ssh-agent) && \
-	ssh-add ~/.ssh/id_rsa && \
-	docker buildx build --ssh default=${SSH_AUTH_SOCK} . -t devlikeapro/whatsapp-http-api
-
-
 build-chrome:
 	docker build . -t devlikeapro/whatsapp-http-api:chrome --build-arg USE_BROWSER=chrome
 
@@ -17,6 +11,13 @@ build-all: build build-chrome build-noweb
 
 build-plus:
 	docker build . -t devlikeapro/whatsapp-http-api-plus
+
+build-ssh:
+	# check IMAGE provided
+	@[ "${IMAGE}" ]  || ( echo "Add APP: make build-ssh image=devlikeapro/whatsapp-http-api"; exit 1 );
+	eval $(ssh-agent) && \
+	ssh-add ~/.ssh/id_rsa && \
+	docker buildx build --ssh default=${SSH_AUTH_SOCK} . -t ${IMAGE} --build-arg USE_BROWSER=none
 
 stop:
 	docker stop whatsapp-http-api
