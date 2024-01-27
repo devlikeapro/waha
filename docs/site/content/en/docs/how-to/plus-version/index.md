@@ -83,14 +83,14 @@ The more you support the project - the more you get!
 
 Here's available tiers for our supporters:
 
-|                                                                                                             | Plus    | Advanced |   Pro   |
-|-------------------------------------------------------------------------------------------------------------|---------|:--------:|:-------:|
-| Access to WAHA Plus  ![](/images/versions/plus.png) docker image with a personal key.                       | ✔️      |    ✔️    |   ✔️    |
-| Special badge and labels on [Issues, PRs and Discussion](https://github.com/devlikeapro/whatsapp-http-api). | ✔️      |    ✔️    |   ✔️    |
-| An invitation to a private Github repository so you have the WAHA Plus source code.                         | ➖️      |    ✔️    |   ✔️️   |
-| Access to a Telegram group where we provide support and assistance.                                         | ➖️      |    ➖     |   ✔️    |
-| Access to an [experimental MOBILE engine]({{< relref "/docs/how-to/plus-version#tiers" >}})!.               | ➖️      |    ➖     |   ✔️    |
-| **Donation**                                                                                                | **$19** | **$39**  | **$99** |
+|                                                                                                                                                                                                                                                                                                                  | Plus    | Advanced |   Pro   |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|:--------:|:-------:|
+| Access to WAHA Plus  ![](/images/versions/plus.png) docker image with a personal key.                                                                                                                                                                                                                            | ✔️      |    ✔️    |   ✔️    |
+| Special badge ([![patron:TIER](https://img.shields.io/badge/patron-TIER-188a42)](https://waha.devlike.pro/docs/how-to/plus-version/#tiers)) and labels (`patron:TIER`) on [project's issues, PRs and Discussion](https://github.com/devlikeapro/whatsapp-http-api) to highlight your support to the project!     | ✔️      |    ✔️    |   ✔️    |
+| An invitation to a private Github repository so you have the WAHA Plus source code.                                                                                                                                                                                                                              | ➖️      |    ✔️    |   ✔️️   |
+| Access to a Telegram group where we provide support and assistance.                                                                                                                                                                                                                                              | ➖️      |    ➖     |   ✔️    |
+| Access to an [experimental MOBILE engine]({{< relref "/docs/how-to/plus-version#tiers" >}})!.                                                                                                                                                                                                                    | ➖️      |    ➖     |   ✔️    |
+| **Donation**                                                                                                                                                                                                                                                                                                     | **$19** | **$39**  | **$99** |
 
 For **$19** donation you get:
 1. **Secret password** for Docker Hub to download Plus image: `devlikeapro/whatsapp-http-api-plus`.
