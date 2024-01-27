@@ -61,7 +61,7 @@ class AuthController {
     @SessionParam session: WhatsappSession,
     @Body() request: RequestCodeRequest,
   ) {
-    return session.requestCode(request.phoneNumber, request.method);
+    return session.requestCode(request.phoneNumber, request.method, request);
   }
 
   @Post('authorize-code')

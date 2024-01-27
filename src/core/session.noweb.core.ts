@@ -268,6 +268,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   public async requestCode(
     phoneNumber: string,
     method: string,
+    params?: any,
   ): Promise<PairingCodeResponse> {
     if (method) {
       const err = `NOWEB engine doesn't support any 'method', remove it and try again`;

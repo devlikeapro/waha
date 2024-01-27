@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 
 export enum QRCodeFormat {
   IMAGE = 'image',
@@ -26,6 +26,12 @@ export class RequestCodeRequest {
     required: false,
   })
   method: string;
+
+  @ApiHideProperty()
+  localeLanguage: string;
+
+  @ApiHideProperty()
+  localeCountry: string;
 }
 
 export class OTPRequest {

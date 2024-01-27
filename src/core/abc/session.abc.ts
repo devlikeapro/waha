@@ -199,7 +199,7 @@ export abstract class WhatsappSession {
     throw new NotImplementedByEngineError();
   }
 
-  public requestCode(phoneNumber: string, method: string) {
+  public requestCode(phoneNumber: string, method: string, params?: any) {
     throw new NotImplementedByEngineError();
   }
 
