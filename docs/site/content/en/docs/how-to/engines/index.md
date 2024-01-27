@@ -50,7 +50,7 @@ Not running Chromium saves you CPU and Memory, so you can run more instances on 
 [How to avoid blocking ->]({{< relref " /docs/overview/how-to-avoid-blocking" >}}).
 
 ### MOBILE (experimental)
-{{< alert icon="👉" text="<b>Experimental engine!</b><br/>Please contact us on <a href='https://www.patreon.com/wa_http_api' target='_blank'>Patreon -></a> or <a href='https://boosty.to/wa-http-api' target='_blank'>Boosty -></a> if you're interested in using it.<br>Available for <a href='http://localhost:1313/docs/how-to/plus-version/#tiers' target='_blank'>PRO</a> subscribers only" />}}
+{{< alert icon="👉" text="<b>Experimental engine!</b><br/>Please contact us on <a href='https://www.patreon.com/wa_http_api' target='_blank'>Patreon -></a> or <a href='https://boosty.to/wa-http-api' target='_blank'>Boosty -></a> if you're interested in using it.<br>Available for <a href='https://waha.devlike.pro/docs/how-to/plus-version/#tiers' target='_blank'>PRO</a> subscribers only" />}}
 
 - `WHATSAPP_DEFAULT_ENGINE=MOBILE`
 - [https://github.com/WhiskeySockets/Baileys](https://github.com/WhiskeySockets/Baileys)
