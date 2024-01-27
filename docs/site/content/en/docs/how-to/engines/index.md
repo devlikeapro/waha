@@ -49,6 +49,16 @@ Not running Chromium saves you CPU and Memory, so you can run more instances on 
 ⚠ Read the article before using **NOWEB** engine
 [How to avoid blocking ->]({{< relref " /docs/overview/how-to-avoid-blocking" >}}).
 
+### MOBILE (experimental)
+{{< alert icon="👉" text="<b>Experimental engine!</b><br/>Please contact us on <a href='https://www.patreon.com/wa_http_api' target='_blank'>Patreon -></a> or <a href='https://boosty.to/wa-http-api' target='_blank'>Boosty -></a> if you're interested in using it.<br>Available for <a href='http://localhost:1313/docs/how-to/plus-version/#tiers' target='_blank'>PRO</a> subscribers only" />}}
+
+- `WHATSAPP_DEFAULT_ENGINE=MOBILE`
+- [https://github.com/WhiskeySockets/Baileys](https://github.com/WhiskeySockets/Baileys)
+
+**MOBILE** engine **does not require a browser and a mobile device** to work with WhatsApp, it does so directly using a WebSocket.
+You don't have to use a mobile device to run this engine.
+
+
 ### VENOM
 
 - `WHATSAPP_DEFAULT_ENGINE=VENOM`
@@ -98,20 +108,22 @@ it's the engine WAHA runs by default.
 If you find any inconsistency with actual endpoints -
 please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues/new?title=Error+in+engine+features )
 
-|                                           | WEBJS |                                   NOWEB                                   | VENOM |
-|-------------------------------------------|:-----:|:-------------------------------------------------------------------------:|:-----:|
-| **Session**                               |       |                                                                           |       |
-| `POST /api/sessions/start`                |  ✔️   |                                    ✔️                                     |  ✔️   |
-| `POST /api/sessions/stop`                 |  ✔️   |                                    ✔️                                     |  ✔️   |
-| `POST /api/sessions/logout`               |  ✔️   |                                    ✔️                                     |  ✔️   |
-| `GET /api/sessions/`                      |  ✔️   |                                    ✔️                                     |  ✔️   |
-| `GET /api/sessions/{session}/me`          |  ✔️   |                                    ✔️                                     |   ➖   |
-| **Authentication**                        |       |                                                                           |       |
-| `POST /api/{session}/auth/qr`             |  ✔️   |                                    ✔️                                     |  ✔️   |
-| `POST /api/{session}/auth/request-code`   |   ➖   |                                    ✔️                                     |   ➖   |
-| `POST /api/{session}/auth/authorize-code` |   ➖   | ➖️<br>[#113](https://github.com/devlikeapro/whatsapp-http-api/issues/113) |   ➖   |
-| **Screenshot**                            |       |                                                                           |       |
-| `POST /api/screenshot`                    |  ✔️   |                                     ➖                                     |  ✔️   |
+|                                                                   | WEBJS |                                   NOWEB                                   | VENOM |
+|-------------------------------------------------------------------|:-----:|:-------------------------------------------------------------------------:|:-----:|
+| **Session**                                                       |       |                                                                           |       |
+| `POST /api/sessions/start`                                        |  ✔️   |                                    ✔️                                     |  ✔️   |
+| `POST /api/sessions/stop`                                         |  ✔️   |                                    ✔️                                     |  ✔️   |
+| `POST /api/sessions/logout`                                       |  ✔️   |                                    ✔️                                     |  ✔️   |
+| `GET /api/sessions/`                                              |  ✔️   |                                    ✔️                                     |  ✔️   |
+| `GET /api/sessions/{session}/me`                                  |  ✔️   |                                    ✔️                                     |   ➖   |
+| **Authentication**                                                |       |                                                                           |       |
+| `POST /api/{session}/auth/qr`                                     |  ✔️   |                                    ✔️                                     |  ✔️   |
+| `POST /api/{session}/auth/request-code`                           |   ➖   |                                    ✔️                                     |   ➖   |
+| `POST /api/{session}/auth/authorize-code`                         |   ➖   | ➖️<br>[#113](https://github.com/devlikeapro/whatsapp-http-api/issues/113) |   ➖   |
+| `GET /api/{session}/auth/captcha`   <br>Only in **MOBILE** engine |   ➖   |                                     ➖                                     |   ➖   |
+| `POST /api/{session}/auth/captcha` <br>Only in **MOBILE** engine  |   ➖   |                                     ➖                                     |   ➖   |
+| **Screenshot**                                                    |       |                                                                           |       |
+| `POST /api/screenshot`                                            |  ✔️   |                                     ➖                                     |  ✔️   |
 
 | **Chatting**                                         | WEBJS | NOWEB | VENOM |
 |------------------------------------------------------|:-----:|:-----:|:-----:|
