@@ -13,28 +13,28 @@ __metadata:
   linkType: hard
 
 "@adiwajshing/baileys@github:WhiskeySockets/Baileys":
-  version: 6.5.0
-  resolution: "@adiwajshing/baileys@https://github.com/WhiskeySockets/Baileys.git#commit=f527c1247c09b3d25d3e5f3a6040930d6eefdc91"
+  version: 6.6.0
+  resolution: "@adiwajshing/baileys@https://github.com/WhiskeySockets/Baileys.git#commit=daafc122759bd5b54279f82b196e1ce41aec4807"
   dependencies:
     "@adiwajshing/keyed-db": ^0.2.4
     "@hapi/boom": ^9.1.3
     audio-decode: ^2.1.3
     axios: ^1.3.3
-    cache-manager: ^5.2.2
+    cache-manager: 4.0.1
     futoin-hkdf: ^1.5.1
     libphonenumber-js: ^1.10.20
     libsignal: "github:adiwajshing/libsignal-node"
     music-metadata: ^7.12.3
     node-cache: ^5.1.2
     pino: ^7.0.0
-    protobufjs: ^6.11.3
+    protobufjs: ^7.2.4
     uuid: ^9.0.0
     ws: ^8.13.0
   peerDependencies:
     jimp: ^0.16.1
     link-preview-js: ^3.0.0
     qrcode-terminal: ^0.12.0
-    sharp: ^0.30.5
+    sharp: ^0.32.2
   peerDependenciesMeta:
     jimp:
       optional: true
@@ -44,7 +44,7 @@ __metadata:
       optional: true
     sharp:
       optional: true
-  checksum: 6705a0aac86e556a6b1b4580382e7c1fbb5f756282f2fb667f8dc1d08d6441b72171e2f46b450ff529c4a5ba131ba1b465da9d3a22bdd862ceed3536c7d1e105
+  checksum: 252146db962934c5dd54472922dd6b60725879f1fd1a3809e464fef726738cb6deeab843394f9793ca98f23d74e4a1436bca5f2a8ab7534e0ea668f3a117011a
   languageName: node
   linkType: hard
 
@@ -1650,7 +1650,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/long@npm:^4.0.0, @types/long@npm:^4.0.1":
+"@types/long@npm:^4.0.0":
   version: 4.0.2
   resolution: "@types/long@npm:4.0.2"
   checksum: d16cde7240d834cf44ba1eaec49e78ae3180e724cd667052b194a372f350d024cba8dd3f37b0864931683dab09ca935d52f0c4c1687178af5ada9fc85b0635f4
@@ -2798,6 +2798,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"async@npm:3.2.3":
+  version: 3.2.3
+  resolution: "async@npm:3.2.3"
+  checksum: c4bee57ab2249af3dc83ca3ef9acfa8e822c0d5e5aa41bae3eaf7f673648343cd64ecd7d26091ffd357f3f044428b17b5f00098494b6cf8b6b3e9681f0636ca1
+  languageName: node
+  linkType: hard
+
 "async@npm:>=0.2.9, async@npm:^3.2.3, async@npm:^3.2.4":
   version: 3.2.4
   resolution: "async@npm:3.2.4"
@@ -3351,13 +3358,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cache-manager@npm:^5.2.2":
-  version: 5.2.3
-  resolution: "cache-manager@npm:5.2.3"
+"cache-manager@npm:4.0.1":
+  version: 4.0.1
+  resolution: "cache-manager@npm:4.0.1"
   dependencies:
+    async: 3.2.3
     lodash.clonedeep: ^4.5.0
-    lru-cache: ^9.1.2
-  checksum: 2bcd6a385e5575bf9577a209e02c9f5074cd476e6eb08a0f108e45d80c20f4e91fbff163493fe345f166f8ecb232687f20541bc4f42fb2167f8770f9f8b26c51
+    lru-cache: ^7.10.1
+  checksum: 8ca25b1e603111f033d1a3f1463b2a9203e9ea61a0706265a4d4f63d54a8be95f9e79efb04fc43103219becb4903a5db747a346e009e7102767a47e5677219b2
   languageName: node
   linkType: hard
 
@@ -8430,6 +8438,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"long@npm:^5.0.0":
+  version: 5.2.3
+  resolution: "long@npm:5.2.3"
+  checksum: 885ede7c3de4facccbd2cacc6168bae3a02c3e836159ea4252c87b6e34d40af819824b2d4edce330bfb5c4d6e8ce3ec5864bdcf9473fa1f53a4f8225860e5897
+  languageName: node
+  linkType: hard
+
 "longest@npm:^2.0.1":
   version: 2.0.1
   resolution: "longest@npm:2.0.1"
@@ -8469,7 +8484,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^7.14.1, lru-cache@npm:^7.7.1":
+"lru-cache@npm:^7.10.1, lru-cache@npm:^7.14.1, lru-cache@npm:^7.7.1":
   version: 7.18.3
   resolution: "lru-cache@npm:7.18.3"
   checksum: e550d772384709deea3f141af34b6d4fa392e2e418c1498c078de0ee63670f1f46f5eee746e8ef7e69e1c895af0d4224e62ee33e66a543a14763b0f2e74c1356
@@ -8480,13 +8495,6 @@ __metadata:
   version: 10.0.1
   resolution: "lru-cache@npm:10.0.1"
   checksum: 06f8d0e1ceabd76bb6f644a26dbb0b4c471b79c7b514c13c6856113879b3bf369eb7b497dad4ff2b7e2636db202412394865b33c332100876d838ad1372f0181
-  languageName: node
-  linkType: hard
-
-"lru-cache@npm:^9.1.2":
-  version: 9.1.2
-  resolution: "lru-cache@npm:9.1.2"
-  checksum: d3415634be3908909081fc4c56371a8d562d9081eba70543d86871b978702fffd0e9e362b83921b27a29ae2b37b90f55675aad770a54ac83bb3e4de5049d4b15
   languageName: node
   linkType: hard
 
@@ -10077,9 +10085,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:^6.11.3":
-  version: 6.11.4
-  resolution: "protobufjs@npm:6.11.4"
+"protobufjs@npm:^7.2.4":
+  version: 7.2.6
+  resolution: "protobufjs@npm:7.2.6"
   dependencies:
     "@protobufjs/aspromise": ^1.1.2
     "@protobufjs/base64": ^1.1.2
@@ -10091,13 +10099,9 @@ __metadata:
     "@protobufjs/path": ^1.1.2
     "@protobufjs/pool": ^1.1.0
     "@protobufjs/utf8": ^1.1.0
-    "@types/long": ^4.0.1
     "@types/node": ">=13.7.0"
-    long: ^4.0.0
-  bin:
-    pbjs: bin/pbjs
-    pbts: bin/pbts
-  checksum: b2fc6a01897b016c2a7e43a854ab4a3c57080f61be41e552235436e7a730711b8e89e47cb4ae52f0f065b5ab5d5989fc932f390337ce3a8ccf07203415700850
+    long: ^5.0.0
+  checksum: 3c62e48f7d50017ac3b0dcd2a58e617cf858f9fba56a488bd48b9aa3482893a75540052dbcb3c12dfbaab42b1d04964611175faf06bdadcd33a4ebac982a511e
   languageName: node
   linkType: hard
 
@@ -13123,8 +13127,8 @@ __metadata:
   linkType: soft
 
 "whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js":
-  version: 1.23.1-alpha.2
-  resolution: "whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js.git#commit=1e9b82b2011fe1ad70cee8ce7813c352470cb6c4"
+  version: 1.23.1-alpha.4
+  resolution: "whatsapp-web.js@https://github.com/pedroslopez/whatsapp-web.js.git#commit=ef2f725bce1bd1afd8491f9de0cd2ed06a6febc3"
   dependencies:
     "@pedroslopez/moduleraid": ^5.0.2
     archiver: ^5.3.1
@@ -13142,7 +13146,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 425fa37ba93bc42a32609dde9e102a11e2783750119972153593a887200afbdf555dc3b559c346274b72d92ceb00cc363cf714b6ff40c8c35103676234170837
+  checksum: 36062f9aa97e5d3f2ae50235a1535ae4b67550ea40f875794590cbaed6045b6b5ae56bd3edd79092419018f5509ff8dfb8f03cb894ed76315f9583d546a4f4be
   languageName: node
   linkType: hard
 
