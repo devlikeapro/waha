@@ -78,6 +78,12 @@
   parent = "waha-plus"
 
 [[main]]
+  name = "Patron Portal ->"
+  weight = 20
+  url = "https://portal.devlike.pro/"
+  parent = "waha-plus"
+
+[[main]]
   name = "Get on Patreon ->"
   weight = 50
   url = "https://patreon.com/wa_http_api"
