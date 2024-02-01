@@ -130,8 +130,9 @@ Boosty ->
 
 Go ahead and get your own WhatsApp HTTP API!
 
-### Install Plus
-After you get the password, use it to login and download docker image:
+## Install Plus
+After you get the password, get your login to Docker Hub in [Patron Portal ->](https://portal.devlike.pro/)
+and run the commands:
 ```bash
 docker login -u devlikeapro -p {KEY}
 docker pull devlikeapro/whatsapp-http-api-plus
