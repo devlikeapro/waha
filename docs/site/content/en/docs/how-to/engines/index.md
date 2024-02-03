@@ -78,7 +78,7 @@ For **x86** processors use following images:
 
 For **ARM** processors use following images:
 - `devlikeapro/whatsapp-http-api:arm` - **Chromium**
-- `devlikeapro/whatsapp-http-api:arm-noweb`- **no browser installed**
+- `devlikeapro/whatsapp-http-api:noweb-arm`- **no browser installed**
 
 {{< alert icon="💡" text="Chrome version is not available in ARM" />}}
 
