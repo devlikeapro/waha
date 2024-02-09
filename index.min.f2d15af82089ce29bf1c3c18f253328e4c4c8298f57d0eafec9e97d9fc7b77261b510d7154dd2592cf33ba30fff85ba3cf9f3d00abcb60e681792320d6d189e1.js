@@ -234,9 +234,11 @@ Delete chat #Use the method to delete chat
 DELETE /api/{session}/chats/{chatId}
 Clear messages #Use the method to clear all messages from the chat
 DELETE /api/{session}/chats/{chatId}/messages
-`}),e.add({id:11,href:"/docs/overview/faq/",title:"FAQ",description:"Answers to frequently asked questions.",content:`How much CPU and Memory does WhatsApp HTTP API consume? #The benchmark has been made on Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz. It may differ from case to case, it depends on usage pattern - how many messages you get, how many send, etc.
+`}),e.add({id:11,href:"/docs/overview/faq/",title:"FAQ",description:"Answers to frequently asked questions.",content:`How much CPU and Memory does WhatsApp HTTP API consume? #WEBJS #The benchmark has been made on Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz. It may differ from case to case, it depends on usage pattern - how many messages you get, how many send, etc.
 Accounts (sessions) in the container CPU Memory 1 30% 400MB 10 270% 1.5GB The nature of WhatsApp HTTP API and its underlying engines - is to run real WhatsApp Web version in Chrome and communicate with it to prevent blocking from WhatsApp. It\u0026rsquo;s the reason why it\u0026rsquo;s so demanding on resources.
-If you\u0026rsquo;re looking for less resource demanded engine - have a look at NOWEB engine -\u0026gt;
+NOWEB #If you\u0026rsquo;re looking for less resource demanded engine - have a look at NOWEB engine -\u0026gt;
+The quote from the user:
+The server has 2 CPU and 8GB of memory. Today we have 85 session in this instance.
 `}),e.add({id:12,href:"/docs/how-to/contacts/",title:"Contacts",description:"Contacts",content:`Methods for contacts.
 👉 WhatsApp Web does not support adding contacts, so the API doesn't support it too. Endpoints #See the list of engines that support the feature -\u0026gt;.
 Get all contacts #Get your contacts - GET /api/contacts/all
