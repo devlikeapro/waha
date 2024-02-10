@@ -18,6 +18,7 @@ WEBJS #
 The benchmark has been made on Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz. It may differ from case to case, it depends on usage pattern - how many messages you get, how many send, etc.
 Accounts (sessions) in the container CPU Memory 1 30% 400MB 10 270% 1.5GB The nature of WhatsApp HTTP API and its underlying engines - is to run real WhatsApp Web version in Chrome and communicate with it to prevent blocking from WhatsApp.</description></item><item><title>Changelog</title><link>https://waha.devlike.pro/docs/overview/changelog/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://waha.devlike.pro/docs/overview/changelog/</guid><description>If you wish to get and read Release Notes - read them on one of our platforms, these posts are FREE.
 Boosty -&amp;gt; Patreon -&amp;gt; You even can subscribe to get new updates there!
-2023.12 #
+2024.2 #
+Listen for browser disconnected and page close events in WEBJS engine #262 2023.12 #
 December 2023
 Add chatId field to GET /api/contacts/check-exists to help get the right chatId for Brazilian numbers. Read more about error sending text to half of Brazilian numbers (every number registered before 2012) -&amp;gt; 2023.</description></item></channel></rss>
