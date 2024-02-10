@@ -19,6 +19,9 @@ If you wish to get and read Release Notes - read them on one of our platforms, *
 
 You even can **subscribe to get new updates** there!
 
+## 2023.2
+- Listen for browser disconnected and page close events in **WEBJS** engine [#262](https://github.com/devlikeapro/whatsapp-http-api/issues/262)
+
 ## 2023.12
 December 2023
 - Add `chatId` field to `GET /api/contacts/check-exists` to help get the right `chatId` for Brazilian numbers.

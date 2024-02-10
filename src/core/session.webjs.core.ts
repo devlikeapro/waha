@@ -99,11 +99,25 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   async start() {
     this.status = WAHASessionStatus.STARTING;
     this.whatsapp = this.buildClient();
-    this.whatsapp.initialize().catch((error) => {
-      this.status = WAHASessionStatus.FAILED;
-      this.log.error(error);
-      return;
-    });
+    this.whatsapp
+      .initialize()
+      .then(() => {
+        // Listen for browser disconnected event
+        this.whatsapp.pupBrowser.on('disconnected', () => {
+          this.status = WAHASessionStatus.FAILED;
+          this.log.error('The browser has been disconnected');
+        });
+        // Listen for page close event
+        this.whatsapp.pupPage.on('close', () => {
+          this.status = WAHASessionStatus.FAILED;
+          this.log.error('The WhatsApp Web page has been closed');
+        });
+      })
+      .catch((error) => {
+        this.status = WAHASessionStatus.FAILED;
+        this.log.error(error);
+        return;
+      });
     if (this.isDebugEnabled()) {
       this.listenEngineEventsInDebugMode();
     }
