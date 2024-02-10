@@ -19,7 +19,7 @@ If you wish to get and read Release Notes - read them on one of our platforms, *
 
 You even can **subscribe to get new updates** there!
 
-## 2023.2
+## 2024.2
 - Listen for browser disconnected and page close events in **WEBJS** engine [#262](https://github.com/devlikeapro/whatsapp-http-api/issues/262)
 
 ## 2023.12
