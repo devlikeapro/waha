@@ -27,7 +27,8 @@ See the list of engines [**that support the feature ->**]({{< relref "/docs/how-
 You can set your global or chat-related presence with `POST /api/{session}/presence` endpoint
 
 Start typing to a chat (you can use `POST /startTyping` instead)
-```json
+```
+POST /api/{session}/presence
 {
   "chatId": "111111111@c.us",
   "presence": "typing"
@@ -35,7 +36,8 @@ Start typing to a chat (you can use `POST /startTyping` instead)
 ```
 
 Clear "typing" state (you can use `POST /stopTyping` instead)
-```json
+```
+POST /api/{session}/presence
 {
   "chatId": "111111111@c.us",
   "presence": "paused"
@@ -43,7 +45,8 @@ Clear "typing" state (you can use `POST /stopTyping` instead)
 ```
 
 Set global "online", all contacts will see it
-```json
+```
+POST /api/{session}/presence
 {
   "presence": "online"
 }
@@ -53,7 +56,8 @@ Set global "online", all contacts will see it
 to the device.
 If you would like to receive said notifications - you need to mark a session's presence as `offline`.
 
-```json
+```
+POST /api/{session}/presence
 {
   "presence": "offline"
 }

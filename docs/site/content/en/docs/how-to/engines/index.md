@@ -188,7 +188,7 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 |                                                   | WEBJS | NOWEB | VENOM |
 |---------------------------------------------------|:-----:|:-----:|:-----:|
 | **Presence**                                      |       |       |       |
-| `POST /api/{session}/presence`                    |   ➖   |  ✔️   |   ➖   |
+| `POST /api/{session}/presence`                    |  ✔️   |  ✔️   |   ➖   |
 | `GET /api/{session}/presence`                     |   ➖   |  ✔️   |   ➖   |
 | `GET /api/{session}/presence/{chatId}`            |   ➖   |  ✔️   |   ➖   |
 | `POST /api/{session}/presence/{chatId}/subscribe` |   ➖   |  ✔️   |   ➖   |
