@@ -19,13 +19,15 @@ import {
 import { WebhookConfig } from '../structures/webhooks.config.dto';
 import { SessionManager } from './abc/manager.abc';
 import { SessionParams, WhatsappSession } from './abc/session.abc';
+import { WhatsappSessionNoWebCore } from './engines/noweb/session.noweb.core';
+import { WhatsappSessionVenomCore } from './engines/venom/session.venom.core';
+import { WhatsappSessionWebJSCore } from './engines/webjs/session.webjs.core';
 import { DOCS_URL } from './exceptions';
 import { getProxyConfig } from './helpers.proxy';
 import { CoreMediaManager, MediaStorageCore } from './media.core';
-import { WhatsappSessionNoWebCore } from './session.noweb.core';
-import { WhatsappSessionVenomCore } from './session.venom.core';
-import { WhatsappSessionWebJSCore } from './session.webjs.core';
-import { SessionStorageCore } from './storage.core';
+import { LocalSessionAuthRepository } from './storage/LocalSessionAuthRepository';
+import { LocalSessionConfigRepository } from './storage/LocalSessionConfigRepository';
+import { LocalStoreCore } from './storage/LocalStoreCore';
 import { WebhookConductorCore } from './webhooks.core';
 
 export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
@@ -59,8 +61,9 @@ export class SessionManagerCore extends SessionManager {
     this.session = undefined;
     const engineName = this.config.getDefaultEngineName();
     this.EngineClass = this.getEngine(engineName);
-    this.sessionStorage = new SessionStorageCore(engineName.toLowerCase());
-
+    this.store = new LocalStoreCore(engineName.toLowerCase());
+    this.sessionAuthRepository = new LocalSessionAuthRepository(this.store);
+    this.sessionConfigRepository = new LocalSessionConfigRepository(this.store);
     this.startPredefinedSessions();
   }
 
@@ -116,11 +119,11 @@ export class SessionManagerCore extends SessionManager {
       name,
       mediaManager,
       log,
-      sessionStorage: this.sessionStorage,
+      sessionStore: this.store,
       proxyConfig: proxyConfig,
       sessionConfig: request.config,
     };
-    await this.sessionStorage.init(name);
+    await this.sessionAuthRepository.init(name);
     // @ts-ignore
     const session = new this.EngineClass(sessionConfig);
     this.session = session;
@@ -181,7 +184,7 @@ export class SessionManagerCore extends SessionManager {
   }
 
   async logout(request: SessionLogoutRequest) {
-    await this.sessionStorage.clean(request.name);
+    await this.sessionAuthRepository.clean(request.name);
   }
 
   getSession(name: string): WhatsappSession {

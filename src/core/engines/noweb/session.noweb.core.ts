@@ -5,6 +5,7 @@ import makeWASocket, {
   getKeyAuthor,
   isJidGroup,
   jidNormalizedUser,
+  makeCacheableSignalKeyStore,
   makeInMemoryStore,
   PresenceData,
   proto,
@@ -19,7 +20,7 @@ import { Agent } from 'https';
 import * as lodash from 'lodash';
 import { PairingCodeResponse } from 'src/structures/auth.dto';
 
-import { flipObject, splitAt } from '../helpers';
+import { flipObject, splitAt } from '../../../helpers';
 import {
   ChatRequest,
   CheckNumberStatusQuery,
@@ -35,8 +36,8 @@ import {
   MessageVoiceRequest,
   SendSeenRequest,
   WANumberExistResult,
-} from '../structures/chatting.dto';
-import { ContactQuery, ContactRequest } from '../structures/contacts.dto';
+} from '../../../structures/chatting.dto';
+import { ContactQuery, ContactRequest } from '../../../structures/contacts.dto';
 import {
   ACK_UNKNOWN,
   SECOND,
@@ -45,35 +46,36 @@ import {
   WAHAPresenceStatus,
   WAHASessionStatus,
   WAMessageAck,
-} from '../structures/enums.dto';
+} from '../../../structures/enums.dto';
 import {
   CreateGroupRequest,
   ParticipantsRequest,
-} from '../structures/groups.dto';
+} from '../../../structures/groups.dto';
 import {
   WAHAChatPresences,
   WAHAPresenceData,
-} from '../structures/presence.dto';
-import { WAMessage } from '../structures/responses.dto';
-import { MeInfo } from '../structures/sessions.dto';
-import { BROADCAST_ID, TextStatus } from '../structures/status.dto';
+} from '../../../structures/presence.dto';
+import { WAMessage } from '../../../structures/responses.dto';
+import { MeInfo } from '../../../structures/sessions.dto';
+import { BROADCAST_ID, TextStatus } from '../../../structures/status.dto';
 import {
   PollVote,
   PollVotePayload,
   WAMessageAckBody,
-} from '../structures/webhooks.dto';
-import { IEngineMediaProcessor } from './abc/media.abc';
+} from '../../../structures/webhooks.dto';
+import { IEngineMediaProcessor } from '../../abc/media.abc';
 import {
   ensureSuffix,
   WAHAInternalEvent,
   WhatsappSession,
-} from './abc/session.abc';
+} from '../../abc/session.abc';
 import {
   AvailableInPlusVersion,
   NotImplementedByEngineError,
-} from './exceptions';
-import { createAgentProxy } from './helpers.proxy';
-import { QR } from './QR';
+} from '../../exceptions';
+import { createAgentProxy } from '../../helpers.proxy';
+import { QR } from '../../QR';
+import { NowebAuthFactoryCore } from './NowebAuthFactoryCore';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -101,6 +103,8 @@ const ToEnginePresenceStatus = flipObject(PresenceStatuses);
 
 export class WhatsappSessionNoWebCore extends WhatsappSession {
   engine = WAHAEngine.NOWEB;
+  authFactory = new NowebAuthFactoryCore();
+
   get listenConnectionEventsFromTheStart() {
     return true;
   }
@@ -123,7 +127,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return {
       agent: agent,
       fetchAgent: agent,
-      auth: state,
+      auth: {
+        creds: state.creds,
+        /** caching makes the store faster to send/recv messages */
+        keys: makeCacheableSignalKeyStore(state.keys, logger),
+      },
       printQRInTerminal: true,
       browser: Browsers.macOS('Chrome'),
       logger: logger,
@@ -134,9 +142,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async makeSocket() {
-    const authFolder = this.sessionStorage.getFolderPath(this.name);
-    await fs.mkdir(authFolder, { recursive: true });
-    const { state, saveCreds } = await useMultiFileAuthState(authFolder);
+    const { state, saveCreds } = await this.authFactory.buildAuth(
+      this.sessionStore,
+      this.name,
+    );
     const agent = this.makeAgent();
     const socketConfig = this.getSocketConfig(agent, state);
     const sock: any = makeWASocket(socketConfig);

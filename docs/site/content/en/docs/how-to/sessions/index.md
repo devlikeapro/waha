@@ -298,28 +298,8 @@ configure autostart options so when the docker container restarts - it restores 
 
 ### Session persistent
 
-#### File storage
-If you want to save your session and do not scan QR code everytime when you launch WAHA - connect a local file storage
-to the container. WAHA stores authentication information in the directory and reuses it after restart.
-
-[Attach volume](https://docs.docker.com/storage/volumes/) part to the command:
-
-```bash
--v `pwd`/.sessions:/app/.sessions
-```
-
-The full command would be:
-
-```bash
-docker run -d -v `pwd`/.sessions:/app/.sessions -p 3000:3000/tcp --name whatsapp-http-api devlikeapro/whatsapp-http-api-plus
-```
-
-#### Remote storage ![](/images/versions/soon.png)
-
-If you're interested in using some "remote" storage (like Redis or other Databases) to save sessions - please create an
-issue on GitHub.
-
-For instances, it may be useful if you run WAHA in a cluster of servers and do not have shared file storage
+If you want to save your session and do not scan QR code everytime when you launch WAHA -
+[connect the session storage to the container ->]({{< relref "/docs/how-to/storages#sessions" >}})
 
 ### Autostart
 If you don't want to call `POST /api/sessions/start` for every session each time when the container restart -

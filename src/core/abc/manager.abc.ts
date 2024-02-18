@@ -8,12 +8,15 @@ import {
   SessionStartRequest,
   SessionStopRequest,
 } from '../../structures/sessions.dto';
+import { ISessionAuthRepository } from '../storage/ISessionAuthRepository';
+import { ISessionConfigRepository } from '../storage/ISessionConfigRepository';
 import { WhatsappSession } from './session.abc';
-import { LocalSessionStorage } from './storage.abc';
 import { WebhookConductor } from './webhooks.abc';
 
 export abstract class SessionManager implements OnApplicationShutdown {
-  public sessionStorage: LocalSessionStorage;
+  public store: any;
+  public sessionAuthRepository: ISessionAuthRepository;
+  public sessionConfigRepository: ISessionConfigRepository;
 
   protected abstract getEngine(engine: WAHAEngine): typeof WhatsappSession;
 

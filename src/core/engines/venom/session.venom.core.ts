@@ -15,17 +15,17 @@ import {
   MessageReplyRequest,
   MessageTextRequest,
   WANumberExistResult,
-} from '../structures/chatting.dto';
+} from '../../../structures/chatting.dto';
 import {
   WAHAEngine,
   WAHAEvents,
   WAHASessionStatus,
-} from '../structures/enums.dto';
-import { WAMessage } from '../structures/responses.dto';
-import { IEngineMediaProcessor } from './abc/media.abc';
-import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
-import { NotImplementedByEngineError } from './exceptions';
-import { QR } from './QR';
+} from '../../../structures/enums.dto';
+import { WAMessage } from '../../../structures/responses.dto';
+import { IEngineMediaProcessor } from '../../abc/media.abc';
+import { WAHAInternalEvent, WhatsappSession } from '../../abc/session.abc';
+import { NotImplementedByEngineError } from '../../exceptions';
+import { QR } from '../../QR';
 
 export class WhatsappSessionVenomCore extends WhatsappSession {
   engine = WAHAEngine.VENOM;

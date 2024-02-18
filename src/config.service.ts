@@ -108,6 +108,10 @@ export class WhatsappConfigService {
     return value ? value.split(',') : [];
   }
 
+  getSessionMongoUrl(): string | undefined {
+    return this.configService.get('WHATSAPP_SESSIONS_MONGO_URL', undefined);
+  }
+
   getDefaultEngineName(): WAHAEngine {
     const value = getEngineName();
     if (value in WAHAEngine) {

@@ -3,7 +3,6 @@ import { EventEmitter } from 'events';
 import * as fs from 'fs';
 import { MessageId } from 'whatsapp-web.js';
 
-import { OTPRequest, RequestCodeRequest } from '../../structures/auth.dto';
 import {
   ChatRequest,
   CheckNumberStatusQuery,
@@ -47,8 +46,8 @@ import {
 import { WASessionStatusBody } from '../../structures/webhooks.dto';
 import { NotImplementedByEngineError } from '../exceptions';
 import { QR } from '../QR';
+import { DataStore } from './DataStore';
 import { MediaManager } from './media.abc';
-import { LocalSessionStorage } from './storage.abc';
 
 const CHROME_PATH = '/usr/bin/google-chrome-stable';
 const CHROMIUM_PATH = '/usr/bin/chromium';
@@ -77,7 +76,7 @@ export interface SessionParams {
   name: string;
   mediaManager: MediaManager;
   log: ConsoleLogger;
-  sessionStorage: LocalSessionStorage;
+  sessionStore: DataStore;
   proxyConfig?: ProxyConfig;
   sessionConfig?: SessionConfig;
 }
@@ -89,7 +88,7 @@ export abstract class WhatsappSession {
   public name: string;
   protected mediaManager: MediaManager;
   protected log: ConsoleLogger;
-  protected sessionStorage: LocalSessionStorage;
+  protected sessionStore: DataStore;
   protected proxyConfig?: ProxyConfig;
   public sessionConfig?: SessionConfig;
 
@@ -98,7 +97,7 @@ export abstract class WhatsappSession {
   public constructor({
     name,
     log,
-    sessionStorage,
+    sessionStore,
     proxyConfig,
     mediaManager,
     sessionConfig,
@@ -107,7 +106,7 @@ export abstract class WhatsappSession {
     this.name = name;
     this.proxyConfig = proxyConfig;
     this.log = log;
-    this.sessionStorage = sessionStorage;
+    this.sessionStore = sessionStore;
     this.mediaManager = mediaManager;
     this.sessionConfig = sessionConfig;
   }

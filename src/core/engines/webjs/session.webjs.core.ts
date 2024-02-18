@@ -24,8 +24,8 @@ import {
   MessageVoiceRequest,
   SendSeenRequest,
   WANumberExistResult,
-} from '../structures/chatting.dto';
-import { ContactQuery, ContactRequest } from '../structures/contacts.dto';
+} from '../../../structures/chatting.dto';
+import { ContactQuery, ContactRequest } from '../../../structures/contacts.dto';
 import {
   ACK_UNKNOWN,
   WAHAEngine,
@@ -33,22 +33,22 @@ import {
   WAHAPresenceStatus,
   WAHASessionStatus,
   WAMessageAck,
-} from '../structures/enums.dto';
+} from '../../../structures/enums.dto';
 import {
   CreateGroupRequest,
   ParticipantsRequest,
   SettingsSecurityChangeInfo,
-} from '../structures/groups.dto';
-import { WAMessage } from '../structures/responses.dto';
-import { MeInfo } from '../structures/sessions.dto';
-import { WAMessageRevokedBody } from '../structures/webhooks.dto';
-import { IEngineMediaProcessor } from './abc/media.abc';
-import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
+} from '../../../structures/groups.dto';
+import { WAMessage } from '../../../structures/responses.dto';
+import { MeInfo } from '../../../structures/sessions.dto';
+import { WAMessageRevokedBody } from '../../../structures/webhooks.dto';
+import { IEngineMediaProcessor } from '../../abc/media.abc';
+import { WAHAInternalEvent, WhatsappSession } from '../../abc/session.abc';
 import {
   AvailableInPlusVersion,
   NotImplementedByEngineError,
-} from './exceptions';
-import { QR } from './QR';
+} from '../../exceptions';
+import { QR } from '../../QR';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -67,7 +67,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     this.qr = new QR();
   }
 
-  protected buildClient() {
+  protected async buildClient() {
     const clientOptions: ClientOptions = {
       puppeteer: {
         headless: true,
@@ -98,7 +98,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   async start() {
     this.status = WAHASessionStatus.STARTING;
-    this.whatsapp = this.buildClient();
+    this.whatsapp = await this.buildClient();
     this.whatsapp
       .initialize()
       .then(() => {

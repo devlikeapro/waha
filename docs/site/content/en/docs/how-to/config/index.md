@@ -38,6 +38,8 @@ The following environment variables can be used to configure the WAHA.
     response.
 - `WHATSAPP_START_SESSION=session1,session2`: This variable can be used to start sessions with the specified names right
   after launching the API. Separate session names with a comma.
+- Also read more about [Sessions ->]({{< relref "/docs/how-to/sessions" >}})
+- Also read more about [Session Storages on the dedicated page ->]({{< relref "/docs/how-to/storages#sessions" >}})
 
 ### Swagger
 - `WHATSAPP_SWAGGER_CONFIG_ADVANCED=true` - enables advanced configuration options for Swagger documentation - you can customize host, port and base URL for the requests.
@@ -66,14 +68,18 @@ Read more about it on [**Session page** ->]({{< relref "/docs/how-to/sessions#co
 Keep in mind that session's proxy configuration takes precedence over proxy configuration set by environment variables!
 
 
-### Security ![](/images/versions/plus.png)
+### Security
+<b>Security is available in [WAHA Plus ![](/images/versions/plus.png)]({{< relref "/docs/how-to/plus-version" >}}) only.</b>
+
 - `WHATSAPP_API_KEY=mysecret`: If you set this variable, you must include the `X-Api-Key: mysecret` header in all
   requests to the API. This will protect the API with a secret code.
 - `WHATSAPP_SWAGGER_USERNAME=admin` and `WHATSAPP_SWAGGER_PASSWORD=admin`: These variables can be used to protect the
   Swagger panel with `admin / admin` credentials. This does not affect API access.
 
+Read more about security settings for Swagger and API on [**Security page** ->]({{< relref "/docs/how-to/security" >}}).
 
-### Files ![](/images/versions/plus.png)
+### Files
+<b>Files configuration is available in [WAHA Plus ![](/images/versions/plus.png)]({{< relref "/docs/how-to/plus-version" >}}) only.</b>
 
 The following environment variables can be used to configure the file storage options for the WAHA:
 
@@ -85,8 +91,11 @@ The following environment variables can be used to configure the file storage op
   - Under the hood, it sets `WHATSAPP_FILES_MIMETYPES=mimetype/ignore-all-media` to ignore all media files.
 - `WHATSAPP_FILES_LIFETIME`: This variable can be used to set the time (in seconds) after which files will be removed to
   free up space. The default value is `180`.
+  - Set this variable to `0` to disable the file lifetime.
 - `WHATSAPP_FILES_FOLDER`: This variable can be used to set the folder where files from chats (images, voice messages)
   will be stored. The default value is `/tmp/whatsapp-files`.
+  - The folder must be mounted to the host machine to keep the files between container restarts. [ Read more about how to persist files ->]({{< relref "/docs/how-to/storages#media" >}})
+- Also read more about [Media Storages on the dedicated page ->]({{< relref "/docs/how-to/storages#media" >}})
 
 💡 Even if WAHA doesn't process the message media because of `WHATSAPP_FILES_MIMETYPES` or `WHATSAPP_DOWNLOAD_MEDIA`
 you'll get a webhook event with `hasMedia: True` field, but with no `media.url`.

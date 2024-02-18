@@ -30,3 +30,15 @@ services:
       - WHATSAPP_SWAGGER_PASSWORD=123
       - WHATSAPP_API_HOSTNAME=localhost
     restart: always
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - '27017:27017/tcp'
+    volumes:
+      - mongodb_data:/data/db
+    restart: always
+
+volumes:
+  mongodb_data: {}

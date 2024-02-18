@@ -29,7 +29,7 @@ class SessionsController {
   @Post('/start/')
   async start(@Body() request: SessionStartRequest): Promise<SessionDTO> {
     const result = await this.manager.start(request);
-    await this.manager.sessionStorage.configRepository.save(
+    await this.manager.sessionConfigRepository.save(
       request.name,
       request.config || null,
     );

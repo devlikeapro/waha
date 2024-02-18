@@ -20,6 +20,16 @@ If you wish to get and read Release Notes - read them on one of our platforms, *
 You even can **subscribe to get new updates** there!
 
 ## 2024.2
+- Add support for [MongoDB as storage for Session data]({{< relref "/docs/how-to/storages" >}})
+- Support persistent file storage for media files - [now you can save media files between container restarts]({{< relref "/docs/how-to/storages#media" >}})
+- If you set `WHATSAPP_FILES_LIFETIME=0` environment variable - media files will be never deleted.
+
+## 2024.1
+- Implement [Patron Portal](https://portal.devlike.pro/) where you can get your personal API key and manage your perks.
+  - Read more on [Patreon ->](https://www.patreon.com/posts/waha-patron-97637416)
+  - Read more on [Boosty ->](https://boosty.to/wa-http-api/posts/8319079f-dac1-4179-b954-fcc559097c76)
+
+## 2024.2
 - Listen for browser disconnected and page close events in **WEBJS** engine [#262](https://github.com/devlikeapro/whatsapp-http-api/issues/262)
 
 ## 2023.12
