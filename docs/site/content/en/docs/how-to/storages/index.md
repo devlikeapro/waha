@@ -70,6 +70,8 @@ If you want to use the MongoDB to store the session data, you need to:
 
 **We recommend using your own MongoDB server as close as possible to WAHA server** for the best performance and security reasons.
 
+{{< alert icon="💡" text="For <b>WEBJS</b> engine it can take up to 1 minute to save credentials in Mongo Database" />}}
+
 ### Example
 First, you need to start MongoDB server:
 ```bash
