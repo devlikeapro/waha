@@ -14,12 +14,19 @@ export class LocalSessionConfigRepository extends ISessionConfigRepository {
     this.store = store;
   }
 
-  async get(sessionName: string): Promise<SessionConfig | null> {
-    const filepath = this.getFilePath(sessionName);
-    // Check file exists
+  private async fileExists(filepath: string) {
     try {
       await fs.access(filepath, fs.constants.F_OK);
     } catch (error) {
+      return false;
+    }
+    return true;
+  }
+
+  async get(sessionName: string): Promise<SessionConfig | null> {
+    const filepath = this.getFilePath(sessionName);
+    // Check file exists
+    if (!(await this.fileExists(filepath))) {
       return null;
     }
 
@@ -51,6 +58,9 @@ export class LocalSessionConfigRepository extends ISessionConfigRepository {
 
   async delete(sessionName: string): Promise<void> {
     const filepath = this.getFilePath(sessionName);
+    if (!(await this.fileExists(filepath))) {
+      return;
+    }
     await fs.unlink(filepath);
   }
 }
