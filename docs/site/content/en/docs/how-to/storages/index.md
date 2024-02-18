@@ -76,9 +76,9 @@ First, you need to start MongoDB server:
 docker run -d -p 27017:27017 --name mongodb mongo
 ```
 
-Then, you need to run the WAHA with the `WHATSAPP_SESSIONS_MONGO_URL` environment variable:
+Then, you need to run the WAHA with the `WHATSAPP_SESSIONS_MONGO_URL` environment variable (please note using `--network host` option as well)
 ```bash
-docker run -e WHATSAPP_SESSIONS_MONGO_URL=mongodb://localhost:27017/ -p 3000:3000/tcp devlikeapro/whatsapp-http-api-plus
+docker run -e WHATSAPP_SESSIONS_MONGO_URL=mongodb://localhost:27017/ --network host devlikeapro/whatsapp-http-api-plus
 ```
 
 This is the only action you need to do to use the MongoDB storage -
