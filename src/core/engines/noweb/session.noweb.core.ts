@@ -243,9 +243,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async stop() {
-    this.sock.ev.removeAllListeners();
-    this.sock.ws.removeAllListeners();
-    this.sock.ws.close();
+    this.sock?.ev?.removeAllListeners();
+    this.sock?.ws?.removeAllListeners();
+    this.sock?.ws?.close();
     this.status = WAHASessionStatus.STOPPED;
     return;
   }
