@@ -5,7 +5,7 @@ import * as path from 'path';
 
 import { LocalStore } from './LocalStore';
 
-export class LocalStoreCore implements LocalStore {
+export class LocalStoreCore extends LocalStore {
   protected readonly baseDirectory: string = path.join(
     os.tmpdir(),
     'waha-sessions',
@@ -14,6 +14,7 @@ export class LocalStoreCore implements LocalStore {
   private readonly engine: string;
 
   constructor(engine: string) {
+    super();
     this.engine = engine;
   }
 
