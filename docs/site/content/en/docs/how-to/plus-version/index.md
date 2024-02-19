@@ -49,17 +49,35 @@ Treat **WAHA Plus** it as an additional episode, behind-the-scenes videos, our n
 We donate most of the donations down to the stream to the underlying libraries and tools - JS-community, Node, other libraries authors, personal contributors.
 By donating to the **WAHA** you donate to the Open Source world!
 
-### Features
+### Tiers
 
-The Plus additional features are:
+The more you support the project - the more you get!
 
-1. [**Send images\files\voices** →]({{< relref "/docs/how-to/send-messages" >}})
-2. [**Receive images\files\voices** →]({{< relref "/docs/how-to/receive-messages" >}})
-3. [**Webhook retries** →]({{< relref "/docs/how-to/receive-messages#retries" >}})
-4. [**Security** →]({{< relref "/docs/how-to/security" >}})
-5. [**Saving sessions** →]({{< relref "/docs/how-to/sessions" >}})
-6. [**Support multiple sessions** →]({{< relref "/docs/how-to/sessions" >}})
-7. **Priority in support** - on both bugs and features
+|                                                                                                                                                                                                                                                                                                              | Core     | Plus    | Advanced |   Pro   |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------|---------|:--------:|:-------:|
+| Messages limit                                                                                                                                                                                                                                                                                               | **∞**    | **∞**   |  **∞**   |  **∞**  |
+| [Send and receive text messages ->]({{< relref "/docs/how-to/send-messages" >}})                                                                                                                                                                                                                             | ✔️       | ✔️      |    ✔️    |   ✔️    |
+| No license checks on installed instances                                                                                                                                                                                                                                                                     | ✔️       | ✔️      |    ✔️    |   ✔️    |
+| [Sessions limit ->]({{< relref "/docs/how-to/sessions" >}})                                                                                                                                                                                                                                                  | **1**    | **∞**   |  **∞**   |  **∞**  |
+| [Send and receive files ->]({{< relref "/docs/how-to/send-messages" >}})                                                                                                                                                                                                                                     | ➖️       | ✔️      |    ✔️    |   ✔️    |
+| [Built-in Security ->]({{< relref "/docs/how-to/security" >}})                                                                                                                                                                                                                                               | ➖️       | ✔️      |    ✔️    |   ✔️    |
+| [**Webhook retries** →]({{< relref "/docs/how-to/receive-messages#retries" >}})                                                                                                                                                                                                                              | ➖️       | ✔️      |    ✔️    |   ✔️    |
+| [MongoDB support ->]({{< relref "/docs/how-to/storages" >}})                                                                                                                                                                                                                                                 | ➖️       | ✔️      |    ✔️    |   ✔️    |
+| Access to **WAHA Plus** ![](/images/versions/plus.png) docker image with a personal key.                                                                                                                                                                                                                     | ➖️       | ✔️      |    ✔️    |   ✔️    |
+| Special badge ([![patron:TIER](https://img.shields.io/badge/patron-TIER-188a42)](https://waha.devlike.pro/docs/how-to/plus-version/#tiers)) and labels (`patron:TIER`) on [project's issues, PRs and Discussion](https://github.com/devlikeapro/whatsapp-http-api) to highlight your support to the project! |          | ✔️      |    ✔️    |   ✔️    |
+| An invitation to **a private Github repository** so you have the **WAHA Plus** source code.                                                                                                                                                                                                                  | ➖️       | ➖️      |    ✔️    |   ✔️️   |
+| Access to a Telegram group where we provide support and assistance.                                                                                                                                                                                                                                          | ➖️       | ➖️      |    ➖     |   ✔️    |
+| Access to an [experimental MOBILE engine]({{< relref "/docs/how-to/plus-version#tiers" >}})!.                                                                                                                                                                                                                | ➖️       | ➖️      |    ➖     |   ✔️    |
+| **Donation**                                                                                                                                                                                                                                                                                                 | **FREE** | **$19** | **$39**  | **$99** |
+
+For **$19** donation you get:
+1. **Secret password** for Docker Hub to download Plus image: `devlikeapro/whatsapp-http-api-plus`.
+2. **All updates for one month** for the Plus image.
+3. **NO LICENSE CHECKS** on installed instances!
+4. **NO LICENSE EXPIRATION** on installed instances! We repeated it twice to make sure that you've got it 😊
+
+{{< alert icon="💡" text="If you stay subscribed - the donation amount will never change for you and always be $19 to get monthly updates!" />}}
+
 
 ### Why WAHA?
 
@@ -77,28 +95,6 @@ What is the difference between **WAHA Plus** and **other SaaS solutions** for Wh
 
 ## Get Plus ![](/images/versions/plus.png)
 
-The more you support the project - the more you get!
-
-### Tiers
-
-Here's available tiers for our supporters:
-
-|                                                                                                                                                                                                                                                                                                                  | Plus    | Advanced |   Pro   |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|:--------:|:-------:|
-| Access to WAHA Plus  ![](/images/versions/plus.png) docker image with a personal key.                                                                                                                                                                                                                            | ✔️      |    ✔️    |   ✔️    |
-| Special badge ([![patron:TIER](https://img.shields.io/badge/patron-TIER-188a42)](https://waha.devlike.pro/docs/how-to/plus-version/#tiers)) and labels (`patron:TIER`) on [project's issues, PRs and Discussion](https://github.com/devlikeapro/whatsapp-http-api) to highlight your support to the project!     | ✔️      |    ✔️    |   ✔️    |
-| An invitation to a private Github repository so you have the WAHA Plus source code.                                                                                                                                                                                                                              | ➖️      |    ✔️    |   ✔️️   |
-| Access to a Telegram group where we provide support and assistance.                                                                                                                                                                                                                                              | ➖️      |    ➖     |   ✔️    |
-| Access to an [experimental MOBILE engine]({{< relref "/docs/how-to/plus-version#tiers" >}})!.                                                                                                                                                                                                                    | ➖️      |    ➖     |   ✔️    |
-| **Donation**                                                                                                                                                                                                                                                                                                     | **$19** | **$39**  | **$99** |
-
-For **$19** donation you get:
-1. **Secret password** for Docker Hub to download Plus image: `devlikeapro/whatsapp-http-api-plus`.
-2. **All updates for one month** for the Plus image.
-3. **NO LICENSE CHECKS** on installed instances!
-4. **NO LICENSE EXPIRATION** on installed instances! We repeated it twice to make sure that you've got it 😊
-
-{{< alert icon="💡" text="If you stay subscribed - the donation amount will never change for you and always be $19 to get monthly updates!" />}}
 
 ### Patreon
 <p align="center">
