@@ -263,7 +263,7 @@ revokes a previously sent message.
 
 ```json
 {
-  "event": "message.ack",
+  "event": "message.revoked",
   "session": "default",
   "payload": {
     "before": {
