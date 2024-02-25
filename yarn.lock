@@ -955,6 +955,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/axios@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "@nestjs/axios@npm:3.0.2"
+  peerDependencies:
+    "@nestjs/common": ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
+    axios: ^1.3.1
+    rxjs: ^6.0.0 || ^7.0.0
+  checksum: 285a735fb5db602b63aa4a37e161f609b2cec05b69f4bffe983617c2136ac29c0a33bb96e6276d22a656907bed5d53460e740310bc05c043dcd39c37db7cda29
+  languageName: node
+  linkType: hard
+
 "@nestjs/cli@npm:^9.0.0":
   version: 9.5.0
   resolution: "@nestjs/cli@npm:9.5.0"
@@ -1150,6 +1161,61 @@ __metadata:
     class-validator:
       optional: true
   checksum: acbf2f01e122dcc9c0595afb6b35b221009e8d003867a897c963fd69acba26322ae5d64b0260f1a082762037ad9f782652614195e3e8c24f8f48da030c07974f
+  languageName: node
+  linkType: hard
+
+"@nestjs/terminus@npm:^10.2.3":
+  version: 10.2.3
+  resolution: "@nestjs/terminus@npm:10.2.3"
+  dependencies:
+    boxen: 5.1.2
+    check-disk-space: 3.4.0
+  peerDependencies:
+    "@grpc/grpc-js": "*"
+    "@grpc/proto-loader": "*"
+    "@mikro-orm/core": "*"
+    "@mikro-orm/nestjs": "*"
+    "@nestjs/axios": ^1.0.0 || ^2.0.0 || ^3.0.0
+    "@nestjs/common": ^9.0.0 || ^10.0.0
+    "@nestjs/core": ^9.0.0 || ^10.0.0
+    "@nestjs/microservices": ^9.0.0 || ^10.0.0
+    "@nestjs/mongoose": ^9.0.0 || ^10.0.0
+    "@nestjs/sequelize": ^9.0.0 || ^10.0.0
+    "@nestjs/typeorm": ^9.0.0 || ^10.0.0
+    "@prisma/client": "*"
+    mongoose: "*"
+    reflect-metadata: 0.1.x || 0.2.x
+    rxjs: 7.x
+    sequelize: "*"
+    typeorm: "*"
+  peerDependenciesMeta:
+    "@grpc/grpc-js":
+      optional: true
+    "@grpc/proto-loader":
+      optional: true
+    "@mikro-orm/core":
+      optional: true
+    "@mikro-orm/nestjs":
+      optional: true
+    "@nestjs/axios":
+      optional: true
+    "@nestjs/microservices":
+      optional: true
+    "@nestjs/mongoose":
+      optional: true
+    "@nestjs/sequelize":
+      optional: true
+    "@nestjs/typeorm":
+      optional: true
+    "@prisma/client":
+      optional: true
+    mongoose:
+      optional: true
+    sequelize:
+      optional: true
+    typeorm:
+      optional: true
+  checksum: 7a758c845c0a07a75230731d3b638919aae0b503b6cef97fa7f63d4cd23c6c6db0e8d39d5ecf4d8fda6e3f0aa7d4aa95fddcf5868758cf85d201db6acc43ac9d
   languageName: node
   linkType: hard
 
@@ -3216,7 +3282,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"boxen@npm:^5.1.1":
+"boxen@npm:5.1.2, boxen@npm:^5.1.1":
   version: 5.1.2
   resolution: "boxen@npm:5.1.2"
   dependencies:
@@ -3589,6 +3655,13 @@ __metadata:
   version: 0.7.0
   resolution: "chardet@npm:0.7.0"
   checksum: 6fd5da1f5d18ff5712c1e0aed41da200d7c51c28f11b36ee3c7b483f3696dabc08927fc6b227735eb8f0e1215c9a8abd8154637f3eff8cada5959df7f58b024d
+  languageName: node
+  linkType: hard
+
+"check-disk-space@npm:3.4.0, check-disk-space@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "check-disk-space@npm:3.4.0"
+  checksum: 0154c149c34a1233fe542f2a9f9ea2526bb90169489259eda8de1cf6870f765e8f5299c3b085085cc1ef33d9559f589fd10609c7e52d2e624ef6b5720dd9743c
   languageName: node
   linkType: hard
 
@@ -13216,6 +13289,7 @@ __metadata:
   dependencies:
     "@adiwajshing/baileys": "github:WhiskeySockets/Baileys"
     "@adiwajshing/keyed-db": ^0.2.4
+    "@nestjs/axios": ^3.0.2
     "@nestjs/cli": ^9.0.0
     "@nestjs/common": ^9.0.9
     "@nestjs/config": ^0.5.0
@@ -13225,6 +13299,7 @@ __metadata:
     "@nestjs/schematics": ^9.0.1
     "@nestjs/serve-static": ^2.1.3
     "@nestjs/swagger": ^7.1.11
+    "@nestjs/terminus": ^10.2.3
     "@nestjs/testing": ^9.0.9
     "@types/express": ^4.17.3
     "@types/jest": 26.0.10
@@ -13234,6 +13309,7 @@ __metadata:
     "@types/ws": ^8.5.4
     "@typescript-eslint/eslint-plugin": 3.9.1
     "@typescript-eslint/parser": 3.9.1
+    check-disk-space: ^3.4.0
     class-validator: ^0.12.2
     del: ^6.0.0
     eslint: 7.7.0

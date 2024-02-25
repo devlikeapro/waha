@@ -114,6 +114,14 @@ you'll get a webhook event with `hasMedia: True` field, but with no `media.url`.
 }
 ```
 
+### Health Check
+<b>Health check is available in [WAHA Plus ![](/images/versions/plus.png)]({{< relref "/docs/how-to/plus-version" >}}) only.</b>
+
+The following environment variables can be used to configure the [Health Check ->]({{< relref "/docs/how-to/other" >}}):
+- `WHATSAPP_HEALTH_MEDIA_FILES_THRESHOLD_MB` - the threshold in MB for the media files storage. The default value is `100`.
+- `WHATSAPP_HEALTH_SESSIONS_FILES_THRESHOLD_MB` - the threshold in MB for the sessions files storage. The default value is `100`.
+- `WHATSAPP_HEALTH_MONGODB_TIMEOUT` - the timeout in milliseconds for the MongoDB health check. The default value is `5000`.
+
 ## Examples
 
 #### Debug Mode

@@ -193,7 +193,8 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 | `GET /api/{session}/presence/{chatId}`            |   ➖   |  ✔️   |   ➖   |
 | `POST /api/{session}/presence/{chatId}/subscribe` |   ➖   |  ✔️   |   ➖   |
 | **Other**                                         |       |       |       |
-| `POST /api/version`                               |   ➖   |  ✔️   |   ➖   |
+| `GET /api/version`                                |   ➖   |  ✔️   |   ➖   |
+| `GET /health` ![](/images/versions/plus.png)      |  ✔️   |  ✔️   |  ✔️   |
 
 | **Webhooks**                                        | WEBJS | NOWEB | VENOM |
 |-----------------------------------------------------|:-----:|:-----:|:-----:|

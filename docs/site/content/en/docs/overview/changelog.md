@@ -23,6 +23,7 @@ You even can **subscribe to get new updates** there!
 - Add support for [MongoDB as storage for Session data]({{< relref "/docs/how-to/storages" >}})
 - Support persistent file storage for media files - [now you can save media files between container restarts]({{< relref "/docs/how-to/storages#media" >}})
 - If you set `WHATSAPP_FILES_LIFETIME=0` environment variable - media files will be never deleted.
+- Add `GET /api/health` endpoint to [check the health of the service](https://waha.devlike.pro/docs/how-to/other/)
 
 ## 2024.1
 - Implement [Patron Portal](https://portal.devlike.pro/) where you can get your personal API key and manage your perks.

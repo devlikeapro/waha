@@ -155,4 +155,25 @@ export class WhatsappConfigService {
   getSwaggerAdvancedConfigEnabled(): boolean {
     return this.configService.get('WHATSAPP_SWAGGER_CONFIG_ADVANCED', false);
   }
+
+  getHealthMediaFilesThreshold(): number {
+    return this.configService.get<number>(
+      'WHATSAPP_HEALTH_MEDIA_FILES_THRESHOLD_MB',
+      100,
+    );
+  }
+
+  getHealthSessionFilesThreshold(): number {
+    return this.configService.get<number>(
+      'WHATSAPP_HEALTH_SESSION_FILES_THRESHOLD_MB',
+      100,
+    );
+  }
+
+  getHealthMongoTimeout(): number {
+    return this.configService.get<number>(
+      'WHATSAPP_HEALTH_MONGO_TIMEOUT_MS',
+      3000,
+    );
+  }
 }
