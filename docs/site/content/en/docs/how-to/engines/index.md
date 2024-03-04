@@ -49,16 +49,6 @@ Not running Chromium saves you CPU and Memory, so you can run more instances on 
 ⚠ Read the article before using **NOWEB** engine
 [How to avoid blocking ->]({{< relref " /docs/overview/how-to-avoid-blocking" >}}).
 
-### MOBILE (experimental)
-{{< alert icon="👉" text="<b>Experimental engine!</b><br/>Please contact us on <a href='https://www.patreon.com/wa_http_api' target='_blank'>Patreon -></a> or <a href='https://boosty.to/wa-http-api' target='_blank'>Boosty -></a> if you're interested in using it.<br>Available for <a href='https://waha.devlike.pro/docs/how-to/plus-version/#tiers' target='_blank'>PRO</a> subscribers only" />}}
-
-- `WHATSAPP_DEFAULT_ENGINE=MOBILE`
-- [https://github.com/WhiskeySockets/Baileys](https://github.com/WhiskeySockets/Baileys)
-
-**MOBILE** engine **does not require a browser and a mobile device** to work with WhatsApp, it does so directly using a WebSocket.
-You don't have to use a mobile device to run this engine.
-
-
 ### VENOM
 
 - `WHATSAPP_DEFAULT_ENGINE=VENOM`
