@@ -133,7 +133,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         keys: makeCacheableSignalKeyStore(state.keys, logger),
       },
       printQRInTerminal: true,
-      browser: Browsers.macOS('Chrome'),
+      browser: Browsers.ubuntu('Chrome'),
       logger: logger,
       mobile: false,
       defaultQueryTimeoutMs: undefined,
