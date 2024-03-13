@@ -9,11 +9,9 @@
         <img src='/images/logo.png' title='WhatsApp HTTP API' alt='logo' width='100' />
       </div>
       <p class='lead'>{{ .Params.lead | safeHTML }}</p>
-      <code>
-        docker run -it -p 3000:3000/tcp devlikeapro/whatsapp-http-api
-      </code>
-      <br />
-      <br />
+      <div class="code-block highlight d-none d-md-block">
+        <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash" style='padding: 0'>docker run -it -p 3000:3000/tcp devlikeapro/whatsapp-http-api</code></pre>
+      </div>
       <a class='btn btn-primary btn-lg px-4 mb-2'
          href='/docs/{{ if .Site.Params.options.docsVersioning }}{{ .Site.Params.docsVersion }}/{{ end }}overview/introduction/'
          role='button'>Get Started</a>
