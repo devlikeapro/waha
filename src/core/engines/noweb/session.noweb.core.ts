@@ -55,7 +55,10 @@ import {
   WAHAChatPresences,
   WAHAPresenceData,
 } from '../../../structures/presence.dto';
-import { WAMessage } from '../../../structures/responses.dto';
+import {
+  WAMessage,
+  WAMessageReaction,
+} from '../../../structures/responses.dto';
 import { MeInfo } from '../../../structures/sessions.dto';
 import { BROADCAST_ID, TextStatus } from '../../../structures/status.dto';
 import {
@@ -585,6 +588,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
           this.handleIncomingMessages(messages, handler, false);
         });
         return true;
+      case WAHAEvents.MESSAGE_REACTION:
+        this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) => {
+          const reactions = this.processMessageReaction(messages);
+          reactions.map(handler);
+        });
+        return true;
       case WAHAEvents.MESSAGE_ANY:
         this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) =>
           this.handleIncomingMessages(messages, handler, true),
@@ -641,6 +650,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       // if there is no text or media message
       if (!message) return;
       if (!message.message) return;
+      // Ignore reactions, we have dedicated handler for that
+      if (message.message.reactionMessage) return;
       // Ignore poll votes, we have dedicated handler for that
       if (message.message.pollUpdateMessage) return;
       // Do not include my messages
@@ -649,6 +660,34 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       }
       this.processIncomingMessage(message).then(handler);
     }
+  }
+
+  private processMessageReaction(messages: any[]): WAMessageReaction[] {
+    const reactions = [];
+    for (const message of messages) {
+      if (!message) return;
+      if (!message.message) return;
+      if (!message.message.reactionMessage) return;
+
+      const id = buildMessageId(message.key);
+      const fromToParticipant = getFromToParticipant(message);
+      const reactionMessage = message.message.reactionMessage;
+      const messageId = buildMessageId(reactionMessage.key);
+      const reaction: WAMessageReaction = {
+        id: id,
+        timestamp: message.messageTimestamp,
+        from: toCusFormat(fromToParticipant.from),
+        fromMe: message.key.fromMe,
+        to: toCusFormat(fromToParticipant.to),
+        participant: toCusFormat(fromToParticipant.participant),
+        reaction: {
+          text: reactionMessage.text,
+          messageId: messageId,
+        },
+      };
+      reactions.push(reaction);
+    }
+    return reactions;
   }
 
   private processIncomingMessage(message) {

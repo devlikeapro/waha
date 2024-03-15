@@ -226,6 +226,43 @@ Fired on all message creations, including your own. The payload is the same as f
 }
 ```
 
+### message.reaction
+Receive events when a message is reacted to by a user (or **yourself** reacting to a message).
+- `payload.reaction.text` - emoji that was used to react to the message. It'll be an empty string if the reaction was removed.
+- `payload.reaction.messageId` - id of the message that was reacted to.
+
+```json
+{
+    "event": "message.reaction",
+    "session": "default",
+    "me": {
+        "id": "79222222222@c.us",
+        "pushName": "WAHA"
+    },
+    "payload": {
+        "id": "false_79111111@c.us_11111111111111111111111111111111",
+        "from": "79111111@c.us",
+        "fromMe": false,
+        "participant": "79111111@c.us",
+        "to": "79111111@c.us",
+        "timestamp": 1710481111.853,
+        "reaction": {
+            "text": "🙏",
+            "messageId": "true_79111111@c.us_11111111111111111111111111111111"
+        }
+    },
+    "engine": "WEBJS",
+    "environment": {
+        "version": "2024.3.3",
+        "engine": "WEBJS",
+        "tier": "PLUS",
+        "browser": "/usr/bin/google-chrome-stable"
+    }
+}
+```
+
+{{< alert icon="👉" text="NOWEB engine note - reactions were sent in 'message' and 'message.any' events, not it's available only in 'message.reaction'!" />}}
+
 ### message.ack
 Receive events when server or recipient gets the message, read or played it.
 

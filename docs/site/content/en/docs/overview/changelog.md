@@ -19,6 +19,10 @@ If you wish to get and read Release Notes - read them on one of our platforms, *
 
 You even can **subscribe to get new updates** there!
 
+## 2024.3
+- Add [message.reaction]({{< relref "/docs/how-to/webhooks#messagereaction" >}}) webhook in **WEBJS** and **NOWEB** engines ([#275](https://github.com/devlikeapro/whatsapp-http-api/issues/275)).
+  - 👉 **NOWEB** engine note - reactions were sent in `'message'` and `'message.any'` events, not it's available **only** in `'message.reaction'`!
+
 ## 2024.2
 - Add support for [MongoDB as storage for Session data]({{< relref "/docs/how-to/storages" >}})
 - Support persistent file storage for media files - [now you can save media files between container restarts]({{< relref "/docs/how-to/storages#media" >}})

@@ -10,7 +10,7 @@ import {
 import { WAHAEnvironment } from './environment.dto';
 import { WAHAChatPresences } from './presence.dto';
 import { ChatIdProperty, MessageIdProperty } from './properties.dto';
-import { WAMessage } from './responses.dto';
+import { WAMessage, WAMessageReaction } from './responses.dto';
 import { MeInfo } from './sessions.dto';
 
 export class WAMessageAckBody {
@@ -134,6 +134,16 @@ class WAHAWebhookMessage extends WAHAWebhook {
   payload: WAMessage;
 }
 
+class WAHAWebhookMessageReaction extends WAHAWebhook {
+  @ApiProperty({
+    description:
+      'The event is triggered when a user reacts or removes a reaction.',
+  })
+  event = WAHAEvents.MESSAGE_REACTION;
+
+  payload: WAMessageReaction;
+}
+
 class WAHAWebhookMessageAny extends WAHAWebhook {
   @ApiProperty({
     description: 'Fired on all message creations, including your own.',
@@ -223,6 +233,7 @@ class WAHAWebhookPollVoteFailed extends WAHAWebhook {
 const WAHA_WEBHOOKS = [
   WAHAWebhookSessionStatus,
   WAHAWebhookMessage,
+  WAHAWebhookMessageReaction,
   WAHAWebhookMessageAny,
   WAHAWebhookMessageAck,
   WAHAWebhookMessageRevoked,

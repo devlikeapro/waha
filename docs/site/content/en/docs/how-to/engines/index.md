@@ -86,7 +86,7 @@ Here, you will find a list of supported endpoints and webhooks per engine.
 If you don't specify `WHATSAPP_DEFAULT_ENGINE` environment variable - look at **WEBJS** engine,
 it's the engine WAHA runs by default.
 
-### Engine
+### Protocols
 
 |                                                              | WEBJS | NOWEB | VENOM |
 |--------------------------------------------------------------|:-----:|:-----:|:-----:|
@@ -186,10 +186,13 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 | `GET /api/version`                                |   ➖   |  ✔️   |   ➖   |
 | `GET /health` ![](/images/versions/plus.png)      |  ✔️   |  ✔️   |  ✔️   |
 
+### Webhooks
+
 | **Webhooks**                                        | WEBJS | NOWEB | VENOM |
 |-----------------------------------------------------|:-----:|:-----:|:-----:|
 | `message`                                           |  ✔️   |  ✔️   |  ✔️   |
 | `message` with files ![](/images/versions/plus.png) |  ✔️   |  ✔️   |  ✔️   |
+| `message.reaction`                                  |  ✔️   |  ✔️   |   ➖   |
 | `message.any`                                       |  ✔️   |  ✔️   |  ✔️   |
 | `message.ack`                                       |  ✔️   |  ✔️   |  ✔️   |
 | `message.revoked`                                   |  ✔️   |   ➖   |   ➖   |

@@ -8,6 +8,7 @@ import {
   GroupChat,
   Location,
   Message,
+  Reaction,
 } from 'whatsapp-web.js';
 import { Message as MessageInstance } from 'whatsapp-web.js/src/structures';
 
@@ -39,7 +40,10 @@ import {
   ParticipantsRequest,
   SettingsSecurityChangeInfo,
 } from '../../../structures/groups.dto';
-import { WAMessage } from '../../../structures/responses.dto';
+import {
+  WAMessage,
+  WAMessageReaction,
+} from '../../../structures/responses.dto';
 import { MeInfo } from '../../../structures/sessions.dto';
 import { WAMessageRevokedBody } from '../../../structures/webhooks.dto';
 import { IEngineMediaProcessor } from '../../abc/media.abc';
@@ -520,6 +524,11 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
           },
         );
         return true;
+      case WAHAEvents.MESSAGE_REACTION:
+        this.whatsapp.on('message_reaction', (message) =>
+          handler(this.processMessageReaction(message)),
+        );
+        return true;
       case WAHAEvents.MESSAGE_ANY:
         this.whatsapp.on(Events.MESSAGE_CREATE, (message) =>
           this.processIncomingMessage(message).then(handler),
@@ -555,6 +564,21 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       }
     }
     return await this.toWAMessage(message);
+  }
+
+  private processMessageReaction(reaction: Reaction): WAMessageReaction {
+    return {
+      id: reaction.id._serialized,
+      from: reaction.senderId,
+      fromMe: reaction.id.fromMe,
+      participant: reaction.senderId,
+      to: reaction.id.remote,
+      timestamp: reaction.timestamp,
+      reaction: {
+        text: reaction.reaction,
+        messageId: reaction.msgId._serialized,
+      },
+    };
   }
 
   protected toWAMessage(message: Message): Promise<WAMessage> {

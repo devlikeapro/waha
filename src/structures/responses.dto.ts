@@ -30,7 +30,7 @@ export class WAMedia {
   filename?: string;
 }
 
-export class WAMessage {
+class WAMessageBase {
   @MessageIdProperty()
   id: string;
 
@@ -65,7 +65,9 @@ export class WAMessage {
     description: 'For groups - participant who sent the message',
   })
   participant: string;
+}
 
+export class WAMessage extends WAMessageBase {
   @ApiProperty({
     description: 'Message content',
   })
@@ -120,4 +122,26 @@ export class WAMessage {
       'Message in a raw format that we get from WhatsApp. May be changed anytime, use it with caution! It depends a lot on the underlying backend.',
   })
   _data?: any;
+}
+
+export class WAReaction {
+  @ApiProperty({
+    description:
+      'Reaction to the message. Either the reaction (emoji) or empty string to remove the reaction',
+  })
+  text: string;
+
+  @ApiProperty({
+    description: 'Message ID for the message to react to',
+    example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
+  })
+  messageId: string;
+}
+
+export class WAMessageReaction extends WAMessageBase {
+  @ApiProperty({
+    description:
+      'Reaction to the message. Either the reaction (emoji) or empty string to remove the reaction',
+  })
+  reaction: WAReaction;
 }
