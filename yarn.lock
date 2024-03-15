@@ -1300,10 +1300,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pedroslopez/moduleraid@npm:^5.0.2":
-  version: 5.0.2
-  resolution: "@pedroslopez/moduleraid@npm:5.0.2"
-  checksum: b5668cb8d602e3fae0bcd75172f53b301814582ec288f4413127377a8be007aafc63846855431b6096a70dc9f113b059f6286bbc254f3bdbec435ba517dae36f
+"@pedroslopez/moduleraid@github:wwebjs/moduleRaid":
+  version: 6.0.2
+  resolution: "@pedroslopez/moduleraid@https://github.com/wwebjs/moduleRaid.git#commit=2ba8baadbc2a73305775ca72325102ed2c629f89"
+  checksum: 399d08f1bc7703f73f7ec5e80618139f6ed4a95cd05baa87a9c6c69d8cd0fbd299e1c757414fed2e160c9ec6dfb0f4b8e5fc08261b97bfb7f248dc16c28e9f83
   languageName: node
   linkType: hard
 
@@ -13349,9 +13349,9 @@ __metadata:
 
 "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js#main-fork":
   version: 1.23.1-alpha.5
-  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=9587dc75e22e30bceb87e0cde4bd46ea7674d0d4"
+  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=1f9c956cd13cc75c211d14e82cf9b5fd665f9b03"
   dependencies:
-    "@pedroslopez/moduleraid": ^5.0.2
+    "@pedroslopez/moduleraid": "github:wwebjs/moduleRaid"
     adm-zip: ^0.5.10
     archiver: ^5.3.1
     fluent-ffmpeg: 2.1.2
@@ -13368,7 +13368,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 9be4cefbf1c3eea3e7dbdaf681cd6588665e18a536b455b562fd5155d011e46039f646e87d76e434107d7e0de61c6a3772b07da62dc4b449043f59bbc011f32a
+  checksum: 03894e8cf847876aac6a543aada3cccce2010069231fb2165d5895598a32f883d5269f5593afa0b369b2bb93a9399a5214d582b3a37b6cf5bda804edf07912d0
   languageName: node
   linkType: hard
 
