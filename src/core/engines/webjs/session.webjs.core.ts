@@ -381,6 +381,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   public async getInfoAdminsOnly(id): Promise<SettingsSecurityChangeInfo> {
     const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
     return {
+      // Undocumented property, can be changed in the future
       // @ts-ignore
       adminsOnly: groupChat.groupMetadata.restrict,
     };
@@ -389,6 +390,21 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   public async setInfoAdminsOnly(id, value) {
     const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
     return groupChat.setInfoAdminsOnly(value);
+  }
+
+  public async getMessagesAdminsOnly(id): Promise<SettingsSecurityChangeInfo> {
+    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    // @ts-ignore
+    return {
+      // Undocumented property, can be changed in the future
+      // @ts-ignore
+      adminsOnly: groupChat.groupMetadata.announce,
+    };
+  }
+
+  public async setMessagesAdminsOnly(id, value) {
+    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    return groupChat.setMessagesAdminsOnly(value);
   }
 
   public getGroups() {

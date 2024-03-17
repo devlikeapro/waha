@@ -9,7 +9,7 @@ export class Participant {
 }
 
 export class SettingsSecurityChangeInfo {
-  adminsOnly: boolean;
+  adminsOnly: boolean = true;
 }
 
 /**

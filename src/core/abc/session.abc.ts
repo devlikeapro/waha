@@ -338,6 +338,14 @@ export abstract class WhatsappSession {
     throw new NotImplementedByEngineError();
   }
 
+  public getMessagesAdminsOnly(id): Promise<SettingsSecurityChangeInfo> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public setMessagesAdminsOnly(id, value) {
+    throw new NotImplementedByEngineError();
+  }
+
   public deleteGroup(id) {
     throw new NotImplementedByEngineError();
   }

@@ -87,21 +87,46 @@ Request:
 }
 ```
 
-### Settings
-#### Security for group info
+### Security - update group info
 Updates the group settings to only allow admins to edit group info (title, description, photo).
+`PUT /api/{session}/groups/{groupId}/settings/security/info-admin-only`
+```json
+{
+  "adminsOnly": true
+}
+```
+
+Get the group settings to only allow admins to edit group info (title, description, photo).
+
 `GET /api/{session}/groups/{groupId}/settings/security/info-admin-only`
 ```json
 {
   "adminsOnly": true
 }
 ```
-`PUT /api/{session}/groups/{groupId}/settings/security/info-admin-only`
 
-The request doesn't require any request's body and
-**can't be used to disable the security setting (allow ANY to edit group info)**.
-If you wish to have that ability - please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues)
+Returns `true` if the setting was properly updated. This can return false if the user does not have the necessary permissions.
 
+
+### Security - who can send messages
+Updates the group settings to only allow admins to send messages.
+
+`PUT /api/{session}/groups/{groupId}/settings/security/messages-admin-only`
+```json
+{
+  "adminsOnly": true
+}
+```
+Returns `true` if the setting was properly updated. This can return false if the user does not have the necessary permissions.
+
+Get the group settings to only allow admins to send messages.
+
+`GET /api/{session}/groups/{groupId}/settings/security/messages-admin-only`
+```json
+{
+  "adminsOnly": true
+}
+```
 
 ### Participants
 

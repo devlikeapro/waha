@@ -11,6 +11,7 @@ import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
+import { MessageContactVcardRequest } from '../structures/chatting.dto';
 import {
   CreateGroupRequest,
   DescriptionRequest,
@@ -56,11 +57,12 @@ export class GroupsController {
     summary:
       'Updates the group settings to only allow admins to edit group info (title, description, photo).',
   })
-  setGroupAdminOnly(
+  setInfoAdminOnly(
     @SessionParam session: WhatsappSession,
     @Param('id') id: string,
+    @Body() request: SettingsSecurityChangeInfo,
   ) {
-    return session.setInfoAdminsOnly(id, true);
+    return session.setInfoAdminsOnly(id, request.adminsOnly);
   }
 
   @Get(':id/settings/security/info-admin-only')
@@ -74,6 +76,32 @@ export class GroupsController {
     @Param('id') id: string,
   ): Promise<SettingsSecurityChangeInfo> {
     return session.getInfoAdminsOnly(id);
+  }
+
+  @Put(':id/settings/security/messages-admin-only')
+  @SessionApiParam
+  @ApiOperation({
+    summary:
+      'Updates the group settings to only allow admins to send messages.',
+  })
+  setMessagesAdminOnly(
+    @SessionParam session: WhatsappSession,
+    @Param('id') id: string,
+    @Body() request: SettingsSecurityChangeInfo,
+  ) {
+    return session.setMessagesAdminsOnly(id, request.adminsOnly);
+  }
+
+  @Get(':id/settings/security/messages-admin-only')
+  @SessionApiParam
+  @ApiOperation({
+    summary: 'Gets the group settings to only allow admins to send messages.',
+  })
+  getMessagesAdminOnly(
+    @SessionParam session: WhatsappSession,
+    @Param('id') id: string,
+  ): Promise<SettingsSecurityChangeInfo> {
+    return session.getMessagesAdminsOnly(id);
   }
 
   @Delete(':id')

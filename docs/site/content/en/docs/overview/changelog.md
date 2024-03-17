@@ -21,7 +21,17 @@ You even can **subscribe to get new updates** there!
 
 ## 2024.3
 - Add [message.reaction]({{< relref "/docs/how-to/webhooks#messagereaction" >}}) webhook in **WEBJS** and **NOWEB** engines ([#275](https://github.com/devlikeapro/whatsapp-http-api/issues/275)).
-  - 👉 **NOWEB** engine note - reactions were sent in `'message'` and `'message.any'` events, not it's available **only** in `'message.reaction'`!
+  - **NOWEB** engine note - reactions were sent in `'message'` and `'message.any'` events, not it's available **only** in `'message.reaction'`!
+- Add security settings [Security - who can send messages]({{< relref "/docs/how-to/groups##security---who-can-send-messages" >}}) `PUT /api/{session}/groups/{groupId}/settings/security/messages-admin-only` ([#274](https://github.com/devlikeapro/whatsapp-http-api/issues/274))
+
+### 👉 Breaking changes
+- **NOWEB** - reactions were sent in `'message'` and `'message.any'` events, not it's available **only** in `'message.reaction'`!
+- Add **required body** in `PUT /api/{session}/groups/{groupId}/settings/security/info-admin-only` endpoint.
+```json
+{
+  "adminsOnly": false
+}
+```
 
 ## 2024.2
 - Add support for [MongoDB as storage for Session data]({{< relref "/docs/how-to/storages" >}})
