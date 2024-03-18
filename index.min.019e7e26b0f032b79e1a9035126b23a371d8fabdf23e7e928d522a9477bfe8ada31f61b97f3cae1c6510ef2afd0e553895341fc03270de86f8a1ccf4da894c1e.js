@@ -39,7 +39,8 @@ For Core version the command is
 # Download the image docker pull devlikeapro/whatsapp-http-api:arm # Rename it, so you can use devlikeapro/whatsapp-http-api image in other place docker tag devlikeapro/whatsapp-http-api:arm devlikeapro/whatsapp-http-api For Plus version the command is:
 docker login -u devlikeapro -p {KEY} docker pull devlikeapro/whatsapp-http-api-plus:arm docker logout # Rename it, so you can use devlikeapro/whatsapp-http-api image in other place docker tag devlikeapro/whatsapp-http-api-plus:arm devlikeapro/whatsapp-http-api-plus 2. Run WhatsApp HTTP API #Run WhatsApp HTTP API:
 docker run -it --rm -p 3000:3000/tcp --name whatsapp-http-api devlikeapro/whatsapp-http-api # It prints logs and the last line must be # WhatsApp HTTP API is running on: http://[::1]:3000 Open the link in your browser http://localhost:3000/ and you\u0026rsquo;ll see API documentation (Swagger).
-👉 We don't recommend expose the API in the internet without authentication! 3. Start a new session #To start a new session you should have your mobile phone with installed WhatsApp application close to you.
+👉 We don't recommend expose the API in the internet without authentication! Read more about Security -\u0026gt;
+3. Start a new session #To start a new session you should have your mobile phone with installed WhatsApp application close to you.
 Please go and read how what we\u0026rsquo;ll need to a bit later: How to log in - the instruction on WhatsApp site When your ready - find POST /api/session/start, click on Try it out, then Execute a bit below.
 The example payload:
 { \u0026quot;name\u0026quot;: \u0026quot;default\u0026quot; } By using the request with name values you can start multiple session (WhatsApp accounts) inside the single docker container in Plus version and only one account in Core version.
