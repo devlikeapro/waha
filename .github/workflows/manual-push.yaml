@@ -59,7 +59,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ secrets.DOCKER_IMAGE }}
+          images: ${{ vars.DOCKER_IMAGE }}
           flavor: latest=false
           tags: |
             type=raw,value=${{ inputs.tag }}-${{ matrix.tag }}
