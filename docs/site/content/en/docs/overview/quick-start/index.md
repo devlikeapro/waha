@@ -107,6 +107,9 @@ Open the link in your browser [http://localhost:3000/](http://localhost:3000/) a
 (Swagger).
 
 {{< alert icon="👉" text="We don't recommend expose the API in the internet without authentication!" />}}
+[Read more about Security ->]({{< relref "/docs/how-to/security" >}})
+
+<br/>
 
 ![](swagger.png)
 
