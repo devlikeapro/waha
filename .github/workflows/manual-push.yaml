@@ -57,7 +57,6 @@ jobs:
           images: ${{ secrets.DOCKER_IMAGE }}
           flavor: latest=false
           tags: |
-            type=raw,value=${{ matrix.tag }}
             type=raw,value=${{ inputs.tag }}-${{ matrix.tag }}
 
       - name: Login to image repository
