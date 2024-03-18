@@ -13349,7 +13349,7 @@ __metadata:
 
 "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js#main-fork":
   version: 1.23.1-alpha.5
-  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=7161e2f6bd8d3c48037af2a6ebfbe81945e497af"
+  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=1f9c956cd13cc75c211d14e82cf9b5fd665f9b03"
   dependencies:
     "@pedroslopez/moduleraid": "github:wwebjs/moduleRaid"
     adm-zip: ^0.5.10
@@ -13368,7 +13368,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 18b441ad2a7f9df54c856975177bed4d6a91d37c333bb5e5ec995f02c373ce579a540084eb35499a00f369b16b883988e4d1eb7c30cc47b85142934bb6cf7d30
+  checksum: 03894e8cf847876aac6a543aada3cccce2010069231fb2165d5895598a32f883d5269f5593afa0b369b2bb93a9399a5214d582b3a37b6cf5bda804edf07912d0
   languageName: node
   linkType: hard
 
