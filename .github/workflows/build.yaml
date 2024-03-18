@@ -55,6 +55,7 @@ jobs:
           flavor: latest=false
           tags: |
             type=raw,value=${{ matrix.tag }}
+            type=raw,value=${{tag}}-${{ matrix.tag }}
 
       - name: Login to image repository
         if: github.ref_type == 'tag'
