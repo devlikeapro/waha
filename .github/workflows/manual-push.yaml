@@ -6,7 +6,12 @@ on:
       tag:
         description: 'Tag to push'
         required: true
-        default: 'test'
+        default: 'dev'
+      push:
+        description: 'Push to registry'
+        required: true
+        type: boolean
+        default: true
 
 jobs:
   docker-build:
@@ -74,6 +79,6 @@ jobs:
           platforms: ${{ matrix.platform }}
           build-args: |
             USE_BROWSER=${{ matrix.browser }}
-          push: ${{ github.ref_type == 'tag' }}
+          push: ${{ inputs.push }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
