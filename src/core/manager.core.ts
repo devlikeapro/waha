@@ -213,12 +213,17 @@ export class SessionManagerCore extends SessionManager {
       ];
     }
     const me = await this.session.getSessionMeInfo().catch((err) => null);
+    const engine = {
+      engine: this.session?.engine,
+      ...(await this.session?.getEngineInfo().catch((err) => ({}))),
+    };
     return [
       {
         name: this.session.name,
         status: this.session.status,
         config: this.session.sessionConfig,
         me: me,
+        engine: engine,
       },
     ];
   }

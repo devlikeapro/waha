@@ -425,6 +425,10 @@ export abstract class WhatsappSession {
     throw new NotImplementedByEngineError();
   }
 
+  public async getEngineInfo(): Promise<any> {
+    return {};
+  }
+
   /**
    * END - Methods for API
    */

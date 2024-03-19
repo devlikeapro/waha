@@ -79,4 +79,5 @@ export class MeInfo {
 
 export class SessionInfo extends SessionDTO {
   me?: MeInfo;
+  engine?: any;
 }

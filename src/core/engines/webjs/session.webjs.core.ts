@@ -622,6 +622,13 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     });
   }
 
+  public async getEngineInfo() {
+    return {
+      WWebVersion: await this.whatsapp?.getWWebVersion(),
+      state: await this.whatsapp?.getState(),
+    };
+  }
+
   protected toWAContact(contact: Contact) {
     // @ts-ignore
     contact.id = contact.id._serialized;
