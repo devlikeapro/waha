@@ -32,6 +32,7 @@ import {
   MessagePollRequest,
   MessageReactionRequest,
   MessageReplyRequest,
+  MessageStarRequest,
   MessageTextRequest,
   MessageVoiceRequest,
   SendSeenRequest,
@@ -434,6 +435,19 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return this.sock.sendMessage(key.remoteJid, reactionMessage);
   }
 
+  async setStar(request: MessageStarRequest) {
+    const key = parseMessageId(request.messageId);
+    await this.sock.chatModify(
+      {
+        star: {
+          messages: [{ id: key.id, fromMe: key.fromMe }],
+          star: request.star,
+        },
+      },
+      toJID(request.chatId),
+    );
+  }
+
   /**
    * Contacts methods
    */
@@ -665,9 +679,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   private processMessageReaction(messages: any[]): WAMessageReaction[] {
     const reactions = [];
     for (const message of messages) {
-      if (!message) return;
-      if (!message.message) return;
-      if (!message.message.reactionMessage) return;
+      if (!message) return [];
+      if (!message.message) return [];
+      if (!message.message.reactionMessage) return [];
 
       const id = buildMessageId(message.key);
       const fromToParticipant = getFromToParticipant(message);
