@@ -20,4 +20,4 @@ Accounts (sessions) in the container CPU Memory 1 30% 400MB 10 270% 1.5GB The na
 Boosty -&amp;gt; Patreon -&amp;gt; You even can subscribe to get new updates there!
 2024.3 #
 🎉 New #
-Add message.reaction webhook in WEBJS and NOWEB engines Read more about message.reaction event Issue: #275 NOWEB engine note - reactions were sent in 'message' and 'message.any' events, not it&amp;rsquo;s available only in 'message.</description></item></channel></rss>
+Handles caption right in POST /api/sendFile Issue: #94 Issue: #133 Add message.reaction webhook in WEBJS and NOWEB engines Read more about message.reaction event Issue: #275 NOWEB engine note - reactions were sent in 'message' and 'message.</description></item></channel></rss>
