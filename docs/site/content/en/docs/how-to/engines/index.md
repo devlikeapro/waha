@@ -128,25 +128,26 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 | **Screenshot**                                                    |       |                                                                           |       |
 | `POST /api/screenshot`                                            |  ✔️   |                                     ➖                                     |  ✔️   |
 
-| **Chatting**                                         | WEBJS | NOWEB | VENOM |
-|------------------------------------------------------|:-----:|:-----:|:-----:|
-| `GET /api/checkNumberStatus`                         |  ✔️   |  ✔️   |  ✔️   |
-| `GET /api/sendContactVcard`                          |   ➖   |   ➖   |  ✔️   |
-| `GET /api/sendText`                                  |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/sendText`                                 |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/sendPoll`                                 |   ➖   |  ✔️   |   ➖   |
-| `POST /api/sendLocation`                             |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/sendLinkPreview`                          |   ➖   |  ✔️   |  ✔️   |
+| **Chatting**                                        | WEBJS | NOWEB | VENOM |
+|-----------------------------------------------------|:-----:|:-----:|:-----:|
+| `GET /api/checkNumberStatus`                        |  ✔️   |  ✔️   |  ✔️   |
+| `GET /api/sendContactVcard`                         |   ➖   |   ➖   |  ✔️   |
+| `GET /api/sendText`                                 |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendText`                                |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendPoll`                                |   ➖   |  ✔️   |   ➖   |
+| `POST /api/sendLocation`                            |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendLinkPreview`                         |   ➖   |  ✔️   |  ✔️   |
 | `POST /api/sendImage` ![](/images/versions/plus.png) |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/sendFile` ![](/images/versions/plus.png)  |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendFile` ![](/images/versions/plus.png) |  ✔️   |  ✔️   |  ✔️   |
 | `POST /api/sendVoice` ![](/images/versions/plus.png) |  ✔️   |  ✔️   |  ✔️   |
 | `POST /api/sendVideo` ![](/images/versions/plus.png) |  ✔️   |  ✔️   |   ➖   |
-| `POST /api/reply`                                    |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/sendSeen`                                 |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/startTyping`                              |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/stopTyping`                               |  ✔️   |  ✔️   |   ➖   |
-| `POST /api/reaction`                                 |  ✔️   |  ✔️   |   ➖   |
-| `GET /api/messages`                                  |  ✔️   |   ➖   |  ✔️   |
+| `POST /api/reply`                                   |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendSeen`                                |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/startTyping`                             |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/stopTyping`                              |  ✔️   |  ✔️   |   ➖   |
+| `POST /api/reaction`                                |  ✔️   |  ✔️   |   ➖   |
+| `POST /api/star`                                    |  ✔️   |  ✔️   |   ➖   |
+| `GET /api/messages`                                 |  ✔️   |   ➖   |  ✔️   |
 
 |                                                                   | WEBJS | NOWEB | VENOM |
 |-------------------------------------------------------------------|:-----:|:-----:|:-----:|

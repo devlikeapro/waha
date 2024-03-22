@@ -21,6 +21,7 @@ import {
   MessageLocationRequest,
   MessageReactionRequest,
   MessageReplyRequest,
+  MessageStarRequest,
   MessageTextRequest,
   MessageVoiceRequest,
   SendSeenRequest,
@@ -290,6 +291,19 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     message._data = { id: messageId };
 
     return message.react(request.reaction);
+  }
+
+  async setStar(request: MessageStarRequest) {
+    const messageId = this.deserializeId(request.messageId);
+    // Recreate instance to apply star
+    const message = new MessageInstance(this.whatsapp);
+    message.id = messageId;
+    message._data = { id: messageId };
+    if (request.star) {
+      await message.star();
+    } else {
+      await message.unstar();
+    }
   }
 
   /**

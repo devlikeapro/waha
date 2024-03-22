@@ -167,6 +167,13 @@ export class MessageReactionRequest extends MessageRequest {
   reaction: string;
 }
 
+export class MessageStarRequest extends MessageRequest {
+  @ChatIdProperty()
+  chatId: string;
+
+  star: boolean;
+}
+
 export class WANumberExistResult {
   numberExists: boolean;
   @ApiProperty({

@@ -14,6 +14,7 @@ import {
   MessagePollRequest,
   MessageReactionRequest,
   MessageReplyRequest,
+  MessageStarRequest,
   MessageTextQuery,
   MessageTextRequest,
   MessageVideoRequest,
@@ -155,6 +156,14 @@ export class ChattingController {
   setReaction(@Body() request: MessageReactionRequest) {
     const whatsapp = this.manager.getSession(request.session);
     return whatsapp.setReaction(request);
+  }
+
+  @Put('/star')
+  @ApiOperation({ summary: 'Star or unstar a message' })
+  async setStar(@Body() request: MessageStarRequest) {
+    const whatsapp = this.manager.getSession(request.session);
+    await whatsapp.setStar(request);
+    return;
   }
 
   @Get('/messages')

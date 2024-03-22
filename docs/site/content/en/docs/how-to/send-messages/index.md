@@ -116,6 +116,33 @@ To remove reaction from a message - send empty string in the reaction request.
 }
 ```
 
+### Star and unstar message
+Use `PUT /api/star` method to star or unstar a message.
+
+{{< alert icon="👉" text="Star API uses PUT, not POST request! Please make sure you send right request." />}}
+
+**Star:**
+```json
+{
+  "messageId": "false_71111111111@c.us_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "chatId": "71111111111@c.us",
+  "star": true,
+  "session": "default"
+}
+```
+
+**Unstar:**
+```json
+{
+  "messageId": "false_71111111111@c.us_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "chatId": "71111111111@c.us",
+  "star": false,
+  "session": "default"
+}
+```
+
+
+
 ### Send image ![](/images/versions/plus.png)
 Use `POST /api/sendImage` to send images.
 

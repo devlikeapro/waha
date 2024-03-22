@@ -20,9 +20,29 @@ If you wish to get and read Release Notes - read them on one of our platforms, *
 You even can **subscribe to get new updates** there!
 
 ## 2024.3
-- Add [message.reaction]({{< relref "/docs/how-to/webhooks#messagereaction" >}}) webhook in **WEBJS** and **NOWEB** engines ([#275](https://github.com/devlikeapro/whatsapp-http-api/issues/275)).
-  - **NOWEB** engine note - reactions were sent in `'message'` and `'message.any'` events, not it's available **only** in `'message.reaction'`!
-- Add security settings [Security - who can send messages]({{< relref "/docs/how-to/groups##security---who-can-send-messages" >}}) `PUT /api/{session}/groups/{groupId}/settings/security/messages-admin-only` ([#274](https://github.com/devlikeapro/whatsapp-http-api/issues/274))
+### 🎉 New
+
+----
+
+- Add `message.reaction` webhook in **WEBJS** and **NOWEB** engines
+  - Read more about [message.reaction]({{< relref "/docs/how-to/webhooks#messagereaction" >}}) event
+  - Issue: [#275](https://github.com/devlikeapro/whatsapp-http-api/issues/275)
+
+**NOWEB** engine note - reactions were sent in `'message'` and `'message.any'` events, not it's available **only** in `'message.reaction'`!
+
+----
+
+- Add security settings for who can send messages `PUT /api/{session}/groups/{groupId}/settings/security/messages-admin-only`
+  - Read [Security - who can send messages]({{< relref "/docs/how-to/groups##security---who-can-send-messages" >}})
+  - Issue: [#274](https://github.com/devlikeapro/whatsapp-http-api/issues/274)
+
+----
+
+- Add star and unstar message endpoint `PUT /api/star`
+  - Read [Star and unstar message]({{< relref "/docs/how-to/send-messages#star-and-unstar-message" >}}) documentation
+  - Issue: [#273](https://github.com/devlikeapro/whatsapp-http-api/issues/240)
+
+----
 
 ### 👉 Breaking changes
 - **NOWEB** - reactions were sent in `'message'` and `'message.any'` events, not it's available **only** in `'message.reaction'`!

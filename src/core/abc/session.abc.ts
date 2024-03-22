@@ -15,6 +15,7 @@ import {
   MessagePollRequest,
   MessageReactionRequest,
   MessageReplyRequest,
+  MessageStarRequest,
   MessageTextRequest,
   MessageVideoRequest,
   MessageVoiceRequest,
@@ -264,6 +265,10 @@ export abstract class WhatsappSession {
   }
 
   abstract setReaction(request: MessageReactionRequest);
+
+  setStar(request: MessageStarRequest): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
 
   /**
    * Chats methods
