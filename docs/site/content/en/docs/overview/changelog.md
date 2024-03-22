@@ -24,6 +24,12 @@ You even can **subscribe to get new updates** there!
 
 ----
 
+- Handles `caption` right in `POST /api/sendFile`
+  - Issue: [#94](https://github.com/devlikeapro/whatsapp-http-api/issues/94)
+  - Issue: [#133](https://github.com/devlikeapro/whatsapp-http-api/issues/133)
+
+----
+
 - Add `message.reaction` webhook in **WEBJS** and **NOWEB** engines
   - Read more about [message.reaction]({{< relref "/docs/how-to/webhooks#messagereaction" >}}) event
   - Issue: [#275](https://github.com/devlikeapro/whatsapp-http-api/issues/275)
