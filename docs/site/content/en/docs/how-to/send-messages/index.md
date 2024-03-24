@@ -141,6 +141,58 @@ Use `PUT /api/star` method to star or unstar a message.
 }
 ```
 
+### Send contact (vcard)
+Use `POST /api/sendContactVcard` to send contact (vcard).
+
+You can use fields this way:
+```json
+{
+  "session": "default",
+  "chatId": "79111111@c.us",
+  "contacts": [
+    {
+      "fullName": "John Doe",
+      "organization": "Company Name",
+      "phoneNumber": "+91 11111 11111",
+      "whatsappId": "911111111111"
+    }
+  ]
+}
+```
+
+Or provide a vCard file content:
+```json
+{
+  "session": "default",
+  "chatId": "79111111@c.us",
+  "contacts": [
+    {
+      "vcard": "BEGIN:VCARD\nVERSION:3.0\nFN:Jane Doe\nORG:Company Name;\nTEL;type=CELL;type=VOICE;waid=911111111111:+91 11111 11111\nEND:VCARD"
+    }
+  ]
+}
+```
+
+Or even combine it:
+```json
+  {
+  "chatId": "79111111@c.us",
+  "contacts": [
+    {
+      "vcard": "BEGIN:VCARD\nVERSION:3.0\nFN:Jane Doe\nORG:Company Name;\nTEL;type=CELL;type=VOICE;waid=911111111111:+91 11111 11111\nEND:VCARD"
+    },
+    {
+      "fullName": "John Doe",
+      "organization": "Company Name",
+      "phoneNumber": "+91 11111 11111",
+      "whatsappId": "911111111111"
+    }
+  ],
+  "session": "default"
+}
+```
+
+
 
 
 ### Send image ![](/images/versions/plus.png)

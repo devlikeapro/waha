@@ -15,6 +15,7 @@ import makeWASocket, {
 } from '@adiwajshing/baileys';
 import { UnprocessableEntityException } from '@nestjs/common';
 import * as Buffer from 'buffer';
+import { request } from 'express';
 import * as fs from 'fs/promises';
 import { Agent } from 'https';
 import * as lodash from 'lodash';
@@ -24,6 +25,7 @@ import { flipObject, splitAt } from '../../../helpers';
 import {
   ChatRequest,
   CheckNumberStatusQuery,
+  MessageContactVcardRequest,
   MessageDestination,
   MessageFileRequest,
   MessageImageRequest,
@@ -77,6 +79,7 @@ import {
   AvailableInPlusVersion,
   NotImplementedByEngineError,
 } from '../../exceptions';
+import { toVcard } from '../../helpers';
 import { createAgentProxy } from '../../helpers.proxy';
 import { QR } from '../../QR';
 import { NowebAuthFactoryCore } from './NowebAuthFactoryCore';
@@ -347,6 +350,16 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       mentions: request.mentions?.map(toJID),
     };
     return this.sock.sendMessage(chatId, message);
+  }
+
+  async sendContactVCard(request: MessageContactVcardRequest) {
+    const chatId = this.ensureSuffix(request.chatId);
+    const contacts = request.contacts.map((el) => ({ vcard: toVcard(el) }));
+    await this.sock.sendMessage(chatId, {
+      contacts: {
+        contacts: contacts,
+      },
+    });
   }
 
   async sendPoll(request: MessagePollRequest) {

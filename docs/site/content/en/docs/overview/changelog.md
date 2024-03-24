@@ -24,29 +24,35 @@ You even can **subscribe to get new updates** there!
 
 ----
 
-- Handles `caption` right in `POST /api/sendFile`
-  - Issue: [#94](https://github.com/devlikeapro/whatsapp-http-api/issues/94)
-  - Issue: [#133](https://github.com/devlikeapro/whatsapp-http-api/issues/133)
+Add `POST /api/sendContactVcard` support for **NOWEB** engine.
+- Read more about [Send Contact vCard]({{< relref "/docs/how-to/send-messages#send-contact-vcard" >}})
+- Issue: [#276](https://github.com/devlikeapro/whatsapp-http-api/issues/256)
 
 ----
 
-- Add `message.reaction` webhook in **WEBJS** and **NOWEB** engines
-  - Read more about [message.reaction]({{< relref "/docs/how-to/webhooks#messagereaction" >}}) event
-  - Issue: [#275](https://github.com/devlikeapro/whatsapp-http-api/issues/275)
-
-**NOWEB** engine note - reactions were sent in `'message'` and `'message.any'` events, not it's available **only** in `'message.reaction'`!
+Handles `caption` and `filename` right in `POST /api/sendFile`
+- Issue: [#94](https://github.com/devlikeapro/whatsapp-http-api/issues/94)
+- Issue: [#133](https://github.com/devlikeapro/whatsapp-http-api/issues/133)
 
 ----
 
-- Add security settings for who can send messages `PUT /api/{session}/groups/{groupId}/settings/security/messages-admin-only`
-  - Read [Security - who can send messages]({{< relref "/docs/how-to/groups##security---who-can-send-messages" >}})
-  - Issue: [#274](https://github.com/devlikeapro/whatsapp-http-api/issues/274)
+Add `message.reaction` webhook in **WEBJS** and **NOWEB** engines
+- Read more about [message.reaction]({{< relref "/docs/how-to/webhooks#messagereaction" >}}) event
+- Issue: [#275](https://github.com/devlikeapro/whatsapp-http-api/issues/275)
+
+👉 **NOWEB** engine note - reactions were sent in `'message'` and `'message.any'` events, not it's available **only** in `'message.reaction'`!
 
 ----
 
-- Add star and unstar message endpoint `PUT /api/star`
-  - Read [Star and unstar message]({{< relref "/docs/how-to/send-messages#star-and-unstar-message" >}}) documentation
-  - Issue: [#273](https://github.com/devlikeapro/whatsapp-http-api/issues/240)
+Add security settings for who can send messages `PUT /api/{session}/groups/{groupId}/settings/security/messages-admin-only`
+- Read [Security - who can send messages]({{< relref "/docs/how-to/groups##security---who-can-send-messages" >}})
+- Issue: [#274](https://github.com/devlikeapro/whatsapp-http-api/issues/274)
+
+----
+
+Add star and unstar message endpoint `PUT /api/star`
+- Read [Star and unstar message]({{< relref "/docs/how-to/send-messages#star-and-unstar-message" >}}) documentation
+- Issue: [#273](https://github.com/devlikeapro/whatsapp-http-api/issues/240)
 
 ----
 
@@ -58,6 +64,8 @@ You even can **subscribe to get new updates** there!
   "adminsOnly": false
 }
 ```
+
+- `POST /api/sendContactVcard` doesn't work in **VENOM** anymore (use **NOWEB** engine).
 
 ## 2024.2
 - Add support for [MongoDB as storage for Session data]({{< relref "/docs/how-to/storages" >}})

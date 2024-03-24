@@ -11,7 +11,6 @@ import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
-import { MessageContactVcardRequest } from '../structures/chatting.dto';
 import {
   CreateGroupRequest,
   DescriptionRequest,

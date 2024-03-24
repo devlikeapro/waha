@@ -6,7 +6,6 @@ import {
   ChatRequest,
   CheckNumberStatusQuery,
   GetMessageQuery,
-  MessageContactVcardRequest,
   MessageFileRequest,
   MessageImageRequest,
   MessageLinkPreviewRequest,
@@ -162,14 +161,6 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
       }
       throw error;
     }
-  }
-
-  sendContactVCard(request: MessageContactVcardRequest) {
-    return this.whatsapp.sendContactVcard(
-      request.chatId,
-      request.contactsId,
-      request.name,
-    );
   }
 
   sendText(request: MessageTextRequest) {

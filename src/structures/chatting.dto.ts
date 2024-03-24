@@ -85,9 +85,59 @@ export class MessageRequest extends SessionBaseRequest {
   messageId: string;
 }
 
+export class VCardContact {
+  @ApiProperty({
+    example:
+      'BEGIN:VCARD\nVERSION:3.0\nFN:Jane Doe\nORG:Company Name;\nTEL;type=CELL;type=VOICE;waid=911111111111:+91 11111 11111\nEND:VCARD',
+    description: 'The vcard string',
+  })
+  vcard: string;
+}
+
+export class Contact {
+  @ApiProperty({
+    example: 'John Doe',
+    description: 'The full name of the contact',
+  })
+  fullName: string;
+
+  @ApiProperty({
+    example: 'Company Name',
+    description: 'The organization of the contact',
+    required: false,
+  })
+  organization: string;
+
+  @ApiProperty({
+    example: '+91 11111 11111',
+    description: 'The phone number of the contact',
+  })
+  phoneNumber: string;
+
+  @ApiProperty({
+    example: '911111111111',
+    description: 'The whatsapp id of the contact. DO NOT add + or @c.us',
+    required: false,
+  })
+  whatsappId: string;
+
+  vcard: string = null;
+}
+
+@ApiExtraModels(Contact, VCardContact)
 export class MessageContactVcardRequest extends ChatRequest {
-  contactsId: string;
-  name: string;
+  @ApiProperty({
+    type: 'array',
+    oneOf: [
+      {
+        $ref: getSchemaPath(VCardContact),
+      },
+      {
+        $ref: getSchemaPath(Contact),
+      },
+    ],
+  })
+  contacts: (VCardContact | Contact)[];
 }
 
 export class MessageTextRequest extends ChatRequest {
