@@ -32,7 +32,7 @@ Add `PUT /api/{session}/chats/{chatId}/messages/{messageId}` endpoint to **edit*
 
 Add `DELETE /api/{session}/chats/{chatId}/messages/{messageId}` endpoint to **delete** the message.
 - Read more about [Delete message]({{< relref "/docs/how-to/send-messages#delete-message" >}})
-- Issue: [#241](https://github.com/devlikeapro/whatsapp-http-api/issues/241)
+- Issue: [#209](https://github.com/devlikeapro/whatsapp-http-api/issues/209)
 
 ----
 
