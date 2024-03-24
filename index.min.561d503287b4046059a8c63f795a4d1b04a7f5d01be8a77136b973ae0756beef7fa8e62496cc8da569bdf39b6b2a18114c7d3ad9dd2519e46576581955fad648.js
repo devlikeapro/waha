@@ -303,7 +303,7 @@ group.join #{ \u0026quot;event\u0026quot;: \u0026quot;group.join\u0026quot;, \u
 Boosty -\u0026gt; Patreon -\u0026gt; You even can subscribe to get new updates there!
 2024.3 #🎉 New #Add PUT /api/{session}/chats/{chatId}/messages/{messageId} endpoint to edit the message.
 Read more about Edit message Issue: #241 Add DELETE /api/{session}/chats/{chatId}/messages/{messageId} endpoint to delete the message.
-Read more about Delete message Issue: #241 Add POST /api/sendContactVcard support for NOWEB engine.
+Read more about Delete message Issue: #209 Add POST /api/sendContactVcard support for NOWEB engine.
 Read more about Send Contact vCard Issue: #276 Handles caption and filename right in POST /api/sendFile
 Issue: #94 Issue: #133 Add message.reaction webhook in WEBJS and NOWEB engines
 Read more about message.reaction event Issue: #275 👉 NOWEB engine note - reactions were sent in 'message' and 'message.any' events, not it\u0026rsquo;s available only in 'message.reaction'!
