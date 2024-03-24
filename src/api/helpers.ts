@@ -48,6 +48,22 @@ export const SessionApiParam = ApiParam({
  */
 export const SessionParam = Param('session', SessionPipe);
 
+export const ChatIdApiParam = ApiParam({
+  name: 'chatId',
+  required: true,
+  type: 'string',
+  description: 'Chat ID',
+  example: '123456789@c.us',
+});
+
+export const MessageIdApiParam = ApiParam({
+  name: 'messageId',
+  required: true,
+  type: 'string',
+  description: 'Message ID',
+  example: 'true_123456789@c.us_BAE6A33293978B16',
+});
+
 function getRefSchemaPaths(models) {
   return models.map((model) => {
     return { $ref: getSchemaPath(model) };

@@ -128,26 +128,28 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 | **Screenshot**                                                    |       |                                                                           |       |
 | `POST /api/screenshot`                                            |  ✔️   |                                     ➖                                     |  ✔️   |
 
-| **Chatting**                                         | WEBJS | NOWEB | VENOM |
-|------------------------------------------------------|:-----:|:-----:|:-----:|
-| `GET /api/checkNumberStatus`                         |  ✔️   |  ✔️   |  ✔️   |
-| `GET /api/sendContactVcard`                          |   ➖   |  ✔️   |   ➖   |
-| `GET /api/sendText`                                  |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/sendText`                                 |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/sendPoll`                                 |   ➖   |  ✔️   |   ➖   |
-| `POST /api/sendLocation`                             |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/sendLinkPreview`                          |   ➖   |  ✔️   |  ✔️   |
-| `POST /api/sendImage` ![](/images/versions/plus.png) |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/sendFile` ![](/images/versions/plus.png)  |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/sendVoice` ![](/images/versions/plus.png) |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/sendVideo` ![](/images/versions/plus.png) |  ✔️   |  ✔️   |   ➖   |
-| `POST /api/reply`                                    |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/sendSeen`                                 |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/startTyping`                              |  ✔️   |  ✔️   |  ✔️   |
-| `POST /api/stopTyping`                               |  ✔️   |  ✔️   |   ➖   |
-| `POST /api/reaction`                                 |  ✔️   |  ✔️   |   ➖   |
-| `POST /api/star`                                     |  ✔️   |  ✔️   |   ➖   |
-| `GET /api/messages`                                  |  ✔️   |   ➖   |  ✔️   |
+| **Chatting**                                                | WEBJS | NOWEB | VENOM |
+|-------------------------------------------------------------|:-----:|:-----:|:-----:|
+| `GET /api/checkNumberStatus`                                |  ✔️   |  ✔️   |  ✔️   |
+| `GET /api/sendContactVcard`                                 |   ➖   |  ✔️   |   ➖   |
+| `GET /api/sendText`                                         |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendText`                                        |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/reply`                                           |  ✔️   |  ✔️   |  ✔️   |
+| `PUT /api/{session}/chats/{chatId}/messages/{messageId}`    |  ✔️   |  ✔️   |   ➖   |
+| `DELETE /api/{session}/chats/{chatId}/messages/{messageId}` |  ✔️   |  ✔️   |   ➖   |
+| `POST /api/sendPoll`                                        |   ➖   |  ✔️   |   ➖   |
+| `POST /api/sendLocation`                                    |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendLinkPreview`                                 |   ➖   |  ✔️   |  ✔️   |
+| `POST /api/sendImage` ![](/images/versions/plus.png)        |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendFile` ![](/images/versions/plus.png)         |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendVoice` ![](/images/versions/plus.png)        |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/sendVideo` ![](/images/versions/plus.png)        |  ✔️   |  ✔️   |   ➖   |
+| `POST /api/sendSeen`                                        |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/startTyping`                                     |  ✔️   |  ✔️   |  ✔️   |
+| `POST /api/stopTyping`                                      |  ✔️   |  ✔️   |   ➖   |
+| `POST /api/reaction`                                        |  ✔️   |  ✔️   |   ➖   |
+| `POST /api/star`                                            |  ✔️   |  ✔️   |   ➖   |
+| `GET /api/messages`                                         |  ✔️   |   ➖   |  ✔️   |
 
 |                                                                   | WEBJS | NOWEB | VENOM |
 |-------------------------------------------------------------------|:-----:|:-----:|:-----:|
@@ -161,6 +163,8 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 | `DELETE /api/{session}/chats/{chatId}`                            |  ✔️   |   ➖   |   ➖   |
 | `GET /api/{session}/chats/{chatId}/messages`                      |  ✔️   |   ➖   |  ✔️   |
 | `DELETE /api/{session}/chats/{chatId}/messages`                   |  ✔️   |   ➖   |   ➖   |
+| `PUT /api/{session}/chats/{chatId}/messages/{messageId}`          |  ✔️   |  ✔️   |   ➖   |
+| `DELETE /api/{session}/chats/{chatId}/messages/{messageId}`       |  ✔️   |  ✔️   |   ➖   |
 | **Contacts**                                                      |       |       |       |
 | `GET /api/contacts`                                               |  ✔️   |   ➖   |   ➖   |
 | `GET /api/contacts/all`                                           |  ✔️   |   ➖   |   ➖   |

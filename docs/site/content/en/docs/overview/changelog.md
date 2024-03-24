@@ -24,6 +24,18 @@ You even can **subscribe to get new updates** there!
 
 ----
 
+Add `PUT /api/{session}/chats/{chatId}/messages/{messageId}` endpoint to **edit** the message.
+- Read more about [Edit message]({{< relref "/docs/how-to/send-messages#edit-message" >}})
+- Issue: [#241](https://github.com/devlikeapro/whatsapp-http-api/issues/241)
+
+----
+
+Add `DELETE /api/{session}/chats/{chatId}/messages/{messageId}` endpoint to **delete** the message.
+- Read more about [Delete message]({{< relref "/docs/how-to/send-messages#delete-message" >}})
+- Issue: [#241](https://github.com/devlikeapro/whatsapp-http-api/issues/241)
+
+----
+
 Add `POST /api/sendContactVcard` support for **NOWEB** engine.
 - Read more about [Send Contact vCard]({{< relref "/docs/how-to/send-messages#send-contact-vcard" >}})
 - Issue: [#276](https://github.com/devlikeapro/whatsapp-http-api/issues/256)

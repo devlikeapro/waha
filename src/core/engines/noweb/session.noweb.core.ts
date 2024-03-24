@@ -25,6 +25,7 @@ import { flipObject, splitAt } from '../../../helpers';
 import {
   ChatRequest,
   CheckNumberStatusQuery,
+  EditMessageRequest,
   MessageContactVcardRequest,
   MessageDestination,
   MessageFileRequest,
@@ -350,6 +351,27 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       mentions: request.mentions?.map(toJID),
     };
     return this.sock.sendMessage(chatId, message);
+  }
+
+  public deleteMessage(chatId: string, messageId: string) {
+    const jid = toJID(this.ensureSuffix(chatId));
+    const key = parseMessageId(messageId);
+    return this.sock.sendMessage(jid, { delete: key });
+  }
+
+  public editMessage(
+    chatId: string,
+    messageId: string,
+    request: EditMessageRequest,
+  ) {
+    const jid = toJID(this.ensureSuffix(chatId));
+    const key = parseMessageId(messageId);
+    const message = {
+      text: request.text,
+      mentions: request.mentions?.map(toJID),
+      edit: key,
+    };
+    return this.sock.sendMessage(jid, message);
   }
 
   async sendContactVCard(request: MessageContactVcardRequest) {

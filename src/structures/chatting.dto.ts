@@ -146,6 +146,13 @@ export class MessageTextRequest extends ChatRequest {
   mentions?: string[];
 }
 
+export class EditMessageRequest {
+  text = 'Hello, world!';
+
+  @ApiHideProperty()
+  mentions?: string[];
+}
+
 export class MessageReplyRequest extends MessageTextRequest {
   text = 'Reply text';
   @ApiProperty({

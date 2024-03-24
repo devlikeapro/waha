@@ -57,6 +57,7 @@ To send text message - use `POST /api/sendText` with example payload.
   "text": "Hi there!"
 }
 ```
+
 #### Mention contact
 If you send a message in a group and want to mention a participant in the message -
 use `mentions` field for that in `POST /api/sendText` request.
@@ -75,11 +76,6 @@ also mention it in `mentions` in format `2132132130@c.us`
 }
 ```
 
-### Send poll
-We have a dedicated page [how to send polls and receive votes]({{< relref "/docs/how-to/polls" >}})!
-
-![](poll-example.jpg)
-
 ### Reply on message
 To reply on a message - use `POST /api/reply` with example payload.
 ```json
@@ -93,6 +89,46 @@ To reply on a message - use `POST /api/reply` with example payload.
 
 #### Reply files ![](/images/versions/plus-soon.png)
 WAHA does not support reply with files (images, voice, etc.). If you're interested in it - please create an issue in GitHub.
+
+
+### Edit message
+You can edit **text** messages or **"caption"** in media messages.
+
+```
+PUT /api/{session}/chats/{chatId}/messages/{messageId}
+```
+👉 Remember to escape `@` in `chatId` and `messageId` with `%40`.
+
+So if you want to edit `true_123@c.us_AAA` message in `123@c.us` chat you need to send request to:
+```
+PUT /api/{session}/chats/123%40c.us/messages/true_123%40c.us_AAA
+```
+
+**Payload:**
+```json
+{
+  "text": "Hello, world!"
+}
+```
+
+### Delete message
+You can delete messages from the chat.
+
+```
+DELETE /api/{session}/chats/{chatId}/messages/{messageId}
+```
+
+👉 Remember to escape `@` in `chatId` and `messageId` with `%40`.
+
+So if you want to delete `true_123@c.us_AAA` message in `123@c.us` chat you need to send request to:
+```
+DELETE /api/{session}/chats/123%40c.us/messages/true_123%40c.us_AAA
+```
+
+### Send poll
+We have a dedicated page [how to send polls and receive votes]({{< relref "/docs/how-to/polls" >}})!
+
+![](poll-example.jpg)
 
 ### Add a reaction
 Use `PUT /api/reaction` method to set reaction to a message.

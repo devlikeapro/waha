@@ -15,6 +15,7 @@ import { Message as MessageInstance } from 'whatsapp-web.js/src/structures';
 import {
   ChatRequest,
   CheckNumberStatusQuery,
+  EditMessageRequest,
   GetMessageQuery,
   MessageFileRequest,
   MessageImageRequest,
@@ -236,6 +237,24 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     );
   }
 
+  public deleteMessage(chatId: string, messageId: string) {
+    const message = this.recreateMessage(messageId);
+    return message.delete(true);
+  }
+
+  public editMessage(
+    chatId: string,
+    messageId: string,
+    request: EditMessageRequest,
+  ) {
+    const message = this.recreateMessage(messageId);
+    const options = {
+      // It's fine to sent just ids instead of Contact object
+      mentions: request.mentions as unknown as string[],
+    };
+    return message.edit(request.text, options);
+  }
+
   reply(request: MessageReplyRequest) {
     const options = {
       quotedMessageId: request.reply_to,
@@ -284,21 +303,23 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   async setReaction(request: MessageReactionRequest) {
-    const messageId = this.deserializeId(request.messageId);
-    // Recreate instance to react on it
-    const message = new MessageInstance(this.whatsapp);
-    message.id = messageId;
-    message._data = { id: messageId };
-
+    const message = this.recreateMessage(request.messageId);
     return message.react(request.reaction);
   }
 
+  /**
+   * Recreate message instance from id
+   */
+  private recreateMessage(msgId: string): MessageInstance {
+    const messageId = this.deserializeId(msgId);
+    const data = {
+      id: messageId,
+    };
+    return new MessageInstance(this.whatsapp, data);
+  }
+
   async setStar(request: MessageStarRequest) {
-    const messageId = this.deserializeId(request.messageId);
-    // Recreate instance to apply star
-    const message = new MessageInstance(this.whatsapp);
-    message.id = messageId;
-    message._data = { id: messageId };
+    const message = this.recreateMessage(request.messageId);
     if (request.star) {
       await message.star();
     } else {

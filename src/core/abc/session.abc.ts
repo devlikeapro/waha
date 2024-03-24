@@ -6,6 +6,7 @@ import { MessageId } from 'whatsapp-web.js';
 import {
   ChatRequest,
   CheckNumberStatusQuery,
+  EditMessageRequest,
   GetMessageQuery,
   MessageContactVcardRequest,
   MessageFileRequest,
@@ -285,6 +286,18 @@ export abstract class WhatsappSession {
     chatId: string,
     limit: number,
     downloadMedia: boolean,
+  ) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public deleteMessage(chatId: string, messageId: string) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public editMessage(
+    chatId: string,
+    messageId: string,
+    request: EditMessageRequest,
   ) {
     throw new NotImplementedByEngineError();
   }
