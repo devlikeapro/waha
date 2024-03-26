@@ -85,13 +85,13 @@
 
 [[main]]
   name = "Get on Patreon ->"
-  weight = 50
+  weight = 60
   url = "https://patreon.com/wa_http_api"
   parent = "waha-plus"
 
 [[main]]
   name = "Get on Boosty ->"
-  weight = 60
+  weight = 50
   url = "https://boosty.to/wa-http-api"
   parent = "waha-plus"
 

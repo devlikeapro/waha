@@ -94,23 +94,6 @@ What is the difference between **WAHA Plus** and **other SaaS solutions** for Wh
 
 ## Get Plus ![](/images/versions/plus.png)
 
-
-### Patreon
-<p align="center">
-  <img src="patreon.png" alt="Patreon" style='width: 40%'/>
-</p>
-
-Support the project and get WAHA Plus version on
-<a href="https://patreon.com/wa_http_api" target="_blank">
-  <b>
-    Patreon ->
-  </b>
-</a>
-
-Go ahead and get your own WhatsApp HTTP API!
-
-{{< alert icon="💡" text="If you stay subscribed - the donation amount will never change for you and always be $19 to get monthly updates!" />}}
-
 ### Boosty
 <p align="center">
   <img src="boosty.svg" alt="Patreon" style='width: 40%'/>
@@ -128,6 +111,24 @@ Boosty ->
 Go ahead and get your own WhatsApp HTTP API!
 
 {{< alert icon="💡" text="If you stay subscribed - the donation amount will never change for you and always be $19 to get monthly updates!" />}}
+
+
+### Patreon
+<p align="center">
+  <img src="patreon.png" alt="Patreon" style='width: 40%'/>
+</p>
+
+Support the project and get WAHA Plus version on
+<a href="https://patreon.com/wa_http_api" target="_blank">
+  <b>
+    Patreon ->
+  </b>
+</a>
+
+Go ahead and get your own WhatsApp HTTP API!
+
+{{< alert icon="💡" text="If you stay subscribed - the donation amount will never change for you and always be $19 to get monthly updates!" />}}
+
 
 ### Patron Portal
 <p align="center">
