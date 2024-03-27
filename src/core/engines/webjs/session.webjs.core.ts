@@ -118,6 +118,15 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
           this.status = WAHASessionStatus.FAILED;
           this.log.error('The WhatsApp Web page has been closed');
         });
+        if (this.isDebugEnabled()) {
+          this.log.debug("Logging 'console' event for web page");
+          this.whatsapp.pupPage.on('console', (msg) =>
+            this.log.debug(`WEBJS page log: ${msg.text()}`),
+          );
+          this.whatsapp.pupPage.evaluate(() =>
+            console.log(`url is ${location.href}`),
+          );
+        }
       })
       .catch((error) => {
         this.status = WAHASessionStatus.FAILED;
