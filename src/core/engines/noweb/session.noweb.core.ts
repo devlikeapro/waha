@@ -208,7 +208,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   protected listenEngineEventsInDebugMode() {
     this.sock.ev.process((events) => {
-      this.log.debug(`Received NOWEB events`, events);
+      this.log.debug(`NOWEB events: ${JSON.stringify(events)}`);
     });
   }
 

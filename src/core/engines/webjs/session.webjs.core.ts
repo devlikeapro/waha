@@ -156,7 +156,8 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     for (const key in Events) {
       const event = Events[key];
       this.whatsapp.on(event, (...data: any[]) => {
-        this.log.debug(`Received WEBJS event`, { event: event, data: data });
+        const log = { event: event, data: data };
+        this.log.debug(`WEBJS event: ${JSON.stringify(log)}`);
       });
     }
   }

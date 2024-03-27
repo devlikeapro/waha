@@ -19,7 +19,7 @@ export class WebhookSenderCore extends WebhookSender {
         return;
       }
       this.log.log(`POST request was sent with status code: ${res.statusCode}`);
-      this.log.verbose(`Response: ${JSON.stringify(body)}`);
+      this.log.debug(`Response: ${body}`);
     });
   }
 }
