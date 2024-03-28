@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Examples on</title><link>https://waha.devlike.pro/docs/examples/</link><description>Recent content in Examples on</description><generator>Hugo -- gohugo.io</generator><lastBuildDate>Tue, 06 Oct 2020 08:49:15 +0000</lastBuildDate><atom:link href="https://waha.devlike.pro/docs/examples/index.xml" rel="self" type="application/rss+xml"/><item><title>Python</title><link>https://waha.devlike.pro/docs/examples/python/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://waha.devlike.pro/docs/examples/python/</guid><description>We&amp;rsquo;ve created a few examples on how to interact with WAHA WhatsApp HTTP API with Python.
-You can find the examples in examples folder on GitHub with detailed instructions in README.md</description></item></channel></rss>
+You can find the examples in examples folder on GitHub with detailed instructions in README.md -&amp;gt;
+Installation #
+We assume that you have installed software:
+Python 3 Docker Download and start image #
+First of all, you must run WhatsApp HTTP API locally (which under the hood it runs real WhatsApp Web instance and expose HTTP API for interaction).</description></item></channel></rss>
