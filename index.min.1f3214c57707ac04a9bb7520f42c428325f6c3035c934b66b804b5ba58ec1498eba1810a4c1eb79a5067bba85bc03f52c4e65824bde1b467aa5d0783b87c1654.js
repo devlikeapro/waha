@@ -249,8 +249,9 @@ DELETE /api/{session}/chats/{chatId}/messages
 `}),e.add({id:11,href:"/docs/overview/faq/",title:"FAQ",description:"Answers to frequently asked questions.",content:`How much CPU and Memory does WhatsApp HTTP API consume? #WEBJS #The benchmark has been made on Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz. It may differ from case to case, it depends on usage pattern - how many messages you get, how many send, etc.
 Accounts (sessions) in the container CPU Memory 1 30% 400MB 10 270% 1.5GB The nature of WhatsApp HTTP API and its underlying engines - is to run real WhatsApp Web version in Chrome and communicate with it to prevent blocking from WhatsApp. It\u0026rsquo;s the reason why it\u0026rsquo;s so demanding on resources.
 NOWEB #If you\u0026rsquo;re looking for less resource demanded engine - have a look at NOWEB engine -\u0026gt;
-The quote from the user:
-The server has 2 CPU and 8GB of memory. Today we have 85 session in this instance.
+Quotes from the users:
+The server has 2 CPU and 8GB of memory. Today we have 85 sessions in this instance.
+400 sessions with 4CPU and 32RAM. It\u0026rsquo;s working fine.
 `}),e.add({id:12,href:"/docs/how-to/contacts/",title:"Contacts",description:"Contacts",content:`Methods for contacts.
 👉 WhatsApp Web does not support adding contacts, so the API doesn't support it too. Endpoints #See the list of engines that support the feature -\u0026gt;.
 Get all contacts #Get your contacts - GET /api/contacts/all
@@ -421,7 +422,11 @@ WEBJS #WHATSAPP_DEFAULT_ENGINE=WEBJS https://github.com/pedroslopez/whatsapp-we
 WAHA uses WhatsApp WebJS engine by default.
 NOWEB #WHATSAPP_DEFAULT_ENGINE=NOWEB https://github.com/WhiskeySockets/Baileys NOWEB engine does not require a browser to work with WhatsApp Web, it does so directly using a WebSocket. Not running Chromium saves you CPU and Memory, so you can run more instances on a single server!
 ️Working with the engine requires more attention, because it\u0026rsquo;s easy to be blocked with it!
-⚠ Read the article before using NOWEB engine How to avoid blocking -\u0026gt;.
+⚠ Read the article before using NOWEB engine
+Quotes from the users:
+The server has 2 CPU and 8GB of memory. Today we have 85 sessions in this instance.
+400 sessions with 4CPU and 32RAM. It\u0026rsquo;s working fine.
+How to avoid blocking -\u0026gt;.
 VENOM #WHATSAPP_DEFAULT_ENGINE=VENOM https://github.com/orkestral/venom It\u0026rsquo;s a high-performance system developed with JavaScript to create a bot for WhatsApp. It uses Puppeteer to run a real instance of Whatsapp Web to avoid getting blocked.
 Docker images #WAHA provides few docker images with different setup.
 Image CPU Browser WAHA Plus devlikeapro/whatsapp-http-api-plus:latest x86 Chromium devlikeapro/whatsapp-http-api-plus:chrome x86 Chrome (supports video) devlikeapro/whatsapp-http-api-plus:noweb x86 None devlikeapro/whatsapp-http-api-plus:arm ARM Chromium devlikeapro/whatsapp-http-api-plus:noweb-arm ARM None WAHA Core devlikeapro/whatsapp-http-api:latest x86 Chromium devlikeapro/whatsapp-http-api:chrome x86 Chrome devlikeapro/whatsapp-http-api:noweb x86 None devlikeapro/whatsapp-http-api:arm ARM Chromium devlikeapro/whatsapp-http-api:noweb-arm ARM None Browsers:
