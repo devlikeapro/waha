@@ -47,6 +47,12 @@ Not running Chromium saves you CPU and Memory, so you can run more instances on 
 ️Working with the engine requires more attention, because it's easy to be blocked with it!
 
 ⚠ Read the article before using **NOWEB** engine
+
+Quotes from the users:
+> The server has **2 CPU and 8GB** of memory. Today we have **85 sessions** in this instance.
+
+> **400** sessions with **4CPU and 32RAM**. It's working fine.
+
 [How to avoid blocking ->]({{< relref " /docs/overview/how-to-avoid-blocking" >}}).
 
 ### VENOM

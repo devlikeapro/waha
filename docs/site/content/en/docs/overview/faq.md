@@ -30,7 +30,9 @@ communicate with it to prevent blocking from WhatsApp. It's the reason why it's 
 ### NOWEB
 If you're looking for less resource demanded engine - [have a look at **NOWEB** engine ->]({{< relref "/docs/how-to/engines" >}})
 
-The quote from the user:
-> The server has 2 CPU and 8GB of memory.
-> Today we have 85 session in this instance.
+Quotes from the users:
+> The server has **2 CPU and 8GB** of memory. Today we have **85 sessions** in this instance.
+
+> **400** sessions with **4CPU and 32RAM**. It's working fine.
+
 
