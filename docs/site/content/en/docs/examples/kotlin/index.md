@@ -1,11 +1,11 @@
 ---
-title: "Python"
-description: "WhatsApp HTTP API + Python examples."
-lead: "WhatsApp HTTP API + Python examples."
+title: "Kotlin"
+description: "WhatsApp HTTP API + Kotlin examples."
+lead: "WhatsApp HTTP API + Kotlin examples."
 date: 2020-10-06T08:49:31+00:00
 lastmod: 2020-10-06T08:49:31+00:00
 draft: false
-images: ["/images/python-whatsapp.png"]
+images: ["/images/kotlin-whatsapp.png"]
 menu:
 docs:
 parent: "help"
@@ -13,17 +13,18 @@ weight: 630
 toc: true
 ---
 
-![](/images/python-whatsapp.png)
+![](/images/kotlin-whatsapp.png)
 
-We've created a few examples on how to interact with WAHA WhatsApp HTTP API with Python.
+We've created a few examples on how to interact with WAHA WhatsApp HTTP API with Kotlin (ktor).
 
-You can find the examples in [examples folder on GitHub with detailed instructions in README.md ->](https://github.com/devlikeapro/whatsapp-http-api/tree/core/examples/python)
+You can find the examples in
+[examples folder on GitHub with detailed instructions in README.md ->](https://github.com/devlikeapro/waha-kotlin)
 
 ## Installation
 
 We assume that you have installed software:
 
-1. Python 3
+1. Kotlin + JVM
 2. Docker
 
 ### Download and start image
@@ -98,13 +99,11 @@ set up webhooks and reply to incoming messages.
 
 ```bash
 # Clone the git repository with example
-git clone https://github.com/devlikeapro/whatsapp-http-api.git
-# Open python example folder
-cd whatsapp-http-api/examples/python
-# Install requirements
-python -mpip install -r requirements.txt
-# Run the bot
-FLASK_APP=whatsapp_echo_bot.py flask run
+git clone https://github.com/devlikeapro/waha-kotlin.git
+
+# Build and run the app
+./gradlew build
+./gradlew run
 ```
 
 Open http://127.0.0.1:5000/bot - if you see **WhatsApp Echo Bot is ready!** then
@@ -113,36 +112,4 @@ the bot is ready to receive message!
 Send message to the WhatsApp (that you used to scan QR code) and it'll echo text
 back to you!
 
-## WhatsApp Download Files Bot
-
-The WhatsApp Download Image Bot downloads all files people send to your WhatsApp
-and log the path for the file.
-
-**The bot works only with WAHA Plus version** available with donations. Visit
-[read more about difference between Core and Plus versions](https://waha.devlike.pro/docs/how-to/plus-version/).
-
-Download **WAHA Plus** version:
-
-```bash
-# Download the image
-docker pull devlikeapro/whatsapp-http-api-plus
-# Run the docker container
-docker run -it --rm --network=host -e WHATSAPP_HOOK_URL=http://localhost:5000/bot -e "WHATSAPP_HOOK_EVENTS=*" --name whatsapp-http-api devlikeapro/whatsapp-http-api-plus
-```
-
-Run the WhatsApp Download Files bot:
-
-```bash
-# Clone the git repository with example
-git clone https://github.com/devlikeapro/whatsapp-http-api.git
-# Open python example folder
-cd whatsapp-http-api/examples/python
-# Install requirements
-python -mpip install -r requirements.txt
-# Run the bot
-FLASK_APP=whatsapp_download_files_bot.py flask run
-```
-
-Open http://127.0.0.1:5000/bot - if you see **WhatsApp Download Files Bot!**
-then the bot is ready to receive message with files!
 

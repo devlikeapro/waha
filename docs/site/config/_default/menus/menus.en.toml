@@ -107,6 +107,11 @@
   url = "https://github.com/devlikeapro/whatsapp-http-api/tree/core/examples/python"
   parent = "examples"
 
+[[main]]
+  name = "Kotlin ->"
+  weight = 22
+  url = "https://github.com/devlikeapro/whatsapp-http-api/tree/core/examples/kotlin"
+  parent = "examples"
 
 [[social]]
   name = "GitHub"
