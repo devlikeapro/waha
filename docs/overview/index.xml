@@ -20,6 +20,6 @@ Accounts (sessions) in the container CPU Memory 1 30% 400MB 10 270% 1.5GB The na
 Boosty -&amp;gt; Patreon -&amp;gt; You even can subscribe to get new updates there!
 2024.3 #
 🎉 New #
+Add config.debug field to POST /api/session/start to enable debug and verbose logs for the session.
 Add PUT /api/{session}/chats/{chatId}/messages/{messageId} endpoint to edit the message.
-Read more about Edit message Issue: #241 Add DELETE /api/{session}/chats/{chatId}/messages/{messageId} endpoint to delete the message.
-Read more about Delete message Issue: #209 Add POST /api/sendContactVcard support for NOWEB engine.</description></item></channel></rss>
+Read more about Edit message Issue: #241 Add DELETE /api/{session}/chats/{chatId}/messages/{messageId} endpoint to delete the message.</description></item></channel></rss>
