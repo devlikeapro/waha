@@ -93,7 +93,7 @@ If you see **Hi there!** message then you're ready to run bots!
 
 ## WhatsApp Echo Bot
 
-The WhatsApp Echo Bot is a sample flask webhook server application that echoes
+The WhatsApp Echo Bot is a sample ktor webhook server application that echoes
 back to you whatever you send it. It can serve as a basic reference for how to
 set up webhooks and reply to incoming messages.
 
