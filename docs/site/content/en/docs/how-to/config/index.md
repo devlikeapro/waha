@@ -26,6 +26,7 @@ The following environment variables can be used to configure the WAHA.
 
 ### Common
 - `DEBUG=1`: Set this variable to any value to enable debug and verbose logs.
+  - You can also do it for a **specific session** by setting `config.debug` field to `true` when starting a session.
 - `WHATSAPP_API_PORT=3000`: The port number that the HTTP server will listen on. The default value is `3000`.
 - `WHATSAPP_API_HOSTNAME=localhost`: The hostname for the HTTP server. The default value is `localhost`.
 

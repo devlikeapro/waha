@@ -84,6 +84,20 @@ Read more about it in [Autostart section](#autostart).
 You can configure proxy when for all sessions by set up environment variables.
 Read more about it on [**Configuration page** ->]({{< relref "/docs/how-to/config#proxy" >}}).
 
+**Enable debug**
+You can enable debug mode for a session by setting `config.debug` field to `true`.
+It'll show you more logs in the console.
+Can be useful for debugging purposes when you're experiencing some issues.
+
+```json
+{
+  "name": "default",
+  "config": {
+    "debug": true
+  }
+}
+```
+
 ### List
 
 To get session list - call `GET /api/sessions`.

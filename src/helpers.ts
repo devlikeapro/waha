@@ -33,10 +33,11 @@ function splitAt(str: string, index) {
   return [fst.join(''), snd.join('')];
 }
 
-function getLogLevels(): LogLevel[] {
-  return process.env.DEBUG != undefined
-    ? ['log', 'debug', 'error', 'verbose', 'warn']
-    : ['log', 'error', 'warn', 'verbose'];
+function getLogLevels(debug: boolean): LogLevel[] {
+  const enableDebug = process.env.DEBUG != undefined || debug;
+  return enableDebug
+    ? ['log', 'error', 'warn', 'debug', 'verbose']
+    : ['log', 'error', 'warn'];
 }
 
 export { flipObject, getLogLevels, parseBool, splitAt };

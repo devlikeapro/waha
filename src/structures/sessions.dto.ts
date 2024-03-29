@@ -39,10 +39,13 @@ export class ProxyConfig {
 
 export class SessionConfig {
   webhooks?: WebhookConfig[];
+
   @ApiProperty({
     example: null,
   })
   proxy?: ProxyConfig;
+
+  debug: boolean = false;
 }
 
 export class SessionStartRequest {

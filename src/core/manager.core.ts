@@ -1,6 +1,7 @@
 import {
   ConsoleLogger,
   Injectable,
+  LogLevel,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -38,8 +39,8 @@ export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
   }
 }
 
-export function buildLogger(name) {
-  return new ConsoleLogger(name, { logLevels: getLogLevels() });
+export function buildLogger(name: string, levels: LogLevel[]) {
+  return new ConsoleLogger(name, { logLevels: levels });
 }
 
 @Injectable()
@@ -107,12 +108,13 @@ export class SessionManagerCore extends SessionManager {
 
     const name = request.name;
     this.log.log(`'${name}' - starting session...`);
-    const log = buildLogger(`WhatsappSession - ${name}`);
+    const levels = getLogLevels(request.config?.debug);
+    const log = buildLogger(`WhatsappSession - ${name}`, levels);
     const mediaManager = new CoreMediaManager(
       new MediaStorageCore(),
       this.config.mimetypes,
     );
-    const webhookLog = buildLogger(`Webhook - ${name}`);
+    const webhookLog = buildLogger(`Webhook - ${name}`, levels);
     const webhook = new this.WebhookConductorClass(webhookLog);
     const proxyConfig = this.getProxyConfig(request);
     const sessionConfig: SessionParams = {

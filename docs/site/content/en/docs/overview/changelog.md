@@ -21,6 +21,9 @@ You even can **subscribe to get new updates** there!
 
 ## 2024.3
 ### 🎉 New
+----
+
+Add `config.debug` field to `POST /api/session/start` to enable debug and verbose logs for the session.
 
 ----
 
