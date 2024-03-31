@@ -36,7 +36,7 @@ Also, Docker makes installation and update processes so simple, just one command
 
 We will guide you through the necessary steps to successfully send your first text message using WhatsApp HTTP API.
 
-<div class='pros-card' style='box-shadow: 0 0 1rem 0 #4aae2050;'>
+<div class='article-card'>
   <b class='h4'>Are you a visual learner?</b>
 
   We've got you covered! Watch the video below to see how to send your first message using <b>WAHA</b>.
