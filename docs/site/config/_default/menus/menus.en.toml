@@ -104,13 +104,13 @@
 [[main]]
   name = "Python ->"
   weight = 21
-  url = "https://github.com/devlikeapro/whatsapp-http-api/tree/core/examples/python"
+  url = "/docs/examples/python"
   parent = "examples"
 
 [[main]]
   name = "Kotlin ->"
   weight = 22
-  url = "https://github.com/devlikeapro/whatsapp-http-api/tree/core/examples/kotlin"
+url = "/docs/examples/kotlin"
   parent = "examples"
 
 [[social]]
