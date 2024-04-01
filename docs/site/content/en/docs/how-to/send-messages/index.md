@@ -354,6 +354,7 @@ You can send files in two ways:
     "filename": "filename.jpeg",
     "url": "https://github.com/devlikeapro/whatsapp-http-api/raw/main/docs/dev.likeapro.jpg"
   },
+  "caption": "Check this out!",
   "session": "default"
 }
 ```
