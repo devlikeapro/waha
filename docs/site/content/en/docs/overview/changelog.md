@@ -21,9 +21,20 @@ You even can **subscribe to get new updates** there!
 
 ## 2024.3
 ### 🎉 New
+
 ----
 
-Add `config.debug` field to `POST /api/session/start` to enable debug and verbose logs for the session.
+Add `message.reaction` webhook in **WEBJS** and **NOWEB** engines
+- Read more about [message.reaction]({{< relref "/docs/how-to/webhooks#messagereaction" >}}) event
+- Issue: [#275](https://github.com/devlikeapro/whatsapp-http-api/issues/275)
+
+👉 **NOWEB** engine note - reactions were sent in `'message'` and `'message.any'` events, not it's available **only** in `'message.reaction'`!
+
+----
+
+Add star and unstar message endpoint `PUT /api/star`
+- Read [Star and unstar message]({{< relref "/docs/how-to/send-messages#star-and-unstar-message" >}}) documentation
+- Issue: [#273](https://github.com/devlikeapro/whatsapp-http-api/issues/240)
 
 ----
 
@@ -51,23 +62,13 @@ Handles `caption` and `filename` right in `POST /api/sendFile`
 
 ----
 
-Add `message.reaction` webhook in **WEBJS** and **NOWEB** engines
-- Read more about [message.reaction]({{< relref "/docs/how-to/webhooks#messagereaction" >}}) event
-- Issue: [#275](https://github.com/devlikeapro/whatsapp-http-api/issues/275)
-
-👉 **NOWEB** engine note - reactions were sent in `'message'` and `'message.any'` events, not it's available **only** in `'message.reaction'`!
-
-----
-
 Add security settings for who can send messages `PUT /api/{session}/groups/{groupId}/settings/security/messages-admin-only`
 - Read [Security - who can send messages]({{< relref "/docs/how-to/groups##security---who-can-send-messages" >}})
 - Issue: [#274](https://github.com/devlikeapro/whatsapp-http-api/issues/274)
 
 ----
 
-Add star and unstar message endpoint `PUT /api/star`
-- Read [Star and unstar message]({{< relref "/docs/how-to/send-messages#star-and-unstar-message" >}}) documentation
-- Issue: [#273](https://github.com/devlikeapro/whatsapp-http-api/issues/240)
+Add `config.debug` field to `POST /api/session/start` to enable debug and verbose logs for the session.
 
 ----
 
