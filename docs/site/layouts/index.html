@@ -109,6 +109,22 @@
     </div>
   </div>
 </section>
+<section class='section section-sm'>
+  <div class='container hr'>
+    <div class='text-center mt-4'>
+      <h2>
+        Try it now!
+      </h2>
+      <div class='mb-4'>
+        <img src='/images/logo.png' title='WhatsApp HTTP API' alt='logo' width='100' />
+      </div>
+      <a class='btn btn-primary btn-lg px-4 mb-2'
+         href='/docs/{{ if .Site.Params.options.docsVersioning }}{{ .Site.Params.docsVersion }}/{{ end }}overview/introduction/'
+         role='button'>Get Started</a>
+      <p class='meta'><a href='https://github.com/devlikeapro/whatsapp-http-api'>Source code in GitHub.</a></p>
+    </div>
+  </div>
+</section>
 {{ end }}
 
 {{ define "sidebar-footer" }}
