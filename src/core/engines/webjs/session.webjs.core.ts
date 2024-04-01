@@ -73,14 +73,24 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     this.qr = new QR();
   }
 
-  protected async buildClient() {
-    const clientOptions: ClientOptions = {
+  protected getClientOptions(): ClientOptions {
+    return {
       puppeteer: {
         headless: true,
         executablePath: this.getBrowserExecutablePath(),
         args: this.getBrowserArgsForPuppeteer(),
       },
+      webVersion: '2.2411.2',
+      webVersionCache: {
+        type: 'remote',
+        remotePath:
+          'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/{version}.html',
+      },
     };
+  }
+
+  protected async buildClient() {
+    const clientOptions = this.getClientOptions();
     this.addProxyConfig(clientOptions);
     return new Client(clientOptions);
   }
