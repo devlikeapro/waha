@@ -112,6 +112,7 @@ const ToEnginePresenceStatus = flipObject(PresenceStatuses);
 export class WhatsappSessionNoWebCore extends WhatsappSession {
   engine = WAHAEngine.NOWEB;
   authFactory = new NowebAuthFactoryCore();
+  private restartTimeoutId: null | ReturnType<typeof setTimeout> = null;
 
   get listenConnectionEventsFromTheStart() {
     return true;
@@ -212,11 +213,27 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     });
   }
 
+  private restartClient() {
+    if (this.restartTimeoutId) {
+      this.log.log(
+        'Request to restart is already in progress, ignoring this request',
+      );
+      return;
+    }
+    this.log.log('Setting up client restart in 2 seconds...');
+    this.restartTimeoutId = setTimeout(() => {
+      this.restartTimeoutId = undefined;
+      this.buildClient();
+    }, 2 * SECOND);
+  }
+
   protected listenConnectionEvents() {
     this.log.debug(`Start listening ${BaileysEvents.CONNECTION_UPDATE}...`);
     this.sock.ev.on(BaileysEvents.CONNECTION_UPDATE, async (update) => {
-      const { connection, lastDisconnect, qr } = update;
-      if (connection === 'open') {
+      const { connection, lastDisconnect, qr, isNewLogin } = update;
+      if (isNewLogin) {
+        this.restartClient();
+      } else if (connection === 'open') {
         this.qr.save('');
         this.status = WAHASessionStatus.WORKING;
         this.resubscribeToKnownPresences();
@@ -234,7 +251,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         this.qr.save('');
         // reconnect if not logged out
         if (shouldReconnect) {
-          setTimeout(() => this.buildClient(), 2 * SECOND);
+          this.restartClient();
         } else {
           this.status = WAHASessionStatus.FAILED;
         }
