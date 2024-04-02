@@ -31,6 +31,26 @@ services:
       - WHATSAPP_API_HOSTNAME=localhost
     restart: always
 
+  whatsapp-http-api-plus--mongodb:
+    image: devlikeapro/whatsapp-http-api-plus
+    container_name: whatsapp-http-api-plus--mongodb
+    ports:
+      - '3000:3000/tcp'
+    volumes:
+      - './.sessions:/app/.sessions'
+    environment:
+      # Environment variables from https://waha.devlike.pro/docs/how-to/config/
+      - WHATSAPP_RESTART_ALL_SESSIONS=True
+      - WHATSAPP_HOOK_URL=https://httpbin.org/post
+      - WHATSAPP_HOOK_EVENTS=message
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+      - WHATSAPP_API_KEY=321
+      - WHATSAPP_SWAGGER_USERNAME=admin
+      - WHATSAPP_SWAGGER_PASSWORD=123
+      - WHATSAPP_API_HOSTNAME=localhost
+      - WHATSAPP_SESSIONS_MONGO_URL=mongodb://mongodb:27017
+    restart: always
+
   mongodb:
     image: mongo
     container_name: mongodb
