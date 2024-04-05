@@ -348,14 +348,14 @@ You can send files in two ways:
 #### URL
 ```json
 {
+  "session": "default",
+  "caption": "Check this out!",
   "chatId": "11111111111@c.us",
   "file": {
     "mimetype": "image/jpeg",
     "filename": "filename.jpeg",
-    "url": "https://github.com/devlikeapro/whatsapp-http-api/raw/main/docs/dev.likeapro.jpg"
-  },
-  "caption": "Check this out!",
-  "session": "default"
+    "url": "https://raw.githubusercontent.com/devlikeapro/whatsapp-http-api/core/examples/video.mp4"
+  }
 }
 ```
 
