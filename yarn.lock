@@ -1302,7 +1302,7 @@ __metadata:
 
 "@pedroslopez/moduleraid@github:wwebjs/moduleRaid":
   version: 6.0.2
-  resolution: "@pedroslopez/moduleraid@https://github.com/wwebjs/moduleRaid.git#commit=2ba8baadbc2a73305775ca72325102ed2c629f89"
+  resolution: "@pedroslopez/moduleraid@https://github.com/wwebjs/moduleRaid.git#commit=ecb616c04172dbeb294cef6b63715bfb4fd42d80"
   checksum: 399d08f1bc7703f73f7ec5e80618139f6ed4a95cd05baa87a9c6c69d8cd0fbd299e1c757414fed2e160c9ec6dfb0f4b8e5fc08261b97bfb7f248dc16c28e9f83
   languageName: node
   linkType: hard
@@ -4696,17 +4696,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"devtools-protocol@npm:0.0.1045489":
+  version: 0.0.1045489
+  resolution: "devtools-protocol@npm:0.0.1045489"
+  checksum: 670b2ecc8e890358b08da3095b4c927ffc5ef846a39e1526ff99aecaa623b339450dfe308e421e64bf94308441832b8e9497ebda97fb02266fef3f455286742f
+  languageName: node
+  linkType: hard
+
 "devtools-protocol@npm:0.0.1147663":
   version: 0.0.1147663
   resolution: "devtools-protocol@npm:0.0.1147663"
   checksum: 0631f2b6c6cd7f56e7d62a85bfc291f7e167f0f2de90969ef61fb24e2bd546b2e9530043d2bc3fe6c4d7a9e00473004272d2c2832a10a05e4b75c03a22f549fc
-  languageName: node
-  linkType: hard
-
-"devtools-protocol@npm:0.0.981744":
-  version: 0.0.981744
-  resolution: "devtools-protocol@npm:0.0.981744"
-  checksum: 609901bff551f5fbe98e272bdda7269de527e28fab138de371ffd7e9a06fa68ca2eec2e961bd1cd6fd98223ccee562c55b7ce3235d4e37cc8d85d6681bc45593
   languageName: node
   linkType: hard
 
@@ -9347,7 +9347,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.5":
+"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.9":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
@@ -9416,10 +9416,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-webpmux@npm:3.1.0":
-  version: 3.1.0
-  resolution: "node-webpmux@npm:3.1.0"
-  checksum: 45041b561d21ab88b81b5eaa1761cf1667dc56118b1ecf1ec1774d5f00ab9fbf473cdada7d5e09577f12dbc765fd22841b81ebeee352ddba5db7b6c5f5980056
+"node-webpmux@npm:3.1.7":
+  version: 3.1.7
+  resolution: "node-webpmux@npm:3.1.7"
+  checksum: 7283a76a52f727e9f1266052a0726371283e21d83f0ced71505776378200c1f3a1be2470ccc487d5977e40e56634aca3d4be255af26c1fed809b352841f15d10
   languageName: node
   linkType: hard
 
@@ -10077,7 +10077,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pkg-dir@npm:4.2.0, pkg-dir@npm:^4.2.0":
+"pkg-dir@npm:^4.2.0":
   version: 4.2.0
   resolution: "pkg-dir@npm:4.2.0"
   dependencies:
@@ -10346,6 +10346,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"puppeteer-core@npm:18.2.1":
+  version: 18.2.1
+  resolution: "puppeteer-core@npm:18.2.1"
+  dependencies:
+    cross-fetch: 3.1.5
+    debug: 4.3.4
+    devtools-protocol: 0.0.1045489
+    extract-zip: 2.0.1
+    https-proxy-agent: 5.0.1
+    proxy-from-env: 1.1.0
+    rimraf: 3.0.2
+    tar-fs: 2.1.1
+    unbzip2-stream: 1.4.3
+    ws: 8.9.0
+  checksum: 27ed65a7335ee3f4356425ebe4bbb5202f7b39493398643554a12b981922b2243dc331d9a478215706b79696bcf391637dd5e5405d60aff6ba8f94f0c3fea742
+  languageName: node
+  linkType: hard
+
 "puppeteer-core@npm:20.9.0":
   version: 20.9.0
   resolution: "puppeteer-core@npm:20.9.0"
@@ -10465,23 +10483,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:^13.0.0":
-  version: 13.7.0
-  resolution: "puppeteer@npm:13.7.0"
+"puppeteer@npm:^18.2.1":
+  version: 18.2.1
+  resolution: "puppeteer@npm:18.2.1"
   dependencies:
-    cross-fetch: 3.1.5
-    debug: 4.3.4
-    devtools-protocol: 0.0.981744
-    extract-zip: 2.0.1
     https-proxy-agent: 5.0.1
-    pkg-dir: 4.2.0
     progress: 2.0.3
     proxy-from-env: 1.1.0
-    rimraf: 3.0.2
-    tar-fs: 2.1.1
-    unbzip2-stream: 1.4.3
-    ws: 8.5.0
-  checksum: 4062b3ac3330e70d58095c1e0c5a46cada39a3fc5608e0e0e204448a400aef4d785a3b21d9e7733b2b2dc8cf686a476abf016f05d2e9108b3753dd41d62b9d1c
+    puppeteer-core: 18.2.1
+  checksum: 58ba8c7abd82071dc12e280622fa352a8ac253375a514c7a3527b468672a4ccdfe20b37aa09498774da2f0666bcdd9a47838c6661de483a3d6e10b47ef666113
   languageName: node
   linkType: hard
 
@@ -13343,13 +13353,13 @@ __metadata:
     tsconfig-paths: ^4.1.0
     typescript: ^4.8.4
     venom-bot: 5.0.1
-    whatsapp-web.js: "https://github.com/devlikeapro/whatsapp-web.js#main-fork"
+    whatsapp-web.js: "https://github.com/devlikeapro/whatsapp-web.js#main-form-update-nodejs"
   languageName: unknown
   linkType: soft
 
-"whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js#main-fork":
+"whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js#main-form-update-nodejs":
   version: 1.23.1-alpha.5
-  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=1f9c956cd13cc75c211d14e82cf9b5fd665f9b03"
+  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=616a80a7da5f8ce522c8e6b8a9ee29a94b315d8e"
   dependencies:
     "@pedroslopez/moduleraid": "github:wwebjs/moduleRaid"
     adm-zip: ^0.5.10
@@ -13357,9 +13367,9 @@ __metadata:
     fluent-ffmpeg: 2.1.2
     fs-extra: ^10.1.0
     mime: ^3.0.0
-    node-fetch: ^2.6.5
-    node-webpmux: 3.1.0
-    puppeteer: ^13.0.0
+    node-fetch: ^2.6.9
+    node-webpmux: 3.1.7
+    puppeteer: ^18.2.1
     unzipper: ^0.10.11
   dependenciesMeta:
     archiver:
@@ -13368,7 +13378,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 03894e8cf847876aac6a543aada3cccce2010069231fb2165d5895598a32f883d5269f5593afa0b369b2bb93a9399a5214d582b3a37b6cf5bda804edf07912d0
+  checksum: b89226a826a13578a2e01ed27951e87444d0ce4725e17742380d4f373ae5505c34ffd86cb26097f70848643016270ab506af47d0cb41c64f175029d8eaa90afa
   languageName: node
   linkType: hard
 
@@ -13623,9 +13633,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:8.5.0":
-  version: 8.5.0
-  resolution: "ws@npm:8.5.0"
+"ws@npm:8.9.0":
+  version: 8.9.0
+  resolution: "ws@npm:8.9.0"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ^5.0.2
@@ -13634,7 +13644,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 76f2f90e40344bf18fd544194e7067812fb1372b2a37865678d8f12afe4b478ff2ebc0c7c0aff82cd5e6b66fc43d889eec0f1865c2365d8f7a66d92da7744a77
+  checksum: 23aa0f021b2eb65c108ec4c3e08c0d81ba01f82b500432dfe327fd6be36079c1d81fdb0eac6464d2a0eb49904d34a9ab8c59619d673fa07b8346f83aeb0cbf12
   languageName: node
   linkType: hard
 
