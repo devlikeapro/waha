@@ -40,6 +40,20 @@
           <a href='https://waha.devlike.pro/docs/how-to/receive-messages/'>receive</a>
           messages from WhatsApp using HTTP API.
         </p>
+
+        <div class='code-block highlight' style='text-align: left'>
+          <pre tabindex='0' class='chroma m-0'>
+            <code class='language-json' data-lang='json' style='padding: 1rem!important; border-radius: 0.5rem'>POST /api/sendText
+{
+  "session": "default",
+  "chatId": "12132132130@c.us",
+  "text": "Hi there!"
+}
+
+            </code>
+          </pre>
+        </div>
+
       </div>
       <div class='col-12 col-lg-4 pros-card'>
         <img src='/images/icons/file-check-green.svg' alt='Servers' style='width: 5rem'>
@@ -51,6 +65,19 @@
           <a href='https://waha.devlike.pro/docs/how-to/receive-messages/'>receive</a>
           files from WhatsApp using HTTP API.
         </p>
+
+        <div class='code-block highlight' style='text-align: left'>
+          <pre tabindex='0' class='chroma m-0'>
+            <code class='language-json' data-lang='json' style='padding: 1rem!important; border-radius: 0.5rem'>POST /api/sendFile
+{
+  "session": "default",
+  "chatId": "12132132130@c.us",
+  "file": {
+    "url": "https://d.com/invoice.pdf"
+  }
+}</code>
+          </pre>
+        </div>
       </div>
       <div class='col-12 col-lg-4 pros-card'>
         <img src='/images/icons/button-green.png' alt='API' style='width: 5rem'>
@@ -64,6 +91,19 @@
           </a>
           to see all the features.
         </p>
+
+        <div class='code-block highlight' style='text-align: left'>
+          <pre tabindex='0' class='chroma m-0'>
+            <code class='language-json' data-lang='json' style='padding: 1rem!important; border-radius: 0.5rem'>POST /api/{session}/groups
+{
+  "name": "Group name",
+  "participants": [
+    {"id": "123123123123@c.us"}
+  ]
+}
+            </code>
+          </pre>
+        </div>
       </div>
     </div>
   </div>
