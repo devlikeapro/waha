@@ -133,8 +133,18 @@ Support the project and get WAHA Plus version on
 Go ahead and get your own WhatsApp HTTP API!
 
 
+### Crypto
+<p align="center">
+  <img src="tether-usdt-logo.svg" alt="Tether Logo" style='width: 40%'/>
+</p>
 
-### Patron Portal
+If you wish to donate in crypto - please contact us at [crypto@devlike.pro](mailto:crypto@devlike.pro)
+with the desired **amount**, **currency** and **network**.
+
+> e.g. "I want to donate $99 in USDT using TRC20 network."
+
+
+## Patron Portal
 <p align="center">
   <img src="patron-portal.png" alt="Patron Portal" />
   <br/>
@@ -150,7 +160,7 @@ or
 **<a href="https://boosty.to/wa-http-api/posts/1011" target="_blank">Boosty -></a>**
 posts.
 
-## Install Plus
+### Install Plus
 After you get the password, get your login to Docker Hub in [Patron Portal ->](https://portal.devlike.pro/)
 and run the commands:
 ```bash
