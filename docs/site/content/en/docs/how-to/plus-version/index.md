@@ -83,14 +83,14 @@ For **$19** donation you get:
 
 What is the difference between **WAHA Plus** and **other SaaS solutions** for WhatsApp HTTP API?
 
-|                    |                     WAHA Plus                     |                                                                            Others |
-|--------------------|:-------------------------------------------------:|----------------------------------------------------------------------------------:|
-| **Sessions**       |   ✔️ No limits on **accounts** or **servers**!    |                                                      ➖ One account for $50/month. |
-| **Infrastructure** | ✔️ On-Premise - your server, your infrastructure! |                                                        ➖ Insecure cloud solution. |
-| **Security**       |                 ✔️ No data leaks!                 | ➖ You have to give access to customers' data - phone number, name, your messages. |
-| **License Term**               |               ✔️ No license checks!               |                                                                       ➖ One month |
-| **Message price**  |             ✔️ All messages are Free!             |                     ➖ Some solutions have a price for messages - $1/100 messages. |
-| **Expenses**       |               ✔️ $19 **donation**!                |                                                 ➖ Monthly payment starts from $50 |
+|                     WAHA Plus                     |                                                                            Others |
+|:-------------------------------------------------:|----------------------------------------------------------------------------------:|
+|   ✔️ No limits on **accounts** or **servers**!    |                                                      ➖ One account for $50/month. |
+| ✔️ On-Premise - your server, your infrastructure! |                                                        ➖ Insecure cloud solution. |
+|                 ✔️ No data leaks!                 | ➖ You have to give access to customers' data - phone number, name, your messages. |
+|               ✔️ No license checks!               |                                                                       ➖ One month |
+|           ✔️ All messages are **Free**!           |                     ➖ Some solutions have a price for messages - $1/100 messages. |
+|               ✔️ $19 **donation**!                |                                                 ➖ Monthly payment starts from $50 |
 
 {{< alert icon="💡" text="If you stay subscribed - the donation amount will never change for you and always be $19 to get monthly updates!" />}}
 
