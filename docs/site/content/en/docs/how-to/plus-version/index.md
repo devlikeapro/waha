@@ -78,12 +78,12 @@ The more you support the project - the more you get!
 | **Donation**                                                                                                                                                                                                                                                                                            | **$19** |
 
 ### Pro
-| Exclusive perks for the professionals!                                                      |         |
-|---------------------------------------------------------------------------------------------|---------|
-| All in **Plus**                                                                             | ✔️      |
-| An invitation to **a private Github repository** so you have the **WAHA Plus** source code. | ✔️      |
-| Access to a **Discord Server** where we provide support and assistance.                     | ✔️      |
-| **Donation**                                                                                | **$99** |
+| Exclusive perks for the PROfessionals!                                                                                           |         |
+|----------------------------------------------------------------------------------------------------------------------------------|---------|
+| All in **Plus**                                                                                                                  | ✔️      |
+| Access to the **WAHA Plus** **source code** in a private Github repository.                                                      | ✔️      |
+| Membership to the **WAHA Discord** server for receiving personal support, and sharing your experiences with other professionals. | ✔️      |
+| **Donation**                                                                                                                     | **$99** |
 
 
 For **$19** donation you get:
