@@ -173,7 +173,7 @@ where you will get the password to download the Plus image and manage your perks
 Read more about Patron Portal in
 **<a href="https://www.patreon.com/posts/waha-patron-97637416" target="_blank">Patreon -> </a>**
 or
-**<a href="https://boosty.to/wa-http-api/posts/1011" target="_blank">Boosty -></a>**
+**<a href="https://boosty.to/wa-http-api/posts/8319079f-dac1-4179-b954-fcc559097c76" target="_blank">Boosty -></a>**
 posts.
 
 ### Install Plus
