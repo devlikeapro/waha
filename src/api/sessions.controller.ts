@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import {
   ApiExtraModels,
   ApiOperation,
@@ -56,6 +65,15 @@ class SessionsController {
   async list(@Query() query: ListSessionsQuery): Promise<SessionInfo[]> {
     const all = parseBool(query.all);
     return this.manager.getSessions(all);
+  }
+
+  @Get('/:session')
+  async get(@Param('session') name: string): Promise<SessionInfo> {
+    const session = this.manager.getSessionInfo(name);
+    if (session === null) {
+      throw new NotFoundException('Session not found');
+    }
+    return session;
   }
 }
 

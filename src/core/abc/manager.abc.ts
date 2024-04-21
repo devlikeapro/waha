@@ -37,5 +37,7 @@ export abstract class SessionManager implements OnApplicationShutdown {
 
   abstract getSession(name: string): WhatsappSession;
 
+  abstract getSessionInfo(name: string): Promise<SessionInfo | null>;
+
   abstract getSessions(all: boolean): Promise<SessionInfo[]>;
 }

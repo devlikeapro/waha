@@ -229,4 +229,11 @@ export class SessionManagerCore extends SessionManager {
       },
     ];
   }
+
+  async getSessionInfo(name: string): Promise<SessionInfo | null> {
+    if (name !== this.DEFAULT) {
+      return null;
+    }
+    return this.getSessions(true).then((sessions) => sessions[0]);
+  }
 }
