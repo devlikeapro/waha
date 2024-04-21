@@ -516,7 +516,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   public async getContactProfilePicture(query: ContactQuery) {
-    throw new NotImplementedByEngineError();
+    const contact = this.ensureSuffix(query.contactId);
+    const url = await this.sock.profilePictureUrl(contact, 'image');
+    return { profilePictureURL: url };
   }
 
   public async blockContact(request: ContactRequest) {

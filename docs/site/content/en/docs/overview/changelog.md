@@ -19,6 +19,15 @@ If you wish to get and read Release Notes - read them on one of our platforms, *
 
 You even can **subscribe to get new updates** there!
 
+## 2024.4
+### 🎉 New
+----
+
+Implement `GET /api/contacts/profile-picture` for **NOWEB** engine.
+- Issue: [#298](https://github.com/devlikeapro/whatsapp-http-api/issues/298)
+
+----
+
 ## 2024.3
 ### 🎉 New
 

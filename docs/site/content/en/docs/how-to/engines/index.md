@@ -176,7 +176,7 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 | `GET /api/contacts/all`                                           |  ✔️   |   ➖   |   ➖   |
 | `GET /api/contacts/check-exists`                                  |  ✔️   |  ✔️   |  ✔️   |
 | `GET /api/contacts/about`                                         |  ✔️   |   ➖   |   ➖   |
-| `GET /api/contacts/profile-picture`                               |  ✔️   |   ➖   |   ➖   |
+| `GET /api/contacts/profile-picture`                               |  ✔️   |  ✔️   |   ➖   |
 | `POST /api/contacts/block`                                        |  ✔️   |   ➖   |   ➖   |
 | `POST /api/contacts/unblock`                                      |  ✔️   |   ➖   |   ➖   |
 
