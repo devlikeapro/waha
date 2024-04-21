@@ -273,6 +273,8 @@ You can send voice messages in two ways:
 1. Provide a URL for the voice.
 2. Encode the whole file content into base64 and send it in the request body.
 
+Please make sure your file has **OPUS** encoding and packed in OGG container.
+
 #### URL
 ```json
 {
@@ -280,8 +282,7 @@ You can send voice messages in two ways:
   "chatId": "11111111111@c.us",
   "file": {
     "mimetype": "audio/ogg; codecs=opus",
-    "filename": "voice-message.mp3",
-    "url": "https://github.com/devlikeapro/whatsapp-http-api/raw/core/examples/dev.likeapro.mp3"
+    "url": "https://github.com/devlikeapro/whatsapp-http-api/raw/core/examples/dev.likeapro.opus"
   },
   "caption": "string"
 }
@@ -319,7 +320,7 @@ You can send voice messages in two ways:
   "file": {
     "mimetype": "video/mp4",
     "filename": "video.mp4",
-    "url": "https://github.com/devlikeapro/whatsapp-http-api/raw/core/examples/dev.likeapro.mp3"
+    "url": "https://github.com/devlikeapro/whatsapp-http-api/raw/core/examples/video.mp4"
   }
 }
 ```

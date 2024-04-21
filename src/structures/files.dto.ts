@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 export class Base64File {
   mimetype: string;
   data: string;
@@ -71,13 +72,8 @@ export class VoiceRemoteFile {
   mimetype = 'audio/ogg; codecs=opus';
 
   @ApiProperty({
-    description: 'Document file name. Optional',
-  })
-  filename = 'voice-message.mp3';
-
-  @ApiProperty({
     example:
-      'https://github.com/devlikeapro/whatsapp-http-api/raw/core/examples/dev.likeapro.mp3',
+      'https://github.com/devlikeapro/whatsapp-http-api/raw/core/examples/dev.likeapro.opus',
   })
   url: string;
 }

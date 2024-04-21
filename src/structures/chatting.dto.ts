@@ -171,8 +171,8 @@ export class MessageLocationRequest extends ChatRequest {
 class FileRequest extends ChatRequest {
   @ApiProperty({
     oneOf: [
-      { $ref: getSchemaPath(BinaryFile) },
       { $ref: getSchemaPath(RemoteFile) },
+      { $ref: getSchemaPath(BinaryFile) },
     ],
   })
   file: BinaryFile | RemoteFile;
@@ -190,8 +190,8 @@ export class MessageFileRequest extends FileRequest {
 export class MessageVoiceRequest extends ChatRequest {
   @ApiProperty({
     oneOf: [
-      { $ref: getSchemaPath(VoiceBinaryFile) },
       { $ref: getSchemaPath(VoiceRemoteFile) },
+      { $ref: getSchemaPath(VoiceBinaryFile) },
     ],
   })
   file: VoiceBinaryFile | VoiceRemoteFile;
