@@ -18,7 +18,10 @@ WEBJS #
 The benchmark has been made on Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz. It may differ from case to case, it depends on usage pattern - how many messages you get, how many send, etc.
 Accounts (sessions) in the container CPU Memory 1 30% 400MB 10 270% 1.5GB The nature of WhatsApp HTTP API and its underlying engines - is to run real WhatsApp Web version in Chrome and communicate with it to prevent blocking from WhatsApp.</description></item><item><title>Changelog</title><link>https://waha.devlike.pro/docs/overview/changelog/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://waha.devlike.pro/docs/overview/changelog/</guid><description>If you wish to get and read Release Notes - read them on one of our platforms, these posts are FREE.
 Boosty -&amp;gt; Patreon -&amp;gt; You even can subscribe to get new updates there!
-2024.3 #
+2024.4 #
 🎉 New #
-Add message.reaction webhook in WEBJS and NOWEB engines
-Read more about message.reaction event Issue: #275 👉 NOWEB engine note - reactions were sent in 'message' and 'message.any' events, not it&amp;rsquo;s available only in 'message.</description></item></channel></rss>
+Add GET /api/sessions/{session} endpoint to get information about a specific session.
+Read more about Get session information Issue: #300 Implement GET /api/contacts/profile-picture for NOWEB engine.
+Issue: #298 2024.3 #
+🎉 New #
+Add message.</description></item></channel></rss>
