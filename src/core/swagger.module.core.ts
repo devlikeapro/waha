@@ -25,6 +25,7 @@ export class SwaggerModuleCore {
           '<ul>' +
           '<li><a href="https://patreon.com/wa_http_api/" target="_blank">Patreon</a></li>' +
           '<li><a href="https://boosty.to/wa-http-api/" target="_blank">Boosty</a></li>' +
+          '<li><a href="https://portal.devlike.pro/" target="_blank">Patron Portal</a></li>' +
           '</ul>',
       )
       .setExternalDoc('WAHA', 'https://waha.devlike.pro/')
