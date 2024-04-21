@@ -80,7 +80,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         executablePath: this.getBrowserExecutablePath(),
         args: this.getBrowserArgsForPuppeteer(),
       },
-      webVersion: '2.2411.2',
+      webVersion: '2.2412.54',
       webVersionCache: {
         type: 'remote',
         remotePath:
