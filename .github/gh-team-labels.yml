@@ -1,8 +1,3 @@
-ignore:
-  teams:
-    - no-labels
-  users:
-    - allburov
 teamLabels:
   - team: waha-patrons-pro
     label: patron:PRO
