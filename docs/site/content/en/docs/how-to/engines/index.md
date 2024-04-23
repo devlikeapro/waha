@@ -129,8 +129,6 @@ please [create an issue](https://github.com/devlikeapro/whatsapp-http-api/issues
 | `POST /api/{session}/auth/qr`                                     |  ✔️   |                                    ✔️                                     |  ✔️   |
 | `POST /api/{session}/auth/request-code`                           |   ➖   |                                    ✔️                                     |   ➖   |
 | `POST /api/{session}/auth/authorize-code`                         |   ➖   | ➖️<br>[#113](https://github.com/devlikeapro/whatsapp-http-api/issues/113) |   ➖   |
-| `GET /api/{session}/auth/captcha`   <br>Only in **MOBILE** engine |   ➖   |                                     ➖                                     |   ➖   |
-| `POST /api/{session}/auth/captcha` <br>Only in **MOBILE** engine  |   ➖   |                                     ➖                                     |   ➖   |
 | **Screenshot**                                                    |       |                                                                           |       |
 | `POST /api/screenshot`                                            |  ✔️   |                                     ➖                                     |  ✔️   |
 
