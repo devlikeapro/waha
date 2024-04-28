@@ -36,6 +36,7 @@ async function bootstrap() {
 
   app.enableShutdownHooks();
   app.useGlobalFilters(new AllExceptionsFilter());
+  app.enableCors();
 
   // Allow to send big body - for images and attachments
   app.use(json({ limit: '50mb' }));
