@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { TerminusModule } from '@nestjs/terminus';
+import { join } from 'path';
 
 import { AuthController } from '../api/auth.controller';
 import { ChatsController } from '../api/chats.controller';
@@ -28,6 +29,7 @@ export const IMPORTS = [
   ConfigModule.forRoot({
     isGlobal: true,
   }),
+  // Serve files (media)
   ServeStaticModule.forRootAsync({
     imports: [],
     extraProviders: [WhatsappConfigService],
@@ -36,7 +38,21 @@ export const IMPORTS = [
       return [
         {
           rootPath: config.filesFolder,
-          serveRoot: config.files_uri,
+          serveRoot: config.filesUri,
+        },
+      ];
+    },
+  }),
+  // Serve Dashboard
+  ServeStaticModule.forRootAsync({
+    imports: [],
+    extraProviders: [WhatsappConfigService],
+    inject: [WhatsappConfigService],
+    useFactory: (config: WhatsappConfigService) => {
+      return [
+        {
+          rootPath: join(__dirname, '..', 'dashboard'),
+          serveRoot: config.dashboardUri,
         },
       ];
     },

@@ -8,13 +8,14 @@ import { getEngineName } from './version';
 
 @Injectable()
 export class WhatsappConfigService {
-  public files_uri = '/api/files';
+  public filesUri = '/api/files';
+  public dashboardUri = '/dashboard';
   public schema = 'http';
 
   constructor(private configService: ConfigService) {}
 
   get filesURL(): string {
-    return `${this.schema}://${this.hostname}:${this.port}${this.files_uri}/`;
+    return `${this.schema}://${this.hostname}:${this.port}${this.filesUri}/`;
   }
 
   get hostname(): string {
