@@ -12,14 +12,35 @@
         --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
       }
 
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        height: 100vh;
+      body,
+      html {
+        height: 100%;
+        padding: 0;
         margin: 0;
-        text-align: center;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .bg-image {
+        /* The image used */
+        background-image: url('./waha-dashboard.png');
+
+        /* Add the blur effect */
+        filter: blur(2px);
+        -webkit-filter: blur(2px);
+
+        /* Full height */
+        height: 100%;
+
+        /* Center and scale the image nicely */
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+
+      body {
         background-color: #111827;
         color: rgba(255, 255, 255, 0.87);
       }
@@ -34,10 +55,13 @@
         margin: 20px;
       }
 
-      .upgrade-link {
-        text-decoration: none;
+      a {
         color: rgb(158, 158, 255);
         text-decoration-color: rgb(158, 158, 255);
+      }
+
+      .upgrade-link {
+        text-decoration: none;
         font-size: 1.5rem;
       }
 
@@ -51,15 +75,23 @@
       }
 
       .card {
+        min-width: 25rem;
         background: var(--surface-card);
         border: 1px solid var(--surface-border);
         box-shadow: var(--card-shadow);
         padding: 2rem;
         border-radius: 12px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        text-align: center;
       }
     </style>
   </head>
   <body>
+    <div class="bg-image"></div>
     <div class="card">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -234,8 +266,13 @@
       </svg>
 
       <div class="message">
-        Sorry, <b>WAHA Dashboard</b> is not available in
-        <strong>WAHA Core</strong> version.
+        Sorry,
+        <a
+          href="https://waha.devlike.pro/docs/how-to/waha-dashboard"
+          target="_blank"
+          >WAHA Dashboard</a
+        >
+        is not available in <strong>WAHA Core</strong> version.
         <br />
         Please consider upgrading to <strong>WAHA Plus</strong>.
       </div>
