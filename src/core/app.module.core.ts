@@ -29,32 +29,25 @@ export const IMPORTS = [
   ConfigModule.forRoot({
     isGlobal: true,
   }),
-  // Serve files (media)
   ServeStaticModule.forRootAsync({
     imports: [],
     extraProviders: [WhatsappConfigService],
     inject: [WhatsappConfigService],
     useFactory: (config: WhatsappConfigService) => {
-      return [
+      const options = [
+        // Serve files (media)
         {
           rootPath: config.filesFolder,
           serveRoot: config.filesUri,
         },
       ];
-    },
-  }),
-  // Serve Dashboard
-  ServeStaticModule.forRootAsync({
-    imports: [],
-    extraProviders: [WhatsappConfigService],
-    inject: [WhatsappConfigService],
-    useFactory: (config: WhatsappConfigService) => {
-      return [
-        {
+      if (config.getDashboardEnabled()) {
+        options.push({
           rootPath: join(__dirname, '..', 'dashboard'),
           serveRoot: config.dashboardUri,
-        },
-      ];
+        });
+      }
+      return options;
     },
   }),
   PassportModule,
@@ -92,4 +85,6 @@ const PROVIDERS = [
   controllers: CONTROLLERS,
   providers: PROVIDERS,
 })
-export class AppModuleCore {}
+export class AppModuleCore {
+  constructor(protected config: WhatsappConfigService) {}
+}
