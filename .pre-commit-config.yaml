@@ -1,3 +1,4 @@
+exclude: '^src/dashboard'
 repos:
   - repo: local
     hooks:
