@@ -48,9 +48,10 @@ class SessionsController {
   @Post('/stop/')
   @ApiOperation({ summary: 'Stop session' })
   async stop(@Body() request: SessionStopRequest): Promise<void> {
-    await this.manager.stop(request);
     if (request.logout) {
       await this.manager.logout(request);
+    } else {
+      await this.manager.stop(request);
     }
     return;
   }
