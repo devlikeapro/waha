@@ -172,8 +172,8 @@ export class WhatsappConfigService {
     if (!this.getDashboardEnabled()) {
       return null;
     }
-    const user = this.configService.get('WAHA_DASHBOARD_USERNAME', 'admin');
-    const password = this.configService.get('WAHA_DASHBOARD_PASSWORD', 'admin');
+    const user = this.configService.get('WAHA_DASHBOARD_USERNAME', 'waha');
+    const password = this.configService.get('WAHA_DASHBOARD_PASSWORD', 'waha');
     if (!user || !password) {
       console.log(
         'Please set up both WAHA_DASHBOARD_USERNAME and WAHA_DASHBOARD_PASSWORD ' +
