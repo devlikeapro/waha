@@ -1300,10 +1300,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pedroslopez/moduleraid@github:wwebjs/moduleRaid":
-  version: 6.0.2
-  resolution: "@pedroslopez/moduleraid@https://github.com/wwebjs/moduleRaid.git#commit=ecb616c04172dbeb294cef6b63715bfb4fd42d80"
-  checksum: 399d08f1bc7703f73f7ec5e80618139f6ed4a95cd05baa87a9c6c69d8cd0fbd299e1c757414fed2e160c9ec6dfb0f4b8e5fc08261b97bfb7f248dc16c28e9f83
+"@pedroslopez/moduleraid@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "@pedroslopez/moduleraid@npm:5.0.2"
+  checksum: b5668cb8d602e3fae0bcd75172f53b301814582ec288f4413127377a8be007aafc63846855431b6096a70dc9f113b059f6286bbc254f3bdbec435ba517dae36f
   languageName: node
   linkType: hard
 
@@ -13464,15 +13464,15 @@ __metadata:
     tsconfig-paths: ^4.1.0
     typescript: ^4.8.4
     venom-bot: 5.0.1
-    whatsapp-web.js: "https://github.com/devlikeapro/whatsapp-web.js#main-form-update-nodejs"
+    whatsapp-web.js: "https://github.com/devlikeapro/whatsapp-web.js#main-fork-update"
   languageName: unknown
   linkType: soft
 
-"whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js#main-form-update-nodejs":
-  version: 1.23.1-alpha.5
-  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=616a80a7da5f8ce522c8e6b8a9ee29a94b315d8e"
+"whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js#main-fork-update":
+  version: 1.23.1-alpha.6
+  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=d6eff450edf3e8d292cf70eb4243fd32ace61182"
   dependencies:
-    "@pedroslopez/moduleraid": "github:wwebjs/moduleRaid"
+    "@pedroslopez/moduleraid": ^5.0.2
     adm-zip: ^0.5.10
     archiver: ^5.3.1
     fluent-ffmpeg: 2.1.2
@@ -13489,7 +13489,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: b89226a826a13578a2e01ed27951e87444d0ce4725e17742380d4f373ae5505c34ffd86cb26097f70848643016270ab506af47d0cb41c64f175029d8eaa90afa
+  checksum: 3a34d43b37caddb4544f8ddad885ceb02edb2e2fccf8412574d57631a16e08e3f4b37e7c5c28debad958f7b08a7b33916db60133e47daa5ebbcd9921b9f7455d
   languageName: node
   linkType: hard
 
