@@ -15,7 +15,9 @@ We do not recommend exposing the API on any public networks!
 Either protect the API with [Api Key](https://www.fortinet.com/resources/cyberglossary/api-key) or deny access by using
 firewalls.
 
-## Swagger Security ![](/images/versions/plus.png)
+👉 Security options are available in [**WAHA Plus**]({{< relref "plus-version#plus" >}}) ![](/images/versions/plus.png) version only.
+
+## Swagger Security
 ### Username and password
 If you want to hide the project Swagger panel under the password - run the following command to hide under `admin/admin`
 login and password.
@@ -35,8 +37,15 @@ You also can hide swagger completely by setting `WHATSAPP_SWAGGER_ENABLED=false`
 
 {{< alert icon="👉" text="Disabling Swagger does not protect the API, please use API security as well" />}}
 
+## Dashboard Security
+When running WAHA you can set the following environment variables to configure the dashboard:
+- `WAHA_DASHBOARD_ENABLED=true` - enable or disable the dashboard, by default `true`. Set to `false` to disable the dashboard.
+- `WAHA_DASHBOARD_USERNAME=waha` - username used to log in, by default `waha`.
+- `WAHA_DASHBOARD_PASSWORD=waha` - password used to log in, by default `waha`.
 
-## API security ![](/images/versions/plus.png)
+Read more about [**Dashboard ->**]({{< relref "/docs/how-to/waha-dashboard" >}})
+
+## API security
 
 You can protect the API by requiring Api Key in a request's headers.
 
@@ -72,7 +81,7 @@ headers = {
 requests.get("http://localhost:3000/api/sessions", headers=headers)
 ```
 
-## Webhook security ![](/images/versions/plus.png)
+## Webhook security
 To make sure that you get a webhook from your WAHA instance - you can use **HMAC authentication**.
 Read more about it on [Webhooks page ->]({{< relref "/docs/how-to/webhooks#hmac-authentication" >}})
 
