@@ -21,14 +21,19 @@ services:
       - './.sessions:/app/.sessions'
     environment:
       # Environment variables from https://waha.devlike.pro/docs/how-to/config/
-      - WHATSAPP_RESTART_ALL_SESSIONS=True
-      - WHATSAPP_HOOK_URL=https://httpbin.org/post
-      - WHATSAPP_HOOK_EVENTS=message
+      # - WHATSAPP_RESTART_ALL_SESSIONS=True
+      # - WHATSAPP_HOOK_URL=https://httpbin.org/post
+      # - WHATSAPP_HOOK_EVENTS=message
+      # - WHATSAPP_API_HOSTNAME=localhost
       - WHATSAPP_DEFAULT_ENGINE=WEBJS
       - WHATSAPP_API_KEY=321
-      - WHATSAPP_SWAGGER_USERNAME=admin
-      - WHATSAPP_SWAGGER_PASSWORD=123
-      - WHATSAPP_API_HOSTNAME=localhost
+      # Username and password for Swagger
+      - WHATSAPP_SWAGGER_USERNAME=swagger
+      - WHATSAPP_SWAGGER_PASSWORD=admin
+      # Username and password for WAHA Dashboard
+      # you can use the same username and password for both Swagger and Dashboard
+      - WAHA_DASHBOARD_USERNAME=dashboard
+      - WAHA_DASHBOARD_PASSWORD=admin
     restart: always
 
   whatsapp-http-api-plus--mongodb:
@@ -40,14 +45,16 @@ services:
       - './.sessions:/app/.sessions'
     environment:
       # Environment variables from https://waha.devlike.pro/docs/how-to/config/
-      - WHATSAPP_RESTART_ALL_SESSIONS=True
-      - WHATSAPP_HOOK_URL=https://httpbin.org/post
-      - WHATSAPP_HOOK_EVENTS=message
+      # - WHATSAPP_RESTART_ALL_SESSIONS=True
+      # - WHATSAPP_HOOK_URL=https://httpbin.org/post
+      # - WHATSAPP_HOOK_EVENTS=message
+      # - WHATSAPP_API_KEY=321
+      # - WHATSAPP_SWAGGER_USERNAME=admin
+      # - WHATSAPP_SWAGGER_PASSWORD=123
+      # - WAHA_DASHBOARD_USERNAME=admin
+      # - WAHA_DASHBOARD_PASSWORD=123
+      # - WHATSAPP_API_HOSTNAME=localhost
       - WHATSAPP_DEFAULT_ENGINE=WEBJS
-      - WHATSAPP_API_KEY=321
-      - WHATSAPP_SWAGGER_USERNAME=admin
-      - WHATSAPP_SWAGGER_PASSWORD=123
-      - WHATSAPP_API_HOSTNAME=localhost
       - WHATSAPP_SESSIONS_MONGO_URL=mongodb://mongodb:27017
     restart: always
 
