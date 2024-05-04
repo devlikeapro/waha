@@ -123,6 +123,8 @@ The `session.status` event is triggered when the session status changes.
 - `STOPPED` - session is stopped
 - `STARTING` - session is starting
 - `SCAN_QR_CODE` - session is required to scan QR code or login via phone number
+  - When you receive the `session.status` event with `SCAN_QR_CODE` status, you can [**fetch updated QR ->**]({{< relref "/docs/how-to/sessions#get-qr" >}})
+  - The `SCAN_QR_CODE` is issued every time when QR updated (WhatsApp requirements)
 - `WORKING` - session is working and ready to use
 - `FAILED` - session is failed due to some error. It's likely that authorization is required again or device has been disconnected from that account.
 Try to restart the session and if it doesn't help - logout and start the session again.
