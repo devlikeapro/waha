@@ -23,6 +23,12 @@ You even can **subscribe to get new updates** there!
 ### 🎉 New
 ----
 
+Add **WAHA Dashboard** - UI to manage your WhatsApp sessions!
+- Read more about [Dashboard]({{< relref "/docs/how-to/waha-dashboard" >}})
+- Open [screenshot](/images/waha-dashboard.png)
+
+----
+
 Add `GET /api/sessions/{session}` endpoint to get information about a specific session.
 - Read more about [Get session information]({{< relref "/docs/how-to/sessions#get-session" >}})
 - Issue: [#300](https://github.com/devlikeapro/whatsapp-http-api/issues/300)
