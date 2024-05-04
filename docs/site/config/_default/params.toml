@@ -73,7 +73,7 @@ copyRight = "Copyright (c) 2021-2023 Dev Like A Pro"
 # Alert
 alert = true
 alertDismissable = true
-alertText = "<a class=\"alert-link stretched-link\" href=\"https://waha.devlike.pro/docs/how-to/waha-dashboard/\">[NEW] WAHA Dashboard - UI to manage your WhatsApp sessions!-></a>"
+alertText = "📢 <a class=\"alert-link stretched-link\" href=\"https://waha.devlike.pro/docs/how-to/waha-dashboard/\">WAHA Dashboard - UI to manage your WhatsApp sessions!</a> 📢"
 
 # Edit Page
 # repoHost [Github | Gitea | GitLab | Bitbucket | BitbucketServer ] is used for building the edit link based on git hoster
