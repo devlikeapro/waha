@@ -2,11 +2,13 @@
 If you wish to read a quick start guide which show you how to send you first message via HTTP API please go to Quick Start -&amp;gt;.
 WAHA is distributed in two versions, that have a similar installation instructions.
 WAHA Core - the basic version that meet almost 80% people&amp;rsquo;s needs. 100% free and open source -&amp;gt;. WAHA Plus - the version with advanced messages, security, and reliability features.</description></item><item><title>Dashboard</title><link>https://waha.devlike.pro/docs/how-to/waha-dashboard/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/waha-dashboard/</guid><description>Overview #
-WAHA Dashboard is a UI to manage your WhatsApp sessions!
-See full size image 👉 WAHA Dashboard is available in WAHA Plus version only.
-You can access WAHA Dashboard by running the project and opening http://localhost:3000/dashboard (or similar, but with /dashboard at the end).
+Dashboard is a UI to manage your WhatsApp sessions!
+See full size image 👉 Dashboard is available in WAHA Plus version only.
+You can access Dashboard by running the project and opening http://localhost:3000/dashboard (or similar, but with /dashboard at the end).
 ℹ️ Default username and password: waha/waha
-docker run -it -p 3000:3000/tcp devlikeapro/whatsapp-http-api-plus If you&amp;rsquo;re using API Key, remember to set up the key in the dashboard.</description></item><item><title>Send messages</title><link>https://waha.devlike.pro/docs/how-to/send-messages/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/send-messages/</guid><description>We consider that you&amp;rsquo;ve run docker container and authenticated the session with QR code.
+docker run -it -p 3000:3000/tcp devlikeapro/whatsapp-http-api-plus If you&amp;rsquo;re using API Key, remember to set up the key in the dashboard.
+See full size image Configuration #
+When running WAHA you can set the following environment variables to configure the dashboard:</description></item><item><title>Send messages</title><link>https://waha.devlike.pro/docs/how-to/send-messages/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/send-messages/</guid><description>We consider that you&amp;rsquo;ve run docker container and authenticated the session with QR code.
 If you haven&amp;rsquo;t yet - please follow the steps from Quick Start →.
 Fields #
 There are common fields that you can find in almost all requests:

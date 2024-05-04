@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WAHA Hub on</title><link>https://waha.devlike.pro/docs/waha-hub/</link><description>Recent content in WAHA Hub on</description><generator>Hugo -- gohugo.io</generator><lastBuildDate>Tue, 06 Oct 2020 08:48:45 +0000</lastBuildDate><atom:link href="https://waha.devlike.pro/docs/waha-hub/index.xml" rel="self" type="application/rss+xml"/><item><title>WAHA Hub</title><link>https://waha.devlike.pro/docs/waha-hub/introduction/</link><pubDate>Tue, 06 Oct 2020 08:48:57 +0000</pubDate><guid>https://waha.devlike.pro/docs/waha-hub/introduction/</guid><description>⚠️ The project in DEVELOPMENT yet&amp;hellip; Subscribe to WAHA PRO to speed up the development!
 Overview #
 WAHA Hub - central management solution to help your build reliable infrastructure with multiple WAHA servers!
-While WAHA Dashboard is a UI to manage your WhatsApp sessions on single server, WAHA Hub is a central management server to control and manage multiple servers in a single place.
+While Dashboard is a UI to manage your WhatsApp sessions on single server, WAHA Hub is a central management server to control and manage multiple servers in a single place.
 👉 WAHA Hub is available in WAHA PRO version only.</description></item></channel></rss>
