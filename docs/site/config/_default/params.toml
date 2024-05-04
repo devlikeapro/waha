@@ -81,8 +81,8 @@ repoHost = "GitHub"
 #repoHost = "Gitea"
 docsRepo = "https://github.com/devlikeapro/whatsapp-http-api"
 docsRepoBranch = "core"
-docsRepoSubPath = ""
-editPage = false
+docsRepoSubPath = "docs/site"
+editPage = true
 lastMod = false
 
 [sections]
