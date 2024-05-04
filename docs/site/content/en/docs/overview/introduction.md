@@ -67,7 +67,7 @@ Here's the available features:
 - Single WhatsApp account running inside one container
 - Multiple WhatsApp account running inside one container ![](/images/versions/plus.png)
 - Session saving (don't have to scan QR on every restart) ![](/images/versions/plus.png)
-- Session saving on remote storage (database, redis) ![](/images/versions/plus-soon.png)
+- Session saving on remote storage (mongodb) ![](/images/versions/plus.png)
 
 ### Security
 - API authentication ![](/images/versions/plus.png)
