@@ -105,6 +105,11 @@ export class SessionManagerCore extends SessionManager {
   //
   async start(request: SessionStartRequest): Promise<SessionDTO> {
     this.onlyDefault(request.name);
+    if (this.session) {
+      throw new UnprocessableEntityException(
+        `Session '${this.DEFAULT}' is already started.`,
+      );
+    }
 
     const name = request.name;
     this.log.log(`'${name}' - starting session...`);
