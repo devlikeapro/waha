@@ -314,7 +314,8 @@ POST /api/{session}/groups/{groupId}/invite-code/revoke
 Webhooks #See the list of engines that support the feature -\u0026gt;.
 group.join #{ \u0026quot;event\u0026quot;: \u0026quot;group.join\u0026quot;, \u0026quot;session\u0026quot;: \u0026quot;default\u0026quot;, \u0026quot;engine\u0026quot;: \u0026quot;WEBJS\u0026quot;, \u0026quot;payload\u0026quot;: { ... } } group.leave #{ \u0026quot;event\u0026quot;: \u0026quot;group.left\u0026quot;, \u0026quot;session\u0026quot;: \u0026quot;default\u0026quot;, \u0026quot;engine\u0026quot;: \u0026quot;WEBJS\u0026quot;, \u0026quot;payload\u0026quot;: { ... } } `}),e.add({id:15,href:"/docs/overview/changelog/",title:"Changelog",description:"WAHA's changelog",content:`If you wish to get and read Release Notes - read them on one of our platforms, these posts are FREE.
 Boosty -\u0026gt; Patreon -\u0026gt; You even can subscribe to get new updates there!
-2024.4 #🎉 New #Add GET /api/sessions/{session} endpoint to get information about a specific session.
+2024.4 #🎉 New #Add WAHA Dashboard - UI to manage your WhatsApp sessions!
+Read more about Dashboard Open screenshot Add GET /api/sessions/{session} endpoint to get information about a specific session.
 Read more about Get session information Issue: #300 Implement GET /api/contacts/profile-picture for NOWEB engine.
 Issue: #298 2024.3 #🎉 New #Add message.reaction webhook in WEBJS and NOWEB engines
 Read more about message.reaction event Issue: #275 👉 NOWEB engine note - reactions were sent in 'message' and 'message.any' events, not it\u0026rsquo;s available only in 'message.reaction'!

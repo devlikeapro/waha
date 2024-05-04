@@ -20,8 +20,6 @@ Accounts (sessions) in the container CPU Memory 1 30% 400MB 10 270% 1.5GB The na
 Boosty -&amp;gt; Patreon -&amp;gt; You even can subscribe to get new updates there!
 2024.4 #
 🎉 New #
-Add GET /api/sessions/{session} endpoint to get information about a specific session.
-Read more about Get session information Issue: #300 Implement GET /api/contacts/profile-picture for NOWEB engine.
-Issue: #298 2024.3 #
-🎉 New #
-Add message.</description></item></channel></rss>
+Add WAHA Dashboard - UI to manage your WhatsApp sessions!
+Read more about Dashboard Open screenshot Add GET /api/sessions/{session} endpoint to get information about a specific session.
+Read more about Get session information Issue: #300 Implement GET /api/contacts/profile-picture for NOWEB engine.</description></item></channel></rss>
