@@ -6,7 +6,7 @@
     </div>
     <div class='col-lg-9 col-xl-9 text-center'>
       <div class='mb-4'>
-        <img src='/images/logo.svg' title='WhatsApp HTTP API' alt='logo' width='100' style='border-radius: 50%'/>
+        <img src='/images/logo.svg' title='WhatsApp HTTP API' alt='logo' style='border-radius: 50%; width: 10rem' />
       </div>
       <p class='lead'>{{ .Params.lead | safeHTML }}</p>
       <div class='code-block highlight'>
@@ -124,7 +124,7 @@
         </p>
         <img src='/images/swagger.png' alt='Swagger'
              style='max-width: 100%; cursor: pointer'
-             onclick="window.open(this.src)"
+             onclick='window.open(this.src)'
         >
       </div>
 
@@ -142,7 +142,7 @@
         </p>
         <img src='/images/waha-dashboard.png' alt='Dashboard'
              style='max-width: 100%; cursor: pointer'
-             onclick="window.open(this.src)"
+             onclick='window.open(this.src)'
         >
       </div>
     </div>
@@ -244,7 +244,7 @@
         Give it a try!
       </h2>
       <div class='mb-4'>
-        <img src='/images/logo.png' title='WhatsApp HTTP API' alt='logo' width='100' />
+        <img src='/images/logo.svg' title='WhatsApp HTTP API' alt='logo' style='border-radius: 50%; width: 10rem' />
       </div>
       <a class='btn btn-primary btn-lg px-4 mb-2'
          href='/docs/{{ if .Site.Params.options.docsVersioning }}{{ .Site.Params.docsVersion }}/{{ end }}overview/introduction/'
