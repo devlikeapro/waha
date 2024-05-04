@@ -13,8 +13,18 @@ weight: 301
 toc: true
 ---
 
-⚠️ The project in **DEVELOPMENT** yet... Subscribe to [**WAHA PRO**]({{< relref "plus-version#pro" >}}) to speed up the
-development!
+
+---
+
+⚠️
+
+**WAHA Hub** in **DEVELOPMENT** yet...
+
+Consider using [Dashboard]({{< relref "/docs/how-to/waha-dashboard" >}}) for managing your sessions.
+
+Subscribe to [**WAHA PRO**]({{< relref "plus-version#pro" >}}) to speed up the development!
+
+⚠️
 
 ---
 
