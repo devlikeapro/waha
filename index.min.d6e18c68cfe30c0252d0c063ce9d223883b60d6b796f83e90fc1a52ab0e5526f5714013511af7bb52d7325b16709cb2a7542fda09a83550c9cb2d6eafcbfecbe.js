@@ -344,7 +344,11 @@ If WHATSAPP_API_KEY is set - requests must have X-Api-Key header with secret val
 Webhooks Instead of setting each webhook via environment variables - we use two environments variables:
 WHATSAPP_HOOK_URL - to set a URL WHATSAPP_HOOK_EVENTS - to set events that are sent to the URL Previous Current WHATSAPP_HOOK_ONMESSAGE=https://httpbin.org/post WHATSAPP_HOOK_ONANYMESSAGE=https://httpbin.org/post WHATSAPP_HOOK_URL=https://httpbin.org/post WHATSAPP_HOOK_EVENTS=message,message.any ** Webhook payload**
 The data for webhooks are wrapped inside a new WAWebhook object with event and payload fields to help you identify which handler you should call based on event.
-{ \u0026quot;event\u0026quot;: \u0026quot;message.any\u0026quot;, \u0026quot;payload\u0026quot;: { } } `}),e.add({id:16,href:"/docs/how-to/",title:"How-to guides",description:"How-to guides",content:""}),e.add({id:17,href:"/docs/waha-hub/",title:"WAHA Hub",description:"WAHA Hub",content:""}),e.add({id:18,href:"/docs/waha-hub/introduction/",title:"WAHA Hub",description:"WAHA Hub",content:`⚠️ The project in DEVELOPMENT yet\u0026hellip; Subscribe to WAHA PRO to speed up the development!
+{ \u0026quot;event\u0026quot;: \u0026quot;message.any\u0026quot;, \u0026quot;payload\u0026quot;: { } } `}),e.add({id:16,href:"/docs/how-to/",title:"How-to guides",description:"How-to guides",content:""}),e.add({id:17,href:"/docs/waha-hub/",title:"WAHA Hub",description:"WAHA Hub",content:""}),e.add({id:18,href:"/docs/waha-hub/introduction/",title:"WAHA Hub",description:"WAHA Hub",content:` ⚠️
+WAHA Hub in DEVELOPMENT yet\u0026hellip;
+Consider using Dashboard for managing your sessions.
+Subscribe to WAHA PRO to speed up the development!
+⚠️
 Overview #WAHA Hub - central management solution to help your build reliable infrastructure with multiple WAHA servers!
 While Dashboard is a UI to manage your WhatsApp sessions on single server, WAHA Hub is a central management server to control and manage multiple servers in a single place.
 👉 WAHA Hub is available in WAHA PRO version only.
