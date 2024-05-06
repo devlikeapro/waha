@@ -26,11 +26,6 @@ We will guide you through the necessary steps to successfully send your first te
 [**Quick Start →**]({{< relref "quick-start" >}}).
 
 ## Features
-WAHA is distributed in two versions:
-- Core ![](/images/versions/core.png) - the basic version that meet almost 80% people's needs. 100% free and [open source ->](https://github.com/devlikeapro/whatsapp-http-api).
-- Plus ![](/images/versions/plus.png) - the version with advanced messages, security, and reliability features. Donations, no license expiration, quick updates, read more about [Plus Version →]({{< relref "plus-version" >}})
-
-See the list of engines [**that support the features ->**]({{< relref "/docs/how-to/engines#features" >}}).
 
 Here's the available features:
 
@@ -75,4 +70,13 @@ Here's the available features:
 
 ### Updates
 - Bug fixes and updates come as soon as they are implemented.
+
+## Engines
+Not all Engines support all Features, see [**the feature supported by engines ->**]({{< relref "/docs/how-to/engines#features" >}}).
+
+
+## Versions
+WAHA is distributed in two versions:
+- Core ![](/images/versions/core.png) - the basic version that meet almost 80% people's needs. **100% free and [open source ->](https://github.com/devlikeapro/whatsapp-http-api)**.
+- Plus ![](/images/versions/plus.png) - the version with advanced messages, security, and reliability features. Donations, no license expiration, quick updates, read more about [**Plus Version →**]({{< relref "plus-version" >}})
 
