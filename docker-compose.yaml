@@ -32,8 +32,9 @@ services:
       - WHATSAPP_SWAGGER_PASSWORD=admin
       # Username and password for WAHA Dashboard
       # you can use the same username and password for both Swagger and Dashboard
-      - WAHA_DASHBOARD_USERNAME=dashboard
-      - WAHA_DASHBOARD_PASSWORD=admin
+      # Default - waha / waha
+      - WAHA_DASHBOARD_USERNAME=waha
+      - WAHA_DASHBOARD_PASSWORD=waha
     restart: always
 
   whatsapp-http-api-plus--mongodb:
