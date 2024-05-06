@@ -19,6 +19,17 @@ If you wish to get and read Release Notes - read them on one of our platforms, *
 
 You even can **subscribe to get new updates** there!
 
+## 2024.5
+### 🐛 Bug Fixes
+----
+Don't allow to start two sessions with the same name.
+
+Before API allowed to start two sessions with the same name, which could lead to potential problems (no way to stop the first, abandoned session).
+- Issue: [#315](https://github.com/devlikeapro/whatsapp-http-api/issues/315)
+- Read more about [start a session](https://waha.devlike.pro/docs/how-to/sessions/#start)
+
+----
+
 ## 2024.4
 ### 🎉 New
 ----
