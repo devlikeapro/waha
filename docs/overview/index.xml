@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Overview on</title><link>https://waha.devlike.pro/docs/overview/</link><description>Recent content in Overview on</description><generator>Hugo -- gohugo.io</generator><lastBuildDate>Tue, 06 Oct 2020 08:48:45 +0000</lastBuildDate><atom:link href="https://waha.devlike.pro/docs/overview/index.xml" rel="self" type="application/rss+xml"/><item><title>Introduction</title><link>https://waha.devlike.pro/docs/overview/introduction/</link><pubDate>Tue, 06 Oct 2020 08:48:57 +0000</pubDate><guid>https://waha.devlike.pro/docs/overview/introduction/</guid><description>WAHA - WhatsApp HTTP API that you can install on your own server and run in less than 5 minutes!
 Get started #
 👉 Run WhatsApp HTTP API in less than 5 minutes! We will guide you through the necessary steps to successfully send your first text message using WhatsApp HTTP API in Quick Start →.
-Features #
-WAHA is distributed in two versions:
-Core - the basic version that meet almost 80% people&amp;rsquo;s needs.</description></item><item><title>Quick Start</title><link>https://waha.devlike.pro/docs/overview/quick-start/</link><pubDate>Mon, 16 Nov 2020 13:59:39 +0100</pubDate><guid>https://waha.devlike.pro/docs/overview/quick-start/</guid><description>On this page you&amp;rsquo;re going to install WAHA, run it, authenticate the client using QR code and send the first text message to WhatsApp!
+Disclaimer #
+This project is not affiliated, associated, authorized, endorsed by, or in any way officially connected with WhatsApp or any of its subsidiaries or its affiliates.</description></item><item><title>Quick Start</title><link>https://waha.devlike.pro/docs/overview/quick-start/</link><pubDate>Mon, 16 Nov 2020 13:59:39 +0100</pubDate><guid>https://waha.devlike.pro/docs/overview/quick-start/</guid><description>On this page you&amp;rsquo;re going to install WAHA, run it, authenticate the client using QR code and send the first text message to WhatsApp!
 Requirements #
 Only thing that you must have - installed docker. Please follow the original instruction how to install docker -&amp;gt;.
 When you are ready - come back and follows the below steps to send the first text message to WhatsApp via HTTP API!
@@ -18,8 +17,7 @@ WEBJS #
 The benchmark has been made on Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz. It may differ from case to case, it depends on usage pattern - how many messages you get, how many send, etc.
 Accounts (sessions) in the container CPU Memory 1 30% 400MB 10 270% 1.5GB The nature of WhatsApp HTTP API and its underlying engines - is to run real WhatsApp Web version in Chrome and communicate with it to prevent blocking from WhatsApp.</description></item><item><title>Changelog</title><link>https://waha.devlike.pro/docs/overview/changelog/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://waha.devlike.pro/docs/overview/changelog/</guid><description>If you wish to get and read Release Notes - read them on one of our platforms, these posts are FREE.
 Boosty -&amp;gt; Patreon -&amp;gt; You even can subscribe to get new updates there!
-2024.4 #
-🎉 New #
-Add WAHA Dashboard - UI to manage your WhatsApp sessions!
-Read more about Dashboard Open screenshot Add GET /api/sessions/{session} endpoint to get information about a specific session.
-Read more about Get session information Issue: #300 Implement GET /api/contacts/profile-picture for NOWEB engine.</description></item></channel></rss>
+2024.5 #
+🐛 Bug Fixes #
+Don&amp;rsquo;t allow to start two sessions with the same name.
+Before API allowed to start two sessions with the same name, which could lead to potential problems (no way to stop the first, abandoned session).</description></item></channel></rss>
