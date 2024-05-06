@@ -322,7 +322,7 @@ Before API allowed to start two sessions with the same name, which could lead to
 Issue: #315 Read more about start a session 2024.4 #🎉 New #Add WAHA Dashboard - UI to manage your WhatsApp sessions!
 Read more about Dashboard Open screenshot Add GET /api/sessions/{session} endpoint to get information about a specific session.
 Read more about Get session information Issue: #300 Implement GET /api/contacts/profile-picture for NOWEB engine.
-Issue: #298 2024.3 #🎉 New #Add message.reaction webhook in WEBJS and NOWEB engines
+Read more about Get contact profile picture Issue: #298 2024.3 #🎉 New #Add message.reaction webhook in WEBJS and NOWEB engines
 Read more about message.reaction event Issue: #275 👉 NOWEB engine note - reactions were sent in 'message' and 'message.any' events, not it\u0026rsquo;s available only in 'message.reaction'!
 Add star and unstar message endpoint PUT /api/star
 Read Star and unstar message documentation Issue: #273 Add PUT /api/{session}/chats/{chatId}/messages/{messageId} endpoint to edit the message.
