@@ -13,12 +13,10 @@ weight: 110
 
 **Dashboard** is a UI to manage your WhatsApp sessions!
 
-
-![Dashboard](waha-dashboard.png)
-<div class="text-center">
-  <a href="./waha-dashboard.png" target="_blank">See full size image</a>
-</div>
-<br/>
+<video autoplay loop muted playsinline controls='noremoteplayback' width="100%" poster='/images/waha-dashboard.png'>
+  <source src="/images/waha-dashboard-overview.webm" type="video/webm" />
+  Download the <a href="/images/waha-dashboard-overview.webm">Dashboard Overview video</a> .
+</video>
 
 👉 **Dashboard** is available in [**WAHA Plus**]({{< relref "plus-version#plus" >}}) ![](/images/versions/plus.png) version only.
 
@@ -35,10 +33,6 @@ docker run -it -p 3000:3000/tcp devlikeapro/whatsapp-http-api-plus
 If you're using [API Key]({{< relref "security" >}}), remember to set up the key in the dashboard.
 
 ![Dashboard with API Key](waha-dashboard-key.png)
-<div class="text-center">
-  <a href="./waha-dashboard-key.png" target="_blank">See full size image</a>
-</div>
-<br/>
 
 ## Configuration
 
