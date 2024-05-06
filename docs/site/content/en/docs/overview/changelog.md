@@ -47,6 +47,7 @@ Add `GET /api/sessions/{session}` endpoint to get information about a specific s
 ----
 
 Implement `GET /api/contacts/profile-picture` for **NOWEB** engine.
+- Read more about [Get contact profile picture](https://waha.devlike.pro/docs/how-to/contacts/#get-contact-profile-picture)
 - Issue: [#298](https://github.com/devlikeapro/whatsapp-http-api/issues/298)
 
 ----
