@@ -9,20 +9,9 @@ import { getEngineName } from './version';
 @Injectable()
 export class WhatsappConfigService {
   public filesUri = '/api/files';
-  public dashboardUri = '/dashboard';
   public schema = 'http';
 
   constructor(private configService: ConfigService) {}
-
-  static noSlash(value: string): string {
-    if (!value) {
-      return value;
-    }
-    if (value.startsWith('/')) {
-      return value.slice(1);
-    }
-    return value;
-  }
 
   get filesURL(): string {
     return `${this.schema}://${this.hostname}:${this.port}${this.filesUri}/`;
@@ -140,27 +129,6 @@ export class WhatsappConfigService {
 
   getApiKey(): string | undefined {
     return this.configService.get('WHATSAPP_API_KEY', '');
-  }
-
-  getSwaggerEnabled(): boolean {
-    const value = this.configService.get('WHATSAPP_SWAGGER_ENABLED', 'true');
-    return parseBool(value);
-  }
-
-  getSwaggerUsernamePassword(): [string, string] | undefined {
-    const user = this.configService.get('WHATSAPP_SWAGGER_USERNAME', undefined);
-    const password = this.configService.get(
-      'WHATSAPP_SWAGGER_PASSWORD',
-      undefined,
-    );
-    if (!user && !password) {
-      console.log(
-        'Please set up both WHATSAPP_SWAGGER_USERNAME and WHATSAPP_SWAGGER_PASSWORD ' +
-          'to enable swagger authentication.',
-      );
-      return undefined;
-    }
-    return [user, password];
   }
 
   getDashboardEnabled(): boolean {

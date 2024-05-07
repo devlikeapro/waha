@@ -25,6 +25,7 @@ async function loadModules(): Promise<
   const { AppModulePlus } = await import('./plus/app.module.plus');
   // @ts-ignore
   const { SwaggerModulePlus } = await import('./plus/swagger.module.plus');
+  // @ts-ignore
   return [AppModulePlus, SwaggerModulePlus];
 }
 
