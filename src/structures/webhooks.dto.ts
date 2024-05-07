@@ -222,8 +222,8 @@ class WAHAWebhookPollVote extends WAHAWebhook {
 class WAHAWebhookPollVoteFailed extends WAHAWebhook {
   @ApiProperty({
     description:
-      'There may be cases when WAHA fails to decrypt a vote from the user. ' +
-      'Read more about how to handle such events: https://waha.devlike.pro/docs/how-to/polls/#pollvotefailed',
+      'There may be cases when it fails to decrypt a vote from the user. ' +
+      'Read more about how to handle such events in the documentations.',
   })
   event = WAHAEvents.POLL_VOTE_FAILED;
 
