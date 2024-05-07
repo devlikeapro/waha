@@ -3,7 +3,7 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "plugins": ["@nestjs/swagger"],
-    "assets": ["dashboard/**"],
+    "assets": ["dashboard/**", "core/engines/webjs/*"],
     "watchAssets": true
   }
 }

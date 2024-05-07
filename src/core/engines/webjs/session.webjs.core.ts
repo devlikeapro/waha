@@ -74,6 +74,8 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   protected getClientOptions(): ClientOptions {
+    // Folder with current file
+    const path = __dirname;
     return {
       puppeteer: {
         headless: true,
@@ -82,9 +84,9 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       },
       webVersion: '2.2412.54',
       webVersionCache: {
-        type: 'remote',
-        remotePath:
-          'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/{version}.html',
+        type: 'local',
+        path: path,
+        strict: true,
       },
     };
   }
