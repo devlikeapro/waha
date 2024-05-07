@@ -6,8 +6,11 @@ import { WhatsappConfigService } from '../config.service';
 import { VERSION } from '../version';
 import { SwaggerConfigServiceCore } from './config/SwaggerConfigServiceCore';
 
-export class SwaggerModuleCore {
-  configure(app: INestApplication, webhooks: any[]) {
+export class SwaggerConfiguratorCore {
+  constructor(protected app: INestApplication) {}
+
+  configure(webhooks: any[]) {
+    const app = this.app;
     const builder = new DocumentBuilder();
 
     builder
