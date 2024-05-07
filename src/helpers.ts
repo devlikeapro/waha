@@ -1,6 +1,10 @@
 import { LogLevel } from '@nestjs/common';
 
 function parseBool(value: any): boolean {
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
   if (!value) {
     return false;
   }
