@@ -26,9 +26,7 @@ async function loadModules(): Promise<
   // @ts-ignore
   const { AppModulePlus } = await import('./plus/app.module.plus');
   // @ts-ignore
-  const { SwaggerConfiguratorPlus } = await import(
-    './plus/SwaggerConfiguratorPlus'
-  );
+  const { SwaggerConfiguratorPlus } = await import('./plus/SwaggerConfiguratorPlus'); // prettier-ignore
   // @ts-ignore
   return [AppModulePlus, SwaggerConfiguratorPlus];
 }
