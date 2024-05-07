@@ -22,11 +22,21 @@ You even can **subscribe to get new updates** there!
 ## 2024.5
 ### 🐛 Bug Fixes
 ----
+
+Use local cache for **WEBJS** engine (versions file).
+- Issue: [#316](https://github.com/devlikeapro/whatsapp-http-api/issues/316)
+- Version: `2024.5.4`
+- Engine: **WEBJS**
+
+----
+
 Don't allow to start two sessions with the same name.
 
 Before API allowed to start two sessions with the same name, which could lead to potential problems (no way to stop the first, abandoned session).
 - Issue: [#315](https://github.com/devlikeapro/whatsapp-http-api/issues/315)
 - Read more about [start a session](https://waha.devlike.pro/docs/how-to/sessions/#start)
+- Version: `2024.5.3`
+- Engine: **ALL**
 
 ----
 
