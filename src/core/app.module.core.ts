@@ -22,6 +22,7 @@ import { VersionController } from '../api/version.controller';
 import { WhatsappConfigService } from '../config.service';
 import { SessionManager } from './abc/manager.abc';
 import { WAHAHealthCheckService } from './abc/WAHAHealthCheckService';
+import { SwaggerConfigServiceCore } from './config/SwaggerConfigServiceCore';
 import { WAHAHealthCheckServiceCore } from './health/WAHAHealthCheckServiceCore';
 import { SessionManagerCore } from './manager.core';
 
@@ -76,6 +77,7 @@ const PROVIDERS = [
     provide: WAHAHealthCheckService,
     useClass: WAHAHealthCheckServiceCore,
   },
+  SwaggerConfigServiceCore,
   WhatsappConfigService,
   ConsoleLogger,
 ];

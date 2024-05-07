@@ -184,10 +184,6 @@ export class WhatsappConfigService {
     return [user, password];
   }
 
-  getSwaggerAdvancedConfigEnabled(): boolean {
-    return this.configService.get('WHATSAPP_SWAGGER_CONFIG_ADVANCED', false);
-  }
-
   getHealthMediaFilesThreshold(): number {
     return this.configService.get<number>(
       'WHATSAPP_HEALTH_MEDIA_FILES_THRESHOLD_MB',

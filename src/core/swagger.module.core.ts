@@ -4,6 +4,7 @@ import { DECORATORS } from '@nestjs/swagger/dist/constants';
 
 import { WhatsappConfigService } from '../config.service';
 import { VERSION } from '../version';
+import { SwaggerConfigServiceCore } from './config/SwaggerConfigServiceCore';
 
 export class SwaggerModuleCore {
   configure(app: INestApplication, webhooks: any[]) {
@@ -60,7 +61,8 @@ export class SwaggerModuleCore {
       });
 
     const config = app.get(WhatsappConfigService);
-    if (config.getSwaggerAdvancedConfigEnabled()) {
+    const swaggerConfig = app.get(SwaggerConfigServiceCore);
+    if (swaggerConfig.advancedConfigEnabled) {
       builder.addServer('{protocol}://{host}:{port}/{baseUrl}', '', {
         protocol: {
           default: 'http',
