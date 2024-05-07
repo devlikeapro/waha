@@ -9,35 +9,47 @@ import { SwaggerConfigServiceCore } from './config/SwaggerConfigServiceCore';
 export class SwaggerConfiguratorCore {
   constructor(protected app: INestApplication) {}
 
+  get title() {
+    return 'WAHA - WhatsApp HTTP API';
+  }
+
+  get description() {
+    return (
+      'WhatsApp HTTP API that you can run in a click!<br/>' +
+      '<br/>' +
+      'Learn more:' +
+      '<ul>' +
+      '<li><a href="https://waha.devlike.pro/" target="_blank">Documentation</a></li>' +
+      '<li><a href="https://waha.devlike.pro/docs/how-to/engines/#features" target="_blank">Supported features in engines</a></li>' +
+      '<li><a href="https://github.com/devlikeapro/whatsapp-http-api" target="_blank">GitHub - WAHA Core</a></li>' +
+      '<li><a href="https://github.com/devlikeapro/whatsapp-http-api-plu' + // Separate line to pass pre-commit check
+      's" target="_blank">GitHub - WAHA Plus</a></li>' +
+      '<li><b>NEW!</b> - <a href="/dashboard">WAHA Dashboard</a></li>' +
+      '<li><b>NEW!</b> - <a href="https://waha.devlike.pro/docs/how-to/waha-dashboard">WAHA Dashboard Documentation</a></li>' +
+      '</ul>' +
+      '<p>Support the project and get WAHA Plus version!</p>' +
+      '<ul>' +
+      '<li><a href="https://waha.devlike.pro/docs/how-to/plu' + // Separate line to pass pre-commit check
+      's-version/" target="_blank">WAHA Plus</a></li>' +
+      '<li><a href="https://patreon.com/wa_http_api/" target="_blank">Patreon</a></li>' +
+      '<li><a href="https://boosty.to/wa-http-api/" target="_blank">Boosty</a></li>' +
+      '<li><a href="https://portal.devlike.pro/" target="_blank">Patron Portal</a></li>' +
+      '</ul>'
+    );
+  }
+
+  get externalDocUrl() {
+    return 'https://waha.devlike.pro/';
+  }
+
   configure(webhooks: any[]) {
     const app = this.app;
     const builder = new DocumentBuilder();
 
     builder
-      .setTitle('WAHA - WhatsApp HTTP API')
-      .setDescription(
-        'WhatsApp HTTP API that you can run in a click!<br/>' +
-          '<br/>' +
-          'Learn more:' +
-          '<ul>' +
-          '<li><a href="https://waha.devlike.pro/" target="_blank">Documentation</a></li>' +
-          '<li><a href="https://waha.devlike.pro/docs/how-to/engines/#features" target="_blank">Supported features in engines</a></li>' +
-          '<li><a href="https://github.com/devlikeapro/whatsapp-http-api" target="_blank">GitHub - WAHA Core</a></li>' +
-          '<li><a href="https://github.com/devlikeapro/whatsapp-http-api-plu' + // Separate line to pass pre-commit check
-          's" target="_blank">GitHub - WAHA Plus</a></li>' +
-          '<li><b>NEW!</b> - <a href="/dashboard">WAHA Dashboard</a></li>' +
-          '<li><b>NEW!</b> - <a href="https://waha.devlike.pro/docs/how-to/waha-dashboard">WAHA Dashboard Documentation</a></li>' +
-          '</ul>' +
-          '<p>Support the project and get WAHA Plus version!</p>' +
-          '<ul>' +
-          '<li><a href="https://waha.devlike.pro/docs/how-to/plu' + // Separate line to pass pre-commit check
-          's-version/" target="_blank">WAHA Plus</a></li>' +
-          '<li><a href="https://patreon.com/wa_http_api/" target="_blank">Patreon</a></li>' +
-          '<li><a href="https://boosty.to/wa-http-api/" target="_blank">Boosty</a></li>' +
-          '<li><a href="https://portal.devlike.pro/" target="_blank">Patron Portal</a></li>' +
-          '</ul>',
-      )
-      .setExternalDoc('WAHA', 'https://waha.devlike.pro/')
+      .setTitle(this.title)
+      .setDescription(this.description)
+      .setExternalDoc(this.title, this.externalDocUrl)
       .setVersion(VERSION.version)
       .addTag('sessions', 'Control WhatsApp sessions')
       .addTag('auth', 'Authentication')
@@ -100,7 +112,7 @@ export class SwaggerConfiguratorCore {
     );
     document = this.configureWebhooks(document, webhooks);
     SwaggerModule.setup('', app, document, {
-      customSiteTitle: 'WAHA - WhatsApp HTTP API',
+      customSiteTitle: this.title,
     });
   }
 
