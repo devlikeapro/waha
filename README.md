@@ -4,7 +4,7 @@
     <img src="./docs/site/static/images/logo.png" alt="Image" />
 </p>
 
-**WAHA** - **W**hats**A**pp **H**TTP **A**PI that you can install on your own server and run in less than 5 minutes!
+**WAHA** - **W**hats**A**pp **H**TTP **A**PI (REST API) that you can install on your own server and run in less than 5 minutes!
 
 - Documentation: [https://waha.devlike.pro/](https://waha.devlike.pro/)
 - Swagger Example: [https://waha.devlike.pro/swagger](https://waha.devlike.pro/swagger)
