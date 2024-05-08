@@ -37,3 +37,25 @@ You can find Swagger documentation on the following url after you
 
 Read more about security settings for Swagger and API on [**Security page** ->]({{< relref "/docs/how-to/security" >}}).
 
+### White label
+You can show your own brand in the Swagger documentation.
+
+👉 Swagger White Label is available in [**WAHA Plus**]({{< relref "plus-version#plus" >}}) ![](/images/versions/plus.png) version only.
+
+<img src="swagger-white-label.png" onclick="window.open(this.src)" style="cursor: pointer;">
+<br/>
+<br/>
+
+
+Use the following environment variables to customize the Swagger documentation:
+- `WHATSAPP_SWAGGER_TITLE` - the title of the Swagger documentation and some other places.
+- `WHATSAPP_SWAGGER_DESCRIPTION` - Markdown formatted description of your API.
+- `WHATSAPP_SWAGGER_EXTERNAL_DOC_URL` - URL to the external documentation.
+
+**Example** (consider using [docker-compose](https://github.com/devlikeapro/whatsapp-http-api/blob/core/docker-compose.yaml#L15-L38) or other methods to store these settings):
+```bash
+docker run -it -p 3000:3000 -e WHATSAPP_SWAGGER_TITLE="AwesomeCRM" -e 'WHATSAPP_SWAGGER_DESCRIPTION=<p>FantasticFindz - Discover unique treasures from around the world at unbelievable prices!<br/> <a href='https://google.com'>Read more about us!</a></p>' -e "WHATSAPP_SWAGGER_EXTERNAL_DOC_URL=https://google.com" devlikeapro/whatsapp-http-api-plus
+```
+
+
+

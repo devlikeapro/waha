@@ -49,7 +49,7 @@ The following environment variables can be used to configure the WAHA.
 - `WHATSAPP_SWAGGER_USERNAME=admin` and `WHATSAPP_SWAGGER_PASSWORD=admin` - these variables can be used to protect the Swagger panel
   with `admin / admin` credentials. This does not affect API access. Available in **WAHA Plus** only.
 
-Read more about security settings for Swagger and API on [**Security page** ->]({{< relref "/docs/how-to/security" >}}).
+Read more about Swagger configuration on [**Swagger page** ->]({{< relref "/docs/how-to/swagger" >}}).
 
 ### Proxy
 #### Global proxy configuration
