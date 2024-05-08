@@ -6,6 +6,8 @@
 
 **WAHA** - **W**hats**A**pp **H**TTP **A**PI (REST API) that you can install on your own server and run in less than 5 minutes!
 
+[![Docker Pulls](https://img.shields.io/docker/pulls/devlikeapro/whatsapp-http-api)](https://hub.docker.com/r/devlikeapro/whatsapp-http-api)
+
 - Documentation: [https://waha.devlike.pro/](https://waha.devlike.pro/)
 - Swagger Example: [https://waha.devlike.pro/swagger](https://waha.devlike.pro/swagger)
 
