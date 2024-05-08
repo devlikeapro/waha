@@ -12,6 +12,11 @@ weight: 111
 ## Overview
 The project provides HTTP API (REST), which is documented with OpenAPI specification and Swagger UI.
 
+<video autoplay loop muted playsinline controls='noremoteplayback' width="100%" poster='/images/swagger.png'>
+  <source src="/videos/swagger-overview.webm" type="video/webm" />
+  Download the <a href="/videos/swagger-overview.webm">Swagger Overview video</a> .
+</video>
+
 You can see all available endpoints, request/response examples, and even execute them directly from the Swagger UI.
 
 Later version:
