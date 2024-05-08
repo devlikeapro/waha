@@ -95,6 +95,11 @@
   url = "https://boosty.to/wa-http-api"
   parent = "waha-plus"
 
+[[main]]
+  name = "Pricing"
+  weight = 90
+  url = "/docs/how-to/plus-version#tiers"
+
 
 [[main]]
   name = "Examples"
