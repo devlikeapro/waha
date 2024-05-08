@@ -14,8 +14,8 @@ weight: 110
 **Dashboard** is a UI to manage your WhatsApp sessions!
 
 <video autoplay loop muted playsinline controls='noremoteplayback' width="100%" poster='/images/waha-dashboard.png'>
-  <source src="/images/waha-dashboard-overview.webm" type="video/webm" />
-  Download the <a href="/images/waha-dashboard-overview.webm">Dashboard Overview video</a> .
+  <source src="/videos/waha-dashboard-overview.webm" type="video/webm" />
+  Download the <a href="/videos/waha-dashboard-overview.webm">Dashboard Overview video</a> .
 </video>
 
 👉 **Dashboard** is available in [**WAHA Plus**]({{< relref "plus-version#plus" >}}) ![](/images/versions/plus.png) version only.
