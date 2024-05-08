@@ -16,8 +16,9 @@ When developing a bot for WhatsApp, you should never initiate a conversation. In
 WEBJS #
 The benchmark has been made on Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz. It may differ from case to case, it depends on usage pattern - how many messages you get, how many send, etc.
 Accounts (sessions) in the container CPU Memory 1 30% 400MB 10 270% 1.5GB The nature of WhatsApp HTTP API and its underlying engines - is to run real WhatsApp Web version in Chrome and communicate with it to prevent blocking from WhatsApp.</description></item><item><title>Changelog</title><link>https://waha.devlike.pro/docs/overview/changelog/</link><pubDate>Tue, 06 Oct 2020 08:49:31 +0000</pubDate><guid>https://waha.devlike.pro/docs/overview/changelog/</guid><description>If you wish to get and read Release Notes - read them on one of our platforms, these posts are FREE.
-Boosty -&amp;gt; Patreon -&amp;gt; You even can subscribe to get new updates there!
+Boosty -&amp;gt; Patreon -&amp;gt; Subscribe for FREE to get new updates there!
 2024.5 #
-🐛 Bug Fixes #
-Don&amp;rsquo;t allow to start two sessions with the same name.
-Before API allowed to start two sessions with the same name, which could lead to potential problems (no way to stop the first, abandoned session).</description></item></channel></rss>
+🎉 New #
+Swagger White Label - show your own brand in the Swagger documentation!
+Read more about Swagger White Label Issue: #305 Build: 2024.5.4 Engine: ALL 🐛 Fixes #
+Use local cache for WEBJS engine (versions file).</description></item></channel></rss>

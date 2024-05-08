@@ -6,7 +6,13 @@ Dashboard is a UI to manage your WhatsApp sessions!
 Download the Dashboard Overview video . 👉 Dashboard is available in WAHA Plus version only.
 You can access Dashboard by running the project and opening http://localhost:3000/dashboard (or similar, but with /dashboard at the end).
 ℹ️ Default username and password: waha/waha
-docker run -it -p 3000:3000/tcp devlikeapro/whatsapp-http-api-plus If you&amp;rsquo;re using API Key, remember to set up the key in the dashboard.</description></item><item><title>Send messages</title><link>https://waha.devlike.pro/docs/how-to/send-messages/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/send-messages/</guid><description>We consider that you&amp;rsquo;ve run docker container and authenticated the session with QR code.
+docker run -it -p 3000:3000/tcp devlikeapro/whatsapp-http-api-plus If you&amp;rsquo;re using API Key, remember to set up the key in the dashboard.</description></item><item><title>Swagger (OpenAPI)</title><link>https://waha.devlike.pro/docs/how-to/swagger/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/swagger/</guid><description>Overview #
+The project provides HTTP API (REST), which is documented with OpenAPI specification and Swagger UI.
+Download the Swagger Overview video . You can see all available endpoints, request/response examples, and even execute them directly from the Swagger UI.
+Later version:
+OpenAPI specification -&amp;gt; Swagger documentation -&amp;gt; You can find Swagger documentation on the following url after you install and started it:
+Swagger: http://localhost:3000. OpenAPI: http://localhost:3000/-json. Configuration #
+WHATSAPP_SWAGGER_CONFIG_ADVANCED=true - enables advanced configuration options for Swagger documentation - you can customize host, port and base URL for the requests.</description></item><item><title>Send messages</title><link>https://waha.devlike.pro/docs/how-to/send-messages/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/send-messages/</guid><description>We consider that you&amp;rsquo;ve run docker container and authenticated the session with QR code.
 If you haven&amp;rsquo;t yet - please follow the steps from Quick Start →.
 Fields #
 There are common fields that you can find in almost all requests:
@@ -47,7 +53,4 @@ See the list of engines that support the feature -&amp;gt;.
 Get all contacts #
 Get your contacts - GET /api/contacts/all
 [ { &amp;quot;id&amp;quot;: &amp;quot;11231231231@c.us&amp;quot;, &amp;quot;number&amp;quot;: &amp;quot;11231231231&amp;quot;, &amp;quot;name&amp;quot;: &amp;quot;Contact Name&amp;quot;, &amp;quot;pushname&amp;quot;: &amp;quot;Pushname&amp;quot;, &amp;quot;shortName&amp;quot;: &amp;quot;Shortname&amp;quot;, &amp;quot;isMe&amp;quot;: true, &amp;quot;isGroup&amp;quot;: false, &amp;quot;isWAContact&amp;quot;: true, &amp;quot;isMyContact&amp;quot;: true, &amp;quot;isBlocked&amp;quot;: false } ] Get contact #
-Get contact</description></item><item><title>Groups</title><link>https://waha.devlike.pro/docs/how-to/groups/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/groups/</guid><description>Endpoints #
-See the list of engines that support the feature -&amp;gt;.
-Endpoints for groups. Please look at swagger for details.
-{session} - use the session name for Whatsapp instance that you created with POST /api/session/start endpoint {groupId} - group id in format 123123123123@g.us. You can get the id in a few ways: By handling incoming message webhook. By getting all groups (see below). By creating a new group and saving the id.</description></item></channel></rss>
+Get contact</description></item></channel></rss>
