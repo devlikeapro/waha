@@ -333,6 +333,14 @@ export abstract class WhatsappSession {
   }
 
   /**
+   * Labels methods
+   */
+
+  public getLabels() {
+    throw new NotImplementedByEngineError();
+  }
+
+  /**
    * Contacts methods
    */
   public getContact(query: ContactQuery) {

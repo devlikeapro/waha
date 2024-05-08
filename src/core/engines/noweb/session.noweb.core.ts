@@ -724,6 +724,14 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   /**
+   * Labels methods
+   */
+
+  getLabels() {
+    throw new NotImplementedByEngineError();
+  }
+
+  /**
    * Contacts methods
    */
   async getContact(query: ContactQuery) {

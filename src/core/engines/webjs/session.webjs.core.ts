@@ -337,7 +337,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   sendText(request: MessageTextRequest) {
     const options = {
       // It's fine to sent just ids instead of Contact object
-      mentions: request.mentions as unknown as string[],
+      mentions: (request.mentions as unknown) as string[],
     };
     return this.whatsapp.sendMessage(
       this.ensureSuffix(request.chatId),
@@ -359,7 +359,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     const message = this.recreateMessage(messageId);
     const options = {
       // It's fine to sent just ids instead of Contact object
-      mentions: request.mentions as unknown as string[],
+      mentions: (request.mentions as unknown) as string[],
     };
     return message.edit(request.text, options);
   }
@@ -368,7 +368,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     const options = {
       quotedMessageId: request.reply_to,
       // It's fine to sent just ids instead of Contact object
-      mentions: request.mentions as unknown as string[],
+      mentions: (request.mentions as unknown) as string[],
     };
     return this.whatsapp.sendMessage(request.chatId, request.text, options);
   }
@@ -478,6 +478,15 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   public chatsUnarchiveChat(chatId: string): Promise<any> {
     const id = this.ensureSuffix(chatId);
     return this.whatsapp.unarchiveChat(id);
+  }
+
+  /**
+   *
+   * Label methods
+   */
+
+  getLabels() {
+    return this.whatsapp.getLabels();
   }
 
   /**

@@ -15,6 +15,7 @@ import { Logger } from 'pino';
 import { AuthController } from '../api/auth.controller';
 import { ChatsController } from '../api/chats.controller';
 import { ChattingController } from '../api/chatting.controller';
+import { LabelsController } from '../api/labels.controller';
 import { ContactsController } from '../api/contacts.controller';
 import { GroupsController } from '../api/groups.controller';
 import { HealthController } from '../api/health.controller';
@@ -35,6 +36,7 @@ import { EngineConfigService } from './config/EngineConfigService';
 import { SwaggerConfigServiceCore } from './config/SwaggerConfigServiceCore';
 import { WAHAHealthCheckServiceCore } from './health/WAHAHealthCheckServiceCore';
 import { SessionManagerCore } from './manager.core';
+
 
 export const IMPORTS = [
   LoggerModule.forRoot({
@@ -100,6 +102,7 @@ export const CONTROLLERS = [
   ChatsController,
   ChannelsController,
   StatusController,
+  LabelsController,
   ContactsController,
   GroupsController,
   PresenceController,
