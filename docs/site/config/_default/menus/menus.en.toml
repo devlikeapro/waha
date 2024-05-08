@@ -35,6 +35,11 @@
   url = "/docs/overview/introduction"
   parent = "docs"
 
+[[main]]
+  name = "Install"
+  weight = 13
+  url = "/docs/how-to/install"
+  parent = "docs"
 
 [[main]]
   name = "Send messages"
@@ -68,7 +73,7 @@
 
 [[main]]
   name = "WAHA Plus"
-  weight = 30
+  weight = 20
   identifier = "waha-plus"
 
 [[main]]
@@ -103,18 +108,18 @@
 
 [[main]]
   name = "Examples"
-  weight = 20
+  weight = 30
   identifier = "examples"
 
 [[main]]
   name = "Python ->"
-  weight = 21
+  weight = 31
   url = "/docs/examples/python"
   parent = "examples"
 
 [[main]]
   name = "Kotlin ->"
-  weight = 22
+  weight = 32
 url = "/docs/examples/kotlin"
   parent = "examples"
 
