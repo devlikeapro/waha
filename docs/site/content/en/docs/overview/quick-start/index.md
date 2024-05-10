@@ -1,5 +1,5 @@
 ---
-title: "Quick Start"
+title: "⚡ Quick Start"
 description: "One page summary of how to start WhatsApp HTTP API."
 lead: "One page summary of how to start WhatsApp HTTP API."
 date: 2020-11-16T13:59:39+01:00

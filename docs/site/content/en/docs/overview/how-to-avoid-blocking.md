@@ -1,5 +1,5 @@
 ---
-title: "How to Avoid Blocking"
+title: "⚠️ How to Avoid Blocking"
 description: "How to Avoid Blocking From Whatsapp"
 date: 2020-11-12T13:26:54+01:00
 lastmod: 2020-11-12T13:26:54+01:00

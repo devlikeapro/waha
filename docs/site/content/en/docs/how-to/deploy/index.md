@@ -1,5 +1,5 @@
 ---
-title: "Deploy"
+title: "🚀 Deploy"
 description: "How to deploy WAHA"
 lead: ""
 date: 2020-10-06T08:48:45+00:00

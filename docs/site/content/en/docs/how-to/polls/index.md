@@ -1,5 +1,5 @@
 ---
-title: "Polls"
+title: "📶 Polls"
 description: "How to send polls and receive votes"
 lead: ""
 date: 2020-10-06T08:48:45+00:00

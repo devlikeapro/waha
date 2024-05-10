@@ -1,5 +1,5 @@
 ---
-title: "Introduction"
+title: "📖 Introduction"
 description: "WAHA - WhatsApp HTTP API that you can install on your own server and run in less than 5 minutes!"
 lead: ""
 date: 2020-10-06T08:48:57+00:00
