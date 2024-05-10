@@ -173,7 +173,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.log.debug(`Connecting store...`);
     if (!this.store) {
       this.log.debug(`Making a new auth store...`);
-      this.store = makeInMemoryStore({});
+      this.store = makeInMemoryStore({ logger: logger });
     }
     this.log.debug(`Binding store to socket...`);
     this.store.bind(this.sock.ev);
