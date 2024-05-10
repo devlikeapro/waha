@@ -12,7 +12,7 @@ parent: "overview"
 weight: 100
 toc: true
 ---
-**WAHA** - **W**hats**A**pp **H**TTP **A**PI that you can install on your own server and run in less than 5 minutes!
+**WAHA** - <u>W</u>hats<u>A</u>pp <u>H</u>TTP <u>A</u>PI that you can install on your own server and run in less than 5 minutes!
 
 <div class="d-flex justify-content-center my-4">
   <img src="/images/logo.svg" style='border-radius: 50%' width='150'/>
