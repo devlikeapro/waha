@@ -27,10 +27,14 @@
 <!-- /Yandex.Metrika counter -->
 
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-2XLLXRJ1KF"></script>
+<script async src='https://www.googletagmanager.com/gtag/js?id=G-2XLLXRJ1KF'></script>
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+
   gtag('js', new Date());
 
   gtag('config', 'G-2XLLXRJ1KF');
@@ -58,6 +62,30 @@
 
   .hr {
     border-top: 1px solid #e9ecef;
+  }
+
+  .pros-card-tier {
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin: 1rem;
+    min-width: 25rem;
+    background-color: #fff;
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.1);
+  }
+  /* Using shadow */
+  .pros-card--highlighted {
+    background-color: #fff;
+    box-shadow: 0 0 1.5rem 0 #4aae2050;
+  }
+
+  .tier-pros > * {
+    margin: 0.5rem 0;
+    text-align: left;
+  }
+
+  .table-highlight-first-column td:nth-child(1) {
+    font-weight: bold;
   }
 </style>
 <!-- /Main page cards -->

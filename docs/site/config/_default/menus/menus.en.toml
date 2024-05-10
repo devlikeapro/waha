@@ -103,7 +103,7 @@
 [[main]]
   name = "Pricing"
   weight = 90
-  url = "/docs/how-to/plus-version#tiers"
+  url = "/pricing"
 
 
 [[main]]
