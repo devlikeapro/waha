@@ -21,4 +21,4 @@ Boosty -&amp;gt; Patreon -&amp;gt; Subscribe for FREE to get new updates there!
 🎉 New #
 Swagger White Label - show your own brand in the Swagger documentation!
 Read more about Swagger White Label Issue: #305 Build: 2024.5.4 Engine: ALL 🐛 Fixes #
-Use local cache for WEBJS engine (versions file).</description></item></channel></rss>
+Fix send video issue POST /api/sendVideo in WEBJS.</description></item></channel></rss>

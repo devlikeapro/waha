@@ -327,7 +327,8 @@ Webhooks #See the list of engines that support the feature -\u0026gt;.
 group.join #{ \u0026quot;event\u0026quot;: \u0026quot;group.join\u0026quot;, \u0026quot;session\u0026quot;: \u0026quot;default\u0026quot;, \u0026quot;engine\u0026quot;: \u0026quot;WEBJS\u0026quot;, \u0026quot;payload\u0026quot;: { ... } } group.leave #{ \u0026quot;event\u0026quot;: \u0026quot;group.left\u0026quot;, \u0026quot;session\u0026quot;: \u0026quot;default\u0026quot;, \u0026quot;engine\u0026quot;: \u0026quot;WEBJS\u0026quot;, \u0026quot;payload\u0026quot;: { ... } } `}),e.add({id:16,href:"/docs/overview/changelog/",title:"🔄 Changelog",description:"WAHA's changelog",content:`If you wish to get and read Release Notes - read them on one of our platforms, these posts are FREE.
 Boosty -\u0026gt; Patreon -\u0026gt; Subscribe for FREE to get new updates there!
 2024.5 #🎉 New #Swagger White Label - show your own brand in the Swagger documentation!
-Read more about Swagger White Label Issue: #305 Build: 2024.5.4 Engine: ALL 🐛 Fixes #Use local cache for WEBJS engine (versions file).
+Read more about Swagger White Label Issue: #305 Build: 2024.5.4 Engine: ALL 🐛 Fixes #Fix send video issue POST /api/sendVideo in WEBJS.
+Issue: #321 Issue: #328 Build: 2024.5.6 Engine: WEBJS Use local cache for WEBJS engine (versions file).
 Issue: #316 Build: 2024.5.4 Engine: WEBJS Don\u0026rsquo;t allow to start two sessions with the same name.
 Before API allowed to start two sessions with the same name, which could lead to potential problems (no way to stop the first, abandoned session).
 Issue: #315 Read more about start a session Build: 2024.5.3 Engine: ALL 2024.4 #🎉 New #Add WAHA Dashboard - UI to manage your WhatsApp sessions!
