@@ -1,4 +1,9 @@
-exclude: '^src/dashboard'
+exclude: |
+  (?x)^(
+    ^src/dashboard/.*|
+    ^src/core/engines/webjs/.*html
+  )$
+
 repos:
   - repo: local
     hooks:

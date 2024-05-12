@@ -36,6 +36,14 @@ If you wish to get and read Release Notes - read them on one of our platforms, *
 ### 🐛 Fixes
 ----
 
+Fix send video issue `POST /api/sendVideo` in **WEBJS**.
+- Issue: [#321](https://github.com/devlikeapro/whatsapp-http-api/issues/321)
+- Issue: [#328](https://github.com/devlikeapro/whatsapp-http-api/issues/328)
+- Build: `2024.5.6`
+- Engine: **WEBJS**
+
+----
+
 Use local cache for **WEBJS** engine (versions file).
 - Issue: [#316](https://github.com/devlikeapro/whatsapp-http-api/issues/316)
 - Build: `2024.5.4`
