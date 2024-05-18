@@ -33,7 +33,11 @@ In order to start a new session - call POST /api/sessions/start
 { &amp;quot;name&amp;quot;: &amp;quot;default&amp;quot; } Configure webhooks #
 You can configure webhooks for a session:
 { &amp;quot;name&amp;quot;: &amp;quot;default&amp;quot;, &amp;quot;config&amp;quot;: { &amp;quot;webhooks&amp;quot;: [ { &amp;quot;url&amp;quot;: &amp;quot;https://httpbin.org/post&amp;quot;, &amp;quot;events&amp;quot;: [ &amp;quot;message&amp;quot; ] } ] } } Read more about available options on Webhooks page -&amp;gt;
-The configuration is saved and will be applied if the docker container restarts, and you set WHATSAPP_RESTART_ALL_SESSIONS environment variables.</description></item><item><title>📶 Polls</title><link>https://waha.devlike.pro/docs/how-to/polls/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/polls/</guid><description>Waiting for WEBJS engine to support it, and we&amp;rsquo;ll add it ASAP!
+The configuration is saved and will be applied if the docker container restarts, and you set WHATSAPP_RESTART_ALL_SESSIONS environment variables.</description></item><item><title>🌐 Proxy</title><link>https://waha.devlike.pro/docs/how-to/proxy/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/proxy/</guid><description>Overview #
+If you&amp;rsquo;re experiencing issues scanning QR codes in WhatsApp, especially with Indian 🇮🇳 phone numbers, using a proxy located close to the phone number&amp;rsquo;s location may help resolve the problem.
+It affects both WEBJS and NOWEB engines.
+Symptoms #
+You start a new session in WhatsApp. Scan the QR code. Experience a long loading time. Face login failures or instant logout. Encounter a new QR code or enter a FAILED state immediately.</description></item><item><title>📶 Polls</title><link>https://waha.devlike.pro/docs/how-to/polls/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/polls/</guid><description>Waiting for WEBJS engine to support it, and we&amp;rsquo;ll add it ASAP!
 Endpoints #
 See the list of engines that support the feature -&amp;gt;.
 Send poll #
@@ -47,10 +51,4 @@ See the list of engines that support the feature -&amp;gt;.
 Get all chats #
 Get all chats GET /api/{session}/chats
 Get messages from chat #
-Get 100 messages from the chat</description></item><item><title>👤 Contacts</title><link>https://waha.devlike.pro/docs/how-to/contacts/</link><pubDate>Tue, 06 Oct 2020 08:48:45 +0000</pubDate><guid>https://waha.devlike.pro/docs/how-to/contacts/</guid><description>Methods for contacts.
-👉 WhatsApp Web does not support adding contacts, so the API doesn't support it too. Endpoints #
-See the list of engines that support the feature -&amp;gt;.
-Get all contacts #
-Get your contacts - GET /api/contacts/all
-[ { &amp;quot;id&amp;quot;: &amp;quot;11231231231@c.us&amp;quot;, &amp;quot;number&amp;quot;: &amp;quot;11231231231&amp;quot;, &amp;quot;name&amp;quot;: &amp;quot;Contact Name&amp;quot;, &amp;quot;pushname&amp;quot;: &amp;quot;Pushname&amp;quot;, &amp;quot;shortName&amp;quot;: &amp;quot;Shortname&amp;quot;, &amp;quot;isMe&amp;quot;: true, &amp;quot;isGroup&amp;quot;: false, &amp;quot;isWAContact&amp;quot;: true, &amp;quot;isMyContact&amp;quot;: true, &amp;quot;isBlocked&amp;quot;: false } ] Get contact #
-Get contact</description></item></channel></rss>
+Get 100 messages from the chat</description></item></channel></rss>
