@@ -246,7 +246,8 @@ server - proxy server address, without http:// or https:// prefixes username and
 Read more about it on Sessions page -\u0026gt;.
 Recommended Proxies #Proxy6 #We recommend using Proxy6 where you can get a DEDICATED proxy (only you\u0026rsquo;ll use it) for \$1.77 per month.
 Apply the promocode get a 5% discount on your purchase.
-9W9oVxx3UX `}),e.add({id:12,href:"/docs/how-to/polls/",title:"📶 Polls",description:"How to send polls and receive votes",content:`Waiting for WEBJS engine to support it, and we\u0026rsquo;ll add it ASAP!
+9W9oVxx3UX Geonode #Another option is Geonode.
+`}),e.add({id:12,href:"/docs/how-to/polls/",title:"📶 Polls",description:"How to send polls and receive votes",content:`Waiting for WEBJS engine to support it, and we\u0026rsquo;ll add it ASAP!
 Endpoints #See the list of engines that support the feature -\u0026gt;.
 Send poll #Use the endpoint to send a poll!
 POST /api/sendPoll The request body is pretty simple:
