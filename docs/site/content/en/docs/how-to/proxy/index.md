@@ -94,4 +94,4 @@ Apply the promocode get a **5% discount** on your purchase.
 ```
 
 ### Geonode
-Another option is <b><a href="https://geonode.com/ref/5f7b1b" target="_blank">Geonode</a></b>.
+Another option is <b><a href="https://geonode.com/invite/89107" target="_blank">Geonode</a></b>.
