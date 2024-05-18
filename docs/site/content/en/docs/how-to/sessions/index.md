@@ -46,7 +46,7 @@ and you set `WHATSAPP_RESTART_ALL_SESSIONS` environment variables.
 Read more about it in [Autostart section](#autostart).
 
 #### Configure proxy
-You can configure proxy for a session by setting `config.proxy` fields:
+You can configure proxy for a session by setting `config.proxy` fields when you `POST /api/sessions/start`:
 - `server` - proxy server address, without `http://` or `https://` prefixes
 - `username` and `password` - set this if the proxy requires authentication
 
@@ -82,7 +82,7 @@ and you set `WHATSAPP_RESTART_ALL_SESSIONS` environment variables.
 Read more about it in [Autostart section](#autostart).
 
 You can configure proxy when for all sessions by set up environment variables.
-Read more about it on [**Configuration page** ->]({{< relref "/docs/how-to/config#proxy" >}}).
+Read more about it on [**Proxy page** ->]({{< relref "/docs/how-to/proxy" >}}) or [**Configuration page** ->]({{< relref "/docs/how-to/config#proxy" >}}).
 
 #### Enable debug
 You can enable debug mode for a session by setting `config.debug` field to `true`.
