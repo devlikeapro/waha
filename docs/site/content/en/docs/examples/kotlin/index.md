@@ -9,7 +9,7 @@ images: ["/images/kotlin-whatsapp.png"]
 menu:
 docs:
 parent: "help"
-weight: 630
+weight: 631
 toc: true
 ---
 
