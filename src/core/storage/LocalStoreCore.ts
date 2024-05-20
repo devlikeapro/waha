@@ -45,6 +45,10 @@ export class LocalStoreCore extends LocalStore {
     return this.getDirectoryPath(name);
   }
 
+  getFilePath(session: string, file: string): string {
+    return path.join(this.getSessionDirectory(session), file);
+  }
+
   protected getDirectoryPath(name: string): string {
     const suffix = crypto.createHash('md5').update(name).digest('hex');
     return path.join(this.getEngineDirectory(), `${name}-${suffix}`);

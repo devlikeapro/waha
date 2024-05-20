@@ -17,4 +17,9 @@ export abstract class LocalStore extends DataStore {
    * Get the directory where the session data is stored
    */
   abstract getSessionDirectory(name: string): string;
+
+  /**
+   * Get the file path for a session
+   */
+  abstract getFilePath(session: string, file: string): string;
 }

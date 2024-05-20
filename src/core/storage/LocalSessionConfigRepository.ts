@@ -52,8 +52,7 @@ export class LocalSessionConfigRepository extends ISessionConfigRepository {
   }
 
   private getFilePath(sessionName): string {
-    const folder = this.store.getSessionDirectory(sessionName);
-    return path.join(folder, this.FILENAME);
+    return this.store.getFilePath(sessionName, this.FILENAME);
   }
 
   async delete(sessionName: string): Promise<void> {
