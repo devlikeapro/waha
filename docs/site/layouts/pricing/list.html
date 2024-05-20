@@ -5,7 +5,7 @@
       <div class='col-11 col-lg-9 text-center'>
         <h1 class='display-5 fw-normal mt-1'>{{ .Summary }}</h1>
       </div>
-      <div class="d-flex justify-content-center mb-4">
+      <div class='d-flex justify-content-center mb-4'>
         <img src='/images/logo.svg' title='WhatsApp HTTP API' alt='logo'
              style='border-radius: 50%; width: 10rem' />
       </div>
@@ -128,7 +128,7 @@
             ✔️ <a href='{{ relref . "/docs/how-to/webhooks" }}'>Webhooks retries</a>
           </div>
           <div>
-            ✔️ <a href='{{ relref . "/docs/how-to/storages" }}'>Simple file storage</a>
+            ✔️ <a href='{{ relref . "/docs/how-to/storages" }}'>File storage</a>
           </div>
           <div>
             ✔️ <a href='{{ relref . "/docs/how-to/storages" }}'>MongoDB storage</a>
@@ -191,6 +191,194 @@
            role='button'>Support project →</a>
       </div>
     </div>
+  </div>
+</section>
+
+<section class='section section-md pb-0' id='tiers-compare'>
+  <div class='text-center'>
+    <h1 class='display-5 fw-normal mt-1'>Compare Features</h1>
+  </div>
+  <div class='row justify-content-center'>
+    <table class='table-highlight-first-column'>
+      <tr>
+        <th></th>
+        <th>
+          Core
+        </th>
+        <th>Plus</th>
+        <th>PRO</th>
+      </tr>
+      <tr>
+        <td>
+          <a href='{{ relref . "/docs/how-to/sessions"}}'>Sessions</a>
+        </td>
+        <td>1</td>
+        <td>∞</td>
+        <td>∞</td>
+      </tr>
+      <tr>
+        <td>
+          Messages
+        </td>
+        <td>∞</td>
+        <td>∞</td>
+        <td>∞</td>
+      </tr>
+      <tr>
+        <td>
+          <a href='{{ relref . "/docs/how-to/send-messages" }}'> Send text messages </a>
+        </td>
+        <td>✔️</td>
+        <td>✔️</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          <a href='{{ relref . "/docs/how-to/receive-messages" }}'> Receive text messages </a>
+        </td>
+        <td>✔️</td>
+        <td>✔️</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          <a href='{{ relref . "/docs/how-to/send-messages" }}'> Send files, voices, video </a>
+        </td>
+        <td>➖</td>
+        <td>✔️</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          <a href='{{ relref . "/docs/how-to/receive-messages" }}'> Receive files, voices, video</a>
+        </td>
+        <td>➖</td>
+        <td>✔️</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          <a href='{{ relref . "/docs/how-to/storages" }}'>Webhooks</a>
+        </td>
+        <td>✔️</td>
+        <td>✔️</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          <a href='{{ relref . "/docs/how-to/webhooks" }}'>Webhooks retries</a>
+        </td>
+        <td>➖</td>
+        <td>✔️</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          <a href='{{ relref . "/docs/how-to/storages" }}'>File storage</a>
+        </td>
+        <td>➖</td>
+        <td>✔️</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          <a href='{{ relref . "/docs/how-to/storages" }}'>MongoDB storage</a>
+        </td>
+        <td>➖</td>
+        <td>✔️</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          <a href='{{ relref . "/docs/how-to/waha-dashboard" }}'>Built-in Dashboard</a>
+        </td>
+        <td>➖</td>
+        <td>✔️</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          <a href='{{ relref . "/docs/how-to/security" }}'>Built-in Security</a>
+        </td>
+        <td>➖</td>
+        <td>✔️</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          <a href='{{ relref . "/docs/how-to/engines#webjs" }}'>Web based engine (WEBJS)</a>
+        </td>
+        <td>✔️</td>
+        <td>✔️</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          <a href='{{ relref . "/docs/how-to/engines#noweb" }}'>Light non-chrome engine (NOWEB)</a>
+        </td>
+        <td>✔️</td>
+        <td>✔️</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          <a href='{{ relref . "/docs/how-to/plus-version" }}'>Personal Docker Key to <b>WAHA Plus</b></a>
+        </td>
+        <td>➖</td>
+        <td>✔️</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          <a href='https://github.com/devlikeapro/whatsapp-http-api' target='_blank'>WAHA Core Source Code -></a>
+        </td>
+        <td>✔️</td>
+        <td>✔️</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          <a href='https://github.com/devlikeapro/whatsapp-http-api-plus' target='_blank'>WAHA Plus Source Code -></a>
+        </td>
+        <td>➖</td>
+        <td>➖</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          Membership in <b>WAHA PRO</b> Discord server
+        </td>
+        <td>➖</td>
+        <td>➖</td>
+        <td>✔️</td>
+      </tr>
+      <tr>
+        <td>
+          Special Badge on GitHub
+        </td>
+        <td>➖</td>
+        <td>
+          <img src='https://img.shields.io/badge/patron-PLUS-a0e6ba'>
+        </td>
+        <td>
+          <img src='https://img.shields.io/badge/patron-PRO-188a42'>
+        </td>
+      </tr>
+      <tr>
+        <th></th>
+        <th>
+          <a
+            href='/docs/{{ if .Site.Params.options.docsVersioning }}{{ .Site.Params.docsVersion }}/{{ end }}overview/introduction/'
+          >Get Started -></a>
+        </th>
+        <th>
+          <a href='#donations'>Support project -></a>
+        </th>
+        <th>
+          <a href='#donations'>Support project -></a>
+        </th>
+      </tr>
+    </table>
   </div>
 </section>
 
