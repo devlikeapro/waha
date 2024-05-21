@@ -380,6 +380,9 @@ You can send statuses (aka stories)!
 
 It is always necessary to inform the list of `contacts` that will have access to the posted status!
 
+👉 You must include your own id in the `contacts` list, so it'll be shown on the phone as well.
+You can get your id by using `GET /api/sessions/{session}/me`
+
 
 #### Send text status
 `POST /api/{session}/status/text`
