@@ -62,8 +62,13 @@ const QRCode = require('qrcode');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const qrcode = require('qrcode-terminal');
 
+export interface WebJSConfig {
+  webVersion?: string;
+}
+
 export class WhatsappSessionWebJSCore extends WhatsappSession {
   engine = WAHAEngine.WEBJS;
+  protected engineConfig?: WebJSConfig;
 
   whatsapp: Client;
   protected qr: QR;
@@ -73,16 +78,24 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     this.qr = new QR();
   }
 
+  /**
+   * Folder with the current class
+   */
+  protected getClassDirName() {
+    return __dirname;
+  }
+
   protected getClientOptions(): ClientOptions {
-    // Folder with current file
-    const path = __dirname;
+    const path = this.getClassDirName();
+    const webVersion = this.engineConfig?.webVersion || '2.2412.54';
+    this.log.debug(`Using web version: '${webVersion}'`);
     return {
       puppeteer: {
         headless: true,
         executablePath: this.getBrowserExecutablePath(),
         args: this.getBrowserArgsForPuppeteer(),
       },
-      webVersion: '2.2412.54',
+      webVersion: webVersion,
       webVersionCache: {
         type: 'local',
         path: path,

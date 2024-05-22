@@ -39,6 +39,8 @@ services:
       # Default - waha / waha
       - WAHA_DASHBOARD_USERNAME=waha
       - WAHA_DASHBOARD_PASSWORD=waha
+      # Engine specific environment variables
+      # - WAHA_WEBJS_WEB_VERSION=2.2412.54-videofix
     restart: always
 
   whatsapp-http-api-plus--mongodb:

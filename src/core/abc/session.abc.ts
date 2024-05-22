@@ -81,6 +81,7 @@ export interface SessionParams {
   sessionStore: DataStore;
   proxyConfig?: ProxyConfig;
   sessionConfig?: SessionConfig;
+  engineConfig?: any;
 }
 
 export abstract class WhatsappSession {
@@ -93,6 +94,7 @@ export abstract class WhatsappSession {
   protected sessionStore: DataStore;
   protected proxyConfig?: ProxyConfig;
   public sessionConfig?: SessionConfig;
+  protected engineConfig?: any;
 
   private _status: WAHASessionStatus;
 
@@ -103,6 +105,7 @@ export abstract class WhatsappSession {
     proxyConfig,
     mediaManager,
     sessionConfig,
+    engineConfig,
   }: SessionParams) {
     this.events = new EventEmitter();
     this.name = name;
@@ -111,6 +114,7 @@ export abstract class WhatsappSession {
     this.sessionStore = sessionStore;
     this.mediaManager = mediaManager;
     this.sessionConfig = sessionConfig;
+    this.engineConfig = engineConfig;
   }
 
   protected set status(value: WAHASessionStatus) {
