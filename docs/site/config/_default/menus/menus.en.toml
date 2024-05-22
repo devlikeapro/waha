@@ -23,53 +23,53 @@
   url = "/docs/overview/introduction/"
   weight = 10
 
-[[main]]
-  name = "Introduction"
-  weight = 11
-  url = "/docs/overview/introduction"
-  parent = "docs"
+#[[main]]
+#  name = "Introduction"
+#  weight = 11
+#  url = "/docs/overview/introduction"
+#  parent = "docs"
+#
+#[[main]]
+#  name = "Quick Start"
+#  weight = 12
+#  url = "/docs/overview/introduction"
+#  parent = "docs"
+#
+#[[main]]
+#  name = "Install"
+#  weight = 13
+#  url = "/docs/how-to/install"
+#  parent = "docs"
+#
+#[[main]]
+#  name = "Send messages"
+#  weight = 14
+#  url = "/docs/how-to/send-messages"
+#  parent = "docs"
+#
+#[[main]]
+#  name = "Receive Messages"
+#  weight = 15
+#  url = "/docs/how-to/receive-messages"
+#  parent = "docs"
+#
+#[[main]]
+#  name = "How to guides"
+#  weight = 20
+#  url = "/docs/how-to"
+#  parent = "docs"
+#
+#[[main]]
+#  name = "Swagger ->"
+#  weight = 98
+#  url = "https://waha.devlike.pro/swagger"
+#  parent = "docs"
 
-[[main]]
-  name = "Quick Start"
-  weight = 12
-  url = "/docs/overview/introduction"
-  parent = "docs"
-
-[[main]]
-  name = "Install"
-  weight = 13
-  url = "/docs/how-to/install"
-  parent = "docs"
-
-[[main]]
-  name = "Send messages"
-  weight = 14
-  url = "/docs/how-to/send-messages"
-  parent = "docs"
-
-[[main]]
-  name = "Receive Messages"
-  weight = 15
-  url = "/docs/how-to/receive-messages"
-  parent = "docs"
-
-[[main]]
-  name = "How to guides"
-  weight = 20
-  url = "/docs/how-to"
-  parent = "docs"
-
-[[main]]
-  name = "Swagger ->"
-  weight = 98
-  url = "https://waha.devlike.pro/swagger"
-  parent = "docs"
-
-[[main]]
-  name = "OpenAPI JSON ->"
-  weight = 99
-  url = "https://waha.devlike.pro/swagger/openapi.json"
-  parent = "docs"
+#[[main]]
+#  name = "OpenAPI JSON ->"
+#  weight = 99
+#  url = "https://waha.devlike.pro/swagger/openapi.json"
+#  parent = "docs"
 
 [[main]]
   name = "WAHA Plus"
@@ -77,7 +77,7 @@
   identifier = "waha-plus"
 
 [[main]]
-  name = "About WAHA Plus"
+  name = "WAHA Plus"
   weight = 10
   url = "/docs/how-to/plus-version"
   parent = "waha-plus"
