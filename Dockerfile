@@ -49,15 +49,15 @@ RUN if [ "$USE_BROWSER" = "chromium" ]; then \
     fi
 
 # Install Chrome
+# Available versions:
+# https://www.ubuntuupdates.org/package/google_chrome/stable/main/base/google-chrome-stable
+ARG CHROME_VERSION="122.0.6261.128-1"
 RUN if [ "$USE_BROWSER" = "chrome" ]; then \
-        apt-get update  \
-        && apt-get install -y wget gnupg \
-        && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-        && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
-        && apt-get update \
-        && apt-get install -y google-chrome-stable \
-          --no-install-recommends \
-        && rm -rf /var/lib/apt/lists/*; \
+        wget --no-verbose -O /tmp/chrome.deb https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb \
+          && apt-get update \
+          && apt install -y /tmp/chrome.deb \
+          && rm /tmp/chrome.deb \
+          && rm -rf /var/lib/apt/lists/*; \
     fi
 
 # Attach sources, install packages
