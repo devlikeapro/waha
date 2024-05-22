@@ -9,7 +9,7 @@ images: []
 menu:
 docs:
 parent: "overview"
-weight: 100
+weight: 101
 toc: true
 ---
 **WAHA** - <u>W</u>hats<u>A</u>pp <u>H</u>TTP <u>A</u>PI that you can install on your own server and run in less than 5 minutes!
