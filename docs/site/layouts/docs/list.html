@@ -6,7 +6,7 @@
       {{ with .Content }}<div class="text-center">{{ . }}</div>{{ end }}
 			<div class="card-list">
 				{{ $currentSection := .CurrentSection }}
-				{{ range where .Site.RegularPages.ByWeight "Section" .Section }}
+				{{ range where .Site.Pages.ByWeight "Section" .Section }}
 					{{ if in (.RelPermalink | string) $currentSection.RelPermalink }}
 						<div class="card my-3">
 							<div class="card-body">
