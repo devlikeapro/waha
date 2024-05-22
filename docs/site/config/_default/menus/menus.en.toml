@@ -110,18 +110,19 @@
   name = "Examples"
   weight = 30
   identifier = "examples"
+  url = "/docs/examples"
 
-[[main]]
-  name = "Python ->"
-  weight = 31
-  url = "/docs/examples/python"
-  parent = "examples"
+#[[main]]
+#  name = "Python ->"
+#  weight = 31
+#  url = "/docs/examples/python"
+#  parent = "examples"
 
-[[main]]
-  name = "Kotlin ->"
-  weight = 32
-url = "/docs/examples/kotlin"
-  parent = "examples"
+#[[main]]
+#  name = "Kotlin ->"
+#  weight = 32
+#url = "/docs/examples/kotlin"
+#  parent = "examples"
 
 [[social]]
   name = "GitHub"
