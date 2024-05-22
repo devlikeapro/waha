@@ -304,8 +304,22 @@ Please make sure your file has **OPUS** encoding and packed in OGG container.
 ### Send video ![](/images/versions/plus.png)
 Use `POST /api/sendVideo` to send a message with a video attached.
 
-For **WEBJS** engine please use `devlikeapro/whatsapp-http-api-plus:chrome` docker image.
+---
+
+⚠️ **WEBJS** (default) engine notes for sending videos ⚠️
+- 👉 Use `devlikeapro/whatsapp-http-api-plus:chrome` docker image.
 Read more about [**Docker images and engines →**]({{< relref "/docs/how-to/engines" >}}).
+- 💡 If you're experiencing **"forever loading" issue**
+(
+[#321](https://github.com/devlikeapro/whatsapp-http-api/issues/321),
+[#328](https://github.com/devlikeapro/whatsapp-http-api/issues/328)
+) - set up `WAHA_WEBJS_WEB_VERSION=2.2412.54-videofix` environment variable:
+
+```bash
+docker run -it -p 3000:3000/tcp -e WAHA_WEBJS_WEB_VERSION=2.2412.54-videofix devlikeapro/whatsapp-http-api-plus:chrome
+```
+
+---
 
 You can send voice messages in two ways:
 1. Provide a URL for the file and the API will download it and send it in the request body.

@@ -49,8 +49,13 @@ WhatsApp has deprecated the version currently being used in the NOWEB engine
 Fix send video issue `POST /api/sendVideo` in **WEBJS**.
 - Issue: [#321](https://github.com/devlikeapro/whatsapp-http-api/issues/321)
 - Issue: [#328](https://github.com/devlikeapro/whatsapp-http-api/issues/328)
-- Build: `2024.5.6`
+- Build: `2024.5.9`
 - Engine: **WEBJS**
+
+💡 If you're experiencing **"forever loading" issue** - set up `WAHA_WEBJS_WEB_VERSION=2.2412.54-videofix` environment variable:
+```bash
+docker run -it -p 3000:3000/tcp -e WAHA_WEBJS_WEB_VERSION=2.2412.54-videofix devlikeapro/whatsapp-http-api-plus:chrome
+```
 
 ----
 
