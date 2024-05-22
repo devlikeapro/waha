@@ -6,7 +6,7 @@ date: 2020-10-06T08:48:45+00:00
 lastmod: 2020-10-06T08:48:45+00:00
 draft: false
 images: []
-weight: 120
+weight: 211
 ---
 We consider that you've run docker container and authenticated the session with QR code.
 
