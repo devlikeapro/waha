@@ -1,6 +1,8 @@
 version: '3'
 services:
   whatsapp-http-api:
+    # Check available Docker images:
+    # https://waha.devlike.pro/docs/how-to/engines/#docker-images
     image: devlikeapro/whatsapp-http-api
     container_name: whatsapp-http-api
     ports:
@@ -13,7 +15,9 @@ services:
     restart: always
 
   whatsapp-http-api-plus:
-    image: devlikeapro/whatsapp-http-api-plus
+    # Check available Docker images:
+    # https://waha.devlike.pro/docs/how-to/engines/#docker-images
+    image: devlikeapro/whatsapp-http-api-plus:chrome
     container_name: whatsapp-http-api-plus
     ports:
       - '3000:3000/tcp'
@@ -38,7 +42,9 @@ services:
     restart: always
 
   whatsapp-http-api-plus--mongodb:
-    image: devlikeapro/whatsapp-http-api-plus
+    # Check available Docker images:
+    # https://waha.devlike.pro/docs/how-to/engines/#docker-images
+    image: devlikeapro/whatsapp-http-api-plus:chrome
     container_name: whatsapp-http-api-plus--mongodb
     ports:
       - '3000:3000/tcp'
