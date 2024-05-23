@@ -21,7 +21,7 @@
   name = "Documentation"
   identifier = "docs"
   url = "/docs/overview/introduction/"
-  weight = 10
+  weight = 20
 
 #[[main]]
 #  name = "Introduction"
@@ -73,7 +73,7 @@
 
 [[main]]
   name = "WAHA Plus"
-  weight = 20
+  weight = 10
   identifier = "waha-plus"
 
 [[main]]
@@ -102,8 +102,13 @@
 
 [[main]]
   name = "Pricing"
-  weight = 90
+  weight = 80
   url = "/pricing"
+
+[[main]]
+  name = "Contact"
+  weight = 90
+  url = "/contact"
 
 
 [[main]]
