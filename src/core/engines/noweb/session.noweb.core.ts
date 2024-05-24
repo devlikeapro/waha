@@ -1,6 +1,7 @@
 import makeWASocket, {
   Browsers,
   DisconnectReason,
+  extractMessageContent,
   getAggregateVotesInPollMessage,
   getKeyAuthor,
   isJidGroup,
@@ -9,14 +10,11 @@ import makeWASocket, {
   makeInMemoryStore,
   PresenceData,
   proto,
-  useMultiFileAuthState,
   WAMessageContent,
   WAMessageKey,
 } from '@adiwajshing/baileys';
 import { UnprocessableEntityException } from '@nestjs/common';
 import * as Buffer from 'buffer';
-import { request } from 'express';
-import * as fs from 'fs/promises';
 import { Agent } from 'https';
 import * as lodash from 'lodash';
 import { PairingCodeResponse } from 'src/structures/auth.dto';
@@ -84,6 +82,7 @@ import { toVcard } from '../../helpers';
 import { createAgentProxy } from '../../helpers.proxy';
 import { QR } from '../../QR';
 import { NowebAuthFactoryCore } from './NowebAuthFactoryCore';
+import { extractMediaContent } from './utils';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
@@ -777,6 +776,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       // https://github.com/devlikeapro/whatsapp-http-api/issues/90
       body = message.message.extendedTextMessage?.text;
     }
+    if (!body) {
+      // Populate from caption
+      const mediaContent = extractMediaContent(message.message);
+      // @ts-ignore - AudioMessage doesn't have caption field
+      body = mediaContent.caption;
+    }
     return Promise.resolve({
       id: id,
       timestamp: message.messageTimestamp,
@@ -947,13 +952,7 @@ export class EngineMediaProcessor implements IEngineMediaProcessor<any> {
   constructor(public session: WhatsappSessionNoWebCore) {}
 
   hasMedia(message: any): boolean {
-    const messageType = Object.keys(message.message)[0];
-    const hasMedia =
-      messageType === 'imageMessage' ||
-      messageType == 'audioMessage' ||
-      messageType == 'documentMessage' ||
-      messageType == 'videoMessage';
-    return hasMedia;
+    return Boolean(extractMediaContent(message.message));
   }
 
   getMessageId(message: any): string {
@@ -969,7 +968,8 @@ export class EngineMediaProcessor implements IEngineMediaProcessor<any> {
   }
 
   getFilename(message: any): string | null {
-    return message.message?.documentMessage?.fileName || null;
+    const content = extractMessageContent(message.message);
+    return content?.documentMessage?.fileName || null;
   }
 }
 
