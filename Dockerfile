@@ -27,6 +27,9 @@ RUN yarn build && find ./dist -name "*.d.ts" -delete
 #
 FROM node:20-bullseye as release
 ENV PUPPETEER_SKIP_DOWNLOAD=True
+# Quick fix for memory potential memory leaks
+# https://github.com/devlikeapro/whatsapp-http-api/issues/347
+ENV NODE_OPTIONS="--max-old-space-size=16384"
 ARG USE_BROWSER=chromium
 
 RUN echo "USE_BROWSER=$USE_BROWSER"
