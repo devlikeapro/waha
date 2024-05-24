@@ -21,4 +21,4 @@ Boosty -&amp;gt; Patreon -&amp;gt; Subscribe for FREE to get new updates there!
 🎉 New #
 Swagger White Label - show your own brand in the Swagger documentation!
 Read more about Swagger White Label Issue: #305 Build: 2024.5.4 Engine: ALL 🐛 Fixes #
-Add body to messages with caption in NOWEB engine.</description></item></channel></rss>
+Set heap memory limit to 16GB for NOWEB engine.</description></item></channel></rss>

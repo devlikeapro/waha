@@ -62,7 +62,8 @@ The server has 2 CPU and 8GB of memory. Today we have 85 sessions in this instan
 `}),e.add({id:5,href:"/docs/overview/changelog/",title:"🔄 Changelog",description:"WAHA's changelog",content:`If you wish to get and read Release Notes - read them on one of our platforms, these posts are FREE.
 Boosty -\u0026gt; Patreon -\u0026gt; Subscribe for FREE to get new updates there!
 2024.5 #🎉 New #Swagger White Label - show your own brand in the Swagger documentation!
-Read more about Swagger White Label Issue: #305 Build: 2024.5.4 Engine: ALL 🐛 Fixes #Add body to messages with caption in NOWEB engine.
+Read more about Swagger White Label Issue: #305 Build: 2024.5.4 Engine: ALL 🐛 Fixes #Set heap memory limit to 16GB for NOWEB engine.
+Issue: #347 Build: 2024.5.11 Engine: NOWEB Add body to messages with caption in NOWEB engine.
 Build: 2024.5.10 Engine: NOWEB Fix \u0026ldquo;document with caption\u0026rdquo; message media issue
 Issue: #345 Build: 2024.5.10 Engine: NOWEB Important NOWEB Engine Update! WhatsApp has deprecated the version currently being used in the NOWEB engine
 Read on Patreon Read on Boosty Build: 2024.5.8 Engine: NOWEB Fix send video issue POST /api/sendVideo in WEBJS.
