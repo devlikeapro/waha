@@ -2,7 +2,7 @@
 # Build
 #
 ARG NODE_VERSION=20.12.2-bullseye
-FROM node:${NODE_VERSION}-bullseye as build
+FROM node:${NODE_VERSION} as build
 ENV PUPPETEER_SKIP_DOWNLOAD=True
 
 # npm packages
@@ -26,7 +26,7 @@ RUN yarn build && find ./dist -name "*.d.ts" -delete
 #
 # Final
 #
-FROM node:${NODE_VERSION}-bullseye as release
+FROM node:${NODE_VERSION} as release
 ENV PUPPETEER_SKIP_DOWNLOAD=True
 # Quick fix for memory potential memory leaks
 # https://github.com/devlikeapro/whatsapp-http-api/issues/347
