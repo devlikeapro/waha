@@ -203,6 +203,7 @@ For example, you can get the webhook like this with `media` value (we've skipped
   "payload": {
     "id": "true_11111111111@c.us_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
     "timestamp": 1667561485,
+    "body": "Check this out (caption for the media)!",
     "from": "11111111111@c.us",
     "hasMedia": true,
     "media": {
