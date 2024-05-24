@@ -62,16 +62,16 @@ The server has 2 CPU and 8GB of memory. Today we have 85 sessions in this instan
 `}),e.add({id:5,href:"/docs/overview/changelog/",title:"🔄 Changelog",description:"WAHA's changelog",content:`If you wish to get and read Release Notes - read them on one of our platforms, these posts are FREE.
 Boosty -\u0026gt; Patreon -\u0026gt; Subscribe for FREE to get new updates there!
 2024.5 #🎉 New #Swagger White Label - show your own brand in the Swagger documentation!
-Read more about Swagger White Label Issue: #305 Build: 2024.5.4 Engine: ALL 🐛 Fixes #Set heap memory limit to 16GB for NOWEB engine.
-Issue: #347 Build: 2024.5.11 Engine: NOWEB Add body to messages with caption in NOWEB engine.
-Build: 2024.5.10 Engine: NOWEB Fix \u0026ldquo;document with caption\u0026rdquo; message media issue
-Issue: #345 Build: 2024.5.10 Engine: NOWEB Important NOWEB Engine Update! WhatsApp has deprecated the version currently being used in the NOWEB engine
-Read on Patreon Read on Boosty Build: 2024.5.8 Engine: NOWEB Fix send video issue POST /api/sendVideo in WEBJS.
+Read more about Swagger White Label Issue: #305 Build: 2024.5.4 🐛 Fixes #Don\u0026rsquo;t allow to start two sessions with the same name.
+Before API allowed to start two sessions with the same name, which could lead to potential problems (no way to stop the first, abandoned session).
+Issue: #315 Read more about start a session Build: 2024.5.3 Engine: ALL 🐛 Fixes - WEBJS #Fix send video issue POST /api/sendVideo in WEBJS.
 Issue: #321 Issue: #328 Build: 2024.5.9 Engine: WEBJS 💡 If you\u0026rsquo;re experiencing \u0026ldquo;forever loading\u0026rdquo; issue - set up WAHA_WEBJS_WEB_VERSION=2.2412.54-videofix environment variable:
 docker run -it -p 3000:3000/tcp -e WAHA_WEBJS_WEB_VERSION=2.2412.54-videofix devlikeapro/whatsapp-http-api-plus:chrome Use local cache for WEBJS engine (versions file).
-Issue: #316 Build: 2024.5.4 Engine: WEBJS Don\u0026rsquo;t allow to start two sessions with the same name.
-Before API allowed to start two sessions with the same name, which could lead to potential problems (no way to stop the first, abandoned session).
-Issue: #315 Read more about start a session Build: 2024.5.3 Engine: ALL 2024.4 #🎉 New #Add WAHA Dashboard - UI to manage your WhatsApp sessions!
+Issue: #316 Build: 2024.5.4 Engine: WEBJS 🐛 Fixes - NOWEB #Set heap memory limit to 16GB for NOWEB engine.
+Issue: #347 Build: 2024.5.11 Add body to messages with caption in NOWEB engine.
+Build: 2024.5.10 Fix \u0026ldquo;document with caption\u0026rdquo; message media issue
+Issue: #345 Build: 2024.5.10 Important NOWEB Engine Update! WhatsApp has deprecated the version currently being used in the NOWEB engine
+Read on Patreon Read on Boosty Build: 2024.5.8 Engine: NOWEB 2024.4 #🎉 New #Add WAHA Dashboard - UI to manage your WhatsApp sessions!
 Read more about Dashboard Open screenshot Add GET /api/sessions/{session} endpoint to get information about a specific session.
 Read more about Get session information Issue: #300 Implement GET /api/contacts/profile-picture for NOWEB engine.
 Read more about Get contact profile picture Issue: #298 2024.3 #🎉 New #Add message.reaction webhook in WEBJS and NOWEB engines
