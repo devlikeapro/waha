@@ -23,49 +23,31 @@ If you wish to get and read Release Notes - read them on one of our platforms, *
 
 ## 2024.5
 ### 🎉 New
+
 ----
 
 [Swagger White Label]({{< relref "/docs/how-to/swagger#white-label" >}}) - show your own brand in the Swagger documentation!
 - Read more about [Swagger White Label]({{< relref "/docs/how-to/swagger#white-label" >}})
 - Issue: [#305](https://github.com/devlikeapro/whatsapp-http-api/issues/305)
 - Build: `2024.5.4`
-- Engine: **ALL**
 
 ----
 
 ### 🐛 Fixes
-----
-
-Set heap memory limit to 16GB for **NOWEB** engine.
-
-- Issue: [#347](https://github.com/devlikeapro/whatsapp-http-api/issues/347)
-- Build: `2024.5.11`
-- Engine: **NOWEB**
 
 ----
 
-Add `body` to messages with caption in **NOWEB** engine.
+Don't allow to start two sessions with the same name.
 
-- Build: `2024.5.10`
-- Engine: **NOWEB**
-
-----
-
-Fix "document with caption" message media issue
-
-- Issue: [#345](https://github.com/devlikeapro/whatsapp-http-api/issues/345)
-- Build: `2024.5.10`
-- Engine: **NOWEB**
+Before API allowed to start two sessions with the same name, which could lead to potential problems (no way to stop the first, abandoned session).
+- Issue: [#315](https://github.com/devlikeapro/whatsapp-http-api/issues/315)
+- Read more about [start a session](https://waha.devlike.pro/docs/how-to/sessions/#start)
+- Build: `2024.5.3`
+- Engine: **ALL**
 
 ----
 
-Important **NOWEB** Engine Update!
-WhatsApp has deprecated the version currently being used in the NOWEB engine
-
-- [Read on Patreon](https://www.patreon.com/posts/important-noweb-104631614)
-- [Read on Boosty](https://boosty.to/wa-http-api/posts/6ccedda7-ddae-413b-b15f-f2f22192c0d8)
-- Build: `2024.5.8`
-- Engine: **NOWEB**
+### 🐛 Fixes - WEBJS
 
 ----
 
@@ -89,13 +71,37 @@ Use local cache for **WEBJS** engine (versions file).
 
 ----
 
-Don't allow to start two sessions with the same name.
+### 🐛 Fixes - NOWEB
 
-Before API allowed to start two sessions with the same name, which could lead to potential problems (no way to stop the first, abandoned session).
-- Issue: [#315](https://github.com/devlikeapro/whatsapp-http-api/issues/315)
-- Read more about [start a session](https://waha.devlike.pro/docs/how-to/sessions/#start)
-- Build: `2024.5.3`
-- Engine: **ALL**
+----
+
+Set heap memory limit to 16GB for **NOWEB** engine.
+
+- Issue: [#347](https://github.com/devlikeapro/whatsapp-http-api/issues/347)
+- Build: `2024.5.11`
+
+----
+
+Add `body` to messages with caption in **NOWEB** engine.
+
+- Build: `2024.5.10`
+
+----
+
+Fix "document with caption" message media issue
+
+- Issue: [#345](https://github.com/devlikeapro/whatsapp-http-api/issues/345)
+- Build: `2024.5.10`
+
+----
+
+Important **NOWEB** Engine Update!
+WhatsApp has deprecated the version currently being used in the NOWEB engine
+
+- [Read on Patreon](https://www.patreon.com/posts/important-noweb-104631614)
+- [Read on Boosty](https://boosty.to/wa-http-api/posts/6ccedda7-ddae-413b-b15f-f2f22192c0d8)
+- Build: `2024.5.8`
+- Engine: **NOWEB**
 
 ----
 
