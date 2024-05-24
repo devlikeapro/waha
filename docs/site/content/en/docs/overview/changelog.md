@@ -36,6 +36,14 @@ If you wish to get and read Release Notes - read them on one of our platforms, *
 ### 🐛 Fixes
 ----
 
+Set heap memory limit to 16GB for **NOWEB** engine.
+
+- Issue: [#347](https://github.com/devlikeapro/whatsapp-http-api/issues/347)
+- Build: `2024.5.11`
+- Engine: **NOWEB**
+
+----
+
 Add `body` to messages with caption in **NOWEB** engine.
 
 - Build: `2024.5.10`
