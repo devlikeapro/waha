@@ -62,7 +62,9 @@ The server has 2 CPU and 8GB of memory. Today we have 85 sessions in this instan
 `}),e.add({id:5,href:"/docs/overview/changelog/",title:"🔄 Changelog",description:"WAHA's changelog",content:`If you wish to get and read Release Notes - read them on one of our platforms, these posts are FREE.
 Boosty -\u0026gt; Patreon -\u0026gt; Subscribe for FREE to get new updates there!
 2024.5 #🎉 New #Swagger White Label - show your own brand in the Swagger documentation!
-Read more about Swagger White Label Issue: #305 Build: 2024.5.4 Engine: ALL 🐛 Fixes #Important NOWEB Engine Update! WhatsApp has deprecated the version currently being used in the NOWEB engine
+Read more about Swagger White Label Issue: #305 Build: 2024.5.4 Engine: ALL 🐛 Fixes #Add body to messages with caption in NOWEB engine.
+Build: 2024.5.10 Engine: NOWEB Fix \u0026ldquo;document with caption\u0026rdquo; message media issue
+Issue: #345 Build: 2024.5.10 Engine: NOWEB Important NOWEB Engine Update! WhatsApp has deprecated the version currently being used in the NOWEB engine
 Read on Patreon Read on Boosty Build: 2024.5.8 Engine: NOWEB Fix send video issue POST /api/sendVideo in WEBJS.
 Issue: #321 Issue: #328 Build: 2024.5.9 Engine: WEBJS 💡 If you\u0026rsquo;re experiencing \u0026ldquo;forever loading\u0026rdquo; issue - set up WAHA_WEBJS_WEB_VERSION=2.2412.54-videofix environment variable:
 docker run -it -p 3000:3000/tcp -e WAHA_WEBJS_WEB_VERSION=2.2412.54-videofix devlikeapro/whatsapp-http-api-plus:chrome Use local cache for WEBJS engine (versions file).
