@@ -36,6 +36,21 @@ If you wish to get and read Release Notes - read them on one of our platforms, *
 ### 🐛 Fixes
 ----
 
+Add `body` to messages with caption in **NOWEB** engine.
+
+- Build: `2024.5.10`
+- Engine: **NOWEB**
+
+----
+
+Fix "document with caption" message media issue
+
+- Issue: [#345](https://github.com/devlikeapro/whatsapp-http-api/issues/345)
+- Build: `2024.5.10`
+- Engine: **NOWEB**
+
+----
+
 Important **NOWEB** Engine Update!
 WhatsApp has deprecated the version currently being used in the NOWEB engine
 
