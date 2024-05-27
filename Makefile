@@ -31,9 +31,6 @@ push:
 for-swagger:
 	WHATSAPP_SWAGGER_CONFIG_ADVANCED=true npm run start
 
-update-swagger:
-	wget http://localhost:3000/-json -O ./docs/site/static/swagger/openapi.json
-
 update-dependencies:
 	. ${NVM_DIR}/nvm.sh && nvm exec yarn up whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js#main-fork
 	. ${NVM_DIR}/nvm.sh && nvm exec yarn up @adiwajshing/baileys@github:WhiskeySockets/Baileys

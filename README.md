@@ -1,7 +1,7 @@
 # WhatsApp HTTP API (WAHA)
 
 <p align="center">
-    <img src="./docs/site/static/images/logo.png" alt="Image" />
+  <img src="./static/images/logo.svg" style='border-radius: 50%' width='150'/>
 </p>
 
 **WAHA** - **W**hats**A**pp **H**TTP **A**PI (REST API) that you can install on your own server and run in less than 5 minutes!
@@ -102,13 +102,11 @@ Let's go over steps that allow you to send your first text message via WhatsApp 
 
 Assuming you have installed [Docker](https://docs.docker.com/get-docker/), let's download the image.
 
-![](./docs/site/content/en/docs/overview/quick-start//images/versions/core.png) For Core version the command is
 
 ```bash
 docker pull devlikeapro/whatsapp-http-api
 ```
 
-![](./docs/site/content/en/docs/overview/quick-start//images/versions/plus.png) For Plus version, we use login to get the image before:
 
 ```bash
 docker login -u devlikeapro -p {KEY}
@@ -132,7 +130,6 @@ docker run -it --rm -p 3000:3000/tcp --name whatsapp-http-api devlikeapro/whatsa
 Open the link in your browser [http://localhost:3000/](http://localhost:3000/) and you'll see API documentation
 (Swagger).
 
-![](./docs/site/content/en/docs/overview/quick-start/swagger.png)
 
 ### 3. Start a new session
 
@@ -154,29 +151,23 @@ The example payload:
 }
 ```
 
-![](./docs/site/content/en/docs/overview/quick-start/session-start.png)
 
 By using the request with `name` values you can start multiple session (WhatsApp accounts) inside the single docker container in Plus
-![](./docs/site/content/en/docs/overview/quick-start//images/versions/plus.png) version and only one account in Core ![](./docs/site/content/en/docs/overview/quick-start//images/versions/core.png) version.
 
-Read more about [multiple sessions →]({{< relref "/docs/how-to/sessions" >}})
 
 ### 4. Get and scan QR
 
 Find `GET /api/screenshot` and execute it, it shows you QR code.
 
-![](./docs/site/content/en/docs/overview/quick-start/qr.png)
 
 **Scan the QR with your cell phone's WhatsApp app.**
 
-![](./docs/site/content/en/docs/overview/quick-start/scan-qr-phone.png)
 
 ### 5. Get the screenshot
 
 Execute `GET /api/screenshot` after a few seconds after scanning the QR - it'll show you the screenshot of you Whatsapp
 instance. If you can get the actual screenshot - then you're ready to start sending messages!
 
-![](./docs/site/content/en/docs/overview/quick-start/screenshot.png)
 
 ### 6. Send a text message
 
@@ -193,7 +184,6 @@ The example payload:
   "session": "default"
 }
 ```
-![](./docs/site/content/en/docs/overview/quick-start/send-text.png)
 
 Also, you can use `curl` and send POST request like this:
 
