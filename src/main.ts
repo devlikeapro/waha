@@ -9,6 +9,12 @@ import { getLogLevels } from './helpers';
 import { WAHA_WEBHOOKS } from './structures/webhooks.dto';
 import { getWAHAVersion, VERSION, WAHAVersion } from './version';
 
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // @ts-ignore
+  console.error(reason.stack);
+});
+
 async function loadModules(): Promise<
   [typeof AppModuleCore, typeof SwaggerConfiguratorCore]
 > {
