@@ -9,6 +9,7 @@ import { getLogLevels } from './helpers';
 import { WAHA_WEBHOOKS } from './structures/webhooks.dto';
 import { getWAHAVersion, VERSION, WAHAVersion } from './version';
 
+console.log('NODE - Catching unhandled exceptions enabled');
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
   // @ts-ignore
