@@ -23,6 +23,7 @@ import { WhatsappConfigService } from '../config.service';
 import { SessionManager } from './abc/manager.abc';
 import { WAHAHealthCheckService } from './abc/WAHAHealthCheckService';
 import { DashboardConfigServiceCore } from './config/DashboardConfigServiceCore';
+import { EngineConfigService } from './config/EngineConfigService';
 import { SwaggerConfigServiceCore } from './config/SwaggerConfigServiceCore';
 import { WAHAHealthCheckServiceCore } from './health/WAHAHealthCheckServiceCore';
 import { SessionManagerCore } from './manager.core';
@@ -84,6 +85,7 @@ const PROVIDERS = [
   DashboardConfigServiceCore,
   SwaggerConfigServiceCore,
   WhatsappConfigService,
+  EngineConfigService,
   ConsoleLogger,
 ];
 

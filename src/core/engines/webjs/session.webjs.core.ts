@@ -197,14 +197,12 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   protected listenConnectionEvents() {
-    this.whatsapp.on(Events.QR_RECEIVED, (qr) => {
+    this.whatsapp.on(Events.QR_RECEIVED, async (qr) => {
       this.log.debug('QR received');
       // Convert to image and save
-      QRCode.toDataURL(qr).then((url) => {
-        this.qr.save(url, qr);
-      });
-      // Print in terminal
-      qrcode.generate(qr, { small: true });
+      const url = await QRCode.toDataURL(qr);
+      this.qr.save(url, qr);
+      this.printQR(this.qr);
       this.status = WAHASessionStatus.SCAN_QR_CODE;
     });
 

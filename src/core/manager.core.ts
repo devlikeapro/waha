@@ -20,6 +20,7 @@ import {
 import { WebhookConfig } from '../structures/webhooks.config.dto';
 import { SessionManager } from './abc/manager.abc';
 import { SessionParams, WhatsappSession } from './abc/session.abc';
+import { EngineConfigService } from './config/EngineConfigService';
 import { WhatsappSessionNoWebCore } from './engines/noweb/session.noweb.core';
 import { WhatsappSessionVenomCore } from './engines/venom/session.venom.core';
 import { WhatsappSessionWebJSCore } from './engines/webjs/session.webjs.core';
@@ -55,6 +56,7 @@ export class SessionManagerCore extends SessionManager {
   constructor(
     private config: WhatsappConfigService,
     private log: ConsoleLogger,
+    private engineConfigService: EngineConfigService,
   ) {
     super();
 
@@ -126,6 +128,7 @@ export class SessionManagerCore extends SessionManager {
       name,
       mediaManager,
       log,
+      printQR: this.engineConfigService.shouldPrintQR,
       sessionStore: this.store,
       proxyConfig: proxyConfig,
       sessionConfig: request.config,

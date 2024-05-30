@@ -67,11 +67,9 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
   protected getCatchQR() {
     return (base64Qrimg, asciiQR, attempts, urlCode) => {
       this.qr.save(base64Qrimg, urlCode);
+      this.printQR(this.qr);
       this.status = WAHASessionStatus.SCAN_QR_CODE;
       this.log.debug('Number of attempts to read the qrcode: ', attempts);
-      this.log.log('Terminal qrcode:');
-      // Log QR image in console without this.log to make it pretty
-      console.log(asciiQR);
     };
   }
 

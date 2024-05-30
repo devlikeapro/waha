@@ -51,6 +51,9 @@ import { QR } from '../QR';
 import { DataStore } from './DataStore';
 import { MediaManager } from './media.abc';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const qrcode = require('qrcode-terminal');
+
 const CHROME_PATH = '/usr/bin/google-chrome-stable';
 const CHROMIUM_PATH = '/usr/bin/chromium';
 
@@ -76,6 +79,7 @@ export enum WAHAInternalEvent {
 
 export interface SessionParams {
   name: string;
+  printQR: boolean;
   mediaManager: MediaManager;
   log: ConsoleLogger;
   sessionStore: DataStore;
@@ -97,9 +101,11 @@ export abstract class WhatsappSession {
   protected engineConfig?: any;
 
   private _status: WAHASessionStatus;
+  private shouldPrintQR: boolean;
 
   public constructor({
     name,
+    printQR,
     log,
     sessionStore,
     proxyConfig,
@@ -115,6 +121,7 @@ export abstract class WhatsappSession {
     this.mediaManager = mediaManager;
     this.sessionConfig = sessionConfig;
     this.engineConfig = engineConfig;
+    this.shouldPrintQR = printQR;
   }
 
   protected set status(value: WAHASessionStatus) {
@@ -471,5 +478,21 @@ export abstract class WhatsappSession {
       id: parts[2],
       _serialized: messageId,
     };
+  }
+
+  protected printQR(qr: QR) {
+    if (!this.shouldPrintQR) {
+      return;
+    }
+    if (!qr.raw) {
+      this.log.error(
+        'QR.raw is not available, can not print it in the console',
+      );
+      return;
+    }
+    this.log.log(
+      "You can disable QR in console by setting 'WAHA_PRINT_QR=false' in your environment variables.",
+    );
+    qrcode.generate(qr.raw, { small: true });
   }
 }

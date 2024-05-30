@@ -140,7 +140,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         /** caching makes the store faster to send/recv messages */
         keys: makeCacheableSignalKeyStore(state.keys, logger),
       },
-      printQRInTerminal: true,
+      printQRInTerminal: false,
       browser: Browsers.ubuntu('Chrome'),
       logger: logger,
       mobile: false,
@@ -258,10 +258,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
       // Save QR
       if (qr) {
+        const url = await QRCode.toDataURL(qr);
+        this.qr.save(url, qr);
+        this.printQR(this.qr);
         this.status = WAHASessionStatus.SCAN_QR_CODE;
-        QRCode.toDataURL(qr).then((url) => {
-          this.qr.save(url, qr);
-        });
       }
     });
   }
