@@ -241,17 +241,17 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         const shouldReconnect =
           lastDisconnect.error?.output?.statusCode !==
           DisconnectReason.loggedOut;
-        this.log.error(
-          'connection closed due to ',
-          lastDisconnect.error,
-          ', reconnecting ',
-          shouldReconnect,
-        );
         this.qr.save('');
         // reconnect if not logged out
         if (shouldReconnect) {
+          this.log.log(
+            `connection closed due to '${lastDisconnect.error}' reconnecting...`,
+          );
           this.restartClient();
         } else {
+          this.log.error(
+            `connection closed due to '${lastDisconnect.error}', do not reconnect the session.`,
+          );
           this.status = WAHASessionStatus.FAILED;
         }
       }
