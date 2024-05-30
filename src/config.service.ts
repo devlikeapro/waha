@@ -131,27 +131,6 @@ export class WhatsappConfigService {
     return this.configService.get('WHATSAPP_API_KEY', '');
   }
 
-  getDashboardEnabled(): boolean {
-    const value = this.configService.get('WAHA_DASHBOARD_ENABLED', 'true');
-    return parseBool(value);
-  }
-
-  getDashboardUsernamePassword(): [string, string] | null {
-    if (!this.getDashboardEnabled()) {
-      return null;
-    }
-    const user = this.configService.get('WAHA_DASHBOARD_USERNAME', 'waha');
-    const password = this.configService.get('WAHA_DASHBOARD_PASSWORD', 'waha');
-    if (!user || !password) {
-      console.log(
-        'Please set up both WAHA_DASHBOARD_USERNAME and WAHA_DASHBOARD_PASSWORD ' +
-          'to enable swagger authentication.',
-      );
-      return null;
-    }
-    return [user, password];
-  }
-
   getHealthMediaFilesThreshold(): number {
     return this.configService.get<number>(
       'WHATSAPP_HEALTH_MEDIA_FILES_THRESHOLD_MB',
