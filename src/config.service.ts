@@ -112,17 +112,6 @@ export class WhatsappConfigService {
     return this.configService.get('WHATSAPP_SESSIONS_MONGO_URL', undefined);
   }
 
-  getDefaultEngineName(): WAHAEngine {
-    const value = getEngineName();
-    if (value in WAHAEngine) {
-      return WAHAEngine[value];
-    }
-    console.log(
-      `Unknown WhatsApp default engine WHATSAPP_DEFAULT_ENGINE=${value}. Using WEBJS`,
-    );
-    return WAHAEngine.WEBJS;
-  }
-
   get(name: string, defaultValue: any = undefined): any {
     return this.configService.get(name, defaultValue);
   }

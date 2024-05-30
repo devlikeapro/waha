@@ -62,7 +62,7 @@ export class SessionManagerCore extends SessionManager {
 
     this.log.setContext('SessionManager');
     this.session = undefined;
-    const engineName = this.config.getDefaultEngineName();
+    const engineName = this.engineConfigService.getDefaultEngineName();
     this.EngineClass = this.getEngine(engineName);
     this.store = new LocalStoreCore(engineName.toLowerCase());
     this.sessionAuthRepository = new LocalSessionAuthRepository(this.store);
