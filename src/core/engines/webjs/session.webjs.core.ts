@@ -31,6 +31,7 @@ import {
 import { ContactQuery, ContactRequest } from '../../../structures/contacts.dto';
 import {
   ACK_UNKNOWN,
+  SECOND,
   WAHAEngine,
   WAHAEvents,
   WAHAPresenceStatus,
@@ -67,8 +68,13 @@ export interface WebJSConfig {
 }
 
 export class WhatsappSessionWebJSCore extends WhatsappSession {
+  private START_ATTEMPT_DELAY_SECONDS = 2;
+
   engine = WAHAEngine.WEBJS;
   protected engineConfig?: WebJSConfig;
+
+  private startTimeoutId: null | ReturnType<typeof setTimeout> = null;
+  private shouldRestart: boolean;
 
   whatsapp: Client;
   protected qr: QR;
@@ -76,6 +82,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   public constructor(config) {
     super(config);
     this.qr = new QR();
+    this.shouldRestart = true;
   }
 
   /**
@@ -110,6 +117,27 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     return new Client(clientOptions);
   }
 
+  private restartClient() {
+    if (!this.shouldRestart) {
+      this.log.debug("Shouldn't restart the client, ignoring restart request");
+      return;
+    }
+
+    if (this.startTimeoutId) {
+      const msg =
+        'Request to restart is already in progress, ignoring restart request';
+      this.log.warn(msg);
+      return;
+    }
+    this.log.log(
+      `Setting up client start in ${this.START_ATTEMPT_DELAY_SECONDS} seconds...`,
+    );
+    this.startTimeoutId = setTimeout(() => {
+      this.startTimeoutId = undefined;
+      this.start();
+    }, this.START_ATTEMPT_DELAY_SECONDS * SECOND);
+  }
+
   protected addProxyConfig(clientOptions: ClientOptions) {
     if (this.proxyConfig?.server !== undefined) {
       // push the proxy server to the args
@@ -127,8 +155,9 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     }
   }
 
-  async start() {
-    this.status = WAHASessionStatus.STARTING;
+  protected async init() {
+    await this.end();
+    this.shouldRestart = true;
     this.whatsapp = await this.buildClient();
     this.whatsapp
       .initialize()
@@ -137,12 +166,16 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         this.whatsapp.pupBrowser.on('disconnected', () => {
           this.status = WAHASessionStatus.FAILED;
           this.log.error('The browser has been disconnected');
+          this.restartClient();
         });
         // Listen for page close event
         this.whatsapp.pupPage.on('close', () => {
           this.status = WAHASessionStatus.FAILED;
           this.log.error('The WhatsApp Web page has been closed');
+          this.restartClient();
         });
+
+        // Listen for page error event
         if (this.isDebugEnabled()) {
           this.log.debug("Logging 'console' event for web page");
           this.whatsapp.pupPage.on('console', (msg) =>
@@ -156,6 +189,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       .catch((error) => {
         this.status = WAHASessionStatus.FAILED;
         this.log.error(error);
+        this.restartClient();
         return;
       });
     if (this.isDebugEnabled()) {
@@ -163,12 +197,30 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     }
     this.listenConnectionEvents();
     this.events.emit(WAHAInternalEvent.ENGINE_START);
+  }
+
+  async start() {
+    this.status = WAHASessionStatus.STARTING;
+    await this.init();
     return this;
   }
 
   async stop() {
-    await this.whatsapp.destroy();
+    this.shouldRestart = false;
     this.status = WAHASessionStatus.STOPPED;
+    await this.end();
+  }
+
+  private async end() {
+    try {
+      this.whatsapp?.removeAllListeners();
+      clearInterval(this.startTimeoutId);
+      this.whatsapp?.destroy().catch((error) => {
+        this.log.debug('Failed to destroy the client', error);
+      });
+    } catch (error) {
+      this.log.error(error);
+    }
   }
 
   async getSessionMeInfo(): Promise<MeInfo | null> {
