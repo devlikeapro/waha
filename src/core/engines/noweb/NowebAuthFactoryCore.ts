@@ -1,7 +1,6 @@
-import { useMultiFileAuthState } from '@adiwajshing/baileys';
-
 import { DataStore } from '../../abc/DataStore';
 import { LocalStore } from '../../storage/LocalStore';
+import { useMultiFileAuthState } from './useMultiFileAuthState';
 
 export class NowebAuthFactoryCore {
   buildAuth(store: DataStore, name: string) {
