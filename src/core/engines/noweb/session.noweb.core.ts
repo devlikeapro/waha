@@ -109,9 +109,13 @@ const PresenceStatuses = {
 const ToEnginePresenceStatus = flipObject(PresenceStatuses);
 
 export class WhatsappSessionNoWebCore extends WhatsappSession {
+  private START_ATTEMPT_DELAY_SECONDS = 2;
+  private AUTO_RESTART_AFTER_SECONDS = 30 * 60;
+
   engine = WAHAEngine.NOWEB;
   authFactory = new NowebAuthFactoryCore();
-  private restartTimeoutId: null | ReturnType<typeof setTimeout> = null;
+  private startTimeoutId: null | ReturnType<typeof setTimeout> = null;
+  private autoRestartTimeoutId: null | ReturnType<typeof setTimeout> = null;
 
   get listenConnectionEventsFromTheStart() {
     return true;
@@ -194,6 +198,23 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       this.listenConnectionEvents();
       this.events.emit(WAHAInternalEvent.ENGINE_START);
     }
+    this.enableAutoRestart();
+  }
+
+  protected enableAutoRestart() {
+    if (this.autoRestartTimeoutId) {
+      return;
+    }
+
+    // add random delay to avoid multiple restarts at the same time
+    const shiftSeconds = Math.floor(Math.random() * 30);
+    const delay = this.AUTO_RESTART_AFTER_SECONDS + shiftSeconds;
+    this.log.debug(`Auto-restart is enabled, after ${delay} seconds`);
+    this.autoRestartTimeoutId = setTimeout(() => {
+      this.autoRestartTimeoutId = null;
+      this.log.log('Auto-restarting the client connection...');
+      this.sock?.end('auto-restart');
+    }, delay * SECOND);
   }
 
   protected async getMessage(
@@ -213,17 +234,19 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   private restartClient() {
-    if (this.restartTimeoutId) {
+    if (this.startTimeoutId) {
       this.log.log(
         'Request to restart is already in progress, ignoring this request',
       );
       return;
     }
-    this.log.log('Setting up client restart in 2 seconds...');
-    this.restartTimeoutId = setTimeout(() => {
-      this.restartTimeoutId = undefined;
+    this.log.log(
+      `Setting up client start in ${this.START_ATTEMPT_DELAY_SECONDS} seconds...`,
+    );
+    this.startTimeoutId = setTimeout(() => {
+      this.startTimeoutId = undefined;
       this.buildClient();
-    }, 2 * SECOND);
+    }, this.START_ATTEMPT_DELAY_SECONDS * SECOND);
   }
 
   protected listenConnectionEvents() {
@@ -245,13 +268,14 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         // reconnect if not logged out
         if (shouldReconnect) {
           this.log.log(
-            `connection closed due to '${lastDisconnect.error}' reconnecting...`,
+            `Connection closed due to '${lastDisconnect.error}', reconnecting...`,
           );
           this.restartClient();
         } else {
           this.log.error(
-            `connection closed due to '${lastDisconnect.error}', do not reconnect the session.`,
+            `Connection closed due to '${lastDisconnect.error}', do not reconnect the session.`,
           );
+          await this.end();
           this.status = WAHASessionStatus.FAILED;
         }
       }
@@ -267,11 +291,17 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async stop() {
-    this.sock?.ev?.removeAllListeners();
-    this.sock?.ws?.removeAllListeners();
-    this.sock?.ws?.close();
+    await this.end();
     this.status = WAHASessionStatus.STOPPED;
     return;
+  }
+
+  private async end() {
+    clearTimeout(this.autoRestartTimeoutId);
+    clearTimeout(this.startTimeoutId);
+    this.sock?.ev?.removeAllListeners();
+    this.sock?.ws?.removeAllListeners();
+    this.sock?.end();
   }
 
   async getSessionMeInfo(): Promise<MeInfo | null> {
