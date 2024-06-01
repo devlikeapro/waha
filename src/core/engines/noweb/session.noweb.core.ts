@@ -5,6 +5,7 @@ import makeWASocket, {
   getAggregateVotesInPollMessage,
   getKeyAuthor,
   isJidGroup,
+  isJidStatusBroadcast,
   jidNormalizedUser,
   makeCacheableSignalKeyStore,
   makeInMemoryStore,
@@ -1008,6 +1009,9 @@ export class EngineMediaProcessor implements IEngineMediaProcessor<any> {
  */
 function toCusFormat(remoteJid) {
   if (isJidGroup(remoteJid)) {
+    return remoteJid;
+  }
+  if (isJidStatusBroadcast(remoteJid)) {
     return remoteJid;
   }
   if (!remoteJid) {

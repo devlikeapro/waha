@@ -14,10 +14,11 @@ __metadata:
 
 "@adiwajshing/baileys@github:WhiskeySockets/Baileys":
   version: 6.7.2
-  resolution: "@adiwajshing/baileys@https://github.com/WhiskeySockets/Baileys.git#commit=79c33e53b4124735f019c48e8075c9cde807b7e7"
+  resolution: "@adiwajshing/baileys@https://github.com/WhiskeySockets/Baileys.git#commit=9065ab690fde0641e3eac458c1521e1d151c5050"
   dependencies:
     "@adiwajshing/keyed-db": ^0.2.4
     "@hapi/boom": ^9.1.3
+    async-lock: ^1.4.1
     audio-decode: ^2.1.3
     axios: ^1.3.3
     cache-manager: 4.0.1
@@ -44,7 +45,7 @@ __metadata:
       optional: true
     sharp:
       optional: true
-  checksum: dacfec2d2c4767370f2ee9a846e119cedf22d792ae920c5682e66aa67e788ec409d5ee364e6879c7c9e76d00acfb2c26c197d377893aaccc2100f3ae22940d72
+  checksum: 255c9aa3107a56055b33adbfba5cce41bad16d1b2453a19f3896438a85e191786c144ea73ebdb896f58c7436044aca8e740d5d9e7271c8df12f9e89318abf90f
   languageName: node
   linkType: hard
 
