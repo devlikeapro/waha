@@ -811,7 +811,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       // Populate from caption
       const mediaContent = extractMediaContent(message.message);
       // @ts-ignore - AudioMessage doesn't have caption field
-      body = mediaContent.caption;
+      body = mediaContent?.caption;
     }
     return Promise.resolve({
       id: id,
