@@ -1,4 +1,4 @@
-# WhatsApp HTTP API (WAHA)
+# WAHA
 
 <p align="center">
   <img src="./logo.png" style='border-radius: 50%' width='150'/>
