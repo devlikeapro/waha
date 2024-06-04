@@ -6,7 +6,7 @@
 
 **WAHA** - **W**hats**A**pp **H**TTP **A**PI (REST API) that you can install on your own server and run in less than 5 minutes!
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/devlikeapro/whatsapp-http-api)](https://hub.docker.com/r/devlikeapro/whatsapp-http-api)
+[![Docker Pulls](https://img.shields.io/docker/pulls/devlikeapro/waha)](https://hub.docker.com/r/devlikeapro/waha)
 
 - Documentation: [https://waha.devlike.pro/](https://waha.devlike.pro/)
 - Swagger Example: [https://waha.devlike.pro/swagger](https://waha.devlike.pro/swagger)
@@ -104,13 +104,13 @@ Assuming you have installed [Docker](https://docs.docker.com/get-docker/), let's
 
 
 ```bash
-docker pull devlikeapro/whatsapp-http-api
+docker pull devlikeapro/waha
 ```
 
 
 ```bash
 docker login -u devlikeapro -p {KEY}
-docker pull devlikeapro/whatsapp-http-api-plus
+docker pull devlikeapro/waha-plus
 docker logout
 ```
 
@@ -121,7 +121,7 @@ Read more about how to get `PASSWORD` for [Plus Version →]({{< relref "plus-ve
 Run WhatsApp HTTP API:
 
 ```bash
-docker run -it --rm -p 3000:3000/tcp --name whatsapp-http-api devlikeapro/whatsapp-http-api
+docker run -it --rm -p 3000:3000/tcp --name waha devlikeapro/waha
 
 # It prints logs and the last line must be
 # WhatsApp HTTP API is running on: http://[::1]:3000

@@ -21,8 +21,8 @@ export class SwaggerConfiguratorCore {
       '<ul>' +
       '<li><a href="https://waha.devlike.pro/" target="_blank">Documentation</a></li>' +
       '<li><a href="https://waha.devlike.pro/docs/how-to/engines/#features" target="_blank">Supported features in engines</a></li>' +
-      '<li><a href="https://github.com/devlikeapro/whatsapp-http-api" target="_blank">GitHub - WAHA Core</a></li>' +
-      '<li><a href="https://github.com/devlikeapro/whatsapp-http-api-plu' + // Separate line to pass pre-commit check
+      '<li><a href="https://github.com/devlikeapro/waha" target="_blank">GitHub - WAHA Core</a></li>' +
+      '<li><a href="https://github.com/devlikeapro/waha-plu' + // Separate line to pass pre-commit check
       's" target="_blank">GitHub - WAHA Plus</a></li>' +
       '<li><b>NEW!</b> - <a href="/dashboard">WAHA Dashboard</a></li>' +
       '<li><b>NEW!</b> - <a href="https://waha.devlike.pro/docs/how-to/waha-dashboard">WAHA Dashboard Documentation</a></li>' +

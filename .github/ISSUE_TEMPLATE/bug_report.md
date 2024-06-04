@@ -23,8 +23,8 @@ assignees: ''
 ```
 
 > You can get the WAHA version by calling `GET /api/version` Try to update to
-> [the latest version](https://github.com/devlikeapro/whatsapp-http-api/releases)
-> before creating an issue!
+> [the latest version](https://github.com/devlikeapro/waha/releases) before
+> creating an issue!
 
 **To Reproduce** Steps to reproduce the behavior:
 

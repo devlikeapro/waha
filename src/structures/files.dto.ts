@@ -20,7 +20,7 @@ export class RemoteFile {
 
   @ApiProperty({
     example:
-      'https://github.com/devlikeapro/whatsapp-http-api/raw/core/examples/dev.likeapro.jpg',
+      'https://github.com/devlikeapro/waha/raw/core/examples/dev.likeapro.jpg',
   })
   url: string;
 }
@@ -73,7 +73,7 @@ export class VoiceRemoteFile {
 
   @ApiProperty({
     example:
-      'https://github.com/devlikeapro/whatsapp-http-api/raw/core/examples/dev.likeapro.opus',
+      'https://github.com/devlikeapro/waha/raw/core/examples/dev.likeapro.opus',
   })
   url: string;
 }
@@ -109,8 +109,7 @@ export class VideoRemoteFile {
   filename = 'video.mp4';
 
   @ApiProperty({
-    example:
-      'https://github.com/devlikeapro/whatsapp-http-api/raw/core/examples/video.mp4',
+    example: 'https://github.com/devlikeapro/waha/raw/core/examples/video.mp4',
   })
   url: string;
 }

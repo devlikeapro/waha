@@ -31,7 +31,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     /**
      * If file not found - we get weird 500 error
      * So we convert that exception manually to 404 and send appropriate JSON response
-     * @issue https://github.com/devlikeapro/whatsapp-http-api/issues/134
+     * @issue https://github.com/devlikeapro/waha/issues/134
      * @solution https://github.com/nestjs/serve-static/issues/139#issuecomment-612429557
      */
     if (exception.code === 'ENOENT') {

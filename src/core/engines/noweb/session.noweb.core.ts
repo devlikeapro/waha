@@ -804,7 +804,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     let body = message.message.conversation;
     if (!body) {
       // Some of the messages have no conversation, but instead have text in extendedTextMessage
-      // https://github.com/devlikeapro/whatsapp-http-api/issues/90
+      // https://github.com/devlikeapro/waha/issues/90
       body = message.message.extendedTextMessage?.text;
     }
     if (!body) {

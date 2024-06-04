@@ -12433,6 +12433,72 @@ __metadata:
   languageName: node
   linkType: hard
 
+"waha@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "waha@workspace:."
+  dependencies:
+    "@adiwajshing/baileys": "github:WhiskeySockets/Baileys"
+    "@adiwajshing/keyed-db": ^0.2.4
+    "@nestjs/axios": ^3.0.2
+    "@nestjs/cli": ^9.0.0
+    "@nestjs/common": ^9.0.9
+    "@nestjs/config": ^0.5.0
+    "@nestjs/core": ^9.0.9
+    "@nestjs/passport": ^9.0.0
+    "@nestjs/platform-express": ^9.0.9
+    "@nestjs/schematics": ^9.0.1
+    "@nestjs/serve-static": ^2.1.3
+    "@nestjs/swagger": ^7.1.11
+    "@nestjs/terminus": ^10.2.3
+    "@nestjs/testing": ^9.0.9
+    "@types/express": ^4.17.3
+    "@types/jest": 26.0.10
+    "@types/lodash": ^4.14.194
+    "@types/node": ^18.14.2
+    "@types/supertest": ^2.0.8
+    "@types/ws": ^8.5.4
+    "@typescript-eslint/eslint-plugin": 3.9.1
+    "@typescript-eslint/parser": 3.9.1
+    async-lock: ^1.4.1
+    check-disk-space: ^3.4.0
+    class-validator: ^0.12.2
+    del: ^6.0.0
+    eslint: 7.7.0
+    eslint-config-prettier: ^6.10.0
+    eslint-plugin-import: ^2.20.1
+    eslint-plugin-simple-import-sort: ^10.0.0
+    express-basic-auth: ^1.2.1
+    file-type: 16.5.4
+    https-proxy-agent: ^7.0.0
+    jest: ^29.7.0
+    libphonenumber-js: ^1.10.36
+    link-preview-js: ^3.0.4
+    lodash: ^4.17.21
+    mime-types: ^2.1.27
+    mongodb: ^6.3.0
+    passport: ^0.6.0
+    passport-headerapikey: ^1.2.2
+    prettier: ^1.19.1
+    puppeteer: ^21.0.0
+    qrcode: ^1.5.1
+    qrcode-terminal: ^0.12.0
+    reflect-metadata: ^0.1.13
+    request: ^2.88.2
+    requestretry: ^4.1.1
+    rimraf: ^3.0.2
+    rxjs: ^7.1.0
+    supertest: ^4.0.2
+    swagger-ui-express: ^4.1.4
+    ts-jest: ^29.1.3
+    ts-loader: ^6.2.1
+    ts-node: ^10.9.1
+    tsconfig-paths: ^4.1.0
+    typescript: ^4.8.4
+    venom-bot: 5.0.1
+    whatsapp-web.js: "https://github.com/devlikeapro/whatsapp-web.js#main-fork-update"
+  languageName: unknown
+  linkType: soft
+
 "walker@npm:^1.0.8":
   version: 1.0.8
   resolution: "walker@npm:1.0.8"
@@ -12525,72 +12591,6 @@ __metadata:
   checksum: 747ee7ebd238c15249c2652060e3c6ca6d62cc66dcf7e4e2824ecd4875b7ea5e01fce8f4179080a3e84dfdb3c8d0992700444c7c5a05ef47b38c0623d3ac76de
   languageName: node
   linkType: hard
-
-"whatsapp-http-api@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "whatsapp-http-api@workspace:."
-  dependencies:
-    "@adiwajshing/baileys": "github:WhiskeySockets/Baileys"
-    "@adiwajshing/keyed-db": ^0.2.4
-    "@nestjs/axios": ^3.0.2
-    "@nestjs/cli": ^9.0.0
-    "@nestjs/common": ^9.0.9
-    "@nestjs/config": ^0.5.0
-    "@nestjs/core": ^9.0.9
-    "@nestjs/passport": ^9.0.0
-    "@nestjs/platform-express": ^9.0.9
-    "@nestjs/schematics": ^9.0.1
-    "@nestjs/serve-static": ^2.1.3
-    "@nestjs/swagger": ^7.1.11
-    "@nestjs/terminus": ^10.2.3
-    "@nestjs/testing": ^9.0.9
-    "@types/express": ^4.17.3
-    "@types/jest": 26.0.10
-    "@types/lodash": ^4.14.194
-    "@types/node": ^18.14.2
-    "@types/supertest": ^2.0.8
-    "@types/ws": ^8.5.4
-    "@typescript-eslint/eslint-plugin": 3.9.1
-    "@typescript-eslint/parser": 3.9.1
-    async-lock: ^1.4.1
-    check-disk-space: ^3.4.0
-    class-validator: ^0.12.2
-    del: ^6.0.0
-    eslint: 7.7.0
-    eslint-config-prettier: ^6.10.0
-    eslint-plugin-import: ^2.20.1
-    eslint-plugin-simple-import-sort: ^10.0.0
-    express-basic-auth: ^1.2.1
-    file-type: 16.5.4
-    https-proxy-agent: ^7.0.0
-    jest: ^29.7.0
-    libphonenumber-js: ^1.10.36
-    link-preview-js: ^3.0.4
-    lodash: ^4.17.21
-    mime-types: ^2.1.27
-    mongodb: ^6.3.0
-    passport: ^0.6.0
-    passport-headerapikey: ^1.2.2
-    prettier: ^1.19.1
-    puppeteer: ^21.0.0
-    qrcode: ^1.5.1
-    qrcode-terminal: ^0.12.0
-    reflect-metadata: ^0.1.13
-    request: ^2.88.2
-    requestretry: ^4.1.1
-    rimraf: ^3.0.2
-    rxjs: ^7.1.0
-    supertest: ^4.0.2
-    swagger-ui-express: ^4.1.4
-    ts-jest: ^29.1.3
-    ts-loader: ^6.2.1
-    ts-node: ^10.9.1
-    tsconfig-paths: ^4.1.0
-    typescript: ^4.8.4
-    venom-bot: 5.0.1
-    whatsapp-web.js: "https://github.com/devlikeapro/whatsapp-web.js#main-fork-update"
-  languageName: unknown
-  linkType: soft
 
 "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js#main-fork-update":
   version: 1.23.1-alpha.6

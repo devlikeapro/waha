@@ -3,7 +3,7 @@
 #
 
 OWNER=devlikeapro
-REPO=whatsapp-http-api-plus
+REPO=waha-plus
 
 # list workflows
 gh api -X GET /repos/$OWNER/$REPO/actions/workflows | jq '.workflows[] | .name,.id'

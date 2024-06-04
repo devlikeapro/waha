@@ -1,32 +1,32 @@
 build:
-	docker build . -t devlikeapro/whatsapp-http-api
+	docker build . -t devlikeapro/waha
 
 build-chrome:
-	docker build . -t devlikeapro/whatsapp-http-api-plus:chrome --build-arg USE_BROWSER=chrome
+	docker build . -t devlikeapro/waha-plus:chrome --build-arg USE_BROWSER=chrome
 
 build-noweb:
-	docker build . -t devlikeapro/whatsapp-http-api:noweb --build-arg USE_BROWSER=none
+	docker build . -t devlikeapro/waha:noweb --build-arg USE_BROWSER=none
 
 build-all: build build-chrome build-noweb
 
 build-plus:
-	docker build . -t devlikeapro/whatsapp-http-api-plus
+	docker build . -t devlikeapro/waha-plus
 
 build-ssh:
 	# check IMAGE provided
-	@[ "${IMAGE}" ]  || ( echo "Add APP: make build-ssh image=devlikeapro/whatsapp-http-api"; exit 1 );
+	@[ "${IMAGE}" ]  || ( echo "Add APP: make build-ssh image=devlikeapro/waha"; exit 1 );
 	eval $(ssh-agent) && \
 	ssh-add ~/.ssh/id_rsa && \
 	docker buildx build --ssh default=${SSH_AUTH_SOCK} . -t ${IMAGE} --build-arg USE_BROWSER=none
 
 stop:
-	docker stop whatsapp-http-api
+	docker stop waha
 
 clean: stop
 	sudo rm -rf .sessions
 
 push:
-	docker push devlikeapro/whatsapp-http-api
+	docker push devlikeapro/waha
 
 for-swagger:
 	WHATSAPP_SWAGGER_CONFIG_ADVANCED=true npm run start
