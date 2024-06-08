@@ -12,6 +12,7 @@ import {
 } from 'whatsapp-web.js';
 import { Message as MessageInstance } from 'whatsapp-web.js/src/structures';
 
+import { parseBool } from '../../../helpers';
 import {
   ChatRequest,
   CheckNumberStatusQuery,
@@ -421,6 +422,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   async getChatMessages(chatId: string, limit: number, downloadMedia: boolean) {
+    downloadMedia = parseBool(downloadMedia)
     const chat: Chat = await this.whatsapp.getChatById(
       this.ensureSuffix(chatId),
     );
