@@ -35,6 +35,9 @@ ARG USE_BROWSER=chromium
 
 RUN echo "USE_BROWSER=$USE_BROWSER"
 
+# Install ffmpeg to generate previews for videos
+RUN apt-get update && apt-get install -y ffmpeg --no-install-recommends && rm -rf /var/lib/apt/lists/*
+
 # Install fonts if using either chromium or chrome
 RUN if [ "$USE_BROWSER" = "chromium" ] || [ "$USE_BROWSER" = "chrome" ]; then \
     apt-get update  \
@@ -62,10 +65,7 @@ RUN if [ "$USE_BROWSER" = "chrome" ]; then \
           && apt install -y /tmp/chrome.deb \
           && rm /tmp/chrome.deb \
           && rm -rf /var/lib/apt/lists/*; \
-    fi \
-
-# Install ffmpeg to generate previews for videos
-RUN apt-get update && apt-get install -y ffmpeg --no-install-recommends && rm -rf /var/lib/apt/lists/*
+    fi
 
 # Attach sources, install packages
 WORKDIR /app
