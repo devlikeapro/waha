@@ -9,7 +9,10 @@
     "target": "es2017",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": "./src",
+    "paths": {
+      "@waha/*": ["*"]
+    },
     "incremental": true,
     "resolveJsonModule": true,
     "skipLibCheck": true

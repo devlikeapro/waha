@@ -27,7 +27,6 @@ export enum WAHAEngine {
   VENOM = 'VENOM',
   WEBJS = 'WEBJS',
   NOWEB = 'NOWEB',
-  MOBILE = 'MOBILE',
 }
 
 export enum WAHAPresenceStatus {

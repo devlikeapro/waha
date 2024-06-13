@@ -1,5 +1,6 @@
 import makeWASocket, {
   Browsers,
+  Contact,
   DisconnectReason,
   extractMessageContent,
   getAggregateVotesInPollMessage,
@@ -8,23 +9,33 @@ import makeWASocket, {
   isJidStatusBroadcast,
   jidNormalizedUser,
   makeCacheableSignalKeyStore,
-  makeInMemoryStore,
+  normalizeMessageContent,
   PresenceData,
   proto,
   WAMessageContent,
   WAMessageKey,
 } from '@adiwajshing/baileys';
+import { isLidUser } from '@adiwajshing/baileys/lib/WABinary/jid-utils';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { NowebInMemoryStore } from '@waha/core/engines/noweb/store/NowebInMemoryStore';
+import { flipObject, getLogLevels, parseBool, splitAt } from '@waha/helpers';
+import { PairingCodeResponse } from '@waha/structures/auth.dto';
+import { ContactQuery, ContactRequest } from '@waha/structures/contacts.dto';
+import {
+  PollVote,
+  PollVotePayload,
+  WAMessageAckBody,
+} from '@waha/structures/webhooks.dto';
 import * as Buffer from 'buffer';
 import { Agent } from 'https';
 import * as lodash from 'lodash';
-import { PairingCodeResponse } from 'src/structures/auth.dto';
+import { toNumber } from 'lodash';
 
-import { flipObject, splitAt } from '../../../helpers';
 import {
   ChatRequest,
   CheckNumberStatusQuery,
   EditMessageRequest,
+  GetMessageQuery,
   MessageContactVcardRequest,
   MessageDestination,
   MessageFileRequest,
@@ -40,7 +51,6 @@ import {
   SendSeenRequest,
   WANumberExistResult,
 } from '../../../structures/chatting.dto';
-import { ContactQuery, ContactRequest } from '../../../structures/contacts.dto';
 import {
   ACK_UNKNOWN,
   SECOND,
@@ -64,11 +74,6 @@ import {
 } from '../../../structures/responses.dto';
 import { MeInfo } from '../../../structures/sessions.dto';
 import { BROADCAST_ID, TextStatus } from '../../../structures/status.dto';
-import {
-  PollVote,
-  PollVotePayload,
-  WAMessageAckBody,
-} from '../../../structures/webhooks.dto';
 import { IEngineMediaProcessor } from '../../abc/media.abc';
 import {
   ensureSuffix,
@@ -81,8 +86,12 @@ import {
 } from '../../exceptions';
 import { toVcard } from '../../helpers';
 import { createAgentProxy } from '../../helpers.proxy';
+import { buildLogger } from '../../manager.core';
 import { QR } from '../../QR';
 import { NowebAuthFactoryCore } from './NowebAuthFactoryCore';
+import { INowebStore } from './store/INowebStore';
+import { NowebPersistentStore } from './store/NowebPersistentStore';
+import { NowebStorageFactoryCore } from './store/NowebStorageFactoryCore';
 import { extractMediaContent } from './utils';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -115,6 +124,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   engine = WAHAEngine.NOWEB;
   authFactory = new NowebAuthFactoryCore();
+  storageFactory = new NowebStorageFactoryCore();
   private startTimeoutId: null | ReturnType<typeof setTimeout> = null;
   private autoRestartTimeoutId: null | ReturnType<typeof setTimeout> = null;
 
@@ -122,8 +132,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return true;
   }
 
-  sock: any;
-  store: any;
+  sock: ReturnType<typeof makeWASocket>;
+  store: INowebStore;
   private qr: QR;
 
   public constructor(config) {
@@ -137,6 +147,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   getSocketConfig(agent, state) {
+    const fullSyncEnabled = this.sessionConfig?.noweb?.store?.fullSync || false;
+    const browser = fullSyncEnabled
+      ? Browsers.ubuntu('Desktop')
+      : Browsers.ubuntu('Chrome');
     return {
       agent: agent,
       fetchAgent: agent,
@@ -146,11 +160,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         keys: makeCacheableSignalKeyStore(state.keys, logger),
       },
       printQRInTerminal: false,
-      browser: Browsers.ubuntu('Chrome'),
+      browser: browser,
       logger: logger,
       mobile: false,
       defaultQueryTimeoutMs: undefined,
       getMessage: (key) => this.getMessage(key),
+      syncFullHistory: fullSyncEnabled,
     };
   }
 
@@ -161,8 +176,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     );
     const agent = this.makeAgent();
     const socketConfig = this.getSocketConfig(agent, state);
-    const sock: any = makeWASocket(socketConfig);
-    sock.ev.on(BaileysEvents.CREDS_UPDATE, saveCreds);
+    const sock = makeWASocket(socketConfig);
+    sock.ev.on('creds.update', saveCreds);
     return sock;
   }
 
@@ -173,14 +188,33 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return createAgentProxy(this.proxyConfig);
   }
 
-  connectStore() {
+  async connectStore() {
     this.log.debug(`Connecting store...`);
     if (!this.store) {
-      this.log.debug(`Making a new auth store...`);
-      this.store = makeInMemoryStore({ logger: logger });
+      this.log.debug(`Making a new store...`);
+      const levels = getLogLevels(false);
+      const log = buildLogger(`NowebStore - ${this.name}`, levels);
+      const storeEnabled = this.sessionConfig?.noweb?.store?.enabled || false;
+      if (storeEnabled) {
+        this.log.debug('Using NowebPersistentStore');
+        const storage = this.storageFactory.createStorage(
+          this.sessionStore,
+          this.name,
+        );
+        this.store = new NowebPersistentStore(log, storage);
+        await this.store.init().catch((err) => {
+          this.log.error(`Failed to initialize storage or store: ${err}`);
+          this.status = WAHASessionStatus.FAILED;
+          this.end();
+          throw err;
+        });
+      } else {
+        this.log.debug('Using NowebInMemoryStore');
+        this.store = new NowebInMemoryStore();
+      }
     }
     this.log.debug(`Binding store to socket...`);
-    this.store.bind(this.sock.ev);
+    this.store.bind(this.sock.ev, this.sock);
   }
 
   resubscribeToKnownPresences() {
@@ -191,10 +225,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   async buildClient() {
     this.sock = await this.makeSocket();
-    this.connectStore();
+    this.issueMessageUpdateOnEdits();
     if (this.isDebugEnabled()) {
       this.listenEngineEventsInDebugMode();
     }
+    await this.connectStore();
     if (this.listenConnectionEventsFromTheStart) {
       this.listenConnectionEvents();
       this.events.emit(WAHAInternalEvent.ENGINE_START);
@@ -214,7 +249,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.autoRestartTimeoutId = setTimeout(() => {
       this.autoRestartTimeoutId = null;
       this.log.log('Auto-restarting the client connection...');
-      this.sock?.end('auto-restart');
+      this.sock?.end(new Error('auto-restart'));
     }, delay * SECOND);
   }
 
@@ -252,7 +287,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   protected listenConnectionEvents() {
     this.log.debug(`Start listening ${BaileysEvents.CONNECTION_UPDATE}...`);
-    this.sock.ev.on(BaileysEvents.CONNECTION_UPDATE, async (update) => {
+    this.sock.ev.on('connection.update', async (update) => {
       const { connection, lastDisconnect, qr, isNewLogin } = update;
       if (isNewLogin) {
         this.restartClient();
@@ -263,6 +298,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         return;
       } else if (connection === 'close') {
         const shouldReconnect =
+          // @ts-ignore: Property output does not exist on type 'Error'
           lastDisconnect.error?.output?.statusCode !==
           DisconnectReason.loggedOut;
         this.qr.save('');
@@ -297,12 +333,40 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return;
   }
 
+  private issueMessageUpdateOnEdits() {
+    // Remove it after it's been merged
+    // https://github.com/WhiskeySockets/Baileys/pull/855/
+    this.sock.ev.on('messages.upsert', ({ messages }) => {
+      for (const message of messages) {
+        const content = normalizeMessageContent(message.message);
+        const protocolMsg = content?.protocolMessage;
+        if (
+          protocolMsg !== null &&
+          protocolMsg !== undefined &&
+          protocolMsg.editedMessage
+        ) {
+          this.sock?.ev.emit('messages.update', [
+            {
+              key: {
+                ...message.key,
+                id: protocolMsg.key.id,
+              },
+              update: { message: protocolMsg.editedMessage },
+            },
+          ]);
+        }
+      }
+    });
+  }
+
   private async end() {
     clearTimeout(this.autoRestartTimeoutId);
     clearTimeout(this.startTimeoutId);
+    // @ts-ignore
     this.sock?.ev?.removeAllListeners();
     this.sock?.ws?.removeAllListeners();
-    this.sock?.end();
+    this.sock?.end(undefined);
+    this.store?.close();
   }
 
   async getSessionMeInfo(): Promise<MeInfo | null> {
@@ -392,7 +456,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   sendText(request: MessageTextRequest) {
-    const chatId = this.ensureSuffix(request.chatId);
+    const chatId = toJID(this.ensureSuffix(request.chatId));
     const message = {
       text: request.text,
       mentions: request.mentions?.map(toJID),
@@ -422,7 +486,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async sendContactVCard(request: MessageContactVcardRequest) {
-    const chatId = this.ensureSuffix(request.chatId);
+    const chatId = toJID(this.ensureSuffix(request.chatId));
     const contacts = request.contacts.map((el) => ({ vcard: toVcard(el) }));
     await this.sock.sendMessage(chatId, {
       contacts: {
@@ -484,7 +548,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   sendLinkPreview(request: MessageLinkPreviewRequest) {
     const text = `${request.title}\n${request.url}`;
-    const chatId = this.ensureSuffix(request.chatId);
+    const chatId = toJID(this.ensureSuffix(request.chatId));
     return this.sock.sendMessage(chatId, { text: text });
   }
 
@@ -504,6 +568,31 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   async stopTyping(request: ChatRequest) {
     return this.sock.sendPresenceUpdate('paused', request.chatId);
+  }
+
+  async getMessages(query: GetMessageQuery) {
+    return this.getChatMessages(query.chatId, query.limit, query.downloadMedia);
+  }
+
+  public async getChatMessages(
+    chatId: string,
+    limit: number,
+    downloadMedia: boolean,
+  ) {
+    downloadMedia = parseBool(downloadMedia);
+    const messages = await this.store.getMessagesByJid(
+      toJID(chatId),
+      toNumber(limit),
+    );
+    const result = [];
+    for (const msg of messages) {
+      const wamsg = await this.processIncomingMessage(msg, downloadMedia);
+      if (!wamsg) {
+        continue;
+      }
+      result.push(wamsg);
+    }
+    return result;
   }
 
   async setReaction(request: MessageReactionRequest) {
@@ -531,14 +620,31 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   /**
-   * Contacts methods
+   * Chats methods
    */
-  getContact(query: ContactQuery) {
-    throw new NotImplementedByEngineError();
+
+  async getChats() {
+    const chats = await this.store.getChats();
+    // Remove unreadCount, it's not ready yet
+    chats.forEach((chat) => delete chat.unreadCount);
+    return chats;
   }
 
-  getContacts() {
-    throw new NotImplementedByEngineError();
+  /**
+   * Contacts methods
+   */
+  async getContact(query: ContactQuery) {
+    const jid = toJID(query.contactId);
+    const contact = await this.store.getContactById(jid);
+    if (!contact) {
+      return null;
+    }
+    return this.toWAContact(contact);
+  }
+
+  async getContacts() {
+    const contacts = await this.store.getContacts();
+    return contacts.map(this.toWAContact);
   }
 
   public async getContactAbout(query: ContactQuery) {
@@ -667,12 +773,24 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
    */
   public sendTextStatus(status: TextStatus) {
     const message = { text: status.text };
+    const JIDs = status.contacts.map(toJID);
+    this.upsertMeInJIDs(JIDs);
     const options = {
       backgroundColor: status.backgroundColor,
       font: status.font,
-      statusJidList: status.contacts.map(toJID),
+      statusJidList: JIDs,
     };
     return this.sock.sendMessage(BROADCAST_ID, message, options);
+  }
+
+  protected upsertMeInJIDs(JIDs: string[]) {
+    if (!this.sock?.authState?.creds?.me) {
+      return;
+    }
+    const myJID = jidNormalizedUser(this.sock.authState.creds.me.id);
+    if (!JIDs.includes(myJID)) {
+      JIDs.push(myJID);
+    }
   }
 
   /**
@@ -682,23 +800,23 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   subscribeEngineEvent(event, handler): boolean {
     switch (event) {
       case WAHAEvents.MESSAGE:
-        this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) => {
+        this.sock.ev.on('messages.upsert', ({ messages }) => {
           this.handleIncomingMessages(messages, handler, false);
         });
         return true;
       case WAHAEvents.MESSAGE_REACTION:
-        this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) => {
+        this.sock.ev.on('messages.upsert', ({ messages }) => {
           const reactions = this.processMessageReaction(messages);
           reactions.map(handler);
         });
         return true;
       case WAHAEvents.MESSAGE_ANY:
-        this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) =>
+        this.sock.ev.on('messages.upsert', ({ messages }) =>
           this.handleIncomingMessages(messages, handler, true),
         );
         return true;
       case WAHAEvents.MESSAGE_ACK: // Direct message ack
-        this.sock.ev.on(BaileysEvents.MESSAGES_UPDATE, (events) => {
+        this.sock.ev.on('messages.update', (events) => {
           events
             .filter(isMine)
             .filter(isAckUpdateMessageEvent)
@@ -706,7 +824,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
             .forEach(handler);
         });
         // Group message ack
-        this.sock.ev.on(BaileysEvents.MESSAGE_RECEIPT_UPDATE, (events) => {
+        this.sock.ev.on('message-receipt.update', (events) => {
           events
             .filter(isMine)
             .map(this.convertMessageReceiptUpdateToMessageAck)
@@ -714,25 +832,25 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         });
         return true;
       case WAHAEvents.STATE_CHANGE:
-        this.sock.ev.on(BaileysEvents.CONNECTION_UPDATE, handler);
+        this.sock.ev.on('connection.update', handler);
         return true;
       case WAHAEvents.GROUP_JOIN:
-        this.sock.ev.on(BaileysEvents.GROUPS_UPSERT, handler);
+        this.sock.ev.on('groups.upsert', handler);
         return true;
       case WAHAEvents.PRESENCE_UPDATE:
-        this.sock.ev.on(BaileysEvents.PRESENCE_UPDATE, (data) =>
+        this.sock.ev.on('presence.update', (data) =>
           handler(this.toWahaPresences(data.id, data.presences)),
         );
         return true;
       case WAHAEvents.POLL_VOTE:
-        this.sock.ev.on(BaileysEvents.MESSAGES_UPDATE, (events) => {
+        this.sock.ev.on('messages.update', (events) => {
           events.forEach((event) =>
             this.handleMessagesUpdatePollVote(event, handler),
           );
         });
         return true;
       case WAHAEvents.POLL_VOTE_FAILED:
-        this.sock.ev.on(BaileysEvents.MESSAGES_UPSERT, ({ messages }) => {
+        this.sock.ev.on('messages.upsert', ({ messages }) => {
           messages.forEach((message) =>
             this.handleMessageUpsertPollVoteFailed(message, handler),
           );
@@ -745,18 +863,16 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   private handleIncomingMessages(messages, handler, includeFromMe) {
     for (const message of messages) {
-      // if there is no text or media message
-      if (!message) return;
-      if (!message.message) return;
-      // Ignore reactions, we have dedicated handler for that
-      if (message.message.reactionMessage) return;
-      // Ignore poll votes, we have dedicated handler for that
-      if (message.message.pollUpdateMessage) return;
       // Do not include my messages
       if (!includeFromMe && message.key.fromMe) {
         continue;
       }
-      this.processIncomingMessage(message).then(handler);
+      this.processIncomingMessage(message).then((msg) => {
+        if (!msg) {
+          return;
+        }
+        handler(msg);
+      });
     }
   }
 
@@ -788,14 +904,32 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return reactions;
   }
 
-  private processIncomingMessage(message) {
-    return this.downloadMedia(message)
-      .then(this.toWAMessage)
-      .catch((error) => {
-        this.log.error('Failed to process incoming message');
-        this.log.error(error);
-        console.trace(error);
-      });
+  private async processIncomingMessage(message, downloadMedia = true) {
+    // if there is no text or media message
+    if (!message) return;
+    if (!message.message) return;
+    // Ignore reactions, we have dedicated handler for that
+    if (message.message.reactionMessage) return;
+    // Ignore poll votes, we have dedicated handler for that
+    if (message.message.pollUpdateMessage) return;
+
+    if (downloadMedia) {
+      try {
+        message = await this.downloadMedia(message);
+      } catch (e) {
+        this.log.error('Failed when tried to download media for a message');
+        this.log.error(e, e.stack);
+      }
+    }
+
+    try {
+      return await this.toWAMessage(message);
+    } catch (error) {
+      this.log.error('Failed to process incoming message');
+      this.log.error(error);
+      console.trace(error);
+      return null;
+    }
   }
 
   protected toWAMessage(message): Promise<WAMessage> {
@@ -813,6 +947,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       // @ts-ignore - AudioMessage doesn't have caption field
       body = mediaContent?.caption;
     }
+    const ack = message.ack || message.status - 1;
     return Promise.resolve({
       id: id,
       timestamp: message.messageTimestamp,
@@ -826,13 +961,22 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       media: message.media,
       mediaUrl: message.media?.url,
       // @ts-ignore
-      ack: message.ack,
+      ack: ack,
       // @ts-ignore
-      ackName: WAMessageAck[message.ack] || ACK_UNKNOWN,
+      ackName: WAMessageAck[ack] || ACK_UNKNOWN,
       location: message.location,
       vCards: message.vCards,
       _data: message,
     });
+  }
+
+  protected toWAContact(contact: Contact) {
+    contact.id = toCusFormat(contact.id);
+    // @ts-ignore
+    contact.pushname = contact.notify;
+    // @ts-ignore
+    delete contact.notify;
+    return contact;
   }
 
   protected convertMessageUpdateToMessageAck(event): WAMessageAckBody {
@@ -950,8 +1094,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   private toWahaPresences(
-    remoteJid,
-    storedPresences: PresenceData[],
+    remoteJid: string,
+    storedPresences: { [participant: string]: PresenceData },
   ): WAHAChatPresences {
     const presences: WAHAPresenceData[] = [];
     for (const participant in storedPresences) {
@@ -1014,6 +1158,9 @@ function toCusFormat(remoteJid) {
   if (isJidStatusBroadcast(remoteJid)) {
     return remoteJid;
   }
+  if (isLidUser(remoteJid)) {
+    return remoteJid;
+  }
   if (!remoteJid) {
     return;
   }
@@ -1030,6 +1177,9 @@ function toCusFormat(remoteJid) {
  */
 export function toJID(chatId) {
   if (isJidGroup(chatId)) {
+    return chatId;
+  }
+  if (isJidStatusBroadcast(chatId)) {
     return chatId;
   }
   const number = chatId.split('@')[0];

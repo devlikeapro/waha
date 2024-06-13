@@ -37,6 +37,26 @@ export class ProxyConfig {
   password?: string;
 }
 
+export class NowebStoreConfig {
+  @ApiProperty({
+    description:
+      'Enable or disable the store for contacts, chats, and messages.',
+  })
+  enabled: boolean = false;
+
+  @ApiProperty({
+    description:
+      'Enable full sync on session initialization (when scanning QR code).\n' +
+      'Full sync will download all contacts, chats, and messages from the phone.\n' +
+      'If disabled, only messages early than 90 days will be downloaded and some contacts may be missing.',
+  })
+  fullSync: boolean = false;
+}
+
+export class NowebConfig {
+  store?: NowebStoreConfig;
+}
+
 export class SessionConfig {
   webhooks?: WebhookConfig[];
 
@@ -46,6 +66,16 @@ export class SessionConfig {
   proxy?: ProxyConfig;
 
   debug: boolean = false;
+
+  @ApiProperty({
+    example: {
+      store: {
+        enabled: true,
+        fullSync: false,
+      },
+    },
+  })
+  noweb?: NowebConfig;
 }
 
 export class SessionStartRequest {

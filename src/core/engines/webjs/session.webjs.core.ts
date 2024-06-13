@@ -422,7 +422,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   async getChatMessages(chatId: string, limit: number, downloadMedia: boolean) {
-    downloadMedia = parseBool(downloadMedia)
+    downloadMedia = parseBool(downloadMedia);
     const chat: Chat = await this.whatsapp.getChatById(
       this.ensureSuffix(chatId),
     );
