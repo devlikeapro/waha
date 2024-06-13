@@ -62,7 +62,10 @@ RUN if [ "$USE_BROWSER" = "chrome" ]; then \
           && apt install -y /tmp/chrome.deb \
           && rm /tmp/chrome.deb \
           && rm -rf /var/lib/apt/lists/*; \
-    fi
+    fi \
+
+# Install ffmpeg to generate previews for videos
+RUN apt-get update && apt-get install -y ffmpeg --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 # Attach sources, install packages
 WORKDIR /app
