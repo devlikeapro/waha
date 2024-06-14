@@ -37,7 +37,7 @@
     "@types/lodash": "^4.14.194",
     "@types/ws": "^8.5.4",
     "async-lock": "^1.4.1",
-    "better-sqlite3": "^11.0.0",
+    "better-sqlite3": "9.6.0",
     "check-disk-space": "^3.4.0",
     "class-validator": "^0.12.2",
     "del": "^6.0.0",
