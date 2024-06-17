@@ -40,7 +40,7 @@ export class NowebInMemoryStore implements INowebStore {
     throw new BadRequestException(this.errorMessage);
   }
 
-  getChats(): Promise<Chat[]> {
+  getChats(limit?: number, offset?: number): Promise<Chat[]> {
     throw new BadRequestException(this.errorMessage);
   }
 

@@ -20,6 +20,7 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { NowebInMemoryStore } from '@waha/core/engines/noweb/store/NowebInMemoryStore';
 import { flipObject, getLogLevels, parseBool, splitAt } from '@waha/helpers';
 import { PairingCodeResponse } from '@waha/structures/auth.dto';
+import { GetChatsQuery } from '@waha/structures/chats.dto';
 import { ContactQuery, ContactRequest } from '@waha/structures/contacts.dto';
 import {
   PollVote,
@@ -623,8 +624,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
    * Chats methods
    */
 
-  async getChats() {
-    const chats = await this.store.getChats();
+  async getChats(query: GetChatsQuery) {
+    const chats = await this.store.getChats(query.limit, query.offset);
     // Remove unreadCount, it's not ready yet
     chats.forEach((chat) => delete chat.unreadCount);
     return chats;

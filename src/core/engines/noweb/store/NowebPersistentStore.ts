@@ -291,8 +291,8 @@ export class NowebPersistentStore implements INowebStore {
     return this.messagesRepo.getAllByJid(toJID(chatId), toNumber(limit));
   }
 
-  getChats() {
-    return this.chatRepo.getAllWithMessages();
+  getChats(limit?: number, offset?: number): Promise<Chat[]> {
+    return this.chatRepo.getAllWithMessages(limit, offset);
   }
 
   getContactById(jid) {

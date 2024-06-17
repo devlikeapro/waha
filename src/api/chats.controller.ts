@@ -4,16 +4,17 @@ import {
   Delete,
   Get,
   Param,
-  Post,
   Put,
   Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
 import { parseBool } from '../helpers';
-import { GetChatMessagesQuery } from '../structures/chats.dto';
+import { GetChatMessagesQuery, GetChatsQuery } from '../structures/chats.dto';
 import { EditMessageRequest } from '../structures/chatting.dto';
 import {
   ChatIdApiParam,
@@ -25,14 +26,18 @@ import {
 @ApiSecurity('api_key')
 @Controller('api/:session/chats')
 @ApiTags('chats')
+@UsePipes(new ValidationPipe({ transform: true }))
 class ChatsController {
   constructor(private manager: SessionManager) {}
 
   @Get('')
   @SessionApiParam
-  @ApiOperation({ summary: 'Get all chats' })
-  getAllChats(@SessionParam session: WhatsappSession) {
-    return session.getChats();
+  @ApiOperation({ summary: 'Get chats' })
+  getChats(
+    @SessionParam session: WhatsappSession,
+    @Query() query: GetChatsQuery,
+  ) {
+    return session.getChats(query);
   }
 
   @Delete(':chatId')

@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { json, urlencoded } from 'express';
 
@@ -47,6 +48,9 @@ async function bootstrap() {
   app.enableShutdownHooks();
   app.useGlobalFilters(new AllExceptionsFilter());
   app.enableCors();
+  // Ideally, we should apply it globally.
+  // but for now we added it ValidationPipe on Controller or endpoint level
+  // app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   // Allow to send big body - for images and attachments
   app.use(json({ limit: '50mb' }));

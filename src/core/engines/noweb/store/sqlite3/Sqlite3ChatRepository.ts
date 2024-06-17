@@ -7,11 +7,17 @@ export class Sqlite3ChatRepository
   extends Sqlite3KVRepository<Chat>
   implements IChatRepository
 {
-  getAllWithMessages(): Promise<Chat[]> {
+  async getAllWithMessages(limit?: number, offset?: number): Promise<Chat[]> {
     // Get chats with conversationTimestamp is not Null
-    const query = this.select()
+    let query = this.select()
       .whereNotNull('conversationTimestamp')
       .orderBy('conversationTimestamp', 'desc');
-    return this.all(query);
+    if (limit != null) {
+      query = query.limit(limit);
+    }
+    if (offset != null) {
+      query = query.offset(offset);
+    }
+    return await this.all(query);
   }
 }

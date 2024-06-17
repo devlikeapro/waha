@@ -1,4 +1,5 @@
 import { ConsoleLogger } from '@nestjs/common';
+import { GetChatsQuery } from '@waha/structures/chats.dto';
 import { EventEmitter } from 'events';
 import * as fs from 'fs';
 import { MessageId } from 'whatsapp-web.js';
@@ -285,7 +286,7 @@ export abstract class WhatsappSession {
   /**
    * Chats methods
    */
-  public getChats() {
+  public getChats(query: GetChatsQuery) {
     throw new NotImplementedByEngineError();
   }
 

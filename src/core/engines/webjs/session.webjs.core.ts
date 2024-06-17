@@ -1,18 +1,14 @@
 import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
+import { IEngineMediaProcessor } from '@waha/core/abc/media.abc';
+import { WAHAInternalEvent, WhatsappSession } from '@waha/core/abc/session.abc';
+import { WebjsClient } from '@waha/core/engines/webjs/WebjsClient';
 import {
-  Chat,
-  Client,
-  ClientOptions,
-  Contact,
-  Events,
-  GroupChat,
-  Location,
-  Message,
-  Reaction,
-} from 'whatsapp-web.js';
-import { Message as MessageInstance } from 'whatsapp-web.js/src/structures';
-
-import { parseBool } from '../../../helpers';
+  AvailableInPlusVersion,
+  NotImplementedByEngineError,
+} from '@waha/core/exceptions';
+import { QR } from '@waha/core/QR';
+import { parseBool } from '@waha/helpers';
+import { GetChatsQuery } from '@waha/structures/chats.dto';
 import {
   ChatRequest,
   CheckNumberStatusQuery,
@@ -28,8 +24,8 @@ import {
   MessageVoiceRequest,
   SendSeenRequest,
   WANumberExistResult,
-} from '../../../structures/chatting.dto';
-import { ContactQuery, ContactRequest } from '../../../structures/contacts.dto';
+} from '@waha/structures/chatting.dto';
+import { ContactQuery, ContactRequest } from '@waha/structures/contacts.dto';
 import {
   ACK_UNKNOWN,
   SECOND,
@@ -38,31 +34,29 @@ import {
   WAHAPresenceStatus,
   WAHASessionStatus,
   WAMessageAck,
-} from '../../../structures/enums.dto';
+} from '@waha/structures/enums.dto';
 import {
   CreateGroupRequest,
   ParticipantsRequest,
   SettingsSecurityChangeInfo,
-} from '../../../structures/groups.dto';
+} from '@waha/structures/groups.dto';
+import { WAMessage, WAMessageReaction } from '@waha/structures/responses.dto';
+import { MeInfo } from '@waha/structures/sessions.dto';
+import { WAMessageRevokedBody } from '@waha/structures/webhooks.dto';
 import {
-  WAMessage,
-  WAMessageReaction,
-} from '../../../structures/responses.dto';
-import { MeInfo } from '../../../structures/sessions.dto';
-import { WAMessageRevokedBody } from '../../../structures/webhooks.dto';
-import { IEngineMediaProcessor } from '../../abc/media.abc';
-import { WAHAInternalEvent, WhatsappSession } from '../../abc/session.abc';
-import {
-  AvailableInPlusVersion,
-  NotImplementedByEngineError,
-} from '../../exceptions';
-import { QR } from '../../QR';
+  Chat,
+  ClientOptions,
+  Contact,
+  Events,
+  GroupChat,
+  Location,
+  Message,
+  Reaction,
+} from 'whatsapp-web.js';
+import { Message as MessageInstance } from 'whatsapp-web.js/src/structures';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const qrcode = require('qrcode-terminal');
 
 export interface WebJSConfig {
   webVersion?: string;
@@ -77,7 +71,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   private startTimeoutId: null | ReturnType<typeof setTimeout> = null;
   private shouldRestart: boolean;
 
-  whatsapp: Client;
+  whatsapp: WebjsClient;
   protected qr: QR;
 
   public constructor(config) {
@@ -116,7 +110,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   protected async buildClient() {
     const clientOptions = this.getClientOptions();
     this.addProxyConfig(clientOptions);
-    return new Client(clientOptions);
+    return new WebjsClient(clientOptions);
   }
 
   private restartClient() {
@@ -417,8 +411,8 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   /**
    * Chats methods
    */
-  getChats() {
-    return this.whatsapp.getChats();
+  getChats(query: GetChatsQuery) {
+    return this.whatsapp.getChats(query.limit, query.offset);
   }
 
   async getChatMessages(chatId: string, limit: number, downloadMedia: boolean) {

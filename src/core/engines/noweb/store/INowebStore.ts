@@ -18,7 +18,7 @@ export interface INowebStore {
 
   getMessagesByJid(chatId: string, limit: number): Promise<any>;
 
-  getChats(): Promise<Chat[]>;
+  getChats(limit?: number, offset?: number): Promise<Chat[]>;
 
   getContacts(): Promise<Contact[]>;
 
