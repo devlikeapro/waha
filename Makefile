@@ -29,7 +29,7 @@ push:
 	docker push devlikeapro/waha
 
 for-swagger:
-	WHATSAPP_SWAGGER_CONFIG_ADVANCED=true npm run start
+	WHATSAPP_SWAGGER_CONFIG_ADVANCED=true . ${NVM_DIR}/nvm.sh && nvm exec yarn start
 
 update-dependencies:
 	. ${NVM_DIR}/nvm.sh && nvm exec yarn up whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js#main-fork
