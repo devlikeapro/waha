@@ -1,6 +1,7 @@
 .yarn
 example.ts
 .*sessions
+.secrets
 tokens
 files
 venv

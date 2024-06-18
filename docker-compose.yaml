@@ -67,6 +67,40 @@ services:
       - WHATSAPP_SESSIONS_MONGO_URL=mongodb://mongodb:27017
     restart: always
 
+  # Let's Encrypt + Certbot
+  # https://waha.devlike.pro/docs/how-to/security/#https
+  waha-https--certbot:
+    image: devlikeapro/waha-plus
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    volumes:
+      - './.sessions:/app/.sessions'
+      - '/etc/letsencrypt:/etc/letsencrypt'
+    environment:
+      - DOMAIN=waha.example.pro
+      - WHATSAPP_API_HOSTNAME=${DOMAIN}
+      - WAHA_HTTPS_ENABLED=true
+      - WAHA_HTTPS_PATH_KEY=/etc/letsencrypt/live/${DOMAIN}/privkey.pem
+      - WAHA_HTTPS_PATH_CERT=/etc/letsencrypt/live/${DOMAIN}/cert.pem
+      - WAHA_HTTPS_PATH_CA=/etc/letsencrypt/live/${DOMAIN}/chain.pem
+
+  # Self-signed certificates example
+  # https://waha.devlike.pro/docs/how-to/security/#https
+  waha-https--self-signed:
+    image: devlikeapro/waha-plus
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    volumes:
+      - './.sessions:/app/.sessions'
+      - './.secrets:/app/.secrets'
+    environment:
+      - WAHA_HTTPS_ENABLED=true
+      - WAHA_HTTPS_PATH_KEY=.secrets/privkey.pem
+      - WAHA_HTTPS_PATH_CERT=.secrets/cert.pem
+      - WAHA_HTTPS_PATH_CA=.secrets/chain.pem
+
   mongodb:
     image: mongo
     container_name: mongodb

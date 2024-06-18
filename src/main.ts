@@ -1,4 +1,3 @@
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { json, urlencoded } from 'express';
 
@@ -41,8 +40,10 @@ async function loadModules(): Promise<
 
 async function bootstrap() {
   const [AppModule, SwaggerModule] = await loadModules();
+  const httpsOptions = AppModule.getHttpsOptions();
   const app = await NestFactory.create(AppModule, {
     logger: getLogLevels(false),
+    httpsOptions: httpsOptions,
   });
 
   app.enableShutdownHooks();
@@ -60,6 +61,7 @@ async function bootstrap() {
   const swaggerConfigurator = new SwaggerModule(app);
   swaggerConfigurator.configure(WAHA_WEBHOOKS);
 
+  AppModule.appReady(app);
   const config = app.get(WhatsappConfigService);
   await app.listen(config.port);
   console.log(`WhatsApp HTTP API is running on: ${await app.getUrl()}`);

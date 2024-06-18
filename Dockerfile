@@ -73,6 +73,10 @@ COPY package.json ./
 COPY --from=build /src/node_modules ./node_modules
 COPY --from=build /src/dist ./dist
 
+# Chokidar options to monitor file changes
+ENV CHOKIDAR_USEPOLLING=1
+ENV CHOKIDAR_INTERVAL=5000
+
 # Run command, etc
 EXPOSE 3000
 CMD yarn start:prod
