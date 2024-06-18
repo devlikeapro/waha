@@ -32,8 +32,10 @@ export class HmacConfiguration {
 
 export class WebhookConfig {
   @ApiProperty({
-    example: 'https://httpbin.org/post',
+    example: 'https://webhook.site/11111111-1111-1111-1111-11111111',
     required: true,
+    description:
+      'You can use https://docs.webhook.site/ to test webhooks and see the payload',
   })
   url: string;
 
