@@ -1,4 +1,5 @@
 import makeWASocket, {
+  areJidsSameUser,
   Browsers,
   Contact,
   DisconnectReason,
@@ -7,6 +8,7 @@ import makeWASocket, {
   getKeyAuthor,
   isJidGroup,
   isJidStatusBroadcast,
+  isRealMessage,
   jidNormalizedUser,
   makeCacheableSignalKeyStore,
   normalizeMessageContent,
@@ -236,6 +238,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   async buildClient() {
     this.sock = await this.makeSocket();
     this.issueMessageUpdateOnEdits();
+    this.issuePresenceUpdateOnMessageUpsert();
     if (this.isDebugEnabled()) {
       this.listenEngineEventsInDebugMode();
     }
@@ -364,6 +367,38 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
               update: { message: protocolMsg.editedMessage },
             },
           ]);
+        }
+      }
+    });
+  }
+
+  private issuePresenceUpdateOnMessageUpsert() {
+    //
+    // Fix for "typing" after sending a message
+    // https://github.com/devlikeapro/waha/issues/379
+    //
+    this.sock.ev.on('messages.upsert', ({ messages }) => {
+      const meId = this.sock?.authState?.creds?.me?.id;
+      for (const message of messages) {
+        if (!isRealMessage(message, meId)) {
+          continue;
+        }
+        if (message.key.fromMe) {
+          continue;
+        }
+        const jid = message.key.remoteJid;
+        const participant = message.key.participant || jid;
+        const jidPresences = this.store?.presences?.[jid];
+        const participantPresence = jidPresences?.[participant];
+        if (participantPresence?.lastKnownPresence === 'composing') {
+          this.log.debug(
+            `Fixing presence for '${participant}' in '${jid} since it's typing`,
+          );
+          const presence: PresenceData = { lastKnownPresence: 'available' };
+          this.sock?.ev?.emit('presence.update', {
+            id: jid,
+            presences: { [participant]: presence },
+          });
         }
       }
     });
@@ -762,20 +797,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   public async getPresence(chatId: string): Promise<WAHAChatPresences> {
-    await this.subscribePresence(chatId);
     const remoteJid = toJID(chatId);
-    const storedPresences = this.store.presences[remoteJid];
-    return this.toWahaPresences(remoteJid, storedPresences || []);
-  }
-
-  public async subscribePresence(chatId: string): Promise<void> {
-    const remoteJid = toJID(chatId);
-    if (this.store.presences[remoteJid]) {
-      return;
+    if (!(remoteJid in this.store.presences)) {
+      this.store.presences[remoteJid] = [];
+      await this.sock.presenceSubscribe(remoteJid);
     }
-    // Have no info - subscribe to listen for events
-    await this.sock.presenceSubscribe(remoteJid);
-    return;
+    const result = this.store.presences[remoteJid];
+    return this.toWahaPresences(remoteJid, result);
   }
 
   /**
