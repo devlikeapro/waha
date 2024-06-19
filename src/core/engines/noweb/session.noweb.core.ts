@@ -175,7 +175,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       logger: this.logger,
       mobile: false,
       defaultQueryTimeoutMs: 120_000,
-      keepAliveIntervalMs: 50_000,
+      keepAliveIntervalMs: 30_000,
       getMessage: (key) => this.getMessage(key),
       syncFullHistory: fullSyncEnabled,
     };
