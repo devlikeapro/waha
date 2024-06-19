@@ -31,6 +31,7 @@ import * as Buffer from 'buffer';
 import { Agent } from 'https';
 import * as lodash from 'lodash';
 import { toNumber } from 'lodash';
+import type { Logger } from 'pino';
 
 import {
   ChatRequest,
@@ -98,7 +99,7 @@ import { extractMediaContent } from './utils';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const logger = require('pino')();
+const pino = require('pino');
 
 export const BaileysEvents = {
   CONNECTION_UPDATE: 'connection.update',
@@ -128,6 +129,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   storageFactory = new NowebStorageFactoryCore();
   private startTimeoutId: null | ReturnType<typeof setTimeout> = null;
   private autoRestartTimeoutId: null | ReturnType<typeof setTimeout> = null;
+  public logger: Logger;
 
   get listenConnectionEventsFromTheStart() {
     return true;
@@ -140,6 +142,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   public constructor(config) {
     super(config);
     this.qr = new QR();
+    const levels = getLogLevels(this.sessionConfig?.debug);
+    const debug = levels.includes('debug');
+    const logger = pino({ level: debug ? 'debug' : 'info' });
+    this.logger = logger.child({
+      session: this.name,
+    });
   }
 
   start() {
@@ -158,13 +166,14 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       auth: {
         creds: state.creds,
         /** caching makes the store faster to send/recv messages */
-        keys: makeCacheableSignalKeyStore(state.keys, logger),
+        keys: makeCacheableSignalKeyStore(state.keys, this.logger),
       },
       printQRInTerminal: false,
       browser: browser,
-      logger: logger,
+      logger: this.logger,
       mobile: false,
       defaultQueryTimeoutMs: undefined,
+      keepAliveIntervalMs: 50_000,
       getMessage: (key) => this.getMessage(key),
       syncFullHistory: fullSyncEnabled,
     };
@@ -193,7 +202,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.log.debug(`Connecting store...`);
     if (!this.store) {
       this.log.debug(`Making a new store...`);
-      const levels = getLogLevels(false);
+      const levels = getLogLevels(this.sessionConfig?.debug);
       const log = buildLogger(`NowebStore - ${this.name}`, levels);
       const storeEnabled = this.sessionConfig?.noweb?.store?.enabled || false;
       if (storeEnabled) {
@@ -781,6 +790,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       font: status.font,
       statusJidList: JIDs,
     };
+
     return this.sock.sendMessage(BROADCAST_ID, message, options);
   }
 
