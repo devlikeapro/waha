@@ -33,6 +33,7 @@ import * as Buffer from 'buffer';
 import { Agent } from 'https';
 import * as lodash from 'lodash';
 import { toNumber } from 'lodash';
+import * as NodeCache from 'node-cache';
 import type { Logger } from 'pino';
 
 import {
@@ -132,6 +133,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   private startTimeoutId: null | ReturnType<typeof setTimeout> = null;
   private autoRestartTimeoutId: null | ReturnType<typeof setTimeout> = null;
   public logger: Logger;
+  private msgRetryCounterCache: NodeCache;
 
   get listenConnectionEventsFromTheStart() {
     return true;
@@ -149,6 +151,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     const logger = pino({ level: debug ? 'trace' : 'info' });
     this.logger = logger.child({
       session: this.name,
+    });
+    // external map to store retry counts of messages when decryption/encryption fails
+    // keep this out of the socket itself, to prevent a message decryption/encryption loop across socket restarts
+    this.msgRetryCounterCache = new NodeCache({
+      stdTTL: 60 * 60, // 1 hour
+      useClones: false,
     });
   }
 
@@ -178,6 +186,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       keepAliveIntervalMs: 30_000,
       getMessage: (key) => this.getMessage(key),
       syncFullHistory: fullSyncEnabled,
+      msgRetryCounterCache: this.msgRetryCounterCache,
     };
   }
 
