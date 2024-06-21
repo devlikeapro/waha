@@ -148,7 +148,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.qr = new QR();
     const levels = getLogLevels(this.sessionConfig?.debug);
     const debug = levels.includes('debug');
-    const logger = pino({ level: debug ? 'trace' : 'info' });
+    const logger = pino({ level: debug ? 'debug' : 'info' });
     this.logger = logger.child({
       session: this.name,
     });
