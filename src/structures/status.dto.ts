@@ -19,7 +19,7 @@ class StatusRequest {
 }
 
 export class TextStatus extends StatusRequest {
-  text = 'Have a look! https://waha.devlike.pro/';
+  text = 'Have a look! https://github.com/';
   backgroundColor = '#38b42f';
   font = 1;
 }
