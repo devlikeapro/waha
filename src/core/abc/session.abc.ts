@@ -75,7 +75,6 @@ export function ensureSuffix(phone) {
 
 export enum WAHAInternalEvent {
   ENGINE_START = 'engine.start',
-  SESSION_STATUS_CHANGED = 'session.status.changed',
 }
 
 export interface SessionParams {
@@ -127,7 +126,8 @@ export abstract class WhatsappSession {
 
   protected set status(value: WAHASessionStatus) {
     this._status = value;
-    this.events.emit(WAHAInternalEvent.SESSION_STATUS_CHANGED, value);
+    const body: WASessionStatusBody = { name: this.name, status: value };
+    this.events.emit(WAHAEvents.SESSION_STATUS, body);
   }
 
   public get status() {
@@ -185,10 +185,7 @@ export abstract class WhatsappSession {
   ): boolean {
     switch (hook) {
       case WAHAEvents.SESSION_STATUS:
-        this.events.on(WAHAInternalEvent.SESSION_STATUS_CHANGED, (value) => {
-          const body: WASessionStatusBody = { name: this.name, status: value };
-          handler(body);
-        });
+        this.events.on(WAHAEvents.SESSION_STATUS, handler);
         return true;
       default:
         return false;
