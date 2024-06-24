@@ -5,6 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { TerminusModule } from '@nestjs/terminus';
 import { BufferJsonReplacerInterceptor } from '@waha/api/BufferJsonReplacerInterceptor';
+import { WebsocketGatewayCore } from '@waha/core/api/websocket.gateway.core';
 import { join } from 'path';
 
 import { AuthController } from '../api/auth.controller';
@@ -93,6 +94,7 @@ const PROVIDERS = [
   WhatsappConfigService,
   EngineConfigService,
   ConsoleLogger,
+  WebsocketGatewayCore,
 ];
 
 @Module({

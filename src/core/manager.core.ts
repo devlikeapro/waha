@@ -5,10 +5,15 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { EventEmitter } from 'events';
 
 import { WhatsappConfigService } from '../config.service';
 import { getLogLevels } from '../helpers';
-import { WAHAEngine, WAHASessionStatus } from '../structures/enums.dto';
+import {
+  WAHAEngine,
+  WAHAEvents,
+  WAHASessionStatus,
+} from '../structures/enums.dto';
 import {
   ProxyConfig,
   SessionDTO,
@@ -59,7 +64,7 @@ export class SessionManagerCore extends SessionManager {
     private engineConfigService: EngineConfigService,
   ) {
     super();
-
+    this.events = new EventEmitter();
     this.log.setContext('SessionManager');
     this.session = undefined;
     const engineName = this.engineConfigService.getDefaultEngineName();
@@ -95,7 +100,7 @@ export class SessionManagerCore extends SessionManager {
     }
   }
 
-  async onApplicationShutdown(signal?: string) {
+  async beforeApplicationShutdown(signal?: string) {
     if (!this.session) {
       return;
     }
@@ -141,6 +146,12 @@ export class SessionManagerCore extends SessionManager {
     // configure webhooks
     const webhooks = this.getWebhooks(request);
     webhook.configure(session, webhooks);
+
+    // configure events
+    session.events.on(
+      WAHAEvents.SESSION_STATUS,
+      this.handleSessionEvent(WAHAEvents.SESSION_STATUS, session),
+    );
 
     // start session
     await session.start();

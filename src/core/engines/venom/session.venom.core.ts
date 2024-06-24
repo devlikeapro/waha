@@ -90,8 +90,9 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
   }
 
   async stop() {
-    await this.whatsapp.close();
     this.status = WAHASessionStatus.STOPPED;
+    this.events.removeAllListeners();
+    await this.whatsapp.close();
   }
 
   subscribeEngineEvent(event: WAHAEvents | string, handler: (message) => void) {

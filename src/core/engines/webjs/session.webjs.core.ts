@@ -204,6 +204,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   async stop() {
     this.shouldRestart = false;
     this.status = WAHASessionStatus.STOPPED;
+    this.events.removeAllListeners();
     await this.end();
   }
 

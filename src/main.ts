@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { WsAdapter } from '@nestjs/platform-ws';
 import { json, urlencoded } from 'express';
 
 import { AllExceptionsFilter } from './api/exception.filter';
@@ -56,6 +57,7 @@ async function bootstrap() {
   // Allow to send big body - for images and attachments
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ limit: '50mb', extended: false }));
+  app.useWebSocketAdapter(new WsAdapter(app));
 
   // Configure swagger
   const swaggerConfigurator = new SwaggerModule(app);
