@@ -20,6 +20,7 @@ export class RemoteFile {
 
   @ApiProperty({
     example:
+      process.env.WHATSAPP_SWAGGER_JPG_EXAMPLE_URL ||
       'https://github.com/devlikeapro/waha/raw/core/examples/dev.likeapro.jpg',
   })
   url: string;
@@ -73,6 +74,7 @@ export class VoiceRemoteFile {
 
   @ApiProperty({
     example:
+      process.env.WHATSAPP_SWAGGER_OPUS_EXAMPLE_URL ||
       'https://github.com/devlikeapro/waha/raw/core/examples/dev.likeapro.opus',
   })
   url: string;
@@ -109,7 +111,9 @@ export class VideoRemoteFile {
   filename = 'video.mp4';
 
   @ApiProperty({
-    example: 'https://github.com/devlikeapro/waha/raw/core/examples/video.mp4',
+    example:
+      process.env.WHATSAPP_SWAGGER_VIDEO_EXAMPLE_URL ||
+      'https://github.com/devlikeapro/waha/raw/core/examples/video.mp4',
   })
   url: string;
 }
