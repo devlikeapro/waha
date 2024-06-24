@@ -424,7 +424,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   getSessionMeInfo(): MeInfo | null {
-    const me = this.sock.authState?.creds?.me;
+    const me = this.sock?.authState?.creds?.me;
     if (!me) {
       return null;
     }
