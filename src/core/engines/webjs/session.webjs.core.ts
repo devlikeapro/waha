@@ -220,17 +220,16 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     }
   }
 
-  async getSessionMeInfo(): Promise<MeInfo | null> {
+  getSessionMeInfo(): MeInfo | null {
     const clientInfo = this.whatsapp?.info;
     if (!clientInfo) {
       return null;
     }
     const wid = clientInfo.wid;
-    const meInfo: MeInfo = {
-      id: wid._serialized,
-      pushName: clientInfo.pushname,
+    return {
+      id: wid?._serialized,
+      pushName: clientInfo?.pushname,
     };
-    return meInfo;
   }
 
   protected listenEngineEventsInDebugMode() {

@@ -219,8 +219,8 @@ export abstract class WhatsappSession {
 
   abstract getScreenshot(): Promise<Buffer>;
 
-  public getSessionMeInfo(): Promise<MeInfo | null> {
-    throw new NotImplementedByEngineError();
+  public getSessionMeInfo(): MeInfo | null {
+    return null;
   }
 
   public getCaptcha(): Promise<QR> {

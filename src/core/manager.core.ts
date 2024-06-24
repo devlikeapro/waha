@@ -245,7 +245,7 @@ export class SessionManagerCore extends SessionManager {
         },
       ];
     }
-    const me = await this.session.getSessionMeInfo().catch((err) => null);
+    const me = this.session.getSessionMeInfo();
     const engine = {
       engine: this.session?.engine,
       ...(await this.session?.getEngineInfo().catch((err) => ({}))),

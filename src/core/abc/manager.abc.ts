@@ -8,6 +8,7 @@ import { EventEmitter } from 'events';
 
 import { WAHAEngine, WAHAEvents } from '../../structures/enums.dto';
 import {
+  MeInfo,
   SessionDTO,
   SessionInfo,
   SessionLogoutRequest,
@@ -49,8 +50,8 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
   abstract getSessions(all: boolean): Promise<SessionInfo[]>;
 
   handleSessionEvent(event: WAHAEvents, session: WhatsappSession) {
-    return async (payload: any) => {
-      const me = await session.getSessionMeInfo().catch((err) => null);
+    return (payload: any) => {
+      const me = session.getSessionMeInfo();
       const data: WAHAWebhook = {
         event: event,
         session: session.name,

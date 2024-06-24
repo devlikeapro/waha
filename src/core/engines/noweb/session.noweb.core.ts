@@ -1,5 +1,4 @@
 import makeWASocket, {
-  areJidsSameUser,
   Browsers,
   Contact,
   DisconnectReason,
@@ -424,17 +423,16 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.store?.close();
   }
 
-  async getSessionMeInfo(): Promise<MeInfo | null> {
+  getSessionMeInfo(): MeInfo | null {
     const me = this.sock.authState?.creds?.me;
     if (!me) {
       return null;
     }
     const meId = jidNormalizedUser(me.id);
-    const meInfo: MeInfo = {
+    return {
       id: toCusFormat(meId),
       pushName: me.name,
     };
-    return meInfo;
   }
 
   /**

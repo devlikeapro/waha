@@ -63,7 +63,7 @@ class SessionsController {
   }
 
   @Get('/')
-  async list(@Query() query: ListSessionsQuery): Promise<SessionInfo[]> {
+  list(@Query() query: ListSessionsQuery): Promise<SessionInfo[]> {
     const all = parseBool(query.all);
     return this.manager.getSessions(all);
   }
@@ -87,7 +87,7 @@ class SessionController {
   @Get('me')
   @SessionApiParam
   @ApiOperation({ summary: 'Get information about the authenticated account' })
-  getMe(@SessionParam session: WhatsappSession): Promise<MeInfo | null> {
+  getMe(@SessionParam session: WhatsappSession): MeInfo | null {
     return session.getSessionMeInfo();
   }
 }

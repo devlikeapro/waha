@@ -127,7 +127,7 @@ export class WebhookConductorCore implements WebhookConductor {
     data: any,
     sender: WebhookSender,
   ) {
-    const me = await session.getSessionMeInfo().catch((err) => null);
+    const me = session.getSessionMeInfo();
     const json: WAHAWebhook = {
       event: event,
       session: session.name,
