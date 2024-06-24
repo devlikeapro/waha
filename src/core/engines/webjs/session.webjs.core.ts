@@ -740,6 +740,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   public async getEngineInfo() {
+    // Add 1 seconds timeout
     return {
       WWebVersion: await this.whatsapp?.getWWebVersion(),
       state: await this.whatsapp?.getState(),
