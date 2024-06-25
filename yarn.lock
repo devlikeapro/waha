@@ -5,9 +5,9 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@adiwajshing/baileys@github:WhiskeySockets/Baileys":
+"@adiwajshing/baileys@github:devlikeapro/Baileys#fork-master":
   version: 6.7.5
-  resolution: "@adiwajshing/baileys@https://github.com/WhiskeySockets/Baileys.git#commit=f25f83656a7cadbcdaf66b7fea72b9d4b3a72aa0"
+  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=f46437cefa0e28d1b31add54daf4f257c57e5a42"
   dependencies:
     "@adiwajshing/keyed-db": ^0.2.4
     "@hapi/boom": ^9.1.3
@@ -18,6 +18,7 @@ __metadata:
     futoin-hkdf: ^1.5.1
     libphonenumber-js: ^1.10.20
     libsignal: "github:WhiskeySockets/libsignal-node"
+    lodash: ^4.17.21
     music-metadata: ^7.12.3
     node-cache: ^5.1.2
     pino: ^7.0.0
@@ -38,7 +39,7 @@ __metadata:
       optional: true
     sharp:
       optional: true
-  checksum: 9f112d79982563c02eaaceac4276f0fdcf666c084f1b1a6da63db1ab9fa5d0e7cdadc98f183d385b68d6ed3f2e8e7e7c67860c0ed54f5091ce98d7ea28b10e1a
+  checksum: be470d6332aa0478705aa0514596daf2609d11ebd64bdfa895dc052be384a5e5ce2e474c8974682961fafffdf99533e7387c7e030c2b7c85968af81a42cc810c
   languageName: node
   linkType: hard
 
@@ -12675,7 +12676,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "waha@workspace:."
   dependencies:
-    "@adiwajshing/baileys": "github:WhiskeySockets/Baileys"
+    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master"
     "@adiwajshing/keyed-db": ^0.2.4
     "@nestjs/axios": ^3.0.2
     "@nestjs/cli": ^9.0.0

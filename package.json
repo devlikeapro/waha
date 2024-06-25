@@ -22,7 +22,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@adiwajshing/baileys": "github:WhiskeySockets/Baileys",
+    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master",
     "@adiwajshing/keyed-db": "^0.2.4",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/common": "^9.0.9",
