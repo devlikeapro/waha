@@ -62,3 +62,11 @@ export class VideoStatus extends StatusRequest {
 
   caption: string;
 }
+
+export class DeleteStatusRequest extends StatusRequest {
+  @ApiProperty({
+    description: 'status message id',
+    example: 'AAAAAAAAAAAAAAAAA',
+  })
+  id: string;
+}

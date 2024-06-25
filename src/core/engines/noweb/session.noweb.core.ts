@@ -29,6 +29,7 @@ import {
   WAMessageAckBody,
 } from '@waha/structures/webhooks.dto';
 import * as Buffer from 'buffer';
+import { request } from 'express';
 import { Agent } from 'https';
 import * as lodash from 'lodash';
 import { toNumber } from 'lodash';
@@ -77,7 +78,11 @@ import {
   WAMessageReaction,
 } from '../../../structures/responses.dto';
 import { MeInfo } from '../../../structures/sessions.dto';
-import { BROADCAST_ID, TextStatus } from '../../../structures/status.dto';
+import {
+  BROADCAST_ID,
+  DeleteStatusRequest,
+  TextStatus,
+} from '../../../structures/status.dto';
 import { IEngineMediaProcessor } from '../../abc/media.abc';
 import {
   ensureSuffix,
@@ -520,7 +525,14 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   public deleteMessage(chatId: string, messageId: string) {
     const jid = toJID(this.ensureSuffix(chatId));
     const key = parseMessageId(messageId);
-    return this.sock.sendMessage(jid, { delete: key });
+    const options = {
+      statusJidList: [
+        '79521562380@s.whatsapp.net',
+        '79069571990@s.whatsapp.net',
+        '79069471990@s.whatsapp.net',
+      ],
+    };
+    return this.sock.sendMessage(jid, { delete: key }, options);
   }
 
   public editMessage(
@@ -828,6 +840,24 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     };
 
     return this.sock.sendMessage(BROADCAST_ID, message, options);
+  }
+
+  public deleteStatus(request: DeleteStatusRequest) {
+    const messageId = request.id;
+    let key: any;
+    if (messageId.includes('_')) {
+      key = parseMessageId(messageId);
+    } else {
+      key = { id: messageId };
+    }
+
+    key.fromMe = true;
+    key.remoteJid = BROADCAST_ID;
+    const JIDs = request.contacts.map(toJID);
+    const options = {
+      statusJidList: JIDs,
+    };
+    return this.sock.sendMessage(BROADCAST_ID, { delete: key }, options);
   }
 
   protected upsertMeInJIDs(JIDs: string[]) {

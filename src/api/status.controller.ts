@@ -12,6 +12,7 @@ import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
 import {
+  DeleteStatusRequest,
   ImageStatus,
   TextStatus,
   VideoStatus,
@@ -63,6 +64,16 @@ class StatusController {
     @Body() status: VideoStatus,
   ) {
     return session.sendVideoStatus(status);
+  }
+
+  @Post('delete')
+  @SessionApiParam
+  @ApiOperation({ summary: 'DELETE sent status.' })
+  deleteStatus(
+    @SessionParam session: WhatsappSession,
+    @Body() status: DeleteStatusRequest,
+  ) {
+    return session.deleteStatus(status);
   }
 }
 

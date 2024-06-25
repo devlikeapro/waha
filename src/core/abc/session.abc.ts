@@ -41,6 +41,7 @@ import {
   SessionConfig,
 } from '../../structures/sessions.dto';
 import {
+  DeleteStatusRequest,
   ImageStatus,
   TextStatus,
   VideoStatus,
@@ -449,6 +450,10 @@ export abstract class WhatsappSession {
   }
 
   public sendVideoStatus(status: VideoStatus) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public deleteStatus(request: DeleteStatusRequest) {
     throw new NotImplementedByEngineError();
   }
 
