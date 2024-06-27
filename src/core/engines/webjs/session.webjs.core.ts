@@ -89,7 +89,8 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   protected getClientOptions(): ClientOptions {
     const path = this.getClassDirName();
-    const webVersion = this.engineConfig?.webVersion || '2.2412.54';
+    const webVersion =
+      this.engineConfig?.webVersion || '2.3000.1014522270-alpha';
     this.log.debug(`Using web version: '${webVersion}'`);
     return {
       puppeteer: {
@@ -258,6 +259,18 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       this.status = WAHASessionStatus.WORKING;
       this.qr.save('');
       this.log.log(`Session '${this.name}' has been authenticated!`);
+    });
+
+    this.whatsapp.on(Events.AUTHENTICATED, () => {
+      this.status = WAHASessionStatus.WORKING;
+      this.qr.save('');
+      this.log.log(`Session '${this.name}' has been authenticated!`);
+    });
+
+    this.whatsapp.on(Events.AUTHENTICATION_FAILURE, () => {
+      this.status = WAHASessionStatus.FAILED;
+      this.qr.save('');
+      this.log.log(`Session '${this.name}' has been disconnected!`);
     });
 
     this.whatsapp.on(Events.DISCONNECTED, () => {
