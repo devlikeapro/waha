@@ -32,7 +32,7 @@ for-swagger:
 	WHATSAPP_SWAGGER_CONFIG_ADVANCED=true . ${NVM_DIR}/nvm.sh && nvm exec yarn start
 
 update-dependencies:
-	. ${NVM_DIR}/nvm.sh && nvm exec yarn up whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js#main-fork
+	. ${NVM_DIR}/nvm.sh && nvm exec yarn up whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js#fork-webpack-exodus
 	. ${NVM_DIR}/nvm.sh && nvm exec yarn up @adiwajshing/baileys@github:devlikeapro/Baileys#fork-master
 	. ${NVM_DIR}/nvm.sh && nvm exec yarn up venom-bot
 
