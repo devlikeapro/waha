@@ -67,7 +67,7 @@
     "sharp": "^0.33.4",
     "swagger-ui-express": "^4.1.4",
     "venom-bot": "5.0.1",
-    "whatsapp-web.js": "https://github.com/devlikeapro/whatsapp-web.js#main-fork-update"
+    "whatsapp-web.js": "https://github.com/devlikeapro/whatsapp-web.js#fork-webpack-exodus"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

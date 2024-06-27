@@ -12742,7 +12742,7 @@ __metadata:
     tsconfig-paths: ^4.1.0
     typescript: ^4.8.4
     venom-bot: 5.0.1
-    whatsapp-web.js: "https://github.com/devlikeapro/whatsapp-web.js#main-fork-update"
+    whatsapp-web.js: "https://github.com/devlikeapro/whatsapp-web.js#fork-webpack-exodus"
   languageName: unknown
   linkType: soft
 
@@ -12839,9 +12839,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js#main-fork-update":
-  version: 1.23.1-alpha.6
-  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=d6eff450edf3e8d292cf70eb4243fd32ace61182"
+"whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js#fork-webpack-exodus":
+  version: 1.23.1-alpha.5
+  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=ec4f08fd0d47d5ec6637ec8d6377c0f3b425da9b"
   dependencies:
     "@pedroslopez/moduleraid": ^5.0.2
     adm-zip: ^0.5.10
@@ -12860,7 +12860,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 3a34d43b37caddb4544f8ddad885ceb02edb2e2fccf8412574d57631a16e08e3f4b37e7c5c28debad958f7b08a7b33916db60133e47daa5ebbcd9921b9f7455d
+  checksum: 4ffb53ccd3cb98efc852f885b2a5d82da6a9cfe1b75b865bc45524d70c3c75cb6d54250173d40fe5ddbbe22979881ec6d6469a0a5c28286507aac1c1fdef4c5e
   languageName: node
   linkType: hard
 
