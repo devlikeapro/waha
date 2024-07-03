@@ -91,7 +91,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     const path = this.getClassDirName();
     const webVersion =
       this.engineConfig?.webVersion || '2.3000.1014522270-alpha';
-    this.log.debug(`Using web version: '${webVersion}'`);
+    // this.log.debug(`Using web version: '${webVersion}'`);
     return {
       puppeteer: {
         headless: true,
@@ -101,9 +101,9 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       },
       webVersion: webVersion,
       webVersionCache: {
-        type: 'local',
-        path: path,
-        strict: true,
+        type: 'none',
+        // path: path,
+        // strict: true,
       },
     };
   }
