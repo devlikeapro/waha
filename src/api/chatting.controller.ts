@@ -46,7 +46,7 @@ export class ChattingController {
   }
 
   @Get('/sendText')
-  @ApiOperation({ summary: 'Send a text message' })
+  @ApiOperation({ summary: 'Send a text message', deprecated: true })
   sendTextGet(@Query() query: MessageTextQuery) {
     const whatsapp = this.manager.getSession(query.session);
     const msg = new MessageTextRequest();
