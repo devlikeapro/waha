@@ -1,6 +1,7 @@
 import {
   ConsoleLogger,
   Injectable,
+  LoggerService,
   LogLevel,
   NotFoundException,
   UnprocessableEntityException,
@@ -58,15 +59,16 @@ export class SessionManagerCore extends SessionManager {
   // @ts-ignore
   protected WebhookConductorClass = WebhookConductorCore;
   protected readonly EngineClass: typeof WhatsappSession;
+  private log: LoggerService;
 
   constructor(
     private config: WhatsappConfigService,
-    private log: ConsoleLogger,
     private engineConfigService: EngineConfigService,
   ) {
     super();
     this.events = new EventEmitter();
-    this.log.setContext('SessionManager');
+    const levels = getLogLevels(false);
+    this.log = buildLogger('SessionManager', levels);
     this.session = undefined;
     const engineName = this.engineConfigService.getDefaultEngineName();
     this.EngineClass = this.getEngine(engineName);
