@@ -12841,7 +12841,7 @@ __metadata:
 
 "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js#fork-webpack-exodus":
   version: 1.23.1-alpha.5
-  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=ec4f08fd0d47d5ec6637ec8d6377c0f3b425da9b"
+  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=72b2a360c1eb5aaa1b7a2d9a2d742d44ba6c0fd5"
   dependencies:
     "@pedroslopez/moduleraid": ^5.0.2
     adm-zip: ^0.5.10
@@ -12860,7 +12860,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 4ffb53ccd3cb98efc852f885b2a5d82da6a9cfe1b75b865bc45524d70c3c75cb6d54250173d40fe5ddbbe22979881ec6d6469a0a5c28286507aac1c1fdef4c5e
+  checksum: 6cdd9fb648e2523aea5bca21e10a4133db9faf3b64d96d20fec381275b48cac3729115db442bab20591f7f65b163ae853d569a4fb6c9266db9f388eb1a5a3527
   languageName: node
   linkType: hard
 
