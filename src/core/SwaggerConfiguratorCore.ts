@@ -1,13 +1,18 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { DECORATORS } from '@nestjs/swagger/dist/constants';
+import { Logger } from 'nestjs-pino';
 
 import { WhatsappConfigService } from '../config.service';
 import { VERSION } from '../version';
 import { SwaggerConfigServiceCore } from './config/SwaggerConfigServiceCore';
 
 export class SwaggerConfiguratorCore {
-  constructor(protected app: INestApplication) {}
+  protected logger: any;
+
+  constructor(protected app: INestApplication) {
+    this.logger = app.get(Logger);
+  }
 
   get title() {
     return 'WAHA - WhatsApp HTTP API';

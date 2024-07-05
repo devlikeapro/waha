@@ -69,7 +69,7 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
       this.qr.save(base64Qrimg, urlCode);
       this.printQR(this.qr);
       this.status = WAHASessionStatus.SCAN_QR_CODE;
-      this.log.debug('Number of attempts to read the qrcode: ', attempts);
+      this.logger.debug('Number of attempts to read the qrcode: ', attempts);
     };
   }
 
@@ -79,7 +79,7 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
       this.whatsapp = await this.buildClient();
     } catch (error) {
       this.status = WAHASessionStatus.FAILED;
-      this.log.error(error);
+      this.logger.error(error);
       this.qr.save('');
       return;
     }

@@ -1,16 +1,16 @@
 import {
   ConsoleLogger,
   Injectable,
-  LoggerService,
   LogLevel,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { getPinoLogLevel, LoggerBuilder } from '@waha/utils/logging';
 import { promiseTimeout } from '@waha/utils/promiseTimeout';
 import { EventEmitter } from 'events';
+import { PinoLogger } from 'nestjs-pino';
 
 import { WhatsappConfigService } from '../config.service';
-import { getLogLevels } from '../helpers';
 import {
   WAHAEngine,
   WAHAEvents,
@@ -47,10 +47,6 @@ export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
   }
 }
 
-export function buildLogger(name: string, levels: LogLevel[]) {
-  return new ConsoleLogger(name, { logLevels: levels });
-}
-
 @Injectable()
 export class SessionManagerCore extends SessionManager {
   private session?: WhatsappSession;
@@ -59,16 +55,15 @@ export class SessionManagerCore extends SessionManager {
   // @ts-ignore
   protected WebhookConductorClass = WebhookConductorCore;
   protected readonly EngineClass: typeof WhatsappSession;
-  private log: LoggerService;
 
   constructor(
     private config: WhatsappConfigService,
     private engineConfigService: EngineConfigService,
+    private log: PinoLogger,
   ) {
     super();
     this.events = new EventEmitter();
-    const levels = getLogLevels(false);
-    this.log = buildLogger('SessionManager', levels);
+    this.log.setContext(SessionManagerCore.name);
     this.session = undefined;
     const engineName = this.engineConfigService.getDefaultEngineName();
     this.EngineClass = this.getEngine(engineName);
@@ -122,20 +117,21 @@ export class SessionManagerCore extends SessionManager {
     }
 
     const name = request.name;
-    this.log.log(`'${name}' - starting session...`);
-    const levels = getLogLevels(request.config?.debug);
-    const log = buildLogger(`WhatsappSession - ${name}`, levels);
+    this.log.info(`'${name}' - starting session...`);
     const mediaManager = new CoreMediaManager(
       new MediaStorageCore(),
       this.config.mimetypes,
     );
-    const webhookLog = buildLogger(`Webhook - ${name}`, levels);
-    const webhook = new this.WebhookConductorClass(webhookLog);
+    const logger = this.log.logger.child({ session: name });
+    logger.level = getPinoLogLevel(request.config?.debug);
+    const loggerBuilder: LoggerBuilder = logger;
+
+    const webhook = new this.WebhookConductorClass(loggerBuilder);
     const proxyConfig = this.getProxyConfig(request);
     const sessionConfig: SessionParams = {
       name,
       mediaManager,
-      log,
+      loggerBuilder,
       printQR: this.engineConfigService.shouldPrintQR,
       sessionStore: this.store,
       proxyConfig: proxyConfig,
@@ -200,10 +196,10 @@ export class SessionManagerCore extends SessionManager {
     this.onlyDefault(request.name);
 
     const name = request.name;
-    this.log.log(`Stopping ${name} session...`);
+    this.log.info(`Stopping ${name} session...`);
     const session = this.getSession(name);
     await session.stop();
-    this.log.log(`"${name}" has been stopped.`);
+    this.log.info(`"${name}" has been stopped.`);
     this.session = undefined;
   }
 
@@ -212,7 +208,7 @@ export class SessionManagerCore extends SessionManager {
     this.onlyDefault(request.name);
     this.stop({ name: name, logout: false })
       .then(() => {
-        this.log.log(`Session '${name}' has been stopped.`);
+        this.log.info(`Session '${name}' has been stopped.`);
       })
       .catch((err) => {
         this.log.error(

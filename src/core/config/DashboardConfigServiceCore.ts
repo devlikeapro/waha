@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 import { parseBool } from '../../helpers';
 
@@ -7,7 +8,11 @@ import { parseBool } from '../../helpers';
 export class DashboardConfigServiceCore {
   public dashboardUri = '/dashboard';
 
-  constructor(protected configService: ConfigService) {}
+  constructor(
+    protected configService: ConfigService,
+    @InjectPinoLogger('DashboardConfigService')
+    protected logger: PinoLogger,
+  ) {}
 
   get enabled(): boolean {
     const value = this.configService.get('WAHA_DASHBOARD_ENABLED', 'true');

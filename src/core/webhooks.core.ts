@@ -7,30 +7,36 @@ import { VERSION } from '../version';
 import { WAHAInternalEvent, WhatsappSession } from './abc/session.abc';
 import { WebhookConductor, WebhookSender } from './abc/webhooks.abc';
 import request = require('request');
+import { LoggerBuilder } from '@waha/utils/logging';
+import { Logger } from 'pino';
 
 export class WebhookSenderCore extends WebhookSender {
   send(json) {
-    this.log.log(`Sending POST to ${this.url}...`);
-    this.log.verbose(`POST DATA: ${JSON.stringify(json)}`);
+    this.logger.info({ url: this.url }, `Sending POST ...`);
+    this.logger.debug({ data: json }, `POST DATA`);
 
     request.post(this.url, { json: json }, (error, res, body) => {
       if (error) {
-        this.log.error(error);
+        this.logger.error(error);
         return;
       }
-      this.log.log(`POST request was sent with status code: ${res.statusCode}`);
-      this.log.debug(`Response: ${body}`);
+      this.logger.info(
+        `POST request was sent with status code: ${res.statusCode}`,
+      );
+      this.logger.debug({ body: body }, `Response`);
     });
   }
 }
 
 export class WebhookConductorCore implements WebhookConductor {
-  constructor(protected log: ConsoleLogger) {
-    this.log = log;
+  private logger: Logger;
+
+  constructor(protected loggerBuilder: LoggerBuilder) {
+    this.logger = loggerBuilder.child({ name: WebhookConductor.name });
   }
 
   protected buildSender(webhookConfig: WebhookConfig): WebhookSender {
-    return new WebhookSenderCore(this.log, webhookConfig);
+    return new WebhookSenderCore(this.loggerBuilder, webhookConfig);
   }
 
   private getSuitableEvents(events: WAHAEvents[] | string[]): WAHAEvents[] {
@@ -47,7 +53,7 @@ export class WebhookConductorCore implements WebhookConductor {
     for (const event of events) {
       // @ts-ignore
       if (!allEvents.includes(event)) {
-        this.log.error(`Unknown event for webhook: '${event}'`);
+        this.logger.error(`Unknown event for webhook: '${event}'`);
         continue;
       }
       rightEvents.push(event);
@@ -70,7 +76,7 @@ export class WebhookConductorCore implements WebhookConductor {
     }
 
     const url = webhook.url;
-    this.log.log(`Configuring webhooks for ${url}...`);
+    this.logger.info(`Configuring webhooks for ${url}...`);
     const events = this.getSuitableEvents(webhook.events);
     const sender = this.buildSender(webhook);
     for (const event of events) {
@@ -93,14 +99,14 @@ export class WebhookConductorCore implements WebhookConductor {
             url,
           );
           if (!found) {
-            this.log.error(
+            this.logger.error(
               `Engine does not support webhook event: '${event}' for url '${url}'`,
             );
           }
         });
       }
     }
-    this.log.log(`Webhooks were configured for ${url}.`);
+    this.logger.info(`Webhooks were configured for ${url}.`);
   }
 
   private configureSingleEvent(
@@ -117,7 +123,7 @@ export class WebhookConductorCore implements WebhookConductor {
     if (!found) {
       return false;
     }
-    this.log.log(`Event '${event}' is enabled for url: ${url}`);
+    this.logger.info(`Event '${event}' is enabled for url: ${url}`);
     return true;
   }
 

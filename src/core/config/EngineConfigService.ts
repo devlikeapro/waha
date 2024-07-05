@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { parseBool } from '../../helpers';
@@ -7,14 +7,18 @@ import { getEngineName } from '../../version';
 
 @Injectable()
 export class EngineConfigService {
-  constructor(protected configService: ConfigService) {}
+  private logger: Logger;
+
+  constructor(protected configService: ConfigService) {
+    this.logger = new Logger('EngineConfigService');
+  }
 
   getDefaultEngineName(): WAHAEngine {
     const value = getEngineName();
     if (value in WAHAEngine) {
       return WAHAEngine[value];
     }
-    console.log(
+    this.logger.warn(
       `Unknown WhatsApp default engine WHATSAPP_DEFAULT_ENGINE=${value}. Using WEBJS`,
     );
     return WAHAEngine.WEBJS;

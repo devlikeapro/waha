@@ -1,27 +1,39 @@
 import { NestFactory } from '@nestjs/core';
 import { WsAdapter } from '@nestjs/platform-ws';
+import {
+  getNestJSLogLevels,
+  getPinoLogLevel,
+  getPinoTransport,
+} from '@waha/utils/logging';
 import { json, urlencoded } from 'express';
+import { Logger as NestJSPinoLogger } from 'nestjs-pino';
+import { Logger } from 'pino';
+import pino from 'pino';
 
 import { AllExceptionsFilter } from './api/exception.filter';
 import { WhatsappConfigService } from './config.service';
 import { AppModuleCore } from './core/app.module.core';
 import { SwaggerConfiguratorCore } from './core/SwaggerConfiguratorCore';
-import { getLogLevels } from './helpers';
 import { WAHA_WEBHOOKS } from './structures/webhooks.dto';
 import { getWAHAVersion, VERSION, WAHAVersion } from './version';
 
-console.log('NODE - Catching unhandled exceptions enabled');
+const logger: Logger = pino({
+  level: getPinoLogLevel(),
+  transport: getPinoTransport(),
+}).child({ name: 'Bootstrap' });
+
+logger.info('NODE - Catching unhandled exceptions enabled');
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
   // @ts-ignore
-  console.error(reason.stack);
+  logger.error(reason.stack);
 });
 
 async function loadModules(): Promise<
   [typeof AppModuleCore, typeof SwaggerConfiguratorCore]
 > {
   const version = getWAHAVersion();
-  console.log(`WAHA (WhatsApp HTTP API) - Running ${version} version...`);
+  logger.info(`WAHA (WhatsApp HTTP API) - Running ${version} version...`);
 
   if (version === WAHAVersion.CORE) {
     const { AppModuleCore } = await import('./core/app.module.core');
@@ -41,12 +53,13 @@ async function loadModules(): Promise<
 
 async function bootstrap() {
   const [AppModule, SwaggerModule] = await loadModules();
-  const httpsOptions = AppModule.getHttpsOptions();
+  const httpsOptions = AppModule.getHttpsOptions(logger);
   const app = await NestFactory.create(AppModule, {
-    logger: getLogLevels(false),
+    logger: getNestJSLogLevels(),
     httpsOptions: httpsOptions,
+    bufferLogs: true,
   });
-
+  app.useLogger(app.get(NestJSPinoLogger));
   app.enableShutdownHooks();
   app.useGlobalFilters(new AllExceptionsFilter());
   app.enableCors();
@@ -63,11 +76,11 @@ async function bootstrap() {
   const swaggerConfigurator = new SwaggerModule(app);
   swaggerConfigurator.configure(WAHA_WEBHOOKS);
 
-  AppModule.appReady(app);
+  AppModule.appReady(app, logger);
   const config = app.get(WhatsappConfigService);
   await app.listen(config.port);
-  console.log(`WhatsApp HTTP API is running on: ${await app.getUrl()}`);
-  console.log(`Environment:`, VERSION);
+  logger.info(`WhatsApp HTTP API is running on: ${await app.getUrl()}`);
+  logger.info(VERSION, 'Environment');
 }
 
 bootstrap();

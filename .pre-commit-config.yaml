@@ -46,3 +46,14 @@ repos:
               src/structures/.*|
               src/config.service.ts|
           )$
+
+  - repo: local
+    hooks:
+      - id: no-console-log
+        name: No console.log() calls
+        language: pygrep
+        entry: 'console\.log'
+        exclude: |
+          (?x)^(
+              .pre-commit-config.yaml
+          )$

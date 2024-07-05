@@ -1,7 +1,8 @@
-import { ConsoleLogger } from '@nestjs/common';
 import { GetChatsQuery } from '@waha/structures/chats.dto';
+import { LoggerBuilder } from '@waha/utils/logging';
 import { EventEmitter } from 'events';
 import * as fs from 'fs';
+import { Logger } from 'pino';
 import { MessageId } from 'whatsapp-web.js';
 
 import {
@@ -82,7 +83,7 @@ export interface SessionParams {
   name: string;
   printQR: boolean;
   mediaManager: MediaManager;
-  log: ConsoleLogger;
+  loggerBuilder: LoggerBuilder;
   sessionStore: DataStore;
   proxyConfig?: ProxyConfig;
   sessionConfig?: SessionConfig;
@@ -95,7 +96,8 @@ export abstract class WhatsappSession {
 
   public name: string;
   protected mediaManager: MediaManager;
-  protected log: ConsoleLogger;
+  public loggerBuilder: LoggerBuilder;
+  protected logger: Logger;
   protected sessionStore: DataStore;
   protected proxyConfig?: ProxyConfig;
   public sessionConfig?: SessionConfig;
@@ -107,7 +109,7 @@ export abstract class WhatsappSession {
   public constructor({
     name,
     printQR,
-    log,
+    loggerBuilder,
     sessionStore,
     proxyConfig,
     mediaManager,
@@ -117,7 +119,8 @@ export abstract class WhatsappSession {
     this.events = new EventEmitter();
     this.name = name;
     this.proxyConfig = proxyConfig;
-    this.log = log;
+    this.loggerBuilder = loggerBuilder;
+    this.logger = loggerBuilder.child({ name: 'WhatsappSession' });
     this.sessionStore = sessionStore;
     this.mediaManager = mediaManager;
     this.sessionConfig = sessionConfig;
@@ -170,7 +173,7 @@ export abstract class WhatsappSession {
   }
 
   protected isDebugEnabled() {
-    return this.log.isLevelEnabled('debug');
+    return this.logger.isLevelEnabled('debug');
   }
 
   /** Start the session */
@@ -488,12 +491,12 @@ export abstract class WhatsappSession {
       return;
     }
     if (!qr.raw) {
-      this.log.error(
+      this.logger.error(
         'QR.raw is not available, can not print it in the console',
       );
       return;
     }
-    this.log.log(
+    this.logger.info(
       "You can disable QR in console by setting 'WAHA_PRINT_QR=false' in your environment variables.",
     );
     qrcode.generate(qr.raw, { small: true });

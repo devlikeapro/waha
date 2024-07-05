@@ -1,4 +1,4 @@
-import { ConsoleLogger } from '@nestjs/common';
+import { LoggerService } from '@nestjs/common';
 import { WebSocket } from '@waha/utils/ws';
 import { WebSocketServer } from 'ws';
 
@@ -6,7 +6,7 @@ export class HeartbeatJob {
   private interval: ReturnType<typeof setInterval>;
 
   constructor(
-    private log: ConsoleLogger,
+    private logger: LoggerService,
     private intervalTime: number = 10_000,
   ) {}
 
@@ -19,14 +19,14 @@ export class HeartbeatJob {
     this.interval = setInterval(() => {
       server.clients.forEach((client: WebSocket) => {
         if (client.isAlive === false) {
-          this.log.debug(
+          this.logger.debug(
             `Terminating client connection due to heartbeat timeout, ${client.id}`,
           );
           return client.terminate();
         }
 
         client.isAlive = false;
-        this.log.debug(`Sending heartbeat (ping) to ${client.id}`);
+        this.logger.debug(`Sending heartbeat (ping) to ${client.id}`);
         client.ping();
       });
     }, this.intervalTime);
@@ -39,7 +39,7 @@ export class HeartbeatJob {
   private onPong(ws: WebSocket) {
     return (event: any) => {
       ws.isAlive = true;
-      this.log.debug(`Heartbeat (pong) received from ${ws.id}`);
+      this.logger.debug(`Heartbeat (pong) received from ${ws.id}`);
     };
   }
 }

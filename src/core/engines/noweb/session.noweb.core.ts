@@ -17,9 +17,10 @@ import makeWASocket, {
   WAMessageKey,
 } from '@adiwajshing/baileys';
 import { isLidUser } from '@adiwajshing/baileys/lib/WABinary/jid-utils';
+import { Logger as BaileysLogger } from '@adiwajshing/baileys/node_modules/pino';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { NowebInMemoryStore } from '@waha/core/engines/noweb/store/NowebInMemoryStore';
-import { flipObject, getLogLevels, parseBool, splitAt } from '@waha/helpers';
+import { flipObject, parseBool, splitAt } from '@waha/helpers';
 import { PairingCodeResponse } from '@waha/structures/auth.dto';
 import { GetChatsQuery } from '@waha/structures/chats.dto';
 import { ContactQuery, ContactRequest } from '@waha/structures/contacts.dto';
@@ -29,12 +30,10 @@ import {
   WAMessageAckBody,
 } from '@waha/structures/webhooks.dto';
 import * as Buffer from 'buffer';
-import { request } from 'express';
 import { Agent } from 'https';
 import * as lodash from 'lodash';
 import { toNumber } from 'lodash';
 import * as NodeCache from 'node-cache';
-import type { Logger } from 'pino';
 
 import {
   ChatRequest,
@@ -95,7 +94,6 @@ import {
 } from '../../exceptions';
 import { toVcard } from '../../helpers';
 import { createAgentProxy } from '../../helpers.proxy';
-import { buildLogger } from '../../manager.core';
 import { QR } from '../../QR';
 import { NowebAuthFactoryCore } from './NowebAuthFactoryCore';
 import { INowebStore } from './store/INowebStore';
@@ -105,8 +103,6 @@ import { extractMediaContent } from './utils';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QRCode = require('qrcode');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const pino = require('pino');
 
 export const BaileysEvents = {
   CONNECTION_UPDATE: 'connection.update',
@@ -136,7 +132,6 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   storageFactory = new NowebStorageFactoryCore();
   private startTimeoutId: null | ReturnType<typeof setTimeout> = null;
   private autoRestartTimeoutId: null | ReturnType<typeof setTimeout> = null;
-  public logger: Logger;
   private msgRetryCounterCache: NodeCache;
 
   get listenConnectionEventsFromTheStart() {
@@ -150,12 +145,6 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   public constructor(config) {
     super(config);
     this.qr = new QR();
-    const levels = getLogLevels(this.sessionConfig?.debug);
-    const debug = levels.includes('debug');
-    const logger = pino({ level: debug ? 'debug' : 'info' });
-    this.logger = logger.child({
-      session: this.name,
-    });
     // external map to store retry counts of messages when decryption/encryption fails
     // keep this out of the socket itself, to prevent a message decryption/encryption loop across socket restarts
     this.msgRetryCounterCache = new NodeCache({
@@ -169,7 +158,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.buildClient();
   }
 
-  getSocketConfig(agent, state) {
+  getSocketConfig(agent, state): any {
     const fullSyncEnabled = this.sessionConfig?.noweb?.store?.fullSync || false;
     const browser = fullSyncEnabled
       ? Browsers.ubuntu('Desktop')
@@ -180,7 +169,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       auth: {
         creds: state.creds,
         /** caching makes the store faster to send/recv messages */
-        keys: makeCacheableSignalKeyStore(state.keys, this.logger),
+        keys: makeCacheableSignalKeyStore(
+          state.keys,
+          this.logger as unknown as BaileysLogger,
+        ),
       },
       printQRInTerminal: false,
       browser: browser,
@@ -194,7 +186,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     };
   }
 
-  async makeSocket() {
+  async makeSocket(): Promise<any> {
     const { state, saveCreds } = await this.authFactory.buildAuth(
       this.sessionStore,
       this.name,
@@ -214,31 +206,32 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async connectStore() {
-    this.log.debug(`Connecting store...`);
+    this.logger.debug(`Connecting store...`);
     if (!this.store) {
-      this.log.debug(`Making a new store...`);
-      const levels = getLogLevels(this.sessionConfig?.debug);
-      const log = buildLogger(`NowebStore - ${this.name}`, levels);
+      this.logger.debug(`Making a new store...`);
       const storeEnabled = this.sessionConfig?.noweb?.store?.enabled || false;
       if (storeEnabled) {
-        this.log.debug('Using NowebPersistentStore');
+        this.logger.debug('Using NowebPersistentStore');
         const storage = this.storageFactory.createStorage(
           this.sessionStore,
           this.name,
         );
-        this.store = new NowebPersistentStore(log, storage);
+        this.store = new NowebPersistentStore(
+          this.loggerBuilder.child({ name: NowebPersistentStore.name }),
+          storage,
+        );
         await this.store.init().catch((err) => {
-          this.log.error(`Failed to initialize storage or store: ${err}`);
+          this.logger.error(`Failed to initialize storage or store: ${err}`);
           this.status = WAHASessionStatus.FAILED;
           this.end();
           throw err;
         });
       } else {
-        this.log.debug('Using NowebInMemoryStore');
+        this.logger.debug('Using NowebInMemoryStore');
         this.store = new NowebInMemoryStore();
       }
     }
-    this.log.debug(`Binding store to socket...`);
+    this.logger.debug(`Binding store to socket...`);
     this.store.bind(this.sock.ev, this.sock);
   }
 
@@ -271,10 +264,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     // add random delay to avoid multiple restarts at the same time
     const shiftSeconds = Math.floor(Math.random() * 30);
     const delay = this.AUTO_RESTART_AFTER_SECONDS + shiftSeconds;
-    this.log.debug(`Auto-restart is enabled, after ${delay} seconds`);
+    this.logger.debug(`Auto-restart is enabled, after ${delay} seconds`);
     this.autoRestartTimeoutId = setTimeout(() => {
       this.autoRestartTimeoutId = null;
-      this.log.log('Auto-restarting the client connection...');
+      this.logger.info('Auto-restarting the client connection...');
       this.sock?.end(new Error('auto-restart'));
     }, delay * SECOND);
   }
@@ -291,18 +284,18 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   protected listenEngineEventsInDebugMode() {
     this.sock.ev.process((events) => {
-      this.log.debug(`NOWEB events: ${JSON.stringify(events)}`);
+      this.logger.debug({ events: events }, `NOWEB events`);
     });
   }
 
   private restartClient() {
     if (this.startTimeoutId) {
-      this.log.log(
+      this.logger.info(
         'Request to restart is already in progress, ignoring this request',
       );
       return;
     }
-    this.log.log(
+    this.logger.info(
       `Setting up client start in ${this.START_ATTEMPT_DELAY_SECONDS} seconds...`,
     );
     this.startTimeoutId = setTimeout(() => {
@@ -312,7 +305,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   protected listenConnectionEvents() {
-    this.log.debug(`Start listening ${BaileysEvents.CONNECTION_UPDATE}...`);
+    this.logger.debug(`Start listening ${BaileysEvents.CONNECTION_UPDATE}...`);
     this.sock.ev.on('connection.update', async (update) => {
       const { connection, lastDisconnect, qr, isNewLogin } = update;
       if (isNewLogin) {
@@ -330,12 +323,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         this.qr.save('');
         // reconnect if not logged out
         if (shouldReconnect) {
-          this.log.log(
+          this.logger.info(
             `Connection closed due to '${lastDisconnect.error}', reconnecting...`,
           );
           this.restartClient();
         } else {
-          this.log.error(
+          this.logger.error(
             `Connection closed due to '${lastDisconnect.error}', do not reconnect the session.`,
           );
           await this.end();
@@ -405,7 +398,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         const jidPresences = this.store?.presences?.[jid];
         const participantPresence = jidPresences?.[participant];
         if (participantPresence?.lastKnownPresence === 'composing') {
-          this.log.debug(
+          this.logger.debug(
             `Fixing presence for '${participant}' in '${jid} since it's typing`,
           );
           const presence: PresenceData = { lastKnownPresence: 'available' };
@@ -462,7 +455,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     }
 
     if (this.status == WAHASessionStatus.STARTING) {
-      this.log.debug('Waiting for connection update...');
+      this.logger.debug('Waiting for connection update...');
       await this.sock.waitForConnectionUpdate((update) => !!update.qr);
     }
 
@@ -471,12 +464,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       throw new UnprocessableEntityException(err);
     }
 
-    this.log.log(`Requesting pairing code for '${phoneNumber}'...`);
+    this.logger.info(`Requesting pairing code for '${phoneNumber}'...`);
     const code: string = await this.sock.requestPairingCode(phoneNumber);
     // show it as ABCD-ABCD
     const parts = splitAt(code, 4);
     const codeRepr = parts.join('-');
-    this.log.log(`Your code: ${codeRepr}`);
+    this.logger.info(`Your code: ${codeRepr}`);
     return { code: codeRepr };
   }
 
@@ -994,16 +987,16 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       try {
         message = await this.downloadMedia(message);
       } catch (e) {
-        this.log.error('Failed when tried to download media for a message');
-        this.log.error(e, e.stack);
+        this.logger.error('Failed when tried to download media for a message');
+        this.logger.error(e, e.stack);
       }
     }
 
     try {
       return await this.toWAMessage(message);
     } catch (error) {
-      this.log.error('Failed to process incoming message');
-      this.log.error(error);
+      this.logger.error('Failed to process incoming message');
+      this.logger.error(error);
       console.trace(error);
       return null;
     }

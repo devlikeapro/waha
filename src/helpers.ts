@@ -1,5 +1,3 @@
-import { LogLevel } from '@nestjs/common';
-
 function parseBool(value: any): boolean {
   if (typeof value === 'boolean') {
     return value;
@@ -37,11 +35,4 @@ function splitAt(str: string, index) {
   return [fst.join(''), snd.join('')];
 }
 
-function getLogLevels(debug: boolean): LogLevel[] {
-  const enableDebug = process.env.DEBUG != undefined || debug;
-  return enableDebug
-    ? ['log', 'error', 'warn', 'debug', 'verbose']
-    : ['log', 'error', 'warn'];
-}
-
-export { flipObject, getLogLevels, parseBool, splitAt };
+export { flipObject, parseBool, splitAt };

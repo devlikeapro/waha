@@ -116,17 +116,19 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   private restartClient() {
     if (!this.shouldRestart) {
-      this.log.debug("Shouldn't restart the client, ignoring restart request");
+      this.logger.debug(
+        "Shouldn't restart the client, ignoring restart request",
+      );
       return;
     }
 
     if (this.startTimeoutId) {
       const msg =
         'Request to restart is already in progress, ignoring restart request';
-      this.log.warn(msg);
+      this.logger.warn(msg);
       return;
     }
-    this.log.log(
+    this.logger.info(
       `Setting up client start in ${this.START_ATTEMPT_DELAY_SECONDS} seconds...`,
     );
     this.startTimeoutId = setTimeout(() => {
@@ -162,30 +164,30 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         // Listen for browser disconnected event
         this.whatsapp.pupBrowser.on('disconnected', () => {
           this.status = WAHASessionStatus.FAILED;
-          this.log.error('The browser has been disconnected');
+          this.logger.error('The browser has been disconnected');
           this.restartClient();
         });
         // Listen for page close event
         this.whatsapp.pupPage.on('close', () => {
           this.status = WAHASessionStatus.FAILED;
-          this.log.error('The WhatsApp Web page has been closed');
+          this.logger.error('The WhatsApp Web page has been closed');
           this.restartClient();
         });
 
         // Listen for page error event
         if (this.isDebugEnabled()) {
-          this.log.debug("Logging 'console' event for web page");
+          this.logger.debug("Logging 'console' event for web page");
           this.whatsapp.pupPage.on('console', (msg) =>
-            this.log.debug(`WEBJS page log: ${msg.text()}`),
+            this.logger.debug(`WEBJS page log: ${msg.text()}`),
           );
           this.whatsapp.pupPage.evaluate(() =>
-            console.log(`url is ${location.href}`),
+            this.logger.info(`url is ${location.href}`),
           );
         }
       })
       .catch((error) => {
         this.status = WAHASessionStatus.FAILED;
-        this.log.error(error);
+        this.logger.error(error);
         this.restartClient();
         return;
       });
@@ -214,10 +216,10 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       this.whatsapp?.removeAllListeners();
       clearInterval(this.startTimeoutId);
       this.whatsapp?.destroy().catch((error) => {
-        this.log.debug('Failed to destroy the client', error);
+        this.logger.debug('Failed to destroy the client', error);
       });
     } catch (error) {
-      this.log.error(error);
+      this.logger.error(error);
     }
   }
 
@@ -240,14 +242,14 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       const event = Events[key];
       this.whatsapp.on(event, (...data: any[]) => {
         const log = { event: event, data: data };
-        this.log.debug(`WEBJS event: ${JSON.stringify(log)}`);
+        this.logger.debug({ event: log }, `WEBJS event`);
       });
     }
   }
 
   protected listenConnectionEvents() {
     this.whatsapp.on(Events.QR_RECEIVED, async (qr) => {
-      this.log.debug('QR received');
+      this.logger.debug('QR received');
       // Convert to image and save
       const url = await QRCode.toDataURL(qr);
       this.qr.save(url, qr);
@@ -258,25 +260,25 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     this.whatsapp.on(Events.READY, () => {
       this.status = WAHASessionStatus.WORKING;
       this.qr.save('');
-      this.log.log(`Session '${this.name}' has been authenticated!`);
+      this.logger.info(`Session '${this.name}' has been authenticated!`);
     });
 
     this.whatsapp.on(Events.AUTHENTICATED, () => {
       this.status = WAHASessionStatus.WORKING;
       this.qr.save('');
-      this.log.log(`Session '${this.name}' has been authenticated!`);
+      this.logger.info(`Session '${this.name}' has been authenticated!`);
     });
 
     this.whatsapp.on(Events.AUTHENTICATION_FAILURE, () => {
       this.status = WAHASessionStatus.FAILED;
       this.qr.save('');
-      this.log.log(`Session '${this.name}' has been disconnected!`);
+      this.logger.info(`Session '${this.name}' has been disconnected!`);
     });
 
     this.whatsapp.on(Events.DISCONNECTED, () => {
       this.status = WAHASessionStatus.FAILED;
       this.qr.save('');
-      this.log.log(`Session '${this.name}' has been disconnected!`);
+      this.logger.info(`Session '${this.name}' has been disconnected!`);
     });
   }
 
@@ -705,8 +707,8 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       try {
         message = await this.downloadMedia(message);
       } catch (e) {
-        this.log.error('Failed when tried to download media for a message');
-        this.log.error(e, e.stack);
+        this.logger.error('Failed when tried to download media for a message');
+        this.logger.error(e, e.stack);
       }
     }
     return await this.toWAMessage(message);

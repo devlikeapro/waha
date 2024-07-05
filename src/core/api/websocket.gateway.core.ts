@@ -1,4 +1,9 @@
-import { BeforeApplicationShutdown, ConsoleLogger } from '@nestjs/common';
+import {
+  BeforeApplicationShutdown,
+  ConsoleLogger,
+  Logger,
+  LoggerService,
+} from '@nestjs/common';
 import { sleep } from '@nestjs/terminus/dist/utils';
 import {
   OnGatewayConnection,
@@ -8,7 +13,6 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { SessionManager } from '@waha/core/abc/manager.abc';
-import { getLogLevels } from '@waha/helpers';
 import { WAHAEvents } from '@waha/structures/enums.dto';
 import { HeartbeatJob } from '@waha/utils/HeartbeatJob';
 import { WebSocket } from '@waha/utils/ws';
@@ -36,26 +40,25 @@ export class WebsocketGatewayCore
   private listeners: Map<WebSocket, { session: string; events: string[] }> =
     new Map();
 
-  private log: ConsoleLogger;
+  private readonly logger: LoggerService;
   private heartbeat: HeartbeatJob;
 
   constructor(private manager: SessionManager) {
-    const levels = getLogLevels(false);
-    this.log = new ConsoleLogger('WebsocketGateway', { logLevels: levels });
-    this.heartbeat = new HeartbeatJob(this.log, this.HEARTBEAT_INTERVAL);
+    this.logger = new Logger('WebsocketGateway');
+    this.heartbeat = new HeartbeatJob(this.logger, this.HEARTBEAT_INTERVAL);
   }
 
   handleConnection(socket: WebSocket, request: IncomingMessage, ...args): any {
     const random = Math.random().toString(36).substring(7);
     const id = `wsc_${random}`;
     socket.id = id;
-    this.log.debug(`New client connected: ${request.url}`);
+    this.logger.debug(`New client connected: ${request.url}`);
     const params = this.getParams(id, request, socket);
     if (!params) {
       return;
     }
     const { session, events } = params;
-    this.log.debug(
+    this.logger.debug(
       `Client connected to session: '${session}', events: ${events}, ${id}`,
     );
     this.listeners.set(socket, { session, events });
@@ -65,7 +68,7 @@ export class WebsocketGatewayCore
     const query = url.parse(request.url, true).query;
     const session = (query.session as string) || '*';
     if (session !== '*') {
-      this.log.warn(
+      this.logger.warn(
         `Only connecting to all sessions is allowed for now, use session=*, ${id}`,
       );
       const error =
@@ -79,7 +82,7 @@ export class WebsocketGatewayCore
       !lodash.isEqual(events, ['*']) &&
       !lodash.isEqual(events, [WAHAEvents.SESSION_STATUS])
     ) {
-      this.log.warn(
+      this.logger.warn(
         `Only \'session.status\' event is allowed for now, use events=session.status or events=*, ${id}`,
       );
       const error =
@@ -91,12 +94,12 @@ export class WebsocketGatewayCore
   }
 
   handleDisconnect(socket: WebSocket): any {
-    this.log.debug(`Client disconnected - ${socket.id}`);
+    this.logger.debug(`Client disconnected - ${socket.id}`);
     this.listeners.delete(socket);
   }
 
   async beforeApplicationShutdown(signal?: string) {
-    this.log.log('Shutting down websocket server');
+    this.logger.log('Shutting down websocket server');
     // Allow pending messages to be sent, it can be even 1ms, just to release the event loop
     await sleep(100);
     this.server.clients.forEach((options, client) => {
@@ -104,20 +107,20 @@ export class WebsocketGatewayCore
     });
     // Do not turn off heartbeat service here,
     // it's responsible for terminating the connection that is not alive
-    this.log.log('Websocket server is down');
+    this.logger.log('Websocket server is down');
   }
 
   afterInit(server: Server) {
-    this.log.debug('Websocket server initialized');
+    this.logger.debug('Websocket server initialized');
     this.manager.events.on(
       WAHAEvents.SESSION_STATUS,
       this.sendToAll.bind(this),
     );
-    this.log.debug('Subscribed to manager events');
+    this.logger.debug('Subscribed to manager events');
 
-    this.log.debug('Starting heartbeat service...');
+    this.logger.debug('Starting heartbeat service...');
     this.heartbeat.start(server);
-    this.log.debug('Heartbeat service started');
+    this.logger.debug('Heartbeat service started');
   }
 
   sendToAll(data: any) {
@@ -125,7 +128,7 @@ export class WebsocketGatewayCore
       if (options.events.length === 0) {
         return;
       }
-      this.log.debug('Sending data to client', data);
+      this.logger.debug('Sending data to client', data);
       client.send(JSON.stringify(data));
     });
   }

@@ -1,15 +1,19 @@
-import { ConsoleLogger } from '@nestjs/common';
+import { LoggerBuilder } from '@waha/utils/logging';
+import { Logger } from 'pino';
 
 import { WebhookConfig } from '../../structures/webhooks.config.dto';
 import { WhatsappSession } from './session.abc';
 
 export abstract class WebhookSender {
   protected url: string;
+  protected logger: Logger;
+
   constructor(
-    protected log: ConsoleLogger,
+    loggerBuilder: LoggerBuilder,
     protected webhookConfig: WebhookConfig,
   ) {
     this.url = webhookConfig.url;
+    this.logger = loggerBuilder.child({ name: WebhookSender.name });
   }
 
   abstract send(json);

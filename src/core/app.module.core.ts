@@ -6,7 +6,10 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { TerminusModule } from '@nestjs/terminus';
 import { BufferJsonReplacerInterceptor } from '@waha/api/BufferJsonReplacerInterceptor';
 import { WebsocketGatewayCore } from '@waha/core/api/websocket.gateway.core';
+import { getPinoLogLevel, getPinoTransport } from '@waha/utils/logging';
+import { LoggerModule } from 'nestjs-pino';
 import { join } from 'path';
+import { Logger } from 'pino';
 
 import { AuthController } from '../api/auth.controller';
 import { ChatsController } from '../api/chats.controller';
@@ -32,6 +35,14 @@ import { WAHAHealthCheckServiceCore } from './health/WAHAHealthCheckServiceCore'
 import { SessionManagerCore } from './manager.core';
 
 export const IMPORTS = [
+  LoggerModule.forRoot({
+    renameContext: 'name',
+    pinoHttp: {
+      quietReqLogger: true,
+      level: getPinoLogLevel(),
+      transport: getPinoTransport(),
+    },
+  }),
   ConfigModule.forRoot({
     isGlobal: true,
   }),
@@ -105,11 +116,11 @@ const PROVIDERS = [
 export class AppModuleCore {
   constructor(protected config: WhatsappConfigService) {}
 
-  static getHttpsOptions() {
+  static getHttpsOptions(logger: Logger) {
     return undefined;
   }
 
-  static appReady(app: INestApplication) {
+  static appReady(app: INestApplication, logger: Logger) {
     return;
   }
 }

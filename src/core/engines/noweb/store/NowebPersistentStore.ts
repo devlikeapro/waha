@@ -11,6 +11,7 @@ import {
 } from '@adiwajshing/baileys';
 import { ConsoleLogger } from '@nestjs/common';
 import { toNumber } from 'lodash';
+import { Logger } from 'pino';
 
 import { toJID } from '../session.noweb.core';
 import { IChatRepository } from './IChatRepository';
@@ -31,7 +32,7 @@ export class NowebPersistentStore implements INowebStore {
   private lock: any;
 
   constructor(
-    private log: ConsoleLogger,
+    private logger: Logger,
     public storage: INowebStorage,
   ) {
     this.socket = null;
@@ -89,7 +90,7 @@ export class NowebPersistentStore implements INowebStore {
 
   async close(): Promise<void> {
     await this.storage?.close().catch((error) => {
-      this.log.warn(`Failed to close storage: ${error}`);
+      this.logger.warn(`Failed to close storage: ${error}`);
     });
     return;
   }
@@ -97,7 +98,7 @@ export class NowebPersistentStore implements INowebStore {
   private async onMessagingHistorySet(history) {
     const { contacts, chats, messages, isLatest } = history;
     if (isLatest) {
-      this.log.debug(
+      this.logger.debug(
         'history sync - clearing all entities, got latest history',
       );
       await Promise.all([
@@ -110,7 +111,7 @@ export class NowebPersistentStore implements INowebStore {
     await Promise.all([
       this.withLock('contacts', async () => {
         await this.onContactsUpsert(contacts);
-        this.log.log(`history sync - '${contacts.length}' synced contacts`);
+        this.logger.info(`history sync - '${contacts.length}' synced contacts`);
       }),
       this.withLock('chats', () => this.onChatUpsert(chats)),
       this.withLock('messages', () => this.syncMessagesHistory(messages)),
@@ -120,7 +121,7 @@ export class NowebPersistentStore implements INowebStore {
   private async syncMessagesHistory(messages) {
     const realMessages = messages.filter(isRealMessage);
     await this.messagesRepo.upsert(realMessages);
-    this.log.log(
+    this.logger.info(
       `history sync - '${messages.length}' got messages, '${realMessages.length}' real messages`,
     );
   }
@@ -128,12 +129,12 @@ export class NowebPersistentStore implements INowebStore {
   private async onMessagesUpsert(update) {
     const { messages, type } = update;
     if (type !== 'notify' && type !== 'append') {
-      this.log.debug(`unexpected type for messages.upsert: '${type}'`);
+      this.logger.debug(`unexpected type for messages.upsert: '${type}'`);
       return;
     }
     const realMessages = messages.filter(isRealMessage);
     await this.messagesRepo.upsert(realMessages);
-    this.log.debug(
+    this.logger.debug(
       `messages.upsert - ${messages.length} got messages, ${realMessages.length} real messages`,
     );
   }
@@ -178,7 +179,7 @@ export class NowebPersistentStore implements INowebStore {
       chat.conversationTimestamp = toNumber(chat.conversationTimestamp);
       await this.chatRepo.save(chat);
     }
-    this.log.log(`history sync - '${chats.length}' synced chats`);
+    this.logger.info(`history sync - '${chats.length}' synced chats`);
   }
 
   private async onChatUpdate(updates: ChatUpdate[]) {
@@ -219,7 +220,7 @@ export class NowebPersistentStore implements INowebStore {
       const contact = await this.contactRepo.getById(update.id);
 
       if (!contact) {
-        this.log.warn(
+        this.logger.warn(
           `got update for non-existent contact. update: '${JSON.stringify(
             update,
           )}'`,
@@ -246,7 +247,7 @@ export class NowebPersistentStore implements INowebStore {
     for (const { key, reaction } of reactions) {
       const msg = await this.messagesRepo.getByJidById(key.remoteJid, key.id);
       if (!msg) {
-        this.log.warn(
+        this.logger.warn(
           `got reaction update for non-existent message. key: '${JSON.stringify(
             key,
           )}'`,
@@ -262,7 +263,7 @@ export class NowebPersistentStore implements INowebStore {
     for (const { key, receipt } of updates) {
       const msg = await this.messagesRepo.getByJidById(key.remoteJid, key.id);
       if (!msg) {
-        this.log.warn(
+        this.logger.warn(
           `got receipt update for non-existent message. key: '${JSON.stringify(
             key,
           )}'`,
