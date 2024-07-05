@@ -55,5 +55,6 @@ repos:
         entry: 'console\.log'
         exclude: |
           (?x)^(
-              .pre-commit-config.yaml
+              .pre-commit-config.yaml|
+              ^src/core/engines/webjs/session.webjs.core.ts|
           )$

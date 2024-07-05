@@ -181,7 +181,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
             this.logger.debug(`WEBJS page log: ${msg.text()}`),
           );
           this.whatsapp.pupPage.evaluate(() =>
-            this.logger.info(`url is ${location.href}`),
+            console.log(`url is ${location.href}`),
           );
         }
       })
