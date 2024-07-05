@@ -44,22 +44,18 @@ export function getDefaultPinoLogLevel(): Level {
 }
 
 export function getPinoTransport() {
-  const logFormat = (process.env.WAHA_LOG_FORMAT || '').toUpperCase();
-  if (!logFormat) {
-    return;
-  }
+  const logFormat = (process.env.WAHA_LOG_FORMAT || 'PRETTY').toUpperCase();
   if (logFormat == 'JSON') {
     return undefined;
   }
-  if (logFormat == 'PRETTY') {
-    return {
-      target: 'pino-pretty',
-      options: {
-        singleLine: true,
-        colorize: true,
-      },
-    };
-  }
+  return {
+    target: 'pino-pretty',
+    options: {
+      singleLine: true,
+      colorize: true,
+      messageFormat: '{if session} session:{session} - {end}{msg}',
+    },
+  };
 }
 
 export { getNestJSLogLevels };
