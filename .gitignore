@@ -8,6 +8,7 @@ venv
 .wwebjs_auth
 test.js
 .wwebjs_cache
+src/dashboard
 
 # compiled output
 /dist
