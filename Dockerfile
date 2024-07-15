@@ -19,6 +19,21 @@ RUN yarn install
 RUN yarn build && find ./dist -name "*.d.ts" -delete
 
 #
+# Dashboard
+#
+FROM node:${NODE_VERSION} as dashboard
+
+# Download WAHA Dashboard
+ENV WAHA_DASHBOARD_SHA 7bfa9269fd385af687a464882637881dfd34cfb6
+RUN \
+    wget https://github.com/devlikeapro/dashboard/archive/${WAHA_DASHBOARD_SHA}.zip \
+    && unzip ${WAHA_DASHBOARD_SHA}.zip -d /tmp/dashboard \
+    && mkdir -p /dashboard \
+    && mv /tmp/dashboard/dashboard-${WAHA_DASHBOARD_SHA}/* /dashboard/ \
+    && rm -rf ${WAHA_DASHBOARD_SHA}.zip \
+    && rm -rf /tmp/dashboard/dashboard-${WAHA_DASHBOARD_SHA}
+
+#
 # Final
 #
 FROM node:${NODE_VERSION} as release
@@ -67,6 +82,7 @@ WORKDIR /app
 COPY package.json ./
 COPY --from=build /src/node_modules ./node_modules
 COPY --from=build /src/dist ./dist
+COPY --from=dashboard /dashboard ./dist/dashboard
 
 # Chokidar options to monitor file changes
 ENV CHOKIDAR_USEPOLLING=1
