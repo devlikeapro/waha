@@ -22,7 +22,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master",
+    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-channels",
     "@adiwajshing/keyed-db": "^0.2.4",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/common": "^9.0.9",
@@ -70,7 +70,7 @@
     "sharp": "^0.33.4",
     "swagger-ui-express": "^4.1.4",
     "venom-bot": "5.0.1",
-    "whatsapp-web.js": "https://github.com/devlikeapro/whatsapp-web.js#fork-webpack-exodus"
+    "whatsapp-web.js": "github:devlikeapro/whatsapp-web.js#fork-webpack-exodus-channels"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

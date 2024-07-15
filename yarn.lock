@@ -5,9 +5,9 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@adiwajshing/baileys@github:devlikeapro/Baileys#fork-master":
+"@adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-channels":
   version: 6.7.5
-  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=7da6b067b37bb2dec388bf43f1517ed98e05ee45"
+  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=66fde3f3e5df76b52c6a01b75c301d63e2b6a75f"
   dependencies:
     "@adiwajshing/keyed-db": ^0.2.4
     "@hapi/boom": ^9.1.3
@@ -39,7 +39,7 @@ __metadata:
       optional: true
     sharp:
       optional: true
-  checksum: d16ada049d4d74e08f4be479a5a871d96e75e91f5bf614468bd282475662ab4efa208e82e53339cd28e0f4afbbc3add269a491886ba033e6ba8fe838983fe1b5
+  checksum: b4f3bc47c559641800e220bddfd06f86848c74dd0c5ea85aba4d1033606a3f90a2d2e488df33da191de75be7357b10df041b2b6d76ee5b7bda1bd37d2586b45c
   languageName: node
   linkType: hard
 
@@ -12861,7 +12861,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "waha@workspace:."
   dependencies:
-    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master"
+    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-channels"
     "@adiwajshing/keyed-db": ^0.2.4
     "@nestjs/axios": ^3.0.2
     "@nestjs/cli": ^9.0.0
@@ -12930,7 +12930,7 @@ __metadata:
     tsconfig-paths: ^4.1.0
     typescript: ^4.8.4
     venom-bot: 5.0.1
-    whatsapp-web.js: "https://github.com/devlikeapro/whatsapp-web.js#fork-webpack-exodus"
+    whatsapp-web.js: "github:devlikeapro/whatsapp-web.js#fork-webpack-exodus-channels"
   languageName: unknown
   linkType: soft
 
@@ -13027,9 +13027,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js#fork-webpack-exodus":
-  version: 1.23.1-alpha.5
-  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=72b2a360c1eb5aaa1b7a2d9a2d742d44ba6c0fd5"
+"whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-webpack-exodus-channels":
+  version: 1.24.0
+  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=035245d3216ff98f231468d9be87253600194d42"
   dependencies:
     "@pedroslopez/moduleraid": ^5.0.2
     adm-zip: ^0.5.10
@@ -13048,7 +13048,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 6cdd9fb648e2523aea5bca21e10a4133db9faf3b64d96d20fec381275b48cac3729115db442bab20591f7f65b163ae853d569a4fb6c9266db9f388eb1a5a3527
+  checksum: 32048fdf11284ca516e2a09801f74ba1e5676cbdfbe4ac7aee7b167e26173aa250cd2593288573e490b474b3c5ebdc20933bd57b3b0b42c1c9299d9fda563923
   languageName: node
   linkType: hard
 

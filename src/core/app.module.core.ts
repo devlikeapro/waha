@@ -5,6 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { TerminusModule } from '@nestjs/terminus';
 import { BufferJsonReplacerInterceptor } from '@waha/api/BufferJsonReplacerInterceptor';
+import { ChannelsController } from '@waha/api/channels.controller';
 import { WebsocketGatewayCore } from '@waha/core/api/websocket.gateway.core';
 import { getPinoLogLevel, getPinoTransport } from '@waha/utils/logging';
 import { LoggerModule } from 'nestjs-pino';
@@ -79,6 +80,7 @@ export const CONTROLLERS = [
   SessionController,
   ChattingController,
   ChatsController,
+  ChannelsController,
   StatusController,
   ContactsController,
   GroupsController,

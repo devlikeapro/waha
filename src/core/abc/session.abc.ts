@@ -1,3 +1,8 @@
+import {
+  Channel,
+  CreateChannelRequest,
+  ListChannelsQuery,
+} from '@waha/structures/channels.dto';
 import { GetChatsQuery } from '@waha/structures/chats.dto';
 import { LoggerBuilder } from '@waha/utils/logging';
 import { EventEmitter } from 'events';
@@ -438,6 +443,47 @@ export abstract class WhatsappSession {
   }
 
   /**
+   * Channels methods
+   */
+  public channelsList(query: ListChannelsQuery): Promise<Channel[]> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public channelsCreateChannel(
+    request: CreateChannelRequest,
+  ): Promise<Channel> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public channelsGetChannel(id: string): Promise<Channel> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public channelsGetChannelByInviteCode(inviteCode: string): Promise<Channel> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public channelsDeleteChannel(id: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public channelsFollowChannel(id: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public channelsUnfollowChannel(id: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public channelsMuteChannel(id: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public channelsUnmuteChannel(id: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  /**
    * Status methods
    */
   public sendTextStatus(status: TextStatus) {
@@ -501,4 +547,12 @@ export abstract class WhatsappSession {
     );
     qrcode.generate(qr.raw, { small: true });
   }
+}
+
+export function isNewsletter(jid: string) {
+  return jid.endsWith('@newsletter');
+}
+
+export function getChannelInviteLink(code: string) {
+  return `https://whatsapp.com/channel/${code}`;
 }

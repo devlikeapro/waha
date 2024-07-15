@@ -5,11 +5,13 @@ import makeWASocket, {
   extractMessageContent,
   getAggregateVotesInPollMessage,
   getKeyAuthor,
+  getUrlFromDirectPath,
   isJidGroup,
   isJidStatusBroadcast,
   isRealMessage,
   jidNormalizedUser,
   makeCacheableSignalKeyStore,
+  NewsletterMetadata,
   normalizeMessageContent,
   PresenceData,
   proto,
@@ -22,6 +24,12 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { NowebInMemoryStore } from '@waha/core/engines/noweb/store/NowebInMemoryStore';
 import { flipObject, parseBool, splitAt } from '@waha/helpers';
 import { PairingCodeResponse } from '@waha/structures/auth.dto';
+import {
+  Channel,
+  ChannelRole,
+  CreateChannelRequest,
+  ListChannelsQuery,
+} from '@waha/structures/channels.dto';
 import { GetChatsQuery } from '@waha/structures/chats.dto';
 import { ContactQuery, ContactRequest } from '@waha/structures/contacts.dto';
 import {
@@ -85,6 +93,8 @@ import {
 import { IEngineMediaProcessor } from '../../abc/media.abc';
 import {
   ensureSuffix,
+  getChannelInviteLink,
+  isNewsletter,
   WAHAInternalEvent,
   WhatsappSession,
 } from '../../abc/session.abc';
@@ -133,6 +143,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   private startTimeoutId: null | ReturnType<typeof setTimeout> = null;
   private autoRestartTimeoutId: null | ReturnType<typeof setTimeout> = null;
   private msgRetryCounterCache: NodeCache;
+  protected engineLogger: BaileysLogger;
 
   get listenConnectionEventsFromTheStart() {
     return true;
@@ -151,6 +162,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       stdTTL: 60 * 60, // 1 hour
       useClones: false,
     });
+
+    this.engineLogger = this.loggerBuilder.child({
+      name: 'NOWEBEngine',
+    }) as unknown as BaileysLogger;
   }
 
   start() {
@@ -169,14 +184,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       auth: {
         creds: state.creds,
         /** caching makes the store faster to send/recv messages */
-        keys: makeCacheableSignalKeyStore(
-          state.keys,
-          this.logger as unknown as BaileysLogger,
-        ),
+        keys: makeCacheableSignalKeyStore(state.keys, this.engineLogger),
       },
       printQRInTerminal: false,
       browser: browser,
-      logger: this.logger,
+      logger: this.engineLogger,
       mobile: false,
       defaultQueryTimeoutMs: 120_000,
       keepAliveIntervalMs: 30_000,
@@ -864,6 +876,81 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   /**
+   * Channels methods
+   */
+  protected toChannel(newsletter: NewsletterMetadata): Channel {
+    const role =
+      // @ts-ignore
+      newsletter.viewer_metadata?.role ||
+      (newsletter.viewer_metadata?.view_role as ChannelRole) ||
+      ChannelRole.GUEST;
+    const preview = newsletter.preview
+      ? getUrlFromDirectPath(newsletter.preview)
+      : null;
+    const picture = newsletter.picture
+      ? getUrlFromDirectPath(newsletter.picture)
+      : null;
+    return {
+      id: newsletter.id,
+      name: newsletter.name,
+      description: newsletter.description,
+      invite: getChannelInviteLink(newsletter.invite),
+      preview: preview,
+      picture: picture,
+      verified: newsletter.verification === 'VERIFIED',
+      role: role,
+    };
+  }
+
+  public async channelsList(query: ListChannelsQuery): Promise<Channel[]> {
+    const newsletters = await this.sock.newsletterSubscribed();
+    let channels = newsletters.map(this.toChannel);
+    if (query.role) {
+      // @ts-ignore
+      channels = channels.filter((channel) => channel.role === query.role);
+    }
+    return channels;
+  }
+
+  public async channelsCreateChannel(request: CreateChannelRequest) {
+    const newsletter = await this.sock.newsletterCreate(
+      request.name,
+      request.description,
+    );
+    return this.toChannel(newsletter);
+  }
+
+  public async channelsGetChannel(id: string) {
+    const newsletter = await this.sock.newsletterMetadata('jid', id);
+    return this.toChannel(newsletter);
+  }
+
+  public async channelsGetChannelByInviteCode(inviteCode: string) {
+    const newsletter = await this.sock.newsletterMetadata('invite', inviteCode);
+    return this.toChannel(newsletter);
+  }
+
+  public async channelsDeleteChannel(id: string) {
+    return await this.sock.newsletterDelete(id);
+  }
+
+  public async channelsFollowChannel(id: string): Promise<void> {
+    return await this.sock.newsletterFollow(id);
+  }
+
+  public async channelsUnfollowChannel(id: string): Promise<void> {
+    return await this.sock.newsletterUnfollow(id);
+  }
+
+  public async channelsMuteChannel(id: string): Promise<void> {
+    return await this.sock.newsletterMute(id);
+  }
+
+  public async channelsUnmuteChannel(id: string): Promise<void> {
+    return await this.sock.newsletterUnmute(id);
+  }
+
+  /**
    * END - Methods for API
    */
 
@@ -1222,6 +1309,9 @@ export class EngineMediaProcessor implements IEngineMediaProcessor<any> {
  * Convert from 11111111111@s.whatsapp.net to 11111111111@c.us
  */
 function toCusFormat(remoteJid) {
+  if (!remoteJid) {
+    return remoteJid;
+  }
   if (isJidGroup(remoteJid)) {
     return remoteJid;
   }
@@ -1229,6 +1319,9 @@ function toCusFormat(remoteJid) {
     return remoteJid;
   }
   if (isLidUser(remoteJid)) {
+    return remoteJid;
+  }
+  if (isNewsletter(remoteJid)) {
     return remoteJid;
   }
   if (!remoteJid) {
@@ -1250,6 +1343,9 @@ export function toJID(chatId) {
     return chatId;
   }
   if (isJidStatusBroadcast(chatId)) {
+    return chatId;
+  }
+  if (isNewsletter(chatId)) {
     return chatId;
   }
   const number = chatId.split('@')[0];

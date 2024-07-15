@@ -1,6 +1,10 @@
 import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
 import { IEngineMediaProcessor } from '@waha/core/abc/media.abc';
-import { WAHAInternalEvent, WhatsappSession } from '@waha/core/abc/session.abc';
+import {
+  getChannelInviteLink,
+  WAHAInternalEvent,
+  WhatsappSession,
+} from '@waha/core/abc/session.abc';
 import { WebjsClient } from '@waha/core/engines/webjs/WebjsClient';
 import {
   AvailableInPlusVersion,
@@ -8,6 +12,12 @@ import {
 } from '@waha/core/exceptions';
 import { QR } from '@waha/core/QR';
 import { parseBool } from '@waha/helpers';
+import {
+  Channel,
+  ChannelRole,
+  CreateChannelRequest,
+  ListChannelsQuery,
+} from '@waha/structures/channels.dto';
 import { GetChatsQuery } from '@waha/structures/chats.dto';
 import {
   ChatRequest,
@@ -44,6 +54,7 @@ import { WAMessage, WAMessageReaction } from '@waha/structures/responses.dto';
 import { MeInfo } from '@waha/structures/sessions.dto';
 import { WAMessageRevokedBody } from '@waha/structures/webhooks.dto';
 import {
+  Channel as WEBJSChannel,
   Chat,
   ClientOptions,
   Contact,
@@ -260,7 +271,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     this.whatsapp.on(Events.READY, () => {
       this.status = WAHASessionStatus.WORKING;
       this.qr.save('');
-      this.logger.info(`Session '${this.name}' has been authenticated!`);
+      this.logger.info(`Session '${this.name}' is ready!`);
     });
 
     this.whatsapp.on(Events.AUTHENTICATED, () => {
@@ -617,6 +628,109 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     return groupChat.demoteParticipants(participantIds);
   }
 
+  /**
+   * Channels methods
+   */
+  protected ChatToChannel(chat: WEBJSChannel): Channel {
+    // @ts-ignore
+    const metadata = chat.channelMetadata;
+    let role = metadata.membershipType.toUpperCase();
+    if (role === 'VIEWER') {
+      role = ChannelRole.GUEST;
+    }
+    return {
+      id: chat.id._serialized,
+      name: chat.name,
+      description: chat.description,
+      invite: getChannelInviteLink(metadata.inviteCode),
+      preview: null,
+      picture: null,
+      verified: metadata.verified,
+      role: role,
+    };
+  }
+
+  protected ChannelMetadataToChannel(metadata: any): Channel {
+    let role = metadata.membershipType.toUpperCase();
+    if (role === 'VIEWER') {
+      role = ChannelRole.GUEST;
+    }
+    return {
+      id: metadata.id,
+      name: metadata.titleMetadata.title,
+      description: metadata.descriptionMetadata.description,
+      invite: metadata.inviteLink,
+      preview: metadata.pictureUrl,
+      picture: metadata.pictureUrl,
+      verified: metadata.isVerified,
+      role: role,
+    };
+  }
+
+  public async channelsList(query: ListChannelsQuery): Promise<Channel[]> {
+    const data = await this.whatsapp.getChannels();
+    let channels = data.map(this.ChatToChannel);
+    if (query.role) {
+      // @ts-ignore
+      channels = channels.filter((channel) => channel.role === query.role);
+    }
+
+    const promises = channels.map(async (channel) =>
+      this.whatsapp.getProfilePicUrl(channel.id),
+    );
+    const pictures = await Promise.all(promises);
+    channels = channels.map((channel, index) => {
+      channel.picture = pictures[index] || null;
+      channel.preview = channel.picture;
+      return channel;
+    });
+    return channels;
+  }
+
+  public channelsCreateChannel(
+    request: CreateChannelRequest,
+  ): Promise<Channel> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public async channelsGetChannel(id: string): Promise<Channel> {
+    return await this.channelsGetChannelByInviteCode(id);
+  }
+
+  public async channelsGetChannelByInviteCode(
+    inviteCode: string,
+  ): Promise<Channel> {
+    const metadata = await this.whatsapp.getChannelByInviteCode(inviteCode);
+    const channel = this.ChannelMetadataToChannel(metadata);
+    channel.preview =
+      (await this.whatsapp.getProfilePicUrl(channel.id)) || null;
+    channel.picture = channel.preview;
+    return channel;
+  }
+
+  public channelsDeleteChannel(id: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public channelsFollowChannel(id: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public channelsUnfollowChannel(id: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public channelsMuteChannel(id: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public channelsUnmuteChannel(id: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  /**
+   * Presences methods
+   */
   public async setPresence(presence: WAHAPresenceStatus, chatId?: string) {
     let chat: Chat;
     switch (presence) {
