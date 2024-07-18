@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ChatIdProperty } from '@waha/structures/properties.dto';
 import { Type } from 'class-transformer';
 import { IsNumber, IsOptional } from 'class-validator';
 
@@ -32,5 +33,12 @@ export class GetChatsQuery {
 }
 
 /**
- * Requests
+ * Events
  */
+
+export class ChatArchiveEvent {
+  @ChatIdProperty()
+  id: string;
+
+  archived: boolean;
+}

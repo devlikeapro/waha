@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { ChatArchiveEvent } from './chats.dto';
 import { MessageDestination } from './chatting.dto';
 import {
   WAHAEngine,
@@ -230,6 +231,16 @@ class WAHAWebhookPollVoteFailed extends WAHAWebhook {
   payload: PollVotePayload;
 }
 
+class WAHAWebhookChatArchive extends WAHAWebhook {
+  @ApiProperty({
+    description:
+      'The event is triggered when the chat is archived or unarchived',
+  })
+  event = WAHAEvents.CHAT_ARCHIVE;
+
+  payload: ChatArchiveEvent;
+}
+
 const WAHA_WEBHOOKS = [
   WAHAWebhookSessionStatus,
   WAHAWebhookMessage,
@@ -243,5 +254,6 @@ const WAHA_WEBHOOKS = [
   WAHAWebhookPresenceUpdate,
   WAHAWebhookPollVote,
   WAHAWebhookPollVoteFailed,
+  WAHAWebhookChatArchive,
 ];
 export { WAHA_WEBHOOKS };

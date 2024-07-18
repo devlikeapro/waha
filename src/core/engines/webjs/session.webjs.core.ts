@@ -18,7 +18,7 @@ import {
   CreateChannelRequest,
   ListChannelsQuery,
 } from '@waha/structures/channels.dto';
-import { GetChatsQuery } from '@waha/structures/chats.dto';
+import { ChatArchiveEvent, GetChatsQuery } from '@waha/structures/chats.dto';
 import {
   ChatRequest,
   CheckNumberStatusQuery,
@@ -820,6 +820,15 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         return true;
       case WAHAEvents.GROUP_LEAVE:
         this.whatsapp.on(Events.GROUP_LEAVE, handler);
+        return true;
+      case WAHAEvents.CHAT_ARCHIVE:
+        this.whatsapp.on('chat_archived', (chat, archived, _) => {
+          const body: ChatArchiveEvent = {
+            id: chat.id._serialized,
+            archived: archived,
+          };
+          handler(body);
+        });
         return true;
       default:
         return false;
