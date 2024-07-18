@@ -11,6 +11,7 @@ import makeWASocket, {
   isRealMessage,
   jidNormalizedUser,
   makeCacheableSignalKeyStore,
+  MinimalMessage,
   NewsletterMetadata,
   normalizeMessageContent,
   PresenceData,
@@ -698,6 +699,26 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     // Remove unreadCount, it's not ready yet
     chats.forEach((chat) => delete chat.unreadCount);
     return chats;
+  }
+
+  protected async chatsPutArchive(
+    chatId: string,
+    archive: boolean,
+  ): Promise<any> {
+    const jid = toJID(chatId);
+    const messages = await this.store.getMessagesByJid(jid, 1);
+    return await this.sock.chatModify(
+      { archive: archive, lastMessages: messages },
+      jid,
+    );
+  }
+
+  public chatsArchiveChat(chatId: string): Promise<any> {
+    return this.chatsPutArchive(chatId, true);
+  }
+
+  public chatsUnarchiveChat(chatId: string): Promise<any> {
+    return this.chatsPutArchive(chatId, false);
   }
 
   /**

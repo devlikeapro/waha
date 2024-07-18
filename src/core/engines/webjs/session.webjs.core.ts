@@ -468,6 +468,16 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     return chat.clearMessages();
   }
 
+  public chatsArchiveChat(chatId: string): Promise<any> {
+    const id = this.ensureSuffix(chatId);
+    return this.whatsapp.archiveChat(id);
+  }
+
+  public chatsUnarchiveChat(chatId: string): Promise<any> {
+    const id = this.ensureSuffix(chatId);
+    return this.whatsapp.unarchiveChat(id);
+  }
+
   /**
    * Contacts methods
    */

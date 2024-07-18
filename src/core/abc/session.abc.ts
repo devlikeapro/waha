@@ -324,6 +324,14 @@ export abstract class WhatsappSession {
     throw new NotImplementedByEngineError();
   }
 
+  public chatsArchiveChat(chatId: string): Promise<any> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public chatsUnarchiveChat(chatId: string): Promise<any> {
+    throw new NotImplementedByEngineError();
+  }
+
   /**
    * Contacts methods
    */

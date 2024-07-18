@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Post,
   Put,
   Query,
   UsePipes,
@@ -97,6 +98,28 @@ class ChatsController {
     @Body() body: EditMessageRequest,
   ) {
     return session.editMessage(chatId, messageId, body);
+  }
+
+  @Post(':chatId/archive')
+  @SessionApiParam
+  @ChatIdApiParam
+  @ApiOperation({ summary: 'Archive the chat' })
+  archiveChat(
+    @SessionParam session: WhatsappSession,
+    @Param('chatId') chatId: string,
+  ) {
+    return session.chatsArchiveChat(chatId);
+  }
+
+  @Post(':chatId/unarchive')
+  @SessionApiParam
+  @ChatIdApiParam
+  @ApiOperation({ summary: 'Unarchive the chat' })
+  unarchiveChat(
+    @SessionParam session: WhatsappSession,
+    @Param('chatId') chatId: string,
+  ) {
+    return session.chatsUnarchiveChat(chatId);
   }
 }
 
