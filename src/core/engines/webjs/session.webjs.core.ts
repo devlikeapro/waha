@@ -826,6 +826,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
           const body: ChatArchiveEvent = {
             id: chat.id._serialized,
             archived: archived,
+            timestamp: chat.timestamp,
           };
           handler(body);
         });

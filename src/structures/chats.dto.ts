@@ -41,4 +41,6 @@ export class ChatArchiveEvent {
   id: string;
 
   archived: boolean;
+
+  timestamp: number;
 }
