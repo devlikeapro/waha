@@ -42,6 +42,23 @@ export const IMPORTS = [
       quietReqLogger: true,
       level: getPinoLogLevel(),
       transport: getPinoTransport(),
+      autoLogging: {
+        ignore: (req) => {
+          return req.url.startsWith('/dashboard/');
+        },
+      },
+      serializers: {
+        req: (req) => ({
+          id: req.id,
+          method: req.method,
+          url: req.url,
+          query: req.query,
+          params: req.params,
+        }),
+        res: (res) => ({
+          statusCode: res.statusCode,
+        }),
+      },
     },
   }),
   ConfigModule.forRoot({
