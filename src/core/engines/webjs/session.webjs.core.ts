@@ -12,6 +12,7 @@ import {
 } from '@waha/core/exceptions';
 import { QR } from '@waha/core/QR';
 import { parseBool } from '@waha/helpers';
+import { CallData } from '@waha/structures/calls.dto';
 import {
   Channel,
   ChannelRole,
@@ -54,6 +55,7 @@ import { WAMessage, WAMessageReaction } from '@waha/structures/responses.dto';
 import { MeInfo } from '@waha/structures/sessions.dto';
 import { WAMessageRevokedBody } from '@waha/structures/webhooks.dto';
 import {
+  Call,
   Channel as WEBJSChannel,
   Chat,
   ClientOptions,
@@ -827,6 +829,18 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
             id: chat.id._serialized,
             archived: archived,
             timestamp: chat.timestamp,
+          };
+          handler(body);
+        });
+        return true;
+      case WAHAEvents.CALL_RECEIVED:
+        this.whatsapp.on('call', (call: Call) => {
+          const body: CallData = {
+            id: call.id,
+            from: call.from,
+            timestamp: call.timestamp,
+            isVideo: call.isVideo,
+            isGroup: call.isGroup,
           };
           handler(body);
         });

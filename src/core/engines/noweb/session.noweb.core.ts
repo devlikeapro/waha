@@ -19,12 +19,14 @@ import makeWASocket, {
   WAMessageContent,
   WAMessageKey,
 } from '@adiwajshing/baileys';
+import { WACallEvent } from '@adiwajshing/baileys/lib/Types/Call';
 import { isLidUser } from '@adiwajshing/baileys/lib/WABinary/jid-utils';
 import { Logger as BaileysLogger } from '@adiwajshing/baileys/node_modules/pino';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { NowebInMemoryStore } from '@waha/core/engines/noweb/store/NowebInMemoryStore';
 import { flipObject, parseBool, splitAt } from '@waha/helpers';
 import { PairingCodeResponse } from '@waha/structures/auth.dto';
+import { CallData } from '@waha/structures/calls.dto';
 import {
   Channel,
   ChannelRole,
@@ -1034,6 +1036,45 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
           );
         });
         return true;
+      case WAHAEvents.CALL_RECEIVED:
+        this.sock.ev.on('call', (calls: WACallEvent[]) => {
+          calls = lodash.filter(calls, { status: 'offer' });
+          for (const call of calls) {
+            const body = this.toCallData(call);
+            handler(body);
+          }
+        });
+        return true;
+      case WAHAEvents.CALL_ACCEPTED:
+        this.sock.ev.on('call', (calls: WACallEvent[]) => {
+          calls = lodash.filter(calls, { status: 'accept' });
+          for (const call of calls) {
+            const body = this.toCallData(call);
+            handler(body);
+          }
+        });
+        return true;
+      case WAHAEvents.CALL_REJECTED:
+        this.sock.ev.on('call', (calls: WACallEvent[]) => {
+          const acceptCalls = lodash.filter(calls, { status: 'accept' });
+          if (acceptCalls.length > 0) {
+            // We got two events when accepting calls - reject and accept
+            // Like for each device
+            // So if we see accepted call - ignore rejected
+            return;
+          }
+
+          calls = lodash.filter(calls, { status: 'reject' });
+          for (const call of calls) {
+            const body = this.toCallData(call);
+            if (body.isGroup == null) {
+              // We get two "reject" events, one with null property, ignore it
+              return;
+            }
+            handler(body);
+          }
+        });
+        return true;
       default:
         return false;
     }
@@ -1269,6 +1310,20 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       poll: getDestination(pollCreationMessageKey),
     };
     handler(payload);
+  }
+
+  private toCallData(call: WACallEvent): CallData {
+    // call.date can be either string 2024-07-18T09:45:55.000Z or Date
+    const date = new Date(call.date);
+    // convert to timestamp in seconds
+    const timestamp: number = date.getTime() / 1000;
+    return {
+      id: call.id,
+      from: toCusFormat(call.from),
+      timestamp: timestamp,
+      isVideo: call.isVideo,
+      isGroup: call.isGroup,
+    };
   }
 
   private toWahaPresences(

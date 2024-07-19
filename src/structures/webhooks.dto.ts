@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { CallData } from '@waha/structures/calls.dto';
 
 import { ChatArchiveEvent } from './chats.dto';
 import { MessageDestination } from './chatting.dto';
@@ -241,6 +242,36 @@ class WAHAWebhookChatArchive extends WAHAWebhook {
   payload: ChatArchiveEvent;
 }
 
+class WAHAWebhookCallReceived extends WAHAWebhook {
+  @ApiProperty({
+    description:
+      'The event is triggered when the call is received by the user.',
+  })
+  event = WAHAEvents.CALL_RECEIVED;
+
+  payload: CallData;
+}
+
+class WAHAWebhookCallAccepted extends WAHAWebhook {
+  @ApiProperty({
+    description:
+      'The event is triggered when the call is accepted by the user.',
+  })
+  event = WAHAEvents.CALL_ACCEPTED;
+
+  payload: CallData;
+}
+
+class WAHAWebhookCallRejected extends WAHAWebhook {
+  @ApiProperty({
+    description:
+      'The event is triggered when the call is rejected by the user.',
+  })
+  event = WAHAEvents.CALL_REJECTED;
+
+  payload: CallData;
+}
+
 const WAHA_WEBHOOKS = [
   WAHAWebhookSessionStatus,
   WAHAWebhookMessage,
@@ -255,5 +286,8 @@ const WAHA_WEBHOOKS = [
   WAHAWebhookPollVote,
   WAHAWebhookPollVoteFailed,
   WAHAWebhookChatArchive,
+  WAHAWebhookCallReceived,
+  WAHAWebhookCallAccepted,
+  WAHAWebhookCallRejected,
 ];
 export { WAHA_WEBHOOKS };
