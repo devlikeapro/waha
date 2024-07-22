@@ -1,1 +1,3 @@
-export abstract class DataStore {}
+export abstract class DataStore {
+  abstract init(sessionName?: string): Promise<void>;
+}
