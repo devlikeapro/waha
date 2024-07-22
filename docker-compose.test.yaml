@@ -1,0 +1,115 @@
+version: '3'
+services:
+  waha:
+    # Check available Docker images:
+    # https://waha.devlike.pro/docs/how-to/engines/#docker-images
+    image: devlikeapro/waha
+    container_name: waha
+    ports:
+      - '3000:3000/tcp'
+    environment:
+      # Environment variables from https://waha.devlike.pro/docs/how-to/config/
+      # https://docs.webhook.site/
+      - WHATSAPP_HOOK_URL=https://webhook.site/11111111-1111-1111-1111-11111111
+      - WHATSAPP_HOOK_EVENTS=message
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+    restart: always
+
+  waha-plus:
+    # Check available Docker images:
+    # https://waha.devlike.pro/docs/how-to/engines/#docker-images
+    image: devlikeapro/waha-plus:chrome
+    container_name: waha-plus
+    ports:
+      - '3000:3000/tcp'
+    volumes:
+      - './.sessions:/app/.sessions'
+    environment:
+      # Environment variables from https://waha.devlike.pro/docs/how-to/config/
+      # - WHATSAPP_RESTART_ALL_SESSIONS=True
+      # - WHATSAPP_HOOK_URL=https://webhook.site/11111111-1111-1111-1111-11111111
+      # - WHATSAPP_HOOK_EVENTS=message
+      # - WHATSAPP_API_HOSTNAME=localhost
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+      - WHATSAPP_API_KEY=321
+      # Username and password for Swagger
+      - WHATSAPP_SWAGGER_USERNAME=swagger
+      - WHATSAPP_SWAGGER_PASSWORD=admin
+      # Username and password for WAHA Dashboard
+      # you can use the same username and password for both Swagger and Dashboard
+      # Default - waha / waha
+      - WAHA_DASHBOARD_USERNAME=waha
+      - WAHA_DASHBOARD_PASSWORD=waha
+      # Engine specific environment variables
+      # - WAHA_WEBJS_WEB_VERSION=2.2412.54-videofix
+    restart: always
+
+  waha-plus--mongodb:
+    # Check available Docker images:
+    # https://waha.devlike.pro/docs/how-to/engines/#docker-images
+    image: devlikeapro/waha-plus:chrome
+    container_name: waha-plus--mongodb
+    ports:
+      - '3000:3000/tcp'
+    volumes:
+      - './.sessions:/app/.sessions'
+    environment:
+      # Environment variables from https://waha.devlike.pro/docs/how-to/config/
+      # - WHATSAPP_RESTART_ALL_SESSIONS=True
+      # - WHATSAPP_HOOK_URL=https://webhook.site/11111111-1111-1111-1111-11111111
+      # - WHATSAPP_HOOK_EVENTS=message
+      # - WHATSAPP_API_KEY=321
+      # - WHATSAPP_SWAGGER_USERNAME=admin
+      # - WHATSAPP_SWAGGER_PASSWORD=123
+      # - WAHA_DASHBOARD_USERNAME=admin
+      # - WAHA_DASHBOARD_PASSWORD=123
+      # - WHATSAPP_API_HOSTNAME=localhost
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+      - WHATSAPP_SESSIONS_MONGO_URL=mongodb://mongodb:27017
+    restart: always
+
+  # Let's Encrypt + Certbot
+  # https://waha.devlike.pro/docs/how-to/security/#https
+  waha-https--certbot:
+    image: devlikeapro/waha-plus
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    volumes:
+      - './.sessions:/app/.sessions'
+      - '/etc/letsencrypt:/etc/letsencrypt'
+    environment:
+      - DOMAIN=waha.example.pro
+      - WHATSAPP_API_HOSTNAME=${DOMAIN}
+      - WAHA_HTTPS_ENABLED=true
+      - WAHA_HTTPS_PATH_KEY=/etc/letsencrypt/live/${DOMAIN}/privkey.pem
+      - WAHA_HTTPS_PATH_CERT=/etc/letsencrypt/live/${DOMAIN}/cert.pem
+      - WAHA_HTTPS_PATH_CA=/etc/letsencrypt/live/${DOMAIN}/chain.pem
+
+  # Self-signed certificates example
+  # https://waha.devlike.pro/docs/how-to/security/#https
+  waha-https--self-signed:
+    image: devlikeapro/waha-plus
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    volumes:
+      - './.sessions:/app/.sessions'
+      - './.secrets:/app/.secrets'
+    environment:
+      - WAHA_HTTPS_ENABLED=true
+      - WAHA_HTTPS_PATH_KEY=.secrets/privkey.pem
+      - WAHA_HTTPS_PATH_CERT=.secrets/cert.pem
+      - WAHA_HTTPS_PATH_CA=.secrets/chain.pem
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - '27017:27017/tcp'
+    volumes:
+      - mongodb_data:/data/db
+    restart: always
+
+volumes:
+  mongodb_data: {}
