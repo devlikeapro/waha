@@ -1,4 +1,3 @@
-version: '3'
 services:
   waha:
     # Check available Docker images:

@@ -7,7 +7,6 @@
 # https://docs.docker.com/compose/install/
 #
 
-version: '3'
 services:
   waha:
     # Always restart the container on failure
