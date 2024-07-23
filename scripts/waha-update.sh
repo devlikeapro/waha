@@ -1,9 +1,7 @@
 set -e
-# REPLACE {KEY} with the key from the Patron Portal
-# https://portal.devlike.pro/
 echo "Updating WAHA..."
 echo "Logging in to Docker..."
-docker login -u devlikeapro -p {KEY}
+docker login -u devlikeapro # -p {KEY} - you can hard code key here https://portal.devlike.pro/
 
 echo "Pulling the latest image..."
 docker pull devlikeapro/waha-plus
