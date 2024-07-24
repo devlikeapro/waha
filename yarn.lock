@@ -2732,6 +2732,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"adm-zip@npm:0.5.10":
+  version: 0.5.10
+  resolution: "adm-zip@npm:0.5.10"
+  checksum: 07ed91cf6423bf5dca4ee63977bc7635e91b8d21829c00829d48dce4c6932e1b19e6cfcbe44f1931c956e68795ae97183fc775913883fa48ce88a1ac11fb2034
+  languageName: node
+  linkType: hard
+
 "adm-zip@npm:^0.5.10":
   version: 0.5.14
   resolution: "adm-zip@npm:0.5.14"
@@ -12886,6 +12893,7 @@ __metadata:
     "@types/ws": ^8.5.4
     "@typescript-eslint/eslint-plugin": 3.9.1
     "@typescript-eslint/parser": 3.9.1
+    adm-zip: 0.5.10
     async-lock: ^1.4.1
     better-sqlite3: 9.6.0
     check-disk-space: ^3.4.0
