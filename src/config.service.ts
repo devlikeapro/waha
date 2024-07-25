@@ -2,9 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { parseBool } from './helpers';
-import { WAHAEngine } from './structures/enums.dto';
 import { WebhookConfig } from './structures/webhooks.config.dto';
-import { getEngineName } from './version';
 
 @Injectable()
 export class WhatsappConfigService {
@@ -118,6 +116,14 @@ export class WhatsappConfigService {
 
   getApiKey(): string | undefined {
     return this.configService.get('WHATSAPP_API_KEY', '');
+  }
+
+  getExcludedPaths(): string[] {
+    const value = this.configService.get('WHATSAPP_API_KEY_EXCLUDE_PATH', '');
+    if (!value) {
+      return [];
+    }
+    return value.split(',');
   }
 
   getHealthMediaFilesThreshold(): number {
