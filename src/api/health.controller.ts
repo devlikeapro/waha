@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { HealthCheck } from '@nestjs/terminus';
 
 import { WAHAHealthCheckService } from '../core/abc/WAHAHealthCheckService';
@@ -11,6 +11,9 @@ export class HealthController {
 
   @Get()
   @HealthCheck()
+  @ApiOperation({
+    summary: 'Check the health of the server, performing all health checks.',
+  })
   async check() {
     return this.wahaHealth.check();
   }

@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class WAHAEnvironment {
   @ApiProperty({
-    example: '2029.10.29',
+    example: 'YYYY.MM.BUILD',
   })
   version: string;
 
