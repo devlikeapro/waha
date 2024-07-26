@@ -4,6 +4,7 @@ import {
   ListChannelsQuery,
 } from '@waha/structures/channels.dto';
 import { GetChatsQuery } from '@waha/structures/chats.dto';
+import { Label } from '@waha/structures/labels.dto';
 import { LoggerBuilder } from '@waha/utils/logging';
 import { EventEmitter } from 'events';
 import * as fs from 'fs';
@@ -336,7 +337,7 @@ export abstract class WhatsappSession {
    * Labels methods
    */
 
-  public getLabels() {
+  public getLabels(): Promise<Label[]> {
     throw new NotImplementedByEngineError();
   }
 

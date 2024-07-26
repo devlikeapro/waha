@@ -74,6 +74,10 @@ export class SwaggerConfiguratorCore {
       )
       .addTag('groups', `Groups methods.<br>`)
       .addTag('presence', `Presence information`)
+      .addTag(
+        'labels',
+        'Labels - available only for WhatsApp Business accounts',
+      )
       .addTag('other', 'Other methods')
       .addApiKey({
         type: 'apiKey',

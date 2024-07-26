@@ -51,6 +51,7 @@ import {
   ParticipantsRequest,
   SettingsSecurityChangeInfo,
 } from '@waha/structures/groups.dto';
+import { Label } from '@waha/structures/labels.dto';
 import { WAMessage, WAMessageReaction } from '@waha/structures/responses.dto';
 import { MeInfo } from '@waha/structures/sessions.dto';
 import { WAMessageRevokedBody } from '@waha/structures/webhooks.dto';
@@ -62,6 +63,7 @@ import {
   Contact,
   Events,
   GroupChat,
+  Label as WEBJSLabel,
   Location,
   Message,
   Reaction,
@@ -337,7 +339,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   sendText(request: MessageTextRequest) {
     const options = {
       // It's fine to sent just ids instead of Contact object
-      mentions: (request.mentions as unknown) as string[],
+      mentions: request.mentions as unknown as string[],
     };
     return this.whatsapp.sendMessage(
       this.ensureSuffix(request.chatId),
@@ -359,7 +361,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     const message = this.recreateMessage(messageId);
     const options = {
       // It's fine to sent just ids instead of Contact object
-      mentions: (request.mentions as unknown) as string[],
+      mentions: request.mentions as unknown as string[],
     };
     return message.edit(request.text, options);
   }
@@ -368,7 +370,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     const options = {
       quotedMessageId: request.reply_to,
       // It's fine to sent just ids instead of Contact object
-      mentions: (request.mentions as unknown) as string[],
+      mentions: request.mentions as unknown as string[],
     };
     return this.whatsapp.sendMessage(request.chatId, request.text, options);
   }
@@ -485,8 +487,17 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
    * Label methods
    */
 
-  getLabels() {
-    return this.whatsapp.getLabels();
+  public async getLabels(): Promise<Label[]> {
+    const labels = await this.whatsapp.getLabels();
+    return labels.map(this.toLabel);
+  }
+
+  protected toLabel(label: WEBJSLabel): Label {
+    return {
+      id: label.id,
+      name: label.name,
+      color: 0,
+    };
   }
 
   /**

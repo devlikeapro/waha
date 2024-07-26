@@ -35,6 +35,7 @@ import {
 } from '@waha/structures/channels.dto';
 import { GetChatsQuery } from '@waha/structures/chats.dto';
 import { ContactQuery, ContactRequest } from '@waha/structures/contacts.dto';
+import { Label } from '@waha/structures/labels.dto';
 import {
   PollVote,
   PollVotePayload,
@@ -727,7 +728,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
    * Labels methods
    */
 
-  getLabels() {
+  public getLabels(): Promise<Label[]> {
     throw new NotImplementedByEngineError();
   }
 
