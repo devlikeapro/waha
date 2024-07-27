@@ -4,7 +4,7 @@ import {
   ListChannelsQuery,
 } from '@waha/structures/channels.dto';
 import { GetChatsQuery } from '@waha/structures/chats.dto';
-import { Label } from '@waha/structures/labels.dto';
+import { Label, LabelID } from '@waha/structures/labels.dto';
 import { LoggerBuilder } from '@waha/utils/logging';
 import { EventEmitter } from 'events';
 import * as fs from 'fs';
@@ -338,6 +338,18 @@ export abstract class WhatsappSession {
    */
 
   public getLabels(): Promise<Label[]> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public getChatsByLabelId(labelId: string) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public getChatLabels(chatId: string): Promise<Label[]> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public putLabelsToChat(chatId: string, labels: LabelID[]) {
     throw new NotImplementedByEngineError();
   }
 

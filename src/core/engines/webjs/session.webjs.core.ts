@@ -51,7 +51,7 @@ import {
   ParticipantsRequest,
   SettingsSecurityChangeInfo,
 } from '@waha/structures/groups.dto';
-import { Label } from '@waha/structures/labels.dto';
+import { Label, LabelID } from '@waha/structures/labels.dto';
 import { WAMessage, WAMessageReaction } from '@waha/structures/responses.dto';
 import { MeInfo } from '@waha/structures/sessions.dto';
 import { WAMessageRevokedBody } from '@waha/structures/webhooks.dto';
@@ -490,6 +490,22 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   public async getLabels(): Promise<Label[]> {
     const labels = await this.whatsapp.getLabels();
     return labels.map(this.toLabel);
+  }
+
+  public getChatsByLabelId(labelId: string) {
+    return this.whatsapp.getChatsByLabelId(labelId);
+  }
+
+  public async getChatLabels(chatId: string): Promise<Label[]> {
+    const id = this.ensureSuffix(chatId);
+    const labels = await this.whatsapp.getChatLabels(id);
+    return labels.map(this.toLabel);
+  }
+
+  public async putLabelsToChat(chatId: string, labels: LabelID[]) {
+    const labelIds = labels.map((label) => label.id);
+    const chatIds = [this.ensureSuffix(chatId)];
+    await this.whatsapp.addOrRemoveLabels(labelIds, chatIds);
   }
 
   protected toLabel(label: WEBJSLabel): Label {

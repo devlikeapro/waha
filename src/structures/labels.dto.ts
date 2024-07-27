@@ -19,3 +19,15 @@ export class Label {
   })
   color: number;
 }
+
+export class LabelID {
+  @ApiProperty({
+    example: '1',
+    description: 'Label ID',
+  })
+  id: string;
+}
+
+export class SetLabelsRequest {
+  labels: LabelID[];
+}
