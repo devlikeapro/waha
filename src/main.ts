@@ -7,6 +7,7 @@ import {
 } from '@waha/utils/logging';
 import { json, urlencoded } from 'express';
 import { Logger as NestJSPinoLogger } from 'nestjs-pino';
+import { LoggerErrorInterceptor } from 'nestjs-pino';
 import { Logger } from 'pino';
 import pino from 'pino';
 
@@ -60,6 +61,11 @@ async function bootstrap() {
     bufferLogs: true,
   });
   app.useLogger(app.get(NestJSPinoLogger));
+
+  // Print original stack, not pino one
+  // https://github.com/iamolegga/nestjs-pino?tab=readme-ov-file#expose-stack-trace-and-error-class-in-err-property
+  app.useGlobalInterceptors(new LoggerErrorInterceptor());
+
   app.enableShutdownHooks();
   app.useGlobalFilters(new AllExceptionsFilter());
   app.enableCors();
