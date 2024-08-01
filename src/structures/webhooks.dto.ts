@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CallData } from '@waha/structures/calls.dto';
+import { Label, LabelChatAssociation } from '@waha/structures/labels.dto';
 
 import { ChatArchiveEvent } from './chats.dto';
 import { MessageDestination } from './chatting.dto';
@@ -89,6 +90,7 @@ export class WAMessageRevokedBody {
   after?: WAMessage;
   before?: WAMessage;
 }
+
 export class WASessionStatusBody {
   @ApiProperty({
     example: 'default',
@@ -120,6 +122,7 @@ export class WAHAWebhook {
     // eslint-disable-next-line @typescript-eslint/ban-types
     | object;
 }
+
 class WAHAWebhookSessionStatus extends WAHAWebhook {
   @ApiProperty({
     description: 'The event is triggered when the session status changes.',
@@ -272,6 +275,42 @@ class WAHAWebhookCallRejected extends WAHAWebhook {
   payload: CallData;
 }
 
+class WAHAWebhookLabelUpsert extends WAHAWebhook {
+  @ApiProperty({
+    description: 'The event is triggered when a label is created or updated',
+  })
+  event = WAHAEvents.LABEL_UPSERT;
+
+  payload: Label;
+}
+
+class WAHAWebhookLabelRemoved extends WAHAWebhook {
+  @ApiProperty({
+    description: 'The event is triggered when a label is removed',
+  })
+  event = WAHAEvents.LABEL_REMOVED;
+
+  payload: Label;
+}
+
+class WAHAWebhookLabelChatAdded extends WAHAWebhook {
+  @ApiProperty({
+    description: 'The event is triggered when a label is added to a chat',
+  })
+  event = WAHAEvents.LABEL_CHAT_ADDED;
+
+  payload: LabelChatAssociation;
+}
+
+class WAHAWebhookLabelChatRemoved extends WAHAWebhook {
+  @ApiProperty({
+    description: 'The event is triggered when a label is removed from a chat',
+  })
+  event = WAHAEvents.LABEL_CHAT_REMOVED;
+
+  payload: LabelChatAssociation;
+}
+
 const WAHA_WEBHOOKS = [
   WAHAWebhookSessionStatus,
   WAHAWebhookMessage,
@@ -289,5 +328,9 @@ const WAHA_WEBHOOKS = [
   WAHAWebhookCallReceived,
   WAHAWebhookCallAccepted,
   WAHAWebhookCallRejected,
+  WAHAWebhookLabelUpsert,
+  WAHAWebhookLabelRemoved,
+  WAHAWebhookLabelChatAdded,
+  WAHAWebhookLabelChatRemoved,
 ];
 export { WAHA_WEBHOOKS };

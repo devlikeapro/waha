@@ -1,4 +1,9 @@
 import { WAMessage } from '@adiwajshing/baileys';
+import { LabelAssociation } from '@adiwajshing/baileys/lib/Types/LabelAssociation';
+import { ILabelAssociationRepository } from '@waha/core/engines/noweb/store/ILabelAssociationsRepository';
+import { ILabelsRepository } from '@waha/core/engines/noweb/store/ILabelsRepository';
+import { Sqlite3LabelAssociationsRepository } from '@waha/core/engines/noweb/store/sqlite3/Sqlite3LabelAssociationsRepository';
+import { Sqlite3LabelsRepository } from '@waha/core/engines/noweb/store/sqlite3/Sqlite3LabelsRepository';
 
 import { INowebStorage } from '../INowebStorage';
 import { Field, Index, NOWEB_STORE_SCHEMA, Schema } from '../Schema';
@@ -10,11 +15,12 @@ import { Sqlite3SchemaValidation } from './Sqlite3SchemaValidation';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Database = require('better-sqlite3');
 
-export class Sqlite3Storage implements INowebStorage {
+export class Sqlite3Storage extends INowebStorage {
   private readonly db: any;
   private readonly tables: Schema[];
 
   constructor(filePath: string) {
+    super();
     this.db = new Database(filePath);
     this.tables = NOWEB_STORE_SCHEMA;
   }
@@ -71,6 +77,33 @@ export class Sqlite3Storage implements INowebStorage {
     this.db.exec(
       'CREATE INDEX IF NOT EXISTS timestamp_index ON messages (messageTimestamp)',
     );
+
+    //
+    // Labels
+    //
+    this.db.exec(
+      'CREATE TABLE IF NOT EXISTS labels (id TEXT PRIMARY KEY, data TEXT)',
+    );
+    this.db.exec(
+      'CREATE UNIQUE INDEX IF NOT EXISTS labels_id_index ON labels (id)',
+    );
+
+    // Label associations
+    this.db.exec(
+      'CREATE TABLE IF NOT EXISTS labelAssociations (id TEXT PRIMARY KEY, type TEXT, labelId TEXT, chatId TEXT, messageId TEXT, data TEXT)',
+    );
+    this.db.exec(
+      'CREATE UNIQUE INDEX IF NOT EXISTS label_assoc_id_index ON labelAssociations (id)',
+    );
+    this.db.exec(
+      'CREATE INDEX IF NOT EXISTS label_assoc_type_label_index ON labelAssociations (type, labelId)',
+    );
+    this.db.exec(
+      'CREATE INDEX IF NOT EXISTS label_assoc_type_chat_index ON labelAssociations (type, chatId)',
+    );
+    this.db.exec(
+      'CREATE INDEX IF NOT EXISTS label_assoc_type_message_index ON labelAssociations (type, messageId)',
+    );
   }
 
   async close() {
@@ -85,11 +118,21 @@ export class Sqlite3Storage implements INowebStorage {
     return new Sqlite3ChatRepository(this.db, this.getSchema('chats'));
   }
 
+  getLabelsRepository(): ILabelsRepository {
+    return new Sqlite3LabelsRepository(this.db, this.getSchema('labels'));
+  }
+
+  getLabelAssociationRepository(): ILabelAssociationRepository {
+    const metadata = this.getLabelAssociationMetadata();
+    return new Sqlite3LabelAssociationsRepository(
+      this.db,
+      this.getSchema('labelAssociations'),
+      metadata,
+    );
+  }
+
   getMessagesRepository() {
-    const metadata = new Map()
-      .set('jid', (msg: WAMessage) => msg.key.remoteJid)
-      .set('id', (msg: WAMessage) => msg.key.id)
-      .set('messageTimestamp', (msg: WAMessage) => msg.messageTimestamp);
+    const metadata = this.getMessagesMetadata();
     return new Sqlite3MessagesRepository(
       this.db,
       this.getSchema('messages'),

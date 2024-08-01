@@ -1,4 +1,5 @@
 import { Chat, Contact, makeInMemoryStore, proto } from '@adiwajshing/baileys';
+import { Label } from '@adiwajshing/baileys/lib/Types/Label';
 import { BadRequestException, ConsoleLogger } from '@nestjs/common';
 
 import { INowebStore } from './INowebStore';
@@ -49,6 +50,22 @@ export class NowebInMemoryStore implements INowebStore {
   }
 
   getContactById(jid: string): Promise<Contact> {
+    throw new BadRequestException(this.errorMessage);
+  }
+
+  getLabels(): Promise<Label[]> {
+    throw new BadRequestException(this.errorMessage);
+  }
+
+  getLabelById(labelId: string): Promise<Label | null> {
+    throw new BadRequestException(this.errorMessage);
+  }
+
+  getChatsByLabelId(labelId: string): Promise<Chat[]> {
+    throw new BadRequestException(this.errorMessage);
+  }
+
+  getChatLabels(chatId: string): Promise<Label[]> {
     throw new BadRequestException(this.errorMessage);
   }
 }

@@ -53,4 +53,26 @@ export const NOWEB_STORE_SCHEMA = [
       new Index('timestamp_index', ['messageTimestamp']),
     ],
   ),
+  new Schema(
+    'labels',
+    [new Field('id', 'TEXT'), new Field('data', 'TEXT')],
+    [new Index('labels_id_index', ['id'])],
+  ),
+  new Schema(
+    'labelAssociations',
+    [
+      new Field('id', 'TEXT'),
+      new Field('type', 'TEXT'),
+      new Field('labelId', 'TEXT'),
+      new Field('chatId', 'TEXT'),
+      new Field('messageId', 'TEXT'),
+      new Field('data', 'TEXT'),
+    ],
+    [
+      new Index('label_assoc_id_index', ['id']),
+      new Index('label_assoc_type_label_index', ['type', 'labelId']),
+      new Index('label_assoc_type_chat_index', ['type', 'chatId']),
+      new Index('label_assoc_type_message_index', ['type', 'messageId']),
+    ],
+  ),
 ];

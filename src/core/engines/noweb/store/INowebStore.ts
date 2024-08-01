@@ -4,6 +4,7 @@ import {
   Contact,
   proto,
 } from '@adiwajshing/baileys';
+import { Label } from '@adiwajshing/baileys/lib/Types/Label';
 
 export interface INowebStore {
   presences: any;
@@ -23,4 +24,12 @@ export interface INowebStore {
   getContacts(): Promise<Contact[]>;
 
   getContactById(jid: string): Promise<Contact>;
+
+  getLabels(): Promise<Label[]>;
+
+  getLabelById(labelId: string): Promise<Label | null>;
+
+  getChatsByLabelId(labelId: string): Promise<Chat[]>;
+
+  getChatLabels(chatId: string): Promise<Label[]>;
 }

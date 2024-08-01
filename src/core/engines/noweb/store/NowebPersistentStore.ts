@@ -9,7 +9,13 @@ import {
   updateMessageWithReaction,
   updateMessageWithReceipt,
 } from '@adiwajshing/baileys';
-import { ConsoleLogger } from '@nestjs/common';
+import { Label } from '@adiwajshing/baileys/lib/Types/Label';
+import {
+  LabelAssociation,
+  LabelAssociationType,
+} from '@adiwajshing/baileys/lib/Types/LabelAssociation';
+import { ILabelAssociationRepository } from '@waha/core/engines/noweb/store/ILabelAssociationsRepository';
+import { ILabelsRepository } from '@waha/core/engines/noweb/store/ILabelsRepository';
 import { toNumber } from 'lodash';
 import { Logger } from 'pino';
 
@@ -28,6 +34,8 @@ export class NowebPersistentStore implements INowebStore {
   private chatRepo: IChatRepository;
   private contactRepo: IContactRepository;
   private messagesRepo: IMessagesRepository;
+  private labelsRepo: ILabelsRepository;
+  private labelAssociationsRepo: ILabelAssociationRepository;
   public presences: any;
   private lock: any;
 
@@ -39,6 +47,8 @@ export class NowebPersistentStore implements INowebStore {
     this.chatRepo = storage.getChatRepository();
     this.contactRepo = storage.getContactsRepository();
     this.messagesRepo = storage.getMessagesRepository();
+    this.labelsRepo = storage.getLabelsRepository();
+    this.labelAssociationsRepo = storage.getLabelAssociationRepository();
     this.presences = {};
     this.lock = new AsyncLock({ maxPending: Infinity });
   }
@@ -82,6 +92,10 @@ export class NowebPersistentStore implements INowebStore {
     );
     ev.on('contacts.update', (data) =>
       this.withLock('contacts', () => this.onContactUpdate(data)),
+    );
+    ev.on('labels.edit', (data) => this.onLabelsEdit(data));
+    ev.on('labels.association', ({ association, type }) =>
+      this.onLabelsAssociation(association, type),
     );
     // Presence
     ev.on('presence.update', (data) => this.onPresenceUpdate(data));
@@ -275,6 +289,26 @@ export class NowebPersistentStore implements INowebStore {
     }
   }
 
+  private async onLabelsEdit(label: Label) {
+    if (label.deleted) {
+      await this.labelsRepo.deleteById(label.id);
+      await this.labelAssociationsRepo.deleteByLabelId(label.id);
+    } else {
+      await this.labelsRepo.save(label);
+    }
+  }
+
+  private async onLabelsAssociation(
+    association: LabelAssociation,
+    type: 'add' | 'remove',
+  ) {
+    if (type === 'remove') {
+      await this.labelAssociationsRepo.deleteOne(association);
+    } else {
+      await this.labelAssociationsRepo.save(association);
+    }
+  }
+
   private async onPresenceUpdate({ id, presences: update }) {
     this.presences[id] = this.presences[id] || {};
     Object.assign(this.presences[id], update);
@@ -302,5 +336,30 @@ export class NowebPersistentStore implements INowebStore {
 
   getContacts() {
     return this.contactRepo.getAll();
+  }
+
+  getLabels(): Promise<Label[]> {
+    return this.labelsRepo.getAll();
+  }
+
+  getLabelById(labelId: string): Promise<Label | null> {
+    return this.labelsRepo.getById(labelId);
+  }
+
+  async getChatsByLabelId(labelId: string): Promise<Chat[]> {
+    const associations =
+      await this.labelAssociationsRepo.getAssociationsByLabelId(
+        labelId,
+        LabelAssociationType.Chat,
+      );
+    const ids = associations.map((association) => association.chatId);
+    return await this.chatRepo.getAllByIds(ids);
+  }
+
+  async getChatLabels(chatId: string): Promise<Label[]> {
+    const associations =
+      await this.labelAssociationsRepo.getAssociationsByChatId(chatId);
+    const ids = associations.map((association) => association.labelId);
+    return await this.labelsRepo.getAllByIds(ids);
   }
 }

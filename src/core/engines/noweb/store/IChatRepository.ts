@@ -3,6 +3,8 @@ import { Chat } from '@adiwajshing/baileys';
 export interface IChatRepository {
   getAll(): Promise<Chat[]>;
 
+  getAllByIds(ids: string[]): Promise<Chat[]>;
+
   getAllWithMessages(limit?: number, offset?: number): Promise<Chat[]>;
 
   getById(id: string): Promise<Chat | null>;

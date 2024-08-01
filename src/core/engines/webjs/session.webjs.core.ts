@@ -509,10 +509,12 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   protected toLabel(label: WEBJSLabel): Label {
+    const color = label.colorIndex;
     return {
       id: label.id,
       name: label.name,
-      color: 0,
+      color: color,
+      colorHex: Label.toHex(color),
     };
   }
 

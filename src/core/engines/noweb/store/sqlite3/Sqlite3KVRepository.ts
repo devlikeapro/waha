@@ -38,6 +38,15 @@ export class Sqlite3KVRepository<Entity> {
     return this.all(this.select());
   }
 
+  getAllByIds(ids: string[]) {
+    return this.all(this.select().whereIn('id', ids));
+  }
+
+  protected getAllBy(filters: any) {
+    const query = this.select().where(filters);
+    return this.all(query);
+  }
+
   protected async getBy(filters: any) {
     const query = this.select().where(filters).limit(1);
     return this.get(query);
