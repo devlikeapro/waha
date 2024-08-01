@@ -1158,7 +1158,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
           const label = labelData ? this.toLabel(labelData) : null;
           const body: LabelChatAssociation = {
             labelId: association.labelId,
-            chatId: association.chatId,
+            chatId: toCusFormat(association.chatId),
             label: label,
           };
           handler(body);
@@ -1176,7 +1176,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
           const label = labelData ? this.toLabel(labelData) : null;
           const body: LabelChatAssociation = {
             labelId: association.labelId,
-            chatId: association.chatId,
+            chatId: toCusFormat(association.chatId),
             label: label,
           };
           handler(body);
