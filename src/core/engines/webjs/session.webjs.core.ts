@@ -342,6 +342,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     const options = {
       // It's fine to sent just ids instead of Contact object
       mentions: request.mentions as unknown as string[],
+     linkPreview: false,
     };
     return this.whatsapp.sendMessage(
       this.ensureSuffix(request.chatId),
