@@ -1,0 +1,63 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "core" ]
+  pull_request:
+    branches: [ "core" ]
+
+jobs:
+  docker-build:
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.platform }} - ${{ matrix.browser }} - ${{ matrix.tag }}
+    strategy:
+      matrix:
+        include:
+          # Chromium
+          - runner: 'buildjet-4vcpu-ubuntu-2204'
+            tag: 'latest'
+            platform: 'amd64'
+            browser: 'chromium'
+          - runner: 'buildjet-4vcpu-ubuntu-2204-arm'
+            tag: 'arm'
+            platform: 'linux/arm64'
+            browser: 'chromium'
+          # Chrome
+          - runner: 'buildjet-4vcpu-ubuntu-2204'
+            tag: 'chrome'
+            platform: 'amd64'
+            browser: 'chrome'
+          # Chrome is not supported on arm64
+          #          - runner: "buildjet-4vcpu-ubuntu-2204-arm"
+          #            tag: "chrome-arm"
+          #            platform: "linux/arm64"
+          #            browser: "chrome"
+          # No browser
+          - runner: 'buildjet-4vcpu-ubuntu-2204'
+            tag: 'noweb'
+            platform: 'amd64'
+            browser: 'none'
+          - runner: 'buildjet-4vcpu-ubuntu-2204-arm'
+            tag: 'noweb-arm'
+            platform: 'linux/arm64'
+            browser: 'none'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to image repository
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build and push container image to registry
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_4a6ae47374b4490eb851b5ec915153ea }}/devwpwa:${{ github.sha }}
+          file: ./Dockerfile
+
