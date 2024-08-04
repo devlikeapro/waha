@@ -18,29 +18,29 @@ jobs:
             tag: 'latest'
             platform: 'amd64'
             browser: 'chromium'
-          - runner: 'buildjet-4vcpu-ubuntu-2204-arm'
-            tag: 'arm'
-            platform: 'linux/arm64'
-            browser: 'chromium'
-          # Chrome
-          - runner: 'buildjet-4vcpu-ubuntu-2204'
-            tag: 'chrome'
-            platform: 'amd64'
-            browser: 'chrome'
+          # - runner: 'buildjet-4vcpu-ubuntu-2204-arm'
+          #   tag: 'arm'
+          #   platform: 'linux/arm64'
+          #   browser: 'chromium'
+          # # Chrome
+          # - runner: 'buildjet-4vcpu-ubuntu-2204'
+          #   tag: 'chrome'
+          #   platform: 'amd64'
+          #   browser: 'chrome'
           # Chrome is not supported on arm64
           #          - runner: "buildjet-4vcpu-ubuntu-2204-arm"
           #            tag: "chrome-arm"
           #            platform: "linux/arm64"
           #            browser: "chrome"
           # No browser
-          - runner: 'buildjet-4vcpu-ubuntu-2204'
-            tag: 'noweb'
-            platform: 'amd64'
-            browser: 'none'
-          - runner: 'buildjet-4vcpu-ubuntu-2204-arm'
-            tag: 'noweb-arm'
-            platform: 'linux/arm64'
-            browser: 'none'
+          # - runner: 'buildjet-4vcpu-ubuntu-2204'
+          #   tag: 'noweb'
+          #   platform: 'amd64'
+          #   browser: 'none'
+          # - runner: 'buildjet-4vcpu-ubuntu-2204-arm'
+          #   tag: 'noweb-arm'
+          #   platform: 'linux/arm64'
+          #   browser: 'none'
 
     steps:
       - name: Checkout
