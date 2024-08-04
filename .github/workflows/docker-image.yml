@@ -28,5 +28,5 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: index.docker.io/${{ secrets.DOCKER_USER }}/devwpwa:${{ github.sha }}
+          tags: index.docker.io/${{ secrets.DOCKER_USER }}/devwpwa:latest
           file: ./Dockerfile
