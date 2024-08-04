@@ -13,9 +13,9 @@ services:
     restart: always
 
     #
-    # Image
+    # Imagehttps://github.com/devagarwal007/devwpwa.git
     #
-    image: devlikeapro/waha-plus:latest # or devlikeapro/waha:latest if you're using WAHA Core
+    image: devagarwal77/devwpwa:latest # or devlikeapro/waha:latest if you're using WAHA Core
     #
     # We strongly recommend using the pinned version of WAHA
     # https://waha.devlike.pro/docs/how-to/engines/#versions

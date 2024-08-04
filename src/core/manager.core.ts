@@ -94,7 +94,7 @@ export class SessionManagerCore extends SessionManager {
 
   private onlyDefault(name: string) {
     if (name !== this.DEFAULT) {
-      throw new OnlyDefaultSessionIsAllowed();
+      //throw new OnlyDefaultSessionIsAllowed();
     }
   }
 
@@ -109,12 +109,12 @@ export class SessionManagerCore extends SessionManager {
   // API Methods
   //
   async start(request: SessionStartRequest): Promise<SessionDTO> {
-    this.onlyDefault(request.name);
-    if (this.session) {
-      throw new UnprocessableEntityException(
-        `Session '${this.DEFAULT}' is already started.`,
-      );
-    }
+    //this.onlyDefault(request.name);
+    // if (this.session) {
+    //   throw new UnprocessableEntityException(
+    //     `Session '${this.DEFAULT}' is already started.`,
+    //   );
+    // }
 
     const name = request.name;
     this.log.info(`'${name}' - starting session...`);
@@ -193,7 +193,7 @@ export class SessionManagerCore extends SessionManager {
   }
 
   async stop(request: SessionStopRequest): Promise<void> {
-    this.onlyDefault(request.name);
+    //this.onlyDefault(request.name);
 
     const name = request.name;
     this.log.info(`Stopping ${name} session...`);
@@ -205,7 +205,7 @@ export class SessionManagerCore extends SessionManager {
 
   async logout(request: SessionLogoutRequest) {
     const name = request.name;
-    this.onlyDefault(request.name);
+    //this.onlyDefault(request.name);
     this.stop({ name: name, logout: false })
       .then(() => {
         this.log.info(`Session '${name}' has been stopped.`);
@@ -220,7 +220,7 @@ export class SessionManagerCore extends SessionManager {
   }
 
   getSession(name: string): WhatsappSession {
-    this.onlyDefault(name);
+    //this.onlyDefault(name);
     const session = this.session;
     if (!session) {
       throw new NotFoundException(

@@ -8,7 +8,7 @@ ENV PUPPETEER_SKIP_DOWNLOAD=True
 # npm packages
 WORKDIR /src
 COPY package.json .
-COPY yarn.lock .
+#COPY yarn.lock .
 RUN yarn set version 3.6.3
 RUN yarn install
 

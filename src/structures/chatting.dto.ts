@@ -168,7 +168,7 @@ export class MessageLocationRequest extends ChatRequest {
 }
 
 @ApiExtraModels(BinaryFile, RemoteFile)
-class FileRequest extends ChatRequest {
+export class FileRequest extends ChatRequest {
   @ApiProperty({
     oneOf: [
       { $ref: getSchemaPath(RemoteFile) },

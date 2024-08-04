@@ -38,6 +38,13 @@ export class BinaryFile {
     example: 'filename.jpeg',
   })
   filename?: string;
+  
+  @ApiProperty({
+    example:
+      process.env.WHATSAPP_SWAGGER_JPG_EXAMPLE_URL ||
+      'https://github.com/devlikeapro/waha/raw/core/examples/dev.likeapro.jpg',
+  })
+  url: string;
 
   @ApiProperty({
     description: 'Base64-encoded data of the file',
