@@ -8,7 +8,7 @@ on:
 
 jobs:
   docker-build:
-    runs-on: buildjet-4vcpu-ubuntu-2204  # Replace with the runner you want
+    runs-on: 'ubuntu-latest'  # Replace with the runner you want
     name: Build Docker Image
     
     steps:
