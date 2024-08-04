@@ -18,9 +18,9 @@ export enum WAHAEvents {
   CALL_ACCEPTED = 'call.accepted',
   CALL_REJECTED = 'call.rejected',
   LABEL_UPSERT = 'label.upsert',
-  LABEL_REMOVED = 'label.removed',
+  LABEL_DELETED = 'label.deleted',
   LABEL_CHAT_ADDED = 'label.chat.added',
-  LABEL_CHAT_REMOVED = 'label.chat.removed',
+  LABEL_CHAT_DELETED = 'label.chat.deleted',
 }
 
 export enum WAHASessionStatus {

@@ -1137,7 +1137,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
           handler(body);
         });
         return true;
-      case WAHAEvents.LABEL_REMOVED:
+      case WAHAEvents.LABEL_DELETED:
         this.sock.ev.on('labels.edit', (data: NOWEBLabel) => {
           if (!data.deleted) {
             return;
@@ -1164,7 +1164,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
           handler(body);
         });
         return true;
-      case WAHAEvents.LABEL_CHAT_REMOVED:
+      case WAHAEvents.LABEL_CHAT_DELETED:
         this.sock.ev.on('labels.association', async ({ association, type }) => {
           if (type !== 'remove') {
             return;

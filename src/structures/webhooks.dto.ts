@@ -284,11 +284,11 @@ class WAHAWebhookLabelUpsert extends WAHAWebhook {
   payload: Label;
 }
 
-class WAHAWebhookLabelRemoved extends WAHAWebhook {
+class WAHAWebhookLabelDeleted extends WAHAWebhook {
   @ApiProperty({
-    description: 'The event is triggered when a label is removed',
+    description: 'The event is triggered when a label is deleted',
   })
-  event = WAHAEvents.LABEL_REMOVED;
+  event = WAHAEvents.LABEL_DELETED;
 
   payload: Label;
 }
@@ -302,11 +302,11 @@ class WAHAWebhookLabelChatAdded extends WAHAWebhook {
   payload: LabelChatAssociation;
 }
 
-class WAHAWebhookLabelChatRemoved extends WAHAWebhook {
+class WAHAWebhookLabelChatDeleted extends WAHAWebhook {
   @ApiProperty({
-    description: 'The event is triggered when a label is removed from a chat',
+    description: 'The event is triggered when a label is deleted from a chat',
   })
-  event = WAHAEvents.LABEL_CHAT_REMOVED;
+  event = WAHAEvents.LABEL_CHAT_DELETED;
 
   payload: LabelChatAssociation;
 }
@@ -329,8 +329,8 @@ const WAHA_WEBHOOKS = [
   WAHAWebhookCallAccepted,
   WAHAWebhookCallRejected,
   WAHAWebhookLabelUpsert,
-  WAHAWebhookLabelRemoved,
+  WAHAWebhookLabelDeleted,
   WAHAWebhookLabelChatAdded,
-  WAHAWebhookLabelChatRemoved,
+  WAHAWebhookLabelChatDeleted,
 ];
 export { WAHA_WEBHOOKS };
