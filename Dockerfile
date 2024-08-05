@@ -48,6 +48,9 @@ RUN echo "USE_BROWSER=$USE_BROWSER"
 # Install ffmpeg to generate previews for videos
 RUN apt-get update && apt-get install -y ffmpeg --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
+# Install zip and unzip
+RUN apt-get update && apt-get install -y zip unzip --no-install-recommends && rm -rf /var/lib/apt/lists/*
+
 # Install fonts if using either chromium or chrome
 RUN if [ "$USE_BROWSER" = "chromium" ] || [ "$USE_BROWSER" = "chrome" ]; then \
     apt-get update  \
@@ -87,6 +90,9 @@ COPY --from=dashboard /dashboard ./dist/dashboard
 # Chokidar options to monitor file changes
 ENV CHOKIDAR_USEPOLLING=1
 ENV CHOKIDAR_INTERVAL=5000
+
+# WAHA variables
+ENV WAHA_ZIPPER=ZIPUNZIP
 
 # Run command, etc
 EXPOSE 3000
