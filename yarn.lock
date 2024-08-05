@@ -10074,6 +10074,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pretty-bytes@npm:5.6.0":
+  version: 5.6.0
+  resolution: "pretty-bytes@npm:5.6.0"
+  checksum: 9c082500d1e93434b5b291bd651662936b8bd6204ec9fa17d563116a192d6d86b98f6d328526b4e8d783c07d5499e2614a807520249692da9ec81564b2f439cd
+  languageName: node
+  linkType: hard
+
 "pretty-format@npm:^25.2.1, pretty-format@npm:^25.5.0":
   version: 25.5.0
   resolution: "pretty-format@npm:25.5.0"
@@ -12921,6 +12928,7 @@ __metadata:
     pino-http: ^10.2.0
     pino-pretty: ^11.2.1
     prettier: ^1.19.1
+    pretty-bytes: 5.6.0
     puppeteer: ^21.0.0
     qrcode: ^1.5.1
     qrcode-terminal: ^0.12.0
