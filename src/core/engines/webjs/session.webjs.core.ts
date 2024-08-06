@@ -138,11 +138,19 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   private restartClient() {
+    if (!this.shouldRestart) {
+      this.logger.debug(
+        'Should not restart the client, ignoring restart request',
+      );
+      return;
+    }
+
     this.startDelayedJob.schedule(async () => {
       if (!this.shouldRestart) {
-        this.logger.debug(
+        this.logger.warn(
           'Should not restart the client, ignoring restart request',
         );
+        return;
       }
       await this.start();
     });
