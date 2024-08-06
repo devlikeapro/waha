@@ -46,6 +46,7 @@ import {
   PollVotePayload,
   WAMessageAckBody,
 } from '@waha/structures/webhooks.dto';
+import { SingleDelayedJobRunner } from '@waha/utils/SingleDelayedJobRunner';
 import { SinglePeriodicJobRunner } from '@waha/utils/SinglePeriodicJobRunner';
 import * as Buffer from 'buffer';
 import { Agent } from 'https';
@@ -145,12 +146,12 @@ const ToEnginePresenceStatus = flipObject(PresenceStatuses);
 
 export class WhatsappSessionNoWebCore extends WhatsappSession {
   private START_ATTEMPT_DELAY_SECONDS = 2;
-  private AUTO_RESTART_AFTER_SECONDS = 30 * 60;
+  private AUTO_RESTART_AFTER_SECONDS = 10;
 
   engine = WAHAEngine.NOWEB;
   authFactory = new NowebAuthFactoryCore();
   storageFactory = new NowebStorageFactoryCore();
-  private startTimeoutId: null | ReturnType<typeof setTimeout> = null;
+  private startDelayedJob: SingleDelayedJobRunner;
   private autoRestartJob: SinglePeriodicJobRunner;
   private msgRetryCounterCache: NodeCache;
   protected engineLogger: BaileysLogger;
@@ -176,6 +177,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.engineLogger = this.loggerBuilder.child({
       name: 'NOWEBEngine',
     }) as unknown as BaileysLogger;
+
+    // Restart job if session failed
+    this.startDelayedJob = new SingleDelayedJobRunner(
+      'start-engine',
+      this.START_ATTEMPT_DELAY_SECONDS * SECOND,
+      this.logger,
+    );
 
     // Enable auto-restart
     const shiftSeconds = Math.floor(Math.random() * 30);
@@ -311,19 +319,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   private restartClient() {
-    if (this.startTimeoutId) {
-      this.logger.info(
-        'Request to restart is already in progress, ignoring this request',
-      );
-      return;
-    }
-    this.logger.info(
-      `Setting up client start in ${this.START_ATTEMPT_DELAY_SECONDS} seconds...`,
-    );
-    this.startTimeoutId = setTimeout(() => {
-      this.startTimeoutId = undefined;
-      this.buildClient();
-    }, this.START_ATTEMPT_DELAY_SECONDS * SECOND);
+    this.startDelayedJob.schedule(async () => {
+      await this.buildClient();
+    });
   }
 
   protected listenConnectionEvents() {
@@ -435,7 +433,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   private async end() {
     this.autoRestartJob.stop();
-    clearTimeout(this.startTimeoutId);
+    this.startDelayedJob.cancel();
     // @ts-ignore
     this.sock?.ev?.removeAllListeners();
     this.sock?.ws?.removeAllListeners();
