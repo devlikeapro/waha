@@ -14,7 +14,7 @@ import {
 } from '@nestjs/websockets';
 import { SessionManager } from '@waha/core/abc/manager.abc';
 import { WAHAEvents } from '@waha/structures/enums.dto';
-import { HeartbeatJob } from '@waha/utils/HeartbeatJob';
+import { WebsocketHeartbeatJob } from '@waha/utils/WebsocketHeartbeatJob';
 import { WebSocket } from '@waha/utils/ws';
 import { IncomingMessage } from 'http';
 import * as lodash from 'lodash';
@@ -41,11 +41,14 @@ export class WebsocketGatewayCore
     new Map();
 
   private readonly logger: LoggerService;
-  private heartbeat: HeartbeatJob;
+  private heartbeat: WebsocketHeartbeatJob;
 
   constructor(private manager: SessionManager) {
     this.logger = new Logger('WebsocketGateway');
-    this.heartbeat = new HeartbeatJob(this.logger, this.HEARTBEAT_INTERVAL);
+    this.heartbeat = new WebsocketHeartbeatJob(
+      this.logger,
+      this.HEARTBEAT_INTERVAL,
+    );
   }
 
   handleConnection(socket: WebSocket, request: IncomingMessage, ...args): any {
