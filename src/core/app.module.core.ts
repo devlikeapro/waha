@@ -7,7 +7,11 @@ import { TerminusModule } from '@nestjs/terminus';
 import { BufferJsonReplacerInterceptor } from '@waha/api/BufferJsonReplacerInterceptor';
 import { ChannelsController } from '@waha/api/channels.controller';
 import { WebsocketGatewayCore } from '@waha/core/api/websocket.gateway.core';
-import { getPinoLogLevel, getPinoTransport } from '@waha/utils/logging';
+import {
+  getPinoHttpUseLevel,
+  getPinoLogLevel,
+  getPinoTransport,
+} from '@waha/utils/logging';
 import { LoggerModule } from 'nestjs-pino';
 import { join } from 'path';
 import { Logger } from 'pino';
@@ -43,6 +47,7 @@ export const IMPORTS = [
     pinoHttp: {
       quietReqLogger: true,
       level: getPinoLogLevel(),
+      useLevel: getPinoHttpUseLevel(),
       transport: getPinoTransport(),
       autoLogging: {
         ignore: (req) => {
