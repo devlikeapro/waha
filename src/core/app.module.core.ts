@@ -6,6 +6,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { TerminusModule } from '@nestjs/terminus';
 import { BufferJsonReplacerInterceptor } from '@waha/api/BufferJsonReplacerInterceptor';
 import { ChannelsController } from '@waha/api/channels.controller';
+import { ServerController } from '@waha/api/server.controller';
 import { WebsocketGatewayCore } from '@waha/core/api/websocket.gateway.core';
 import {
   getPinoHttpUseLevel,
@@ -111,9 +112,10 @@ export const CONTROLLERS = [
   GroupsController,
   PresenceController,
   ScreenshotController,
-  VersionController,
-  HealthController,
   PingController,
+  HealthController,
+  ServerController,
+  VersionController,
 ];
 const PROVIDERS = [
   {
