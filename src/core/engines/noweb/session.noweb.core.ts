@@ -146,7 +146,7 @@ const ToEnginePresenceStatus = flipObject(PresenceStatuses);
 
 export class WhatsappSessionNoWebCore extends WhatsappSession {
   private START_ATTEMPT_DELAY_SECONDS = 2;
-  private AUTO_RESTART_AFTER_SECONDS = 30 * 60;
+  private AUTO_RESTART_AFTER_SECONDS = 28 * 60;
 
   engine = WAHAEngine.NOWEB;
   authFactory = new NowebAuthFactoryCore();
@@ -298,7 +298,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   private enableAutoRestart() {
     this.autoRestartJob.start(async () => {
       this.logger.info('Auto-restarting the client connection...');
-      this.sock?.end(new Error('auto-restart'));
+      if (this.sock?.ws?.isConnecting) {
+        this.logger.warn('Auto-restart skipped, the client is connecting...');
+        return;
+      }
+      this.sock?.end(undefined);
     });
   }
 
@@ -343,9 +347,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         this.qr.save('');
         // reconnect if not logged out
         if (shouldReconnect) {
-          this.logger.info(
-            `Connection closed due to '${lastDisconnect.error}', reconnecting...`,
-          );
+          if (lastDisconnect.error) {
+            this.logger.info(
+              `Connection closed due to '${lastDisconnect.error}', reconnecting...`,
+            );
+          }
           this.restartClient();
         } else {
           this.logger.error(
