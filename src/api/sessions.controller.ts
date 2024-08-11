@@ -8,6 +8,7 @@ import {
   Query,
   UsePipes,
 } from '@nestjs/common';
+import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import {
   SessionApiParam,
@@ -35,23 +36,34 @@ class SessionsController {
 
   @Post('/start/')
   @UsePipes(new WAHAValidationPipe())
-  async start(@Body() request: SessionStartRequest): Promise<SessionDTO> {
-    const result = await this.manager.startOld(request);
-    await this.manager.sessionConfigRepository.save(
-      request.name,
-      request.config || null,
-    );
-    return result;
+  async start_DEPRECATED(
+    @Body() request: SessionStartRequest,
+  ): Promise<SessionDTO> {
+    const name = request.name;
+    if (this.manager.isRunning(name)) {
+      const msg = `Session '${name}' is already started.`;
+      throw new UnprocessableEntityException(msg);
+    }
+
+    const config = request.config;
+    if (config) {
+      await this.manager.upsert(name, config);
+    }
+    return await this.manager.start(name);
   }
 
   @Post('/stop/')
   @UsePipes(new WAHAValidationPipe())
   @ApiOperation({ summary: 'Stop session' })
-  async stop(@Body() request: SessionStopRequest): Promise<void> {
+  async stop_DEPRECATED(@Body() request: SessionStopRequest): Promise<void> {
+    const name = request.name;
     if (request.logout) {
-      await this.manager.logoutOld(request);
+      // Old API did remove the session complete
+      await this.manager.stop(name, true);
+      await this.manager.logout(name);
+      await this.manager.delete(name);
     } else {
-      await this.manager.stopOld(request);
+      await this.manager.stop(name, false);
     }
     return;
   }
@@ -59,8 +71,14 @@ class SessionsController {
   @Post('/logout/')
   @UsePipes(new WAHAValidationPipe())
   @ApiOperation({ summary: 'Logout from session.' })
-  clean(@Body() request: SessionLogoutRequest): Promise<void> {
-    return this.manager.logoutOld(request);
+  async logout_DEPRECATED(
+    @Body() request: SessionLogoutRequest,
+  ): Promise<void> {
+    const name = request.name;
+    await this.manager.stop(name, true);
+    await this.manager.logout(name);
+    await this.manager.delete(name);
+    return;
   }
 
   @Get('/')

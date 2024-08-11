@@ -9,6 +9,7 @@ import { EventEmitter } from 'events';
 import { WAHAEngine, WAHAEvents } from '../../structures/enums.dto';
 import {
   MeInfo,
+  SessionConfig,
   SessionDTO,
   SessionInfo,
   SessionLogoutRequest,
@@ -37,11 +38,20 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
   //
   // API Methods
   //
-  abstract startOld(request: SessionStartRequest): Promise<SessionDTO>;
+  /**
+   * Either create or update
+   */
+  abstract isRunning(name: string): boolean;
 
-  abstract stopOld(request: SessionStopRequest): Promise<void>;
+  abstract upsert(name: string, config?: SessionConfig): Promise<void>;
 
-  abstract logoutOld(request: SessionLogoutRequest): Promise<void>;
+  abstract delete(name: string): Promise<void>;
+
+  abstract start(name: string): Promise<SessionDTO>;
+
+  abstract stop(name: string, silent: boolean): Promise<void>;
+
+  abstract logout(name: string): Promise<void>;
 
   abstract getSession(name: string): WhatsappSession;
 
