@@ -1,7 +1,10 @@
-import * as fs from 'fs/promises';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const fs = require('fs-extra');
 
 import { ISessionAuthRepository } from './ISessionAuthRepository';
 import { LocalStore } from './LocalStore';
+// Keep all waha related files, ".waha.session.*"
+const KEEP_FILES = /^\.waha\.session\..*$/;
 
 export class LocalSessionAuthRepository extends ISessionAuthRepository {
   private store: LocalStore;
@@ -16,7 +19,12 @@ export class LocalSessionAuthRepository extends ISessionAuthRepository {
   }
 
   async clean(sessionName: string) {
-    const folder = this.store.getSessionDirectory(sessionName);
-    await fs.rm(folder, { recursive: true });
+    // Remove all files and directories recursively, but keep waha files
+    const sessionDirectory = this.store.getSessionDirectory(sessionName);
+    const files = await fs.readdir(sessionDirectory);
+    const filesToRemove = files.filter((file) => !file.match(KEEP_FILES));
+    for (const file of filesToRemove) {
+      await fs.remove(`${sessionDirectory}/${file}`);
+    }
   }
 }

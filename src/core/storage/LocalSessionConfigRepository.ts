@@ -1,5 +1,5 @@
-import * as fs from 'fs/promises';
-import * as path from 'path';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const fs = require('fs-extra');
 
 import { SessionConfig } from '../../structures/sessions.dto';
 import { ISessionConfigRepository } from './ISessionConfigRepository';
@@ -56,11 +56,8 @@ export class LocalSessionConfigRepository extends ISessionConfigRepository {
   }
 
   async delete(sessionName: string): Promise<void> {
-    const filepath = this.getFilePath(sessionName);
-    if (!(await this.fileExists(filepath))) {
-      return;
-    }
-    await fs.unlink(filepath);
+    const sessionDirectory = this.store.getSessionDirectory(sessionName);
+    await fs.remove(sessionDirectory);
   }
 
   async getAll(): Promise<string[]> {
