@@ -46,6 +46,8 @@ import {
   PollVotePayload,
   WAMessageAckBody,
 } from '@waha/structures/webhooks.dto';
+import { SingleDelayedJobRunner } from '@waha/utils/SingleDelayedJobRunner';
+import { SinglePeriodicJobRunner } from '@waha/utils/SinglePeriodicJobRunner';
 import * as Buffer from 'buffer';
 import { Agent } from 'https';
 import * as lodash from 'lodash';
@@ -149,8 +151,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   engine = WAHAEngine.NOWEB;
   authFactory = new NowebAuthFactoryCore();
   storageFactory = new NowebStorageFactoryCore();
-  private startTimeoutId: null | ReturnType<typeof setTimeout> = null;
-  private autoRestartTimeoutId: null | ReturnType<typeof setTimeout> = null;
+  private startDelayedJob: SingleDelayedJobRunner;
+  private autoRestartJob: SinglePeriodicJobRunner;
   private msgRetryCounterCache: NodeCache;
   protected engineLogger: BaileysLogger;
 
@@ -175,6 +177,22 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.engineLogger = this.loggerBuilder.child({
       name: 'NOWEBEngine',
     }) as unknown as BaileysLogger;
+
+    // Restart job if session failed
+    this.startDelayedJob = new SingleDelayedJobRunner(
+      'start-engine',
+      this.START_ATTEMPT_DELAY_SECONDS * SECOND,
+      this.logger,
+    );
+
+    // Enable auto-restart
+    const shiftSeconds = Math.floor(Math.random() * 30);
+    const delay = this.AUTO_RESTART_AFTER_SECONDS + shiftSeconds;
+    this.autoRestartJob = new SinglePeriodicJobRunner(
+      'auto-restart',
+      delay * SECOND,
+      this.logger,
+    );
   }
 
   start() {
@@ -277,20 +295,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.enableAutoRestart();
   }
 
-  protected enableAutoRestart() {
-    if (this.autoRestartTimeoutId) {
-      return;
-    }
-
-    // add random delay to avoid multiple restarts at the same time
-    const shiftSeconds = Math.floor(Math.random() * 30);
-    const delay = this.AUTO_RESTART_AFTER_SECONDS + shiftSeconds;
-    this.logger.debug(`Auto-restart is enabled, after ${delay} seconds`);
-    this.autoRestartTimeoutId = setTimeout(() => {
-      this.autoRestartTimeoutId = null;
+  private enableAutoRestart() {
+    this.autoRestartJob.start(async () => {
       this.logger.info('Auto-restarting the client connection...');
       this.sock?.end(new Error('auto-restart'));
-    }, delay * SECOND);
+    });
   }
 
   protected async getMessage(
@@ -310,19 +319,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   private restartClient() {
-    if (this.startTimeoutId) {
-      this.logger.info(
-        'Request to restart is already in progress, ignoring this request',
-      );
-      return;
-    }
-    this.logger.info(
-      `Setting up client start in ${this.START_ATTEMPT_DELAY_SECONDS} seconds...`,
-    );
-    this.startTimeoutId = setTimeout(() => {
-      this.startTimeoutId = undefined;
-      this.buildClient();
-    }, this.START_ATTEMPT_DELAY_SECONDS * SECOND);
+    this.startDelayedJob.schedule(async () => {
+      await this.buildClient();
+    });
   }
 
   protected listenConnectionEvents() {
@@ -433,8 +432,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   private async end() {
-    clearTimeout(this.autoRestartTimeoutId);
-    clearTimeout(this.startTimeoutId);
+    this.autoRestartJob.stop();
+    this.startDelayedJob.cancel();
     // @ts-ignore
     this.sock?.ev?.removeAllListeners();
     this.sock?.ws?.removeAllListeners();

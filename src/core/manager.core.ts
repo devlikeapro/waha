@@ -251,7 +251,10 @@ export class SessionManagerCore extends SessionManager {
       try {
         engineInfo = await promiseTimeout(10, this.session.getEngineInfo());
       } catch (e) {
-        this.log.warn('Error while getting engine info', e);
+        this.log.warn(
+          { session: this.session },
+          'Error while getting engine info',
+        );
       }
     }
     const engine = {

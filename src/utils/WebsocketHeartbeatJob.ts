@@ -2,7 +2,7 @@ import { LoggerService } from '@nestjs/common';
 import { WebSocket } from '@waha/utils/ws';
 import { WebSocketServer } from 'ws';
 
-export class HeartbeatJob {
+export class WebsocketHeartbeatJob {
   private interval: ReturnType<typeof setInterval>;
 
   constructor(

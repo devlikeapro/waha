@@ -1,5 +1,5 @@
 import { LogLevel } from '@nestjs/common';
-import { ChildLoggerOptions, Level, Logger } from 'pino';
+import { ChildLoggerOptions, Level, LevelWithSilent, Logger } from 'pino';
 
 export interface LoggerBuilder {
   child(bindings: Record<string, any>, options?: ChildLoggerOptions): Logger;
@@ -29,6 +29,18 @@ export function getPinoLogLevel(debug: boolean = false): Level {
     return 'debug';
   }
   return getDefaultPinoLogLevel();
+}
+
+export function getPinoHttpUseLevel(): LevelWithSilent {
+  const levels = ['fatal', 'error', 'warn', 'info', 'debug', 'trace'];
+  const level = (process.env.WAHA_HTTP_LOG_LEVEL || 'info').toLowerCase();
+  if (!levels.includes(level)) {
+    console.error(
+      `Unknown ${process.env.WAHA_HTTP_LOG_LEVEL}' value for WAHA_HTTP_LOG_LEVEL`,
+    );
+    return 'info';
+  }
+  return level as LevelWithSilent;
 }
 
 export function getDefaultPinoLogLevel(): Level {

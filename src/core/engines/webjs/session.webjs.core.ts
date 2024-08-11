@@ -56,6 +56,7 @@ import { Label, LabelID } from '@waha/structures/labels.dto';
 import { WAMessage, WAMessageReaction } from '@waha/structures/responses.dto';
 import { MeInfo } from '@waha/structures/sessions.dto';
 import { WAMessageRevokedBody } from '@waha/structures/webhooks.dto';
+import { SingleDelayedJobRunner } from '@waha/utils/SingleDelayedJobRunner';
 import {
   Call,
   Channel as WEBJSChannel,
@@ -85,7 +86,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   engine = WAHAEngine.WEBJS;
   protected engineConfig?: WebJSConfig;
 
-  private startTimeoutId: null | ReturnType<typeof setTimeout> = null;
+  private startDelayedJob: SingleDelayedJobRunner;
   private shouldRestart: boolean;
 
   whatsapp: WebjsClient;
@@ -95,6 +96,13 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     super(config);
     this.qr = new QR();
     this.shouldRestart = true;
+
+    // Restart job if session failed
+    this.startDelayedJob = new SingleDelayedJobRunner(
+      'start-engine',
+      this.START_ATTEMPT_DELAY_SECONDS * SECOND,
+      this.logger,
+    );
   }
 
   /**
@@ -134,24 +142,20 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   private restartClient() {
     if (!this.shouldRestart) {
       this.logger.debug(
-        "Shouldn't restart the client, ignoring restart request",
+        'Should not restart the client, ignoring restart request',
       );
       return;
     }
 
-    if (this.startTimeoutId) {
-      const msg =
-        'Request to restart is already in progress, ignoring restart request';
-      this.logger.warn(msg);
-      return;
-    }
-    this.logger.info(
-      `Setting up client start in ${this.START_ATTEMPT_DELAY_SECONDS} seconds...`,
-    );
-    this.startTimeoutId = setTimeout(() => {
-      this.startTimeoutId = undefined;
-      this.start();
-    }, this.START_ATTEMPT_DELAY_SECONDS * SECOND);
+    this.startDelayedJob.schedule(async () => {
+      if (!this.shouldRestart) {
+        this.logger.warn(
+          'Should not restart the client, ignoring restart request',
+        );
+        return;
+      }
+      await this.start();
+    });
   }
 
   protected addProxyConfig(clientOptions: ClientOptions) {
@@ -231,7 +235,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   private async end() {
     try {
       this.whatsapp?.removeAllListeners();
-      clearInterval(this.startTimeoutId);
+      this.startDelayedJob.cancel();
       this.whatsapp?.destroy().catch((error) => {
         this.logger.debug('Failed to destroy the client', error);
       });

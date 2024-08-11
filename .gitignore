@@ -6,6 +6,8 @@ tokens
 files
 venv
 .wwebjs_auth
+src/test.ts
+src/test.js
 test.js
 .wwebjs_cache
 src/dashboard

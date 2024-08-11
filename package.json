@@ -60,6 +60,7 @@
     "passport-headerapikey": "^1.2.2",
     "pino-http": "^10.2.0",
     "pino-pretty": "^11.2.1",
+    "pretty-bytes": "5.6.0",
     "puppeteer": "^21.0.0",
     "qrcode": "^1.5.1",
     "qrcode-terminal": "^0.12.0",
