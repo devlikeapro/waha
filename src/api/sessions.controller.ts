@@ -9,7 +9,11 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { WAHAValidationPipe } from '@waha/utils/WAHAValidationPipe';
+import {
+  SessionApiParam,
+  SessionParam,
+} from '@waha/nestjs/params/SessionApiParam';
+import { WAHAValidationPipe } from '@waha/nestjs/pipes/WAHAValidationPipe';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
@@ -22,7 +26,6 @@ import {
   SessionStartRequest,
   SessionStopRequest,
 } from '../structures/sessions.dto';
-import { SessionApiParam, SessionParam } from './helpers';
 
 @ApiSecurity('api_key')
 @Controller('api/sessions')

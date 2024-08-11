@@ -11,10 +11,10 @@ import { LoggerErrorInterceptor } from 'nestjs-pino';
 import { Logger } from 'pino';
 import pino from 'pino';
 
-import { AllExceptionsFilter } from './api/exception.filter';
 import { WhatsappConfigService } from './config.service';
 import { AppModuleCore } from './core/app.module.core';
 import { SwaggerConfiguratorCore } from './core/SwaggerConfiguratorCore';
+import { AllExceptionsFilter } from './nestjs/AllExceptionsFilter';
 import { WAHA_WEBHOOKS } from './structures/webhooks.dto';
 import { getWAHAVersion, VERSION, WAHAVersion } from './version';
 

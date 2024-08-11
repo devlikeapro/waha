@@ -1,7 +1,10 @@
 import { Body, Controller, Get, Param, Put } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { SessionApiParam, SessionParam } from '@waha/api/helpers';
 import { WhatsappSession } from '@waha/core/abc/session.abc';
+import {
+  SessionApiParam,
+  SessionParam,
+} from '@waha/nestjs/params/SessionApiParam';
 import { Label, LabelID, SetLabelsRequest } from '@waha/structures/labels.dto';
 
 import { SessionManager } from '../core/abc/manager.abc';

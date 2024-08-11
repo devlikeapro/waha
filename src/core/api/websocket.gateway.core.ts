@@ -13,9 +13,9 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { SessionManager } from '@waha/core/abc/manager.abc';
+import { WebsocketHeartbeatJob } from '@waha/nestjs/ws/WebsocketHeartbeatJob';
+import { WebSocket } from '@waha/nestjs/ws/ws';
 import { WAHAEvents } from '@waha/structures/enums.dto';
-import { WebsocketHeartbeatJob } from '@waha/utils/WebsocketHeartbeatJob';
-import { WebSocket } from '@waha/utils/ws';
 import { IncomingMessage } from 'http';
 import * as lodash from 'lodash';
 import * as url from 'url';

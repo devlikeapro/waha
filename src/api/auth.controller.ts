@@ -8,9 +8,15 @@ import {
 } from '@nestjs/common';
 import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiFileAcceptHeader } from '@waha/nestjs/ApiFileAcceptHeader';
+import {
+  SessionApiParam,
+  SessionParam,
+} from '@waha/nestjs/params/SessionApiParam';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
+import { BufferResponseInterceptor } from '../nestjs/BufferResponseInterceptor';
 import {
   CaptchaBody,
   OTPRequest,
@@ -21,8 +27,6 @@ import {
 } from '../structures/auth.dto';
 import { WAHASessionStatus } from '../structures/enums.dto';
 import { Base64File } from '../structures/files.dto';
-import { BufferResponseInterceptor } from './BufferResponseInterceptor';
-import { ApiFileAcceptHeader, SessionApiParam, SessionParam } from './helpers';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/auth')

@@ -1,5 +1,5 @@
 import { LoggerService } from '@nestjs/common';
-import { WebSocket } from '@waha/utils/ws';
+import { WebSocket } from '@waha/nestjs/ws/ws';
 import { WebSocketServer } from 'ws';
 
 export class WebsocketHeartbeatJob {

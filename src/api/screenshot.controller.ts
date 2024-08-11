@@ -7,12 +7,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiFileAcceptHeader } from '@waha/nestjs/ApiFileAcceptHeader';
 import { Response } from 'express';
 
 import { SessionManager } from '../core/abc/manager.abc';
+import { BufferResponseInterceptor } from '../nestjs/BufferResponseInterceptor';
 import { SessionQuery } from '../structures/base.dto';
-import { BufferResponseInterceptor } from './BufferResponseInterceptor';
-import { ApiFileAcceptHeader } from './helpers';
 
 @ApiSecurity('api_key')
 @Controller('api')

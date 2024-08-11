@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BooleanString } from '@waha/utils/BooleanString';
+import { BooleanString } from '@waha/nestjs/validation/BooleanString';
 import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,

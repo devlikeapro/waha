@@ -9,6 +9,10 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import {
+  SessionApiParam,
+  SessionParam,
+} from '@waha/nestjs/params/SessionApiParam';
+import {
   Channel,
   CreateChannelRequest,
   ListChannelsQuery,
@@ -18,7 +22,6 @@ import {
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { isNewsletter, WhatsappSession } from '../core/abc/session.abc';
-import { SessionApiParam, SessionParam } from './helpers';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/channels')
