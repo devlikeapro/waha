@@ -443,8 +443,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     // @ts-ignore
     this.sock?.ev?.removeAllListeners();
     this.sock?.ws?.removeAllListeners();
+    await this.store?.close();
     this.sock?.end(undefined);
-    this.store?.close();
   }
 
   getSessionMeInfo(): MeInfo | null {
