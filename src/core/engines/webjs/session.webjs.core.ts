@@ -235,7 +235,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       this.whatsapp?.removeAllListeners();
       this.startDelayedJob.cancel();
       this.whatsapp?.destroy().catch((error) => {
-        this.logger.debug('Failed to destroy the client', error);
+        this.logger.warn('Failed to destroy the client', error);
       });
     } catch (error) {
       this.logger.error(error);
