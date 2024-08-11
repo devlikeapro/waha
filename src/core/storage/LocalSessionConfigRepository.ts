@@ -62,4 +62,14 @@ export class LocalSessionConfigRepository extends ISessionConfigRepository {
     }
     await fs.unlink(filepath);
   }
+
+  async getAll(): Promise<string[]> {
+    await this.store.init();
+    const content = await fs.readdir(this.store.getEngineDirectory(), {
+      withFileTypes: true,
+    });
+    return content
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name);
+  }
 }
