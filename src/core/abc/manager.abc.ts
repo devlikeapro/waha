@@ -37,11 +37,11 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
   //
   // API Methods
   //
-  abstract start(request: SessionStartRequest): Promise<SessionDTO>;
+  abstract startOld(request: SessionStartRequest): Promise<SessionDTO>;
 
-  abstract stop(request: SessionStopRequest): Promise<void>;
+  abstract stopOld(request: SessionStopRequest): Promise<void>;
 
-  abstract logout(request: SessionLogoutRequest): Promise<void>;
+  abstract logoutOld(request: SessionLogoutRequest): Promise<void>;
 
   abstract getSession(name: string): WhatsappSession;
 

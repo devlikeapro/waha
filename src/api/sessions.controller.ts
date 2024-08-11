@@ -36,7 +36,7 @@ class SessionsController {
   @Post('/start/')
   @UsePipes(new WAHAValidationPipe())
   async start(@Body() request: SessionStartRequest): Promise<SessionDTO> {
-    const result = await this.manager.start(request);
+    const result = await this.manager.startOld(request);
     await this.manager.sessionConfigRepository.save(
       request.name,
       request.config || null,
@@ -49,9 +49,9 @@ class SessionsController {
   @ApiOperation({ summary: 'Stop session' })
   async stop(@Body() request: SessionStopRequest): Promise<void> {
     if (request.logout) {
-      await this.manager.logout(request);
+      await this.manager.logoutOld(request);
     } else {
-      await this.manager.stop(request);
+      await this.manager.stopOld(request);
     }
     return;
   }
@@ -60,7 +60,7 @@ class SessionsController {
   @UsePipes(new WAHAValidationPipe())
   @ApiOperation({ summary: 'Logout from session.' })
   clean(@Body() request: SessionLogoutRequest): Promise<void> {
-    return this.manager.logout(request);
+    return this.manager.logoutOld(request);
   }
 
   @Get('/')

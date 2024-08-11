@@ -76,7 +76,7 @@ export class SessionManagerCore extends SessionManager {
   protected startPredefinedSessions() {
     const startSessions = this.config.startSessions;
     startSessions.forEach((sessionName) => {
-      this.start({ name: sessionName });
+      this.startOld({ name: sessionName });
     });
   }
 
@@ -102,13 +102,13 @@ export class SessionManagerCore extends SessionManager {
     if (!this.session) {
       return;
     }
-    await this.stop({ name: this.DEFAULT, logout: false });
+    await this.stopOld({ name: this.DEFAULT, logout: false });
   }
 
   //
   // API Methods
   //
-  async start(request: SessionStartRequest): Promise<SessionDTO> {
+  async startOld(request: SessionStartRequest): Promise<SessionDTO> {
     this.onlyDefault(request.name);
     if (this.session) {
       throw new UnprocessableEntityException(
@@ -192,7 +192,7 @@ export class SessionManagerCore extends SessionManager {
     return getProxyConfig(this.config, sessions, request.name);
   }
 
-  async stop(request: SessionStopRequest): Promise<void> {
+  async stopOld(request: SessionStopRequest): Promise<void> {
     this.onlyDefault(request.name);
 
     const name = request.name;
@@ -203,10 +203,10 @@ export class SessionManagerCore extends SessionManager {
     this.session = undefined;
   }
 
-  async logout(request: SessionLogoutRequest) {
+  async logoutOld(request: SessionLogoutRequest) {
     const name = request.name;
     this.onlyDefault(request.name);
-    this.stop({ name: name, logout: false })
+    this.stopOld({ name: name, logout: false })
       .then(() => {
         this.log.info(`Session '${name}' has been stopped.`);
       })
