@@ -1,23 +1,18 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   NotFoundException,
   Param,
   Post,
   Query,
+  UsePipes,
 } from '@nestjs/common';
-import {
-  ApiExtraModels,
-  ApiOperation,
-  ApiSecurity,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { WAHAValidationPipe } from '@waha/utils/WAHAValidationPipe';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
-import { parseBool } from '../helpers';
 import {
   ListSessionsQuery,
   MeInfo,
@@ -36,6 +31,7 @@ class SessionsController {
   constructor(private manager: SessionManager) {}
 
   @Post('/start/')
+  @UsePipes(new WAHAValidationPipe())
   async start(@Body() request: SessionStartRequest): Promise<SessionDTO> {
     const result = await this.manager.start(request);
     await this.manager.sessionConfigRepository.save(
@@ -46,6 +42,7 @@ class SessionsController {
   }
 
   @Post('/stop/')
+  @UsePipes(new WAHAValidationPipe())
   @ApiOperation({ summary: 'Stop session' })
   async stop(@Body() request: SessionStopRequest): Promise<void> {
     if (request.logout) {
@@ -57,18 +54,21 @@ class SessionsController {
   }
 
   @Post('/logout/')
+  @UsePipes(new WAHAValidationPipe())
   @ApiOperation({ summary: 'Logout from session.' })
   clean(@Body() request: SessionLogoutRequest): Promise<void> {
     return this.manager.logout(request);
   }
 
   @Get('/')
-  list(@Query() query: ListSessionsQuery): Promise<SessionInfo[]> {
-    const all = parseBool(query.all);
-    return this.manager.getSessions(all);
+  list(
+    @Query(new WAHAValidationPipe()) query: ListSessionsQuery,
+  ): Promise<SessionInfo[]> {
+    return this.manager.getSessions(query.all);
   }
 
   @Get('/:session')
+  @UsePipes(new WAHAValidationPipe())
   async get(@Param('session') name: string): Promise<SessionInfo> {
     const session = this.manager.getSessionInfo(name);
     if (session === null) {

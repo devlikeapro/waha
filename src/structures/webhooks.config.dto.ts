@@ -1,25 +1,43 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { WAHAEvents } from '@waha/structures/enums.dto';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUrl,
+  ValidateNested,
+} from 'class-validator';
 
 export class RetriesConfiguration {
   @ApiProperty({
     example: 2,
   })
-  delaySeconds: number;
+  @IsNumber()
+  @IsOptional()
+  delaySeconds?: number;
 
   @ApiProperty({
     example: 15,
   })
-  attempts: number;
+  @IsNumber()
+  @IsOptional()
+  attempts?: number;
 }
+
 export class CustomHeader {
   @ApiProperty({
     example: 'X-My-Custom-Header',
   })
+  @IsString()
   name: string;
 
   @ApiProperty({
     example: 'Value',
   })
+  @IsString()
   value: string;
 }
 
@@ -27,7 +45,9 @@ export class HmacConfiguration {
   @ApiProperty({
     example: 'your-secret-key',
   })
-  key: string;
+  @IsString()
+  @IsOptional()
+  key?: string;
 }
 
 export class WebhookConfig {
@@ -37,26 +57,38 @@ export class WebhookConfig {
     description:
       'You can use https://docs.webhook.site/ to test webhooks and see the payload',
   })
+  @IsUrl({ require_protocol: true })
   url: string;
 
   @ApiProperty({
     example: ['message', 'session.status'],
     required: true,
   })
-  events: string[];
+  @IsEnum(WAHAEvents, { each: true })
+  @IsArray()
+  events: WAHAEvents[];
 
   @ApiProperty({
     example: null,
   })
+  @ValidateNested()
+  @Type(() => HmacConfiguration)
+  @IsOptional()
   hmac?: HmacConfiguration;
 
   @ApiProperty({
     example: null,
   })
+  @ValidateNested()
+  @Type(() => RetriesConfiguration)
+  @IsOptional()
   retries?: RetriesConfiguration;
 
   @ApiProperty({
     example: null,
   })
+  @ValidateNested()
+  @Type(() => CustomHeader)
+  @IsOptional()
   customHeaders?: CustomHeader[];
 }

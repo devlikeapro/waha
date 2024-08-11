@@ -13,11 +13,6 @@ function parseBool(value: any): boolean {
     return false;
   }
 
-  console.error(
-    'parseBool got an unexpected value:',
-    value,
-    '(accepted values : "true", "false")',
-  );
   throw new Error(
     'Error: parseBool got unexpected value - use "true" or "false" values',
   );

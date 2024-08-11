@@ -1,4 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BooleanString } from '@waha/utils/BooleanString';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
 import { WAHASessionStatus } from './enums.dto';
 import { ChatIdProperty } from './properties.dto';
@@ -14,7 +22,10 @@ export class ListSessionsQuery {
     description:
       'Return all sessions, including those that are in the STOPPED state.',
   })
-  all: boolean;
+  @Transform(BooleanString)
+  @IsBoolean()
+  @IsOptional()
+  all?: boolean;
 }
 
 /**
@@ -24,16 +35,21 @@ export class ProxyConfig {
   @ApiProperty({
     example: 'localhost:3128',
   })
+  @IsString()
   server: string;
 
   @ApiProperty({
     example: null,
   })
+  @IsString()
+  @IsOptional()
   username?: string;
 
   @ApiProperty({
     example: null,
   })
+  @IsString()
+  @IsOptional()
   password?: string;
 }
 
@@ -42,6 +58,7 @@ export class NowebStoreConfig {
     description:
       'Enable or disable the store for contacts, chats, and messages.',
   })
+  @IsBoolean()
   enabled: boolean = false;
 
   @ApiProperty({
@@ -50,22 +67,34 @@ export class NowebStoreConfig {
       'Full sync will download all contacts, chats, and messages from the phone.\n' +
       'If disabled, only messages early than 90 days will be downloaded and some contacts may be missing.',
   })
+  @IsBoolean()
   fullSync: boolean = false;
 }
 
 export class NowebConfig {
+  @ValidateNested()
+  @Type(() => NowebStoreConfig)
+  @IsOptional()
   store?: NowebStoreConfig;
 }
 
 export class SessionConfig {
+  @ValidateNested({ each: true })
+  @Type(() => WebhookConfig)
+  @IsOptional()
   webhooks?: WebhookConfig[];
 
   @ApiProperty({
     example: null,
   })
+  @ValidateNested()
+  @Type(() => ProxyConfig)
+  @IsOptional()
   proxy?: ProxyConfig;
 
-  debug: boolean = false;
+  @IsBoolean()
+  @IsOptional()
+  debug: boolean;
 
   @ApiProperty({
     example: {
@@ -75,30 +104,61 @@ export class SessionConfig {
       },
     },
   })
+  @ValidateNested()
+  @Type(() => NowebConfig)
+  @IsOptional()
   noweb?: NowebConfig;
 }
 
 export class SessionStartRequest {
-  name = 'default';
+  @ApiProperty({
+    example: 'default',
+    description: 'Session name (aka id)',
+  })
+  @IsString()
+  name: string;
+
+  @ValidateNested()
+  @Type(() => SessionConfig)
+  @IsOptional()
   config?: SessionConfig;
 }
 
 export class SessionStopRequest {
-  name = 'default';
+  @ApiProperty({
+    example: 'default',
+    description: 'Session name (aka id)',
+  })
+  @IsString()
+  name: string;
+
   @ApiProperty({
     example: false,
     required: false,
     description: 'Stop and logout from the session.',
   })
-  logout = false;
+  @IsBoolean()
+  @IsOptional()
+  logout: boolean | undefined = false;
 }
 
 export class SessionLogoutRequest {
-  name = 'default';
+  @ApiProperty({
+    example: 'default',
+    description: 'Session name (aka id)',
+  })
+  @IsString()
+  name: string;
 }
 
 export class SessionDTO {
-  name = 'default';
+  @ApiProperty({
+    example: 'default',
+    description: 'Session name (aka id)',
+  })
+  @IsString()
+  name: string;
+
   status: WAHASessionStatus;
   config?: SessionConfig;
 }

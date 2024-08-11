@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { WAHAEvents } from '@waha/structures/enums.dto';
 
 import { parseBool } from './helpers';
 import { WebhookConfig } from './structures/webhooks.config.dto';
@@ -101,7 +102,7 @@ export class WhatsappConfigService {
     return this.get('WHATSAPP_HOOK_URL');
   }
 
-  private getWebhookEvents(): string[] {
+  private getWebhookEvents(): WAHAEvents[] {
     const value = this.get('WHATSAPP_HOOK_EVENTS', '');
     return value ? value.split(',') : [];
   }
