@@ -12914,6 +12914,7 @@ __metadata:
     eslint-plugin-simple-import-sort: ^10.0.0
     express-basic-auth: ^1.2.1
     file-type: 16.5.4
+    fs-extra: ^11.2.0
     https-proxy-agent: ^7.0.0
     jest: ^29.7.0
     knex: ^3.1.0
