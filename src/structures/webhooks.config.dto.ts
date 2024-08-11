@@ -89,6 +89,7 @@ export class WebhookConfig {
   })
   @ValidateNested()
   @Type(() => CustomHeader)
+  @IsArray()
   @IsOptional()
   customHeaders?: CustomHeader[];
 }

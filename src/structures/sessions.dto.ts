@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BooleanString } from '@waha/nestjs/validation/BooleanString';
 import { Transform, Type } from 'class-transformer';
 import {
+  IsArray,
   IsBoolean,
   IsOptional,
   IsString,
@@ -81,6 +82,7 @@ export class NowebConfig {
 export class SessionConfig {
   @ValidateNested({ each: true })
   @Type(() => WebhookConfig)
+  @IsArray()
   @IsOptional()
   webhooks?: WebhookConfig[];
 
