@@ -183,6 +183,11 @@ export class SessionManagerCore extends SessionManager {
 
   async stop(name: string, silent: boolean): Promise<void> {
     this.onlyDefault(name);
+    if (!this.isRunning(name)) {
+      this.log.debug(`Session is not running.`, { session: name });
+      return;
+    }
+
     this.log.info(`Stopping session...`, { session: name });
     try {
       const session = this.getSession(name);
