@@ -115,7 +115,7 @@ export class SessionConfig {
 export class SessionDTO {
   @ApiProperty({
     example: 'default',
-    description: 'Session name (aka id)',
+    description: 'Session name (id)',
   })
   @IsString()
   name: string;

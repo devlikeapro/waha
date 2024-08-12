@@ -11,7 +11,7 @@ import {
 export class SessionStartDeprecatedRequest {
   @ApiProperty({
     example: 'default',
-    description: 'Session name (aka id)',
+    description: 'Session name (id)',
   })
   @IsString()
   name: string;
@@ -25,7 +25,7 @@ export class SessionStartDeprecatedRequest {
 export class SessionStopDeprecatedRequest {
   @ApiProperty({
     example: 'default',
-    description: 'Session name (aka id)',
+    description: 'Session name (id)',
   })
   @IsString()
   name: string;
@@ -43,7 +43,7 @@ export class SessionStopDeprecatedRequest {
 export class SessionLogoutDeprecatedRequest {
   @ApiProperty({
     example: 'default',
-    description: 'Session name (aka id)',
+    description: 'Session name (id)',
   })
   @IsString()
   name: string;
