@@ -55,6 +55,7 @@ import { Label, LabelID } from '@waha/structures/labels.dto';
 import { WAMessage, WAMessageReaction } from '@waha/structures/responses.dto';
 import { MeInfo } from '@waha/structures/sessions.dto';
 import { WAMessageRevokedBody } from '@waha/structures/webhooks.dto';
+import { waitUntil } from '@waha/utils/promiseTimeout';
 import { SingleDelayedJobRunner } from '@waha/utils/SingleDelayedJobRunner';
 import {
   Call,
@@ -152,6 +153,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         );
         return;
       }
+      await this.end();
       await this.start();
     });
   }
@@ -174,7 +176,6 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   protected async init() {
-    await this.end();
     this.shouldRestart = true;
     this.whatsapp = await this.buildClient();
     this.whatsapp
@@ -234,6 +235,16 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     try {
       this.whatsapp?.removeAllListeners();
       this.startDelayedJob.cancel();
+      // It's possible that browser yet starting
+      await waitUntil(
+        async () => {
+          const result = !!this.whatsapp.pupBrowser;
+          this.logger.debug(`Browser is ready to be closed: ${result}`);
+          return result;
+        },
+        1_000,
+        10_000,
+      );
       this.whatsapp?.destroy().catch((error) => {
         this.logger.warn(error, 'Failed to destroy the client');
       });

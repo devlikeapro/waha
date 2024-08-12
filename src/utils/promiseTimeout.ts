@@ -36,3 +36,17 @@ export const promiseTimeout = function (
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+export async function waitUntil(
+  condition: () => Promise<boolean>,
+  everyMs: number,
+  timeoutMs: number,
+): Promise<boolean> {
+  const startTime = Date.now();
+  let result = await condition();
+  while (!result && Date.now() - startTime < timeoutMs) {
+    await sleep(everyMs);
+    result = await condition();
+  }
+  return result;
+}
