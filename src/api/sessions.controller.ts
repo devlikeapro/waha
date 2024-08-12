@@ -35,11 +35,22 @@ import {
   SessionInfo,
 } from '../structures/sessions.dto';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const AsyncLock = require('async-lock');
+
 @ApiSecurity('api_key')
 @Controller('api/sessions')
 @ApiTags('sessions')
 class SessionsController {
-  constructor(private manager: SessionManager) {}
+  private lock: any;
+
+  constructor(private manager: SessionManager) {
+    this.lock = new AsyncLock({ maxPending: Infinity });
+  }
+
+  private withLock(name, fn) {
+    return this.lock.acquire(name, fn);
+  }
 
   @Get('/')
   @ApiOperation({ summary: 'List all sessions' })
@@ -77,22 +88,24 @@ class SessionsController {
   @UsePipes(new WAHAValidationPipe())
   async create(@Body() request: SessionCreateRequest): Promise<SessionDTO> {
     const name = request.name || generatePrefixedId('session');
-    if (this.manager.isRunning(name)) {
-      const msg = `Session '${name}' is already started.`;
-      throw new UnprocessableEntityException(msg);
-    }
+    await this.withLock(name, async () => {
+      if (this.manager.isRunning(name)) {
+        const msg = `Session '${name}' is already started.`;
+        throw new UnprocessableEntityException(msg);
+      }
 
-    if (await this.manager.exists(name)) {
-      const msg = `Session '${name}' already exists. Use PUT to update it.`;
-      throw new UnprocessableEntityException(msg);
-    }
+      if (await this.manager.exists(name)) {
+        const msg = `Session '${name}' already exists. Use PUT to update it.`;
+        throw new UnprocessableEntityException(msg);
+      }
 
-    const config = request.config;
-    const start = request.start || false;
-    await this.manager.upsert(name, config);
-    if (start) {
-      await this.manager.start(name);
-    }
+      const config = request.config;
+      const start = request.start || false;
+      await this.manager.upsert(name, config);
+      if (start) {
+        await this.manager.start(name);
+      }
+    });
     return await this.manager.getSessionInfo(name);
   }
 
@@ -105,12 +118,14 @@ class SessionsController {
   })
   @UsePipes(new WAHAValidationPipe())
   async delete(@Param('session') name: string): Promise<void> {
-    if (this.manager.isRunning(name)) {
-      await this.manager.stop(name, true);
-      await sleep(2000);
-    }
-    await this.manager.logout(name);
-    await this.manager.delete(name);
+    await this.withLock(name, async () => {
+      if (this.manager.isRunning(name)) {
+        await this.manager.stop(name, true);
+        await sleep(2000);
+      }
+      await this.manager.logout(name);
+      await this.manager.delete(name);
+    });
   }
 
   @Post(':session/start')
@@ -122,11 +137,14 @@ class SessionsController {
   })
   @UsePipes(new WAHAValidationPipe())
   async start(@Param('session') name: string): Promise<SessionDTO> {
-    const exists = await this.manager.exists(name);
-    if (!exists) {
-      throw new NotFoundException('Session not found');
-    }
-    return await this.manager.start(name);
+    await this.withLock(name, async () => {
+      const exists = await this.manager.exists(name);
+      if (!exists) {
+        throw new NotFoundException('Session not found');
+      }
+      await this.manager.start(name);
+    });
+    return await this.manager.getSessionInfo(name);
   }
 
   @Post(':session/stop')
@@ -137,14 +155,16 @@ class SessionsController {
   })
   @UsePipes(new WAHAValidationPipe())
   async stop(@Param('session') name: string): Promise<SessionDTO> {
-    const exists = await this.manager.exists(name);
-    if (!exists) {
-      throw new NotFoundException('Session not found');
-    }
-    if (!this.manager.isRunning(name)) {
-      return await this.manager.getSessionInfo(name);
-    }
-    await this.manager.stop(name, false);
+    await this.withLock(name, async () => {
+      const exists = await this.manager.exists(name);
+      if (!exists) {
+        throw new NotFoundException('Session not found');
+      }
+      if (!this.manager.isRunning(name)) {
+        return await this.manager.getSessionInfo(name);
+      }
+      await this.manager.stop(name, false);
+    });
     return await this.manager.getSessionInfo(name);
   }
 }
