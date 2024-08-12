@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -22,6 +23,7 @@ import {
   SessionStopDeprecatedRequest,
 } from '@waha/structures/sessions.deprecated.dto';
 import { generatePrefixedId } from '@waha/utils/ids';
+import { sleep } from '@waha/utils/promiseTimeout';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
@@ -127,6 +129,23 @@ class SessionsController {
     }
     await this.manager.stop(name, false);
     return await this.manager.getSessionInfo(name);
+  }
+
+  @Delete(':session/')
+  @SessionApiParam
+  @ApiOperation({
+    summary: 'Delete the session',
+    description:
+      'Delete the session with the given name. Stop and logout if required. Idempotent operation.',
+  })
+  @UsePipes(new WAHAValidationPipe())
+  async delete(@Param('session') name: string): Promise<void> {
+    if (this.manager.isRunning(name)) {
+      await this.stop(name);
+      await sleep(2000);
+    }
+    await this.manager.logout(name);
+    await this.manager.delete(name);
   }
 }
 
