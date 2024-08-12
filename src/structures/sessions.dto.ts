@@ -160,3 +160,10 @@ export class SessionCreateRequest {
   @IsOptional()
   start?: boolean;
 }
+
+export class SessionUpdateRequest {
+  @ValidateNested()
+  @Type(() => SessionConfig)
+  @IsOptional()
+  config?: SessionConfig;
+}

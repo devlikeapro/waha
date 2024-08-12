@@ -6,6 +6,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Put,
   Query,
   UsePipes,
 } from '@nestjs/common';
@@ -33,6 +34,7 @@ import {
   SessionCreateRequest,
   SessionDTO,
   SessionInfo,
+  SessionUpdateRequest,
 } from '../structures/sessions.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -89,11 +91,6 @@ class SessionsController {
   async create(@Body() request: SessionCreateRequest): Promise<SessionDTO> {
     const name = request.name || generatePrefixedId('session');
     await this.withLock(name, async () => {
-      if (this.manager.isRunning(name)) {
-        const msg = `Session '${name}' is already started.`;
-        throw new UnprocessableEntityException(msg);
-      }
-
       if (await this.manager.exists(name)) {
         const msg = `Session '${name}' already exists. Use PUT to update it.`;
         throw new UnprocessableEntityException(msg);
@@ -109,7 +106,33 @@ class SessionsController {
     return await this.manager.getSessionInfo(name);
   }
 
-  @Delete(':session/')
+  @Put(':session')
+  @ApiOperation({
+    summary: 'Update a session',
+    description: '',
+  })
+  @SessionApiParam
+  @UsePipes(new WAHAValidationPipe())
+  async update(
+    @Param('session') name: string,
+    @Body() request: SessionUpdateRequest,
+  ): Promise<SessionDTO> {
+    await this.withLock(name, async () => {
+      if (!(await this.manager.exists(name))) {
+        throw new NotFoundException('Session not found');
+      }
+      const config = request.config;
+      const isRunning = this.manager.isRunning(name);
+      await this.manager.stop(name, true);
+      await this.manager.upsert(name, config);
+      if (isRunning) {
+        await this.manager.start(name);
+      }
+    });
+    return await this.manager.getSessionInfo(name);
+  }
+
+  @Delete(':session')
   @SessionApiParam
   @ApiOperation({
     summary: 'Delete the session',
@@ -158,6 +181,29 @@ class SessionsController {
         throw new NotFoundException('Session not found');
       }
       await this.manager.stop(name, false);
+    });
+    return await this.manager.getSessionInfo(name);
+  }
+
+  @Post(':session/logout')
+  @SessionApiParam
+  @ApiOperation({
+    summary: 'Logout from the session',
+    description: 'Logout the session, restart a session if it was not STOPPED',
+  })
+  @UsePipes(new WAHAValidationPipe())
+  async logout(@Param('session') name: string): Promise<SessionDTO> {
+    await this.withLock(name, async () => {
+      const exists = await this.manager.exists(name);
+      if (!exists) {
+        throw new NotFoundException('Session not found');
+      }
+      const isRunning = this.manager.isRunning(name);
+      await this.manager.stop(name, true);
+      await this.manager.logout(name);
+      if (isRunning) {
+        await this.manager.start(name);
+      }
     });
     return await this.manager.getSessionInfo(name);
   }
