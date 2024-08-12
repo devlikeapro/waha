@@ -160,11 +160,32 @@ class SessionsController {
       if (!exists) {
         throw new NotFoundException('Session not found');
       }
-      if (!this.manager.isRunning(name)) {
-        return await this.manager.getSessionInfo(name);
-      }
       await this.manager.stop(name, false);
     });
+    return await this.manager.getSessionInfo(name);
+  }
+
+  @Post(':session/restart')
+  @SessionApiParam
+  @ApiOperation({
+    summary: 'Restart the session',
+    description: 'Restart the session with the given name.',
+  })
+  @UsePipes(new WAHAValidationPipe())
+  async restart(@Param('session') name: string): Promise<SessionDTO> {
+    await this.withLock(name, async () => {
+      const exists = await this.manager.exists(name);
+      if (!exists) {
+        throw new NotFoundException('Session not found');
+      }
+      if (this.manager.isRunning(name)) {
+        await sleep(5000);
+        await this.manager.stop(name, false);
+        await sleep(5000);
+      }
+      await this.manager.start(name);
+    });
+
     return await this.manager.getSessionInfo(name);
   }
 }
