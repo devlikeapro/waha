@@ -46,6 +46,7 @@ import {
   PollVotePayload,
   WAMessageAckBody,
 } from '@waha/structures/webhooks.dto';
+import { waitUntil } from '@waha/utils/promiseTimeout';
 import { SingleDelayedJobRunner } from '@waha/utils/SingleDelayedJobRunner';
 import { SinglePeriodicJobRunner } from '@waha/utils/SinglePeriodicJobRunner';
 import * as Buffer from 'buffer';
@@ -444,6 +445,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.sock?.ev?.removeAllListeners();
     this.sock?.ws?.removeAllListeners();
     await this.store?.close();
+    // wait until connection is not connecting to avoid error:
+    // "WebSocket was closed before the connection was established"
+    await waitUntil(async () => !this.sock?.ws?.isConnecting, 1_000, 10_000);
     this.sock?.end(undefined);
   }
 
