@@ -23,7 +23,7 @@ const logger: Logger = pino({
   transport: getPinoTransport(),
 }).child({ name: 'Bootstrap' });
 
-logger.info('NODE - Catching unhandled exceptions enabled');
+logger.info('NODE - Catching unhandled rejection enabled');
 process.on('unhandledRejection', (reason, promise) => {
   logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
   // @ts-ignore
