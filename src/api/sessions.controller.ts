@@ -97,8 +97,9 @@ class SessionsController {
   @Post(':session/start')
   @SessionApiParam
   @ApiOperation({
-    summary: 'Start a session',
-    description: 'Start a session with the given name.',
+    summary: 'Start the session',
+    description:
+      'Start the session with the given name. The session must exist. IT IS NOT IDEMPOTENT operation.',
   })
   @UsePipes(new WAHAValidationPipe())
   async start(@Param('session') name: string): Promise<SessionDTO> {
@@ -107,6 +108,25 @@ class SessionsController {
       throw new NotFoundException('Session not found');
     }
     return await this.manager.start(name);
+  }
+
+  @Post(':session/stop')
+  @SessionApiParam
+  @ApiOperation({
+    summary: 'Stop the session',
+    description: 'Stop the session with the given name. Idempotent operation.',
+  })
+  @UsePipes(new WAHAValidationPipe())
+  async stop(@Param('session') name: string): Promise<SessionDTO> {
+    const exists = await this.manager.exists(name);
+    if (!exists) {
+      throw new NotFoundException('Session not found');
+    }
+    if (!this.manager.isRunning(name)) {
+      return await this.manager.getSessionInfo(name);
+    }
+    await this.manager.stop(name, false);
+    return await this.manager.getSessionInfo(name);
   }
 }
 
