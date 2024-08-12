@@ -109,6 +109,11 @@ export class SessionManagerCore extends SessionManager {
   //
   // API Methods
   //
+  async exists(name: string): Promise<boolean> {
+    this.onlyDefault(name);
+    return !!this.session;
+  }
+
   isRunning(name: string): boolean {
     this.onlyDefault(name);
     return !!this.session;

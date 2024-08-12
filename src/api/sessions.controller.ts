@@ -15,17 +15,20 @@ import {
   SessionParam,
 } from '@waha/nestjs/params/SessionApiParam';
 import { WAHAValidationPipe } from '@waha/nestjs/pipes/WAHAValidationPipe';
+import { WAHASessionStatus } from '@waha/structures/enums.dto';
 import {
   SessionLogoutDeprecatedRequest,
   SessionStartDeprecatedRequest,
   SessionStopDeprecatedRequest,
 } from '@waha/structures/sessions.deprecated.dto';
+import { generatePrefixedId } from '@waha/utils/ids';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
 import {
   ListSessionsQuery,
   MeInfo,
+  SessionCreateRequest,
   SessionDTO,
   SessionInfo,
 } from '../structures/sessions.dto';
@@ -61,6 +64,34 @@ class SessionsController {
   @ApiOperation({ summary: 'Get information about the authenticated account' })
   getMe(@SessionParam session: WhatsappSession): MeInfo | null {
     return session.getSessionMeInfo();
+  }
+
+  @Post('')
+  @ApiOperation({
+    summary: 'Create a session',
+    description:
+      'Create session a new session (and start it at the same time if required).',
+  })
+  @UsePipes(new WAHAValidationPipe())
+  async create(@Body() request: SessionCreateRequest): Promise<SessionDTO> {
+    const name = request.name || generatePrefixedId('session');
+    if (this.manager.isRunning(name)) {
+      const msg = `Session '${name}' is already started.`;
+      throw new UnprocessableEntityException(msg);
+    }
+
+    if (await this.manager.exists(name)) {
+      const msg = `Session '${name}' already exists. Use PUT to update it.`;
+      throw new UnprocessableEntityException(msg);
+    }
+
+    const config = request.config;
+    const start = request.start || false;
+    await this.manager.upsert(name, config);
+    if (start) {
+      await this.manager.start(name);
+    }
+    return await this.manager.getSessionInfo(name);
   }
 }
 

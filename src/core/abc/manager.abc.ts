@@ -34,6 +34,8 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
   /**
    * Either create or update
    */
+  abstract exists(name: string): Promise<boolean>;
+
   abstract isRunning(name: string): boolean;
 
   abstract upsert(name: string, config?: SessionConfig): Promise<void>;

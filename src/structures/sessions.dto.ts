@@ -135,3 +135,28 @@ export class SessionInfo extends SessionDTO {
   me?: MeInfo;
   engine?: any;
 }
+
+export class SessionCreateRequest {
+  @ApiProperty({
+    example: 'default',
+    description: 'Session name (id)',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  name: string | undefined;
+
+  @ValidateNested()
+  @Type(() => SessionConfig)
+  @IsOptional()
+  config?: SessionConfig;
+
+  @ApiProperty({
+    description: 'Start session after creation',
+    example: true,
+    default: true,
+  })
+  @IsBoolean()
+  @IsOptional()
+  start?: boolean;
+}
