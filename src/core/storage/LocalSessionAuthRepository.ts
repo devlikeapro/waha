@@ -21,6 +21,11 @@ export class LocalSessionAuthRepository extends ISessionAuthRepository {
   async clean(sessionName: string) {
     // Remove all files and directories recursively, but keep waha files
     const sessionDirectory = this.store.getSessionDirectory(sessionName);
+    // Check it exists and it's directory
+    const exists = await fs.pathExists(sessionDirectory);
+    if (!exists) {
+      return;
+    }
     const files = await fs.readdir(sessionDirectory);
     const filesToRemove = files.filter((file) => !file.match(KEEP_FILES));
     for (const file of filesToRemove) {
