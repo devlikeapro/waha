@@ -195,9 +195,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     );
   }
 
-  start() {
+  async start() {
     this.status = WAHASessionStatus.STARTING;
-    this.buildClient();
+    await this.buildClient();
   }
 
   getSocketConfig(agent, state): any {
