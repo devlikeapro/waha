@@ -15,6 +15,11 @@ import {
   SessionParam,
 } from '@waha/nestjs/params/SessionApiParam';
 import { WAHAValidationPipe } from '@waha/nestjs/pipes/WAHAValidationPipe';
+import {
+  SessionLogoutDeprecatedRequest,
+  SessionStartDeprecatedRequest,
+  SessionStopDeprecatedRequest,
+} from '@waha/structures/sessions.deprecated.dto';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
@@ -23,9 +28,6 @@ import {
   MeInfo,
   SessionDTO,
   SessionInfo,
-  SessionLogoutRequest,
-  SessionStartRequest,
-  SessionStopRequest,
 } from '../structures/sessions.dto';
 
 @ApiSecurity('api_key')
@@ -75,7 +77,9 @@ class SessionsDeprecatedController {
     deprecated: true,
   })
   @UsePipes(new WAHAValidationPipe())
-  async start(@Body() request: SessionStartRequest): Promise<SessionDTO> {
+  async start(
+    @Body() request: SessionStartDeprecatedRequest,
+  ): Promise<SessionDTO> {
     const name = request.name;
     if (this.manager.isRunning(name)) {
       const msg = `Session '${name}' is already started.`;
@@ -96,7 +100,7 @@ class SessionsDeprecatedController {
     deprecated: true,
   })
   @UsePipes(new WAHAValidationPipe())
-  async stop(@Body() request: SessionStopRequest): Promise<void> {
+  async stop(@Body() request: SessionStopDeprecatedRequest): Promise<void> {
     const name = request.name;
     if (request.logout) {
       // Old API did remove the session complete
@@ -116,7 +120,7 @@ class SessionsDeprecatedController {
     deprecated: true,
   })
   @UsePipes(new WAHAValidationPipe())
-  async logout(@Body() request: SessionLogoutRequest): Promise<void> {
+  async logout(@Body() request: SessionLogoutDeprecatedRequest): Promise<void> {
     const name = request.name;
     await this.manager.stop(name, true);
     await this.manager.logout(name);

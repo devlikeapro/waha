@@ -1,20 +1,13 @@
-import {
-  BeforeApplicationShutdown,
-  OnApplicationShutdown,
-} from '@nestjs/common';
+import { BeforeApplicationShutdown } from '@nestjs/common';
 import { WAHAWebhook } from '@waha/structures/webhooks.dto';
 import { VERSION } from '@waha/version';
 import { EventEmitter } from 'events';
 
 import { WAHAEngine, WAHAEvents } from '../../structures/enums.dto';
 import {
-  MeInfo,
   SessionConfig,
   SessionDTO,
   SessionInfo,
-  SessionLogoutRequest,
-  SessionStartRequest,
-  SessionStopRequest,
 } from '../../structures/sessions.dto';
 import { ISessionAuthRepository } from '../storage/ISessionAuthRepository';
 import { ISessionConfigRepository } from '../storage/ISessionConfigRepository';

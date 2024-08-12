@@ -112,47 +112,6 @@ export class SessionConfig {
   noweb?: NowebConfig;
 }
 
-export class SessionStartRequest {
-  @ApiProperty({
-    example: 'default',
-    description: 'Session name (aka id)',
-  })
-  @IsString()
-  name: string;
-
-  @ValidateNested()
-  @Type(() => SessionConfig)
-  @IsOptional()
-  config?: SessionConfig;
-}
-
-export class SessionStopRequest {
-  @ApiProperty({
-    example: 'default',
-    description: 'Session name (aka id)',
-  })
-  @IsString()
-  name: string;
-
-  @ApiProperty({
-    example: false,
-    required: false,
-    description: 'Stop and logout from the session.',
-  })
-  @IsBoolean()
-  @IsOptional()
-  logout: boolean | undefined = false;
-}
-
-export class SessionLogoutRequest {
-  @ApiProperty({
-    example: 'default',
-    description: 'Session name (aka id)',
-  })
-  @IsString()
-  name: string;
-}
-
 export class SessionDTO {
   @ApiProperty({
     example: 'default',

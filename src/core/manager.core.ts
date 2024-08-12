@@ -21,9 +21,6 @@ import {
   SessionConfig,
   SessionDTO,
   SessionInfo,
-  SessionLogoutRequest,
-  SessionStartRequest,
-  SessionStopRequest,
 } from '../structures/sessions.dto';
 import { WebhookConfig } from '../structures/webhooks.config.dto';
 import { SessionManager } from './abc/manager.abc';
