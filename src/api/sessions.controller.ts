@@ -119,10 +119,7 @@ class SessionsController {
   @UsePipes(new WAHAValidationPipe())
   async delete(@Param('session') name: string): Promise<void> {
     await this.withLock(name, async () => {
-      if (this.manager.isRunning(name)) {
-        await this.manager.stop(name, true);
-        await sleep(2000);
-      }
+      await this.manager.stop(name, true);
       await this.manager.logout(name);
       await this.manager.delete(name);
     });
@@ -178,23 +175,12 @@ class SessionsController {
       if (!exists) {
         throw new NotFoundException('Session not found');
       }
-      if (this.manager.isRunning(name)) {
-        await sleep(5000);
-        await this.manager.stop(name, false);
-        await sleep(5000);
-      }
+      await this.manager.stop(name, true);
       await this.manager.start(name);
     });
 
     return await this.manager.getSessionInfo(name);
   }
-}
-
-@ApiSecurity('api_key')
-@Controller('api/sessions')
-@ApiTags('sessions')
-class SessionsDeprecatedController {
-  constructor(private manager: SessionManager) {}
 
   @Post('/start/')
   @ApiOperation({
@@ -204,7 +190,7 @@ class SessionsDeprecatedController {
     deprecated: true,
   })
   @UsePipes(new WAHAValidationPipe())
-  async start(
+  async DEPRACATED_start(
     @Body() request: SessionStartDeprecatedRequest,
   ): Promise<SessionDTO> {
     const name = request.name;
@@ -213,11 +199,13 @@ class SessionsDeprecatedController {
       throw new UnprocessableEntityException(msg);
     }
 
-    const config = request.config;
-    if (config) {
-      await this.manager.upsert(name, config);
-    }
-    return await this.manager.start(name);
+    return await this.withLock(name, async () => {
+      const config = request.config;
+      if (config) {
+        await this.manager.upsert(name, config);
+      }
+      return await this.manager.start(name);
+    });
   }
 
   @Post('/stop/')
@@ -227,15 +215,21 @@ class SessionsDeprecatedController {
     deprecated: true,
   })
   @UsePipes(new WAHAValidationPipe())
-  async stop(@Body() request: SessionStopDeprecatedRequest): Promise<void> {
+  async DEPRECATED_stop(
+    @Body() request: SessionStopDeprecatedRequest,
+  ): Promise<void> {
     const name = request.name;
     if (request.logout) {
       // Old API did remove the session complete
-      await this.manager.stop(name, true);
-      await this.manager.logout(name);
-      await this.manager.delete(name);
+      await this.withLock(name, async () => {
+        await this.manager.stop(name, true);
+        await this.manager.logout(name);
+        await this.manager.delete(name);
+      });
     } else {
-      await this.manager.stop(name, false);
+      await this.withLock(name, async () => {
+        await this.manager.stop(name, false);
+      });
     }
     return;
   }
@@ -247,13 +241,17 @@ class SessionsDeprecatedController {
     deprecated: true,
   })
   @UsePipes(new WAHAValidationPipe())
-  async logout(@Body() request: SessionLogoutDeprecatedRequest): Promise<void> {
+  async DEPRECATED_logout(
+    @Body() request: SessionLogoutDeprecatedRequest,
+  ): Promise<void> {
     const name = request.name;
-    await this.manager.stop(name, true);
-    await this.manager.logout(name);
-    await this.manager.delete(name);
+    await this.withLock(name, async () => {
+      await this.manager.stop(name, true);
+      await this.manager.logout(name);
+      await this.manager.delete(name);
+    });
     return;
   }
 }
 
-export { SessionsController, SessionsDeprecatedController };
+export { SessionsController };

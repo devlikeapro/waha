@@ -27,10 +27,7 @@ import { LabelsController } from '../api/labels.controller';
 import { PingController } from '../api/ping.controller';
 import { PresenceController } from '../api/presence.controller';
 import { ScreenshotController } from '../api/screenshot.controller';
-import {
-  SessionsController,
-  SessionsDeprecatedController,
-} from '../api/sessions.controller';
+import { SessionsController } from '../api/sessions.controller';
 import { StatusController } from '../api/status.controller';
 import { VersionController } from '../api/version.controller';
 import { WhatsappConfigService } from '../config.service';
@@ -102,7 +99,6 @@ export const IMPORTS = [
 export const CONTROLLERS = [
   AuthController,
   SessionsController,
-  SessionsDeprecatedController,
   ChattingController,
   ChatsController,
   ChannelsController,
