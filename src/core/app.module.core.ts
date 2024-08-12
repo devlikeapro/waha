@@ -28,8 +28,8 @@ import { PingController } from '../api/ping.controller';
 import { PresenceController } from '../api/presence.controller';
 import { ScreenshotController } from '../api/screenshot.controller';
 import {
-  SessionController,
   SessionsController,
+  SessionsDeprecatedController,
 } from '../api/sessions.controller';
 import { StatusController } from '../api/status.controller';
 import { VersionController } from '../api/version.controller';
@@ -102,7 +102,7 @@ export const IMPORTS = [
 export const CONTROLLERS = [
   AuthController,
   SessionsController,
-  SessionController,
+  SessionsDeprecatedController,
   ChattingController,
   ChatsController,
   ChannelsController,
