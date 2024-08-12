@@ -171,6 +171,7 @@ export class SessionManagerCore extends SessionManager {
 
     // start session
     await session.start();
+    logger.info('Session has been started.');
     return {
       name: session.name,
       status: session.status,
