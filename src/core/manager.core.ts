@@ -46,7 +46,7 @@ export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
 
 @Injectable()
 export class SessionManagerCore extends SessionManager {
-  SESSION_STOP_TIMEOUT = 5000;
+  SESSION_STOP_TIMEOUT = 3000;
 
   // session - exists and running (or failed or smth)
   // null - stopped
