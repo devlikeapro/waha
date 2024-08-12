@@ -6,7 +6,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { getPinoLogLevel, LoggerBuilder } from '@waha/utils/logging';
-import { promiseTimeout } from '@waha/utils/promiseTimeout';
+import { promiseTimeout, sleep } from '@waha/utils/promiseTimeout';
 import { EventEmitter } from 'events';
 import { PinoLogger } from 'nestjs-pino';
 
@@ -46,6 +46,8 @@ export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
 
 @Injectable()
 export class SessionManagerCore extends SessionManager {
+  SESSION_STOP_TIMEOUT = 5000;
+
   // session - exists and running (or failed or smth)
   // null - stopped
   // undefined - removed
@@ -181,19 +183,19 @@ export class SessionManagerCore extends SessionManager {
 
   async stop(name: string, silent: boolean): Promise<void> {
     this.onlyDefault(name);
-    this.log.info(`Stopping ${name} session...`);
+    this.log.info(`Stopping session...`, { session: name });
     try {
       const session = this.getSession(name);
       await session.stop();
     } catch (err) {
       this.log.warn(`Error while stopping session '${name}'`);
-      if (silent) {
-        return;
+      if (!silent) {
+        throw err;
       }
-      throw err;
     }
-    this.log.info(`"${name}" has been stopped.`);
+    this.log.info(`Session has been stopped.`, { session: name });
     this.session = null;
+    await sleep(this.SESSION_STOP_TIMEOUT);
   }
 
   async logout(name: string): Promise<void> {
