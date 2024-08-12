@@ -12,10 +12,9 @@ export const SessionApiParam = ApiParam({
   schema: {
     default: 'default',
   },
-  description: 'WhatsApp session name',
+  description: 'Session <code>name</code>',
 });
 /**
- * DEPRECATED
  * Session param
  */
 export const SessionParam = Param('session', SessionPipe);

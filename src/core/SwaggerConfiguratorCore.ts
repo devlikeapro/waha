@@ -56,7 +56,7 @@ export class SwaggerConfiguratorCore {
       .setDescription(this.description)
       .setExternalDoc(this.title, this.externalDocUrl)
       .setVersion(VERSION.version)
-      .addTag('sessions', 'Control WhatsApp sessions')
+      .addTag('sessions', 'Control WhatsApp sessions (accounts)')
       .addTag('auth', 'Authentication')
       .addTag('screenshot', 'Get screenshot of WhatsApp and show QR code')
       .addTag('chatting', 'Chatting methods')

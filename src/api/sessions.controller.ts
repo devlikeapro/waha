@@ -46,6 +46,7 @@ class SessionsController {
 
   @Get('/:session')
   @ApiOperation({ summary: 'Get session information' })
+  @SessionApiParam
   @UsePipes(new WAHAValidationPipe())
   async get(@Param('session') name: string): Promise<SessionInfo> {
     const session = this.manager.getSessionInfo(name);
