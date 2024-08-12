@@ -93,6 +93,21 @@ class SessionsController {
     }
     return await this.manager.getSessionInfo(name);
   }
+
+  @Post(':session/start')
+  @SessionApiParam
+  @ApiOperation({
+    summary: 'Start a session',
+    description: 'Start a session with the given name.',
+  })
+  @UsePipes(new WAHAValidationPipe())
+  async start(@Param('session') name: string): Promise<SessionDTO> {
+    const exists = await this.manager.exists(name);
+    if (!exists) {
+      throw new NotFoundException('Session not found');
+    }
+    return await this.manager.start(name);
+  }
 }
 
 @ApiSecurity('api_key')
