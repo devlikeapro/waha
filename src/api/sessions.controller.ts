@@ -96,6 +96,23 @@ class SessionsController {
     return await this.manager.getSessionInfo(name);
   }
 
+  @Delete(':session/')
+  @SessionApiParam
+  @ApiOperation({
+    summary: 'Delete the session',
+    description:
+      'Delete the session with the given name. Stop and logout as well. Idempotent operation.',
+  })
+  @UsePipes(new WAHAValidationPipe())
+  async delete(@Param('session') name: string): Promise<void> {
+    if (this.manager.isRunning(name)) {
+      await this.manager.stop(name, true);
+      await sleep(2000);
+    }
+    await this.manager.logout(name);
+    await this.manager.delete(name);
+  }
+
   @Post(':session/start')
   @SessionApiParam
   @ApiOperation({
@@ -129,23 +146,6 @@ class SessionsController {
     }
     await this.manager.stop(name, false);
     return await this.manager.getSessionInfo(name);
-  }
-
-  @Delete(':session/')
-  @SessionApiParam
-  @ApiOperation({
-    summary: 'Delete the session',
-    description:
-      'Delete the session with the given name. Stop and logout if required. Idempotent operation.',
-  })
-  @UsePipes(new WAHAValidationPipe())
-  async delete(@Param('session') name: string): Promise<void> {
-    if (this.manager.isRunning(name)) {
-      await this.stop(name);
-      await sleep(2000);
-    }
-    await this.manager.logout(name);
-    await this.manager.delete(name);
   }
 }
 
