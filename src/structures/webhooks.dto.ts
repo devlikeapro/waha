@@ -107,6 +107,15 @@ export class WAHAWebhook {
   session: string;
 
   @ApiProperty({
+    example: {
+      'user.id': '123',
+      'user.email': 'email@example.com',
+    },
+    description: 'Metadata for the session.',
+  })
+  metadata?: Map<string, string>;
+
+  @ApiProperty({
     example: WAHAEngine.WEBJS,
   })
   engine: WAHAEngine;

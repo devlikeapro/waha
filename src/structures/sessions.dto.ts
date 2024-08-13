@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BooleanString } from '@waha/nestjs/validation/BooleanString';
+import { IsDynamicObject } from '@waha/nestjs/validation/IsDynamicObject';
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
@@ -87,6 +88,19 @@ export class SessionConfig {
   webhooks?: WebhookConfig[];
 
   @ApiProperty({
+    example: {
+      'user.id': '123',
+      'user.email': 'email@example.com',
+    },
+    description:
+      "Metadata for the session. You'll get 'metadata' in all webhooks.",
+    required: false,
+  })
+  @IsDynamicObject()
+  @IsOptional()
+  metadata?: Map<string, string>;
+
+  @ApiProperty({
     example: null,
   })
   @ValidateNested()
@@ -94,6 +108,10 @@ export class SessionConfig {
   @IsOptional()
   proxy?: ProxyConfig;
 
+  @ApiProperty({
+    required: false,
+    default: false,
+  })
   @IsBoolean()
   @IsOptional()
   debug: boolean;

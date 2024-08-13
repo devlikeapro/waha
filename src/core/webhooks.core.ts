@@ -137,6 +137,7 @@ export class WebhookConductorCore implements WebhookConductor {
     const json: WAHAWebhook = {
       event: event,
       session: session.name,
+      metadata: session.sessionConfig.metadata,
       me: me,
       payload: data,
       engine: session.engine,
