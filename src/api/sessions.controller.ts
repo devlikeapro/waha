@@ -153,7 +153,7 @@ class SessionsController {
   @ApiOperation({
     summary: 'Start the session',
     description:
-      'Start the session with the given name. The session must exist. IT IS NOT IDEMPOTENT operation.',
+      'Start the session with the given name. The session must exist. Identity operation.',
   })
   @UsePipes(new WAHAValidationPipe())
   async start(@Param('session') name: string): Promise<SessionDTO> {
@@ -162,7 +162,10 @@ class SessionsController {
       if (!exists) {
         throw new NotFoundException('Session not found');
       }
-      await this.manager.start(name);
+      const isRunning = this.manager.isRunning(name);
+      if (!isRunning) {
+        await this.manager.start(name);
+      }
     });
     return await this.manager.getSessionInfo(name);
   }
