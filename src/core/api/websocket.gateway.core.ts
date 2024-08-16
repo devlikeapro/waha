@@ -105,7 +105,7 @@ export class WebsocketGatewayCore
     this.logger.log('Shutting down websocket server');
     // Allow pending messages to be sent, it can be even 1ms, just to release the event loop
     await sleep(100);
-    this.server.clients.forEach((options, client) => {
+    this.server?.clients.forEach((options, client) => {
       client.close(1001, 'Server is shutting down');
     });
     // Do not turn off heartbeat service here,

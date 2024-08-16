@@ -34,7 +34,6 @@ async function loadModules(): Promise<
   [typeof AppModuleCore, typeof SwaggerConfiguratorCore]
 > {
   const version = getWAHAVersion();
-  logger.info(`WAHA (WhatsApp HTTP API) - Running ${version} version...`);
 
   if (version === WAHAVersion.CORE) {
     const { AppModuleCore } = await import('./core/app.module.core');
@@ -52,10 +51,32 @@ async function loadModules(): Promise<
   return [AppModulePlus, SwaggerConfiguratorPlus];
 }
 
+let app = undefined;
+
+export function getApp() {
+  return app;
+}
+
+/**
+ * Get the AppModule instance (depends on the version)
+ */
+export async function getAppModuleInstance(): Promise<
+  AppModuleCore | undefined
+> {
+  const [AppModule, _] = await loadModules();
+  const app = getApp();
+  if (!app) {
+    return;
+  }
+  return app.get(AppModule);
+}
+
 async function bootstrap() {
+  const version = getWAHAVersion();
+  logger.info(`WAHA (WhatsApp HTTP API) - Running ${version} version...`);
   const [AppModule, SwaggerModule] = await loadModules();
   const httpsOptions = AppModule.getHttpsOptions(logger);
-  const app = await NestFactory.create(AppModule, {
+  app = await NestFactory.create(AppModule, {
     logger: getNestJSLogLevels(),
     httpsOptions: httpsOptions,
     bufferLogs: true,

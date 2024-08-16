@@ -140,7 +140,11 @@ const PROVIDERS = [
   providers: PROVIDERS,
 })
 export class AppModuleCore {
-  constructor(protected config: WhatsappConfigService) {}
+  public startTimestamp: number;
+
+  constructor(protected config: WhatsappConfigService) {
+    this.startTimestamp = Date.now();
+  }
 
   static getHttpsOptions(logger: Logger) {
     return undefined;
