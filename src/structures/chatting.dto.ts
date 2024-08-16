@@ -72,6 +72,7 @@ export class SendSeenRequest extends ChatRequest {
   @ApiProperty({
     example: '11111111111@c.us',
     required: false,
+    default: null,
     description:
       'NOWEB engine only - the ID of the user that sent the  message (undefined for individual chats)',
   })

@@ -642,10 +642,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   async sendSeen(request: SendSeenRequest) {
     const key = parseMessageId(request.messageId);
+    const participant = request.participant
+      ? toJID(this.ensureSuffix(request.participant))
+      : undefined;
     const data = {
       remoteJid: key.remoteJid,
       id: key.id,
-      participant: request.participant,
+      participant: participant,
     };
     return this.sock.readMessages([data]);
   }
