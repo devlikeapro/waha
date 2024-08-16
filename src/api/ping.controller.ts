@@ -4,7 +4,7 @@ import { PingResponse } from '@waha/structures/ping.dto';
 
 @ApiSecurity('api_key')
 @Controller('ping')
-@ApiTags('other')
+@ApiTags('🔍 Observability')
 export class PingController {
   @Get()
   @ApiOperation({ summary: 'Ping the server, perform no operations.' })

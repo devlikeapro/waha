@@ -42,7 +42,7 @@ const AsyncLock = require('async-lock');
 
 @ApiSecurity('api_key')
 @Controller('api/sessions')
-@ApiTags('sessions')
+@ApiTags('🖥️ Sessions')
 class SessionsController {
   private lock: any;
 

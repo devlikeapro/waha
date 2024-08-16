@@ -30,7 +30,7 @@ import { Base64File } from '../structures/files.dto';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/auth')
-@ApiTags('auth')
+@ApiTags('🔑 Auth')
 class AuthController {
   constructor(private manager: SessionManager) {}
 

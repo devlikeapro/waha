@@ -25,7 +25,7 @@ import {
 
 @ApiSecurity('api_key')
 @Controller('api/:session/groups')
-@ApiTags('groups')
+@ApiTags('👥 Groups')
 export class GroupsController {
   constructor(private manager: SessionManager) {}
 

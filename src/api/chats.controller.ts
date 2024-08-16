@@ -26,7 +26,7 @@ import { EditMessageRequest } from '../structures/chatting.dto';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/chats')
-@ApiTags('chats')
+@ApiTags('💬 Chats')
 @UsePipes(new ValidationPipe({ transform: true }))
 class ChatsController {
   constructor(private manager: SessionManager) {}

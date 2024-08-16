@@ -23,7 +23,7 @@ import * as lodash from 'lodash';
 
 @ApiSecurity('api_key')
 @Controller('api/server')
-@ApiTags('other')
+@ApiTags('🔍 Observability')
 export class ServerController {
   private logger: Logger;
 

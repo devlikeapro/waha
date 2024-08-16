@@ -25,7 +25,7 @@ import {
 
 @ApiSecurity('api_key')
 @Controller('api/:session/status')
-@ApiTags('status')
+@ApiTags('🟢 Status')
 class StatusController {
   constructor(private manager: SessionManager) {}
 

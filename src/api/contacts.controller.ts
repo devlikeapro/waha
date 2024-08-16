@@ -11,7 +11,7 @@ import { ContactQuery, ContactRequest } from '../structures/contacts.dto';
 
 @ApiSecurity('api_key')
 @Controller('api/contacts')
-@ApiTags('contacts')
+@ApiTags('👤 Contacts')
 export class ContactsController {
   constructor(private manager: SessionManager) {}
 

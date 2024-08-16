@@ -25,7 +25,7 @@ import { isNewsletter, WhatsappSession } from '../core/abc/session.abc';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/channels')
-@ApiTags('channels')
+@ApiTags('📢 Channels')
 export class ChannelsController {
   constructor(private manager: SessionManager) {}
 

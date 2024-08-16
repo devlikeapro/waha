@@ -16,7 +16,7 @@ import { SessionQuery } from '../structures/base.dto';
 
 @ApiSecurity('api_key')
 @Controller('api')
-@ApiTags('screenshot')
+@ApiTags('🖼️ Screenshot')
 export class ScreenshotController {
   constructor(private manager: SessionManager) {}
 

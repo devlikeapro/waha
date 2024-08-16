@@ -6,7 +6,7 @@ import { WAHAHealthCheckService } from '../core/abc/WAHAHealthCheckService';
 
 @ApiSecurity('api_key')
 @Controller('health')
-@ApiTags('other')
+@ApiTags('🔍 Observability')
 export class HealthController {
   constructor(private wahaHealth: WAHAHealthCheckService) {}
 

@@ -11,7 +11,7 @@ import { SessionManager } from '../core/abc/manager.abc';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/labels')
-@ApiTags('labels')
+@ApiTags('🏷️ Labels')
 export class LabelsController {
   constructor(private manager: SessionManager) {}
 

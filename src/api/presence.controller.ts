@@ -22,7 +22,7 @@ import {
 
 @ApiSecurity('api_key')
 @Controller('api/:session/presence')
-@ApiTags('presence')
+@ApiTags('✅ Presence')
 export class PresenceController {
   constructor(private manager: SessionManager) {}
 

@@ -56,29 +56,29 @@ export class SwaggerConfiguratorCore {
       .setDescription(this.description)
       .setExternalDoc(this.title, this.externalDocUrl)
       .setVersion(VERSION.version)
-      .addTag('sessions', 'Control WhatsApp sessions (accounts)')
-      .addTag('auth', 'Authentication')
-      .addTag('screenshot', 'Get screenshot of WhatsApp and show QR code')
-      .addTag('chatting', 'Chatting methods')
-      .addTag('channels', 'Channels (newsletters) methods')
+      .addTag('🖥️ Sessions', 'Control WhatsApp sessions (accounts)')
+      .addTag('🔑 Auth', 'Authentication')
+      .addTag('🖼️ Screenshot', 'Get screenshot of WhatsApp and show QR code')
+      .addTag('📤 Chatting', 'Chatting methods')
+      .addTag('📢 Channels', 'Channels (newsletters) methods')
       .addTag(
-        'status',
+        '🟢 Status',
         'Status (aka stories) methods. <b>NOWEB</b> engine only!',
       )
-      .addTag('chats', `Chats methods`)
+      .addTag('💬 Chats', `Chats methods`)
       .addTag(
-        'contacts',
+        '👤 Contacts',
         `Contacts methods.<br>
                 Use phone number (without +) or phone number and \`@c.us\` at the end as \`contactId\`.<br>
                 'E.g: \`12312312310\` OR \`12312312310@c.us\`<br>`,
       )
-      .addTag('groups', `Groups methods.<br>`)
-      .addTag('presence', `Presence information`)
+      .addTag('👥 Groups', `Groups methods.<br>`)
+      .addTag('✅ Presence', `Presence information`)
       .addTag(
-        'labels',
+        '🏷️ Labels',
         'Labels - available only for WhatsApp Business accounts',
       )
-      .addTag('other', 'Other methods')
+      .addTag('🔍 Observability', 'Other methods')
       .addApiKey({
         type: 'apiKey',
         description: 'Your secret api key',

@@ -26,7 +26,7 @@ import { WAMessage } from '../structures/responses.dto';
 
 @ApiSecurity('api_key')
 @Controller('api')
-@ApiTags('chatting')
+@ApiTags('📤 Chatting')
 export class ChattingController {
   constructor(private manager: SessionManager) {}
 
