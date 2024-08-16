@@ -10,7 +10,7 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { getApp, getAppModuleInstance } from '@waha/main';
 import { WAHAValidationPipe } from '@waha/nestjs/pipes/WAHAValidationPipe';
 import { WAHAEnvironment } from '@waha/structures/environment.dto';
@@ -22,6 +22,7 @@ import {
 import { VERSION } from '@waha/version';
 import * as lodash from 'lodash';
 
+@ApiSecurity('api_key')
 @Controller('api/server')
 @ApiTags('other')
 export class ServerController {
