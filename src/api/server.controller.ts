@@ -76,7 +76,12 @@ export class ServerController {
   }
 
   @Post('stop')
-  @ApiOperation({ summary: 'Stop the server' })
+  @ApiOperation({
+    summary: 'Stop (and restart) the server',
+    description:
+      "If you're using docker, after calling this endpoint Docker will start a new container, " +
+      'so you can use this endpoint to restart the server',
+  })
   @UsePipes(new WAHAValidationPipe())
   async stop(@Body() request: StopRequest) {
     const timeout = 1_000;
