@@ -57,20 +57,6 @@ export function getApp() {
   return app;
 }
 
-/**
- * Get the AppModule instance (depends on the version)
- */
-export async function getAppModuleInstance(): Promise<
-  AppModuleCore | undefined
-> {
-  const [AppModule, _] = await loadModules();
-  const app = getApp();
-  if (!app) {
-    return;
-  }
-  return app.get(AppModule);
-}
-
 async function bootstrap() {
   const version = getWAHAVersion();
   logger.info(`WAHA (WhatsApp HTTP API) - Running ${version} version...`);

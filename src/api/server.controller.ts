@@ -9,9 +9,8 @@ import {
   Query,
   UsePipes,
 } from '@nestjs/common';
-import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { getApp, getAppModuleInstance } from '@waha/main';
+import { getApp } from '@waha/main';
 import { WAHAValidationPipe } from '@waha/nestjs/pipes/WAHAValidationPipe';
 import { WAHAEnvironment } from '@waha/structures/environment.dto';
 import {
@@ -67,15 +66,12 @@ export class ServerController {
   @Get('status')
   @ApiOperation({ summary: 'The server status' })
   async status(): Promise<ServerStatusResponse> {
-    const appModule = await getAppModuleInstance();
-    if (!appModule) {
-      throw new UnprocessableEntityException('AppModule not found');
-    }
     const now = Date.now();
-    const startTimestamp = appModule.startTimestamp;
+    const uptime = Math.floor(process.uptime() * 1000);
+    const startTimestamp = now - uptime;
     return {
       startTimestamp: startTimestamp,
-      uptime: now - startTimestamp,
+      uptime: uptime,
     };
   }
 
