@@ -7,6 +7,7 @@ import {
   IsBoolean,
   IsOptional,
   IsString,
+  MaxLength,
   ValidateNested,
 } from 'class-validator';
 
@@ -154,6 +155,9 @@ export class SessionInfo extends SessionDTO {
   engine?: any;
 }
 
+const MONGO_DB_NAME_LIMIT = 64;
+const MONGO_DB_NAME_PREFIX_LEN = 'waha_noweb'.length;
+
 export class SessionCreateRequest {
   @ApiProperty({
     example: 'default',
@@ -162,6 +166,7 @@ export class SessionCreateRequest {
   })
   @IsString()
   @IsOptional()
+  @MaxLength(MONGO_DB_NAME_LIMIT - MONGO_DB_NAME_PREFIX_LEN)
   name: string | undefined;
 
   @ValidateNested()
