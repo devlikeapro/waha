@@ -248,7 +248,8 @@ export class SessionManagerCore extends SessionManager {
     const session = this.session;
     if (!session) {
       throw new NotFoundException(
-        `We didn't find a session with name '${name}'. Please start it first by using POST /sessions/start request`,
+        `We didn't find a session with name '${name}'. 
+        Please start it first by using POST /sessions/${name}/start request`,
       );
     }
     return session;

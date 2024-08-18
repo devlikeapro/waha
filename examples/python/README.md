@@ -50,8 +50,8 @@ docker run -it --rm --network=host -e WHATSAPP_HOOK_URL=http://localhost:5000/bo
 
 2. Open Swagger API in the browser http://localhost:3000/
 3. Start session and scan QR code in swagger
-   1. Find `POST /api/session/start` request press **Try it out** and
-      **Execute** it with `default` session name
+   1. Find `POST /api/sessions/` request press **Try it out** and **Execute** it
+      with `default` session name
    2. Find `GET /api/screenshot` and execute it - it must show QR code
    3. Scan QR code on your mobile WhatsApp application (that installed on your
       phone)

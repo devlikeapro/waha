@@ -141,7 +141,7 @@ later:
 How to log in - the instruction on WhatsApp site
 </a>
 
-When your ready - find `POST /api/session/start`, click on **Try it out**, then **Execute** a bit below.
+When your ready - find `POST /api/sessions`, click on **Try it out**, then **Execute** a bit below.
 
 
 The example payload:
