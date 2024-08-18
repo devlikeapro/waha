@@ -55,6 +55,7 @@ repos:
         entry: 'console\.log'
         exclude: |
           (?x)^(
+              entrypoint.sh|
               .pre-commit-config.yaml|
               ^src/core/engines/webjs/session.webjs.core.ts|
           )$
