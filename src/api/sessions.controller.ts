@@ -50,7 +50,7 @@ class SessionsController {
     this.lock = new AsyncLock({ maxPending: Infinity });
   }
 
-  private withLock(name, fn) {
+  private withLock(name: string, fn: () => any) {
     return this.lock.acquire(name, fn);
   }
 
