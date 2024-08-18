@@ -1023,19 +1023,19 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   public async channelsFollowChannel(id: string): Promise<void> {
-    return await this.sock.newsletterFollow(id);
+    return await this.sock.newsletterAction(id, 'follow');
   }
 
   public async channelsUnfollowChannel(id: string): Promise<void> {
-    return await this.sock.newsletterUnfollow(id);
+    return await this.sock.newsletterAction(id, 'unfollow');
   }
 
   public async channelsMuteChannel(id: string): Promise<void> {
-    return await this.sock.newsletterMute(id);
+    return await this.sock.newsletterAction(id, 'mute');
   }
 
   public async channelsUnmuteChannel(id: string): Promise<void> {
-    return await this.sock.newsletterUnmute(id);
+    return await this.sock.newsletterAction(id, 'unmute');
   }
 
   /**
