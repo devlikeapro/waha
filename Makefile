@@ -32,7 +32,7 @@ for-swagger:
 	WHATSAPP_SWAGGER_CONFIG_ADVANCED=true . ${NVM_DIR}/nvm.sh && nvm exec yarn start
 
 up-noweb:
-	. ${NVM_DIR}/nvm.sh && nvm exec yarn up @adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-channels
+	. ${NVM_DIR}/nvm.sh && nvm exec yarn up @adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-channels-2
 
 up-webjs:
 	. ${NVM_DIR}/nvm.sh && nvm exec yarn up whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-webpack-exodus-channels
