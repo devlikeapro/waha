@@ -5,9 +5,9 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-channels":
-  version: 6.7.5
-  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=5a051ac5894dd8aa3b1ecf86e3db9843045f5dfc"
+"@adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-channels-2":
+  version: 6.7.6
+  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=1dbcb55b16e5e23195f8071c57e06aa397879a6f"
   dependencies:
     "@adiwajshing/keyed-db": ^0.2.4
     "@hapi/boom": ^9.1.3
@@ -39,7 +39,7 @@ __metadata:
       optional: true
     sharp:
       optional: true
-  checksum: 0f4c218435b1e43b300e0b96cc48981bb79884a63e0c050847db5700e2864cd2a718847bc3cbb9afa91bdda9c2514e65d071b6cd78dab750bd123d55107aad86
+  checksum: 4e6792166054447232cca7b6b1af071d7fd14451be0a885e0387f8584a79adcdc04f0349a684ad08c918d062b88578fa0dafed4fd8c8d6aeb8025c7bd1e47b15
   languageName: node
   linkType: hard
 
@@ -12875,7 +12875,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "waha@workspace:."
   dependencies:
-    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-channels"
+    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-channels-2"
     "@adiwajshing/keyed-db": ^0.2.4
     "@nestjs/axios": ^3.0.2
     "@nestjs/cli": ^9.0.0
