@@ -7,8 +7,11 @@ const { LoadUtils } = require('./WahaInjected');
 const ChatFactory = require('whatsapp-web.js/src/factories/ChatFactory');
 
 export class WebjsClient extends Client {
-  async initialize() {
-    await super.initialize();
+  async inject() {
+    // Even tho this.inject is not defined as interface in Client.ts
+    // We can still call and override it
+    // @ts-ignore
+    await super.inject();
     //Load util functions (serializers, helper functions)
     await this.pupPage.evaluate(LoadUtils);
   }
