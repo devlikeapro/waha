@@ -2,6 +2,7 @@
 example.ts
 .*sessions
 .secrets
+.minio
 tokens
 files
 venv
