@@ -1,4 +1,4 @@
-import { ConsoleLogger, INestApplication, Module } from '@nestjs/common';
+import { INestApplication, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { PassportModule } from '@nestjs/passport';
@@ -130,7 +130,6 @@ const PROVIDERS = [
   SwaggerConfigServiceCore,
   WhatsappConfigService,
   EngineConfigService,
-  ConsoleLogger,
   WebsocketGatewayCore,
 ];
 

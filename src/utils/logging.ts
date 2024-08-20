@@ -31,6 +31,11 @@ export function getPinoLogLevel(debug: boolean = false): Level {
   return getDefaultPinoLogLevel();
 }
 
+export function isDebugEnabled() {
+  const level = getPinoLogLevel();
+  return level == 'debug' || level == 'trace';
+}
+
 export function getPinoHttpUseLevel(): LevelWithSilent {
   const levels = ['fatal', 'error', 'warn', 'info', 'debug', 'trace'];
   const level = (process.env.WAHA_HTTP_LOG_LEVEL || 'info').toLowerCase();

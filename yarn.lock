@@ -1346,10 +1346,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hapi/hoek@npm:9.x.x":
+"@hapi/hoek@npm:9.x.x, @hapi/hoek@npm:^9.0.0, @hapi/hoek@npm:^9.3.0":
   version: 9.3.0
   resolution: "@hapi/hoek@npm:9.3.0"
   checksum: 4771c7a776242c3c022b168046af4e324d116a9d2e1d60631ee64f474c6e38d1bb07092d898bf95c7bc5d334c5582798a1456321b2e53ca817d4e7c88bc25b43
+  languageName: node
+  linkType: hard
+
+"@hapi/topo@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "@hapi/topo@npm:5.1.0"
+  dependencies:
+    "@hapi/hoek": ^9.0.0
+  checksum: 604dfd5dde76d5c334bd03f9001fce69c7ce529883acf92da96f4fe7e51221bf5e5110e964caca287a6a616ba027c071748ab636ff178ad750547fba611d6014
   languageName: node
   linkType: hard
 
@@ -1956,20 +1965,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/config@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "@nestjs/config@npm:0.5.0"
+"@nestjs/config@npm:^3.2.3":
+  version: 3.2.3
+  resolution: "@nestjs/config@npm:3.2.3"
   dependencies:
-    dotenv: 8.2.0
-    dotenv-expand: 5.1.0
-    lodash.get: 4.4.2
-    lodash.set: 4.3.2
-    uuid: 8.1.0
+    dotenv: 16.4.5
+    dotenv-expand: 10.0.0
+    lodash: 4.17.21
   peerDependencies:
-    "@nestjs/common": ^6.10.0 || ^7.0.0
-    reflect-metadata: ^0.1.12
-    rxjs: ^6.0.0
-  checksum: 0866f2779972845da64f2534019fb76a69fdcff74470aa9ee0c36031c62db28c06752604f99417c2c8ba537f358e60e27d75f23594c0c214f7fe292d80e65f00
+    "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0
+    rxjs: ^7.1.0
+  checksum: 5e013737c0cac2aa9ca0ac4bd17d21ce5d86feac7e3bf5a54d7d27c7ef5e3b860e079e45e584ad3d191de33a6ab88d882bbab0bf281d94a6ef94edd86b122466
   languageName: node
   linkType: hard
 
@@ -2391,6 +2397,29 @@ __metadata:
   bin:
     browsers: lib/cjs/main-cli.js
   checksum: 1ea82e34af882dc6d7e8392a88ec4196e206a7f65743be39c196c7068d66b9bdfa370e28c6ab09946bd2baa2182adbcbf445e79cc9bcc5242f05878ae7045b27
+  languageName: node
+  linkType: hard
+
+"@sideway/address@npm:^4.1.5":
+  version: 4.1.5
+  resolution: "@sideway/address@npm:4.1.5"
+  dependencies:
+    "@hapi/hoek": ^9.0.0
+  checksum: 3e3ea0f00b4765d86509282290368a4a5fd39a7995fdc6de42116ca19a96120858e56c2c995081def06e1c53e1f8bccc7d013f6326602bec9d56b72ee2772b9d
+  languageName: node
+  linkType: hard
+
+"@sideway/formula@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@sideway/formula@npm:3.0.1"
+  checksum: e4beeebc9dbe2ff4ef0def15cec0165e00d1612e3d7cea0bc9ce5175c3263fc2c818b679bd558957f49400ee7be9d4e5ac90487e1625b4932e15c4aa7919c57a
+  languageName: node
+  linkType: hard
+
+"@sideway/pinpoint@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@sideway/pinpoint@npm:2.0.0"
+  checksum: 0f4491e5897fcf5bf02c46f5c359c56a314e90ba243f42f0c100437935daa2488f20482f0f77186bd6bf43345095a95d8143ecf8b1f4d876a7bc0806aba9c3d2
   languageName: node
   linkType: hard
 
@@ -6306,21 +6335,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv-expand@npm:5.1.0":
-  version: 5.1.0
-  resolution: "dotenv-expand@npm:5.1.0"
-  checksum: 8017675b7f254384915d55f9eb6388e577cf0a1231a28d54b0ca03b782be9501b0ac90ac57338636d395fa59051e6209e9b44b8ddf169ce6076dffb5dea227d3
+"dotenv-expand@npm:10.0.0":
+  version: 10.0.0
+  resolution: "dotenv-expand@npm:10.0.0"
+  checksum: 2a38b470efe0abcb1ac8490421a55e1d764dc9440fd220942bce40965074f3fb00b585f4346020cb0f0f219966ee6b4ee5023458b3e2953fe5b3214de1b314ee
   languageName: node
   linkType: hard
 
-"dotenv@npm:8.2.0":
-  version: 8.2.0
-  resolution: "dotenv@npm:8.2.0"
-  checksum: ad4c8e0df3e24b4811c8e93377d048a10a9b213dcd9f062483b4a2d3168f08f10ec9c618c23f5639060d230ccdb174c08761479e9baa29610aa978e1ee66df76
-  languageName: node
-  linkType: hard
-
-"dotenv@npm:^16.0.1":
+"dotenv@npm:16.4.5, dotenv@npm:^16.0.1":
   version: 16.4.5
   resolution: "dotenv@npm:16.4.5"
   checksum: 301a12c3d44fd49888b74eb9ccf9f07a1f5df43f489e7fcb89647a2edcd84c42d6bc349dc8df099cd18f07c35c7b04685c1a4f3e6a6a9e6b30f8d48c15b7f49c
@@ -9320,6 +9342,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"joi@npm:^17.13.3":
+  version: 17.13.3
+  resolution: "joi@npm:17.13.3"
+  dependencies:
+    "@hapi/hoek": ^9.3.0
+    "@hapi/topo": ^5.1.0
+    "@sideway/address": ^4.1.5
+    "@sideway/formula": ^3.0.1
+    "@sideway/pinpoint": ^2.0.0
+  checksum: 66ed454fee3d8e8da1ce21657fd2c7d565d98f3e539d2c5c028767e5f38cbd6297ce54df8312d1d094e62eb38f9452ebb43da4ce87321df66cf5e3f128cbc400
+  languageName: node
+  linkType: hard
+
 "joycon@npm:^3.1.1":
   version: 3.1.1
   resolution: "joycon@npm:3.1.1"
@@ -9741,13 +9776,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.get@npm:4.4.2":
-  version: 4.4.2
-  resolution: "lodash.get@npm:4.4.2"
-  checksum: e403047ddb03181c9d0e92df9556570e2b67e0f0a930fcbbbd779370972368f5568e914f913e93f3b08f6d492abc71e14d4e9b7a18916c31fa04bd2306efe545
-  languageName: node
-  linkType: hard
-
 "lodash.isplainobject@npm:^4.0.6":
   version: 4.0.6
   resolution: "lodash.isplainobject@npm:4.0.6"
@@ -9780,13 +9808,6 @@ __metadata:
   version: 4.6.2
   resolution: "lodash.mergewith@npm:4.6.2"
   checksum: a6db2a9339752411f21b956908c404ec1e088e783a65c8b29e30ae5b3b6384f82517662d6f425cc97c2070b546cc2c7daaa8d33f78db7b6e9be06cd834abdeb8
-  languageName: node
-  linkType: hard
-
-"lodash.set@npm:4.3.2":
-  version: 4.3.2
-  resolution: "lodash.set@npm:4.3.2"
-  checksum: a9122f49eef9f2d0fc9061a33d87f8e5b8c6b23d46e8b9e9ce1529d3588d79741bd1145a3abdfa3b13082703e65af27ff18d8a07bfc22b9be32f3fc36f763f70
   languageName: node
   linkType: hard
 
@@ -14063,15 +14084,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:8.1.0":
-  version: 8.1.0
-  resolution: "uuid@npm:8.1.0"
-  bin:
-    uuid: dist/bin/uuid
-  checksum: 4fc4f12e5c704947cce132df07e6e8a20ca34dcbba4a5aef7a24cf76e0e13830cf7cdd69035a916caf2a00fa011876ceabc098d01f5827adc174ca5defdc8c99
-  languageName: node
-  linkType: hard
-
 "uuid@npm:^10.0.0":
   version: 10.0.0
   resolution: "uuid@npm:10.0.0"
@@ -14218,7 +14230,7 @@ __metadata:
     "@nestjs/axios": ^3.0.2
     "@nestjs/cli": ^9.0.0
     "@nestjs/common": ^9.0.9
-    "@nestjs/config": ^0.5.0
+    "@nestjs/config": ^3.2.3
     "@nestjs/core": ^9.0.9
     "@nestjs/passport": ^9.0.0
     "@nestjs/platform-express": ^9.0.9
@@ -14255,6 +14267,7 @@ __metadata:
     fs-extra: ^11.2.0
     https-proxy-agent: ^7.0.0
     jest: ^29.7.0
+    joi: ^17.13.3
     knex: ^3.1.0
     libphonenumber-js: ^1.10.36
     link-preview-js: ^3.0.4

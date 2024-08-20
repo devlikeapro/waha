@@ -65,8 +65,11 @@ export class WhatsappConfigService {
   }
 
   get proxyServer(): string[] | string | undefined {
-    const single = this.configService.get('WHATSAPP_PROXY_SERVER', undefined);
-    const multipleValues = this.configService.get(
+    const single = this.configService.get<string>(
+      'WHATSAPP_PROXY_SERVER',
+      undefined,
+    );
+    const multipleValues = this.configService.get<string>(
       'WHATSAPP_PROXY_SERVER_LIST',
       undefined,
     );
