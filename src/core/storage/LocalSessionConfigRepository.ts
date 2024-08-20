@@ -1,6 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require('fs-extra');
 
+import { fileExists } from '@waha/utils/files';
+
 import { SessionConfig } from '../../structures/sessions.dto';
 import { ISessionConfigRepository } from './ISessionConfigRepository';
 import { LocalStore } from './LocalStore';
@@ -14,24 +16,15 @@ export class LocalSessionConfigRepository extends ISessionConfigRepository {
     this.store = store;
   }
 
-  private async fileExists(filepath: string) {
-    try {
-      await fs.access(filepath, fs.constants.F_OK);
-    } catch (error) {
-      return false;
-    }
-    return true;
-  }
-
   async exists(sessionName: string): Promise<boolean> {
     const filepath = this.getFilePath(sessionName);
-    return await this.fileExists(filepath);
+    return await fileExists(filepath);
   }
 
   async get(sessionName: string): Promise<SessionConfig | null> {
     const filepath = this.getFilePath(sessionName);
     // Check file exists
-    if (!(await this.fileExists(filepath))) {
+    if (!(await fileExists(filepath))) {
       return null;
     }
 

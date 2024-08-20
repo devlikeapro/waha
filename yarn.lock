@@ -14268,6 +14268,7 @@ __metadata:
     pino-pretty: ^11.2.1
     prettier: ^1.19.1
     pretty-bytes: 5.6.0
+    promise-retry: ^2.0.1
     puppeteer: ^21.0.0
     qrcode: ^1.5.1
     qrcode-terminal: ^0.12.0

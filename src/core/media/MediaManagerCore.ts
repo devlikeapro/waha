@@ -1,5 +1,5 @@
 import { IMediaEngineProcessor } from '@waha/core/media/IMediaEngineProcessor';
-import { IMediaStorage } from '@waha/core/media/IMediaStorage';
+import { IMediaStorage, MediaData } from '@waha/core/media/IMediaStorage';
 
 import { WAMedia } from '../../structures/responses.dto';
 import { IMediaManager } from './IMediaManager';
@@ -18,8 +18,17 @@ export class MediaManagerCore implements IMediaManager {
       return message;
     }
     const mimetype = '';
+    const mediaData: MediaData = {
+      message: {
+        id: '',
+      },
+      file: {
+        extension: '',
+      },
+    };
+    const url = await this.storage.getUrl(mediaData);
+
     const filename = processor.getFilename(message);
-    const url = await this.storage.save('', mimetype, Buffer.from(''));
     const media: WAMedia = {
       mimetype: mimetype,
       filename: filename,
