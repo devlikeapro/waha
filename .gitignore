@@ -3,6 +3,7 @@ example.ts
 .*sessions
 .secrets
 .minio
+.media
 tokens
 files
 venv
