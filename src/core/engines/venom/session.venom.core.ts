@@ -1,4 +1,5 @@
 import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
+import { IMediaEngineProcessor } from '@waha/core/media/IMediaEngineProcessor';
 import * as Buffer from 'buffer';
 import { create, CreateConfig, Message, Whatsapp } from 'venom-bot';
 
@@ -21,7 +22,6 @@ import {
   WAHASessionStatus,
 } from '../../../structures/enums.dto';
 import { WAMessage } from '../../../structures/responses.dto';
-import { IEngineMediaProcessor } from '../../abc/media.abc';
 import { WAHAInternalEvent, WhatsappSession } from '../../abc/session.abc';
 import { NotImplementedByEngineError } from '../../exceptions';
 import { QR } from '../../QR';
@@ -280,7 +280,7 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
   }
 }
 
-export class EngineMediaProcessor implements IEngineMediaProcessor<Message> {
+export class EngineMediaProcessor implements IMediaEngineProcessor<Message> {
   constructor(public session: WhatsappSessionVenomCore) {}
 
   hasMedia(message: any): boolean {

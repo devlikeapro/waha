@@ -1,5 +1,4 @@
 import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
-import { IEngineMediaProcessor } from '@waha/core/abc/media.abc';
 import {
   getChannelInviteLink,
   WAHAInternalEvent,
@@ -10,6 +9,7 @@ import {
   AvailableInPlusVersion,
   NotImplementedByEngineError,
 } from '@waha/core/exceptions';
+import { IMediaEngineProcessor } from '@waha/core/media/IMediaEngineProcessor';
 import { QR } from '@waha/core/QR';
 import { parseBool } from '@waha/helpers';
 import { CallData } from '@waha/structures/calls.dto';
@@ -975,7 +975,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 }
 
-export class EngineMediaProcessor implements IEngineMediaProcessor<Message> {
+export class EngineMediaProcessor implements IMediaEngineProcessor<Message> {
   hasMedia(message: Message): boolean {
     if (!message.hasMedia) {
       return false;

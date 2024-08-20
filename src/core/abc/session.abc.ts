@@ -56,9 +56,9 @@ import {
 } from '../../structures/status.dto';
 import { WASessionStatusBody } from '../../structures/webhooks.dto';
 import { NotImplementedByEngineError } from '../exceptions';
+import { IMediaManager } from '../media/IMediaManager';
 import { QR } from '../QR';
 import { DataStore } from './DataStore';
-import { MediaManager } from './media.abc';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const qrcode = require('qrcode-terminal');
@@ -88,7 +88,7 @@ export enum WAHAInternalEvent {
 export interface SessionParams {
   name: string;
   printQR: boolean;
-  mediaManager: MediaManager;
+  mediaManager: IMediaManager;
   loggerBuilder: LoggerBuilder;
   sessionStore: DataStore;
   proxyConfig?: ProxyConfig;
@@ -101,7 +101,7 @@ export abstract class WhatsappSession {
   public engine: WAHAEngine;
 
   public name: string;
-  protected mediaManager: MediaManager;
+  protected mediaManager: IMediaManager;
   public loggerBuilder: LoggerBuilder;
   protected logger: Logger;
   protected sessionStore: DataStore;

@@ -25,6 +25,7 @@ import { isLidUser } from '@adiwajshing/baileys/lib/WABinary/jid-utils';
 import { Logger as BaileysLogger } from '@adiwajshing/baileys/node_modules/pino';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { NowebInMemoryStore } from '@waha/core/engines/noweb/store/NowebInMemoryStore';
+import { IMediaEngineProcessor } from '@waha/core/media/IMediaEngineProcessor';
 import { flipObject, parseBool, splitAt } from '@waha/helpers';
 import { PairingCodeResponse } from '@waha/structures/auth.dto';
 import { CallData } from '@waha/structures/calls.dto';
@@ -102,7 +103,6 @@ import {
   DeleteStatusRequest,
   TextStatus,
 } from '../../../structures/status.dto';
-import { IEngineMediaProcessor } from '../../abc/media.abc';
 import {
   ensureSuffix,
   getChannelInviteLink,
@@ -1475,7 +1475,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 }
 
-export class EngineMediaProcessor implements IEngineMediaProcessor<any> {
+export class EngineMediaProcessor implements IMediaEngineProcessor<any> {
   constructor(public session: WhatsappSessionNoWebCore) {}
 
   hasMedia(message: any): boolean {

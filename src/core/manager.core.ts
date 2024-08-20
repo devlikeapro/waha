@@ -5,6 +5,7 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { MediaNoopStorage } from '@waha/core/media/MediaNoopStorage';
 import { getPinoLogLevel, LoggerBuilder } from '@waha/utils/logging';
 import { promiseTimeout, sleep } from '@waha/utils/promiseTimeout';
 import { EventEmitter } from 'events';
@@ -31,7 +32,7 @@ import { WhatsappSessionVenomCore } from './engines/venom/session.venom.core';
 import { WhatsappSessionWebJSCore } from './engines/webjs/session.webjs.core';
 import { DOCS_URL } from './exceptions';
 import { getProxyConfig } from './helpers.proxy';
-import { CoreMediaManager, MediaStorageCore } from './media.core';
+import { MediaManagerCore } from './media/MediaManagerCore';
 import { LocalSessionAuthRepository } from './storage/LocalSessionAuthRepository';
 import { LocalStoreCore } from './storage/LocalStoreCore';
 import { WebhookConductorCore } from './webhooks.core';
@@ -134,8 +135,8 @@ export class SessionManagerCore extends SessionManager {
       );
     }
     this.log.info(`'${name}' - starting session...`);
-    const mediaManager = new CoreMediaManager(
-      new MediaStorageCore(),
+    const mediaManager = new MediaManagerCore(
+      new MediaNoopStorage(),
       this.config.mimetypes,
     );
     const logger = this.log.logger.child({
