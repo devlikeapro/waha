@@ -45,16 +45,6 @@ export class ChattingController {
     return whatsapp.sendContactVCard(request);
   }
 
-  @Get('/sendText')
-  @ApiOperation({ summary: 'Send a text message', deprecated: true })
-  sendTextGet(@Query() query: MessageTextQuery) {
-    const whatsapp = this.manager.getSession(query.session);
-    const msg = new MessageTextRequest();
-    msg.chatId = query.phone;
-    msg.text = query.text;
-    return whatsapp.sendText(msg);
-  }
-
   @Post('/sendText')
   @ApiOperation({ summary: 'Send a text message' })
   sendText(@Body() request: MessageTextRequest): Promise<WAMessage> {
@@ -171,5 +161,15 @@ export class ChattingController {
   getMessages(@Query() query: GetMessageQuery) {
     const whatsapp = this.manager.getSession(query.session);
     return whatsapp.getMessages(query);
+  }
+
+  @Get('/sendText')
+  @ApiOperation({ summary: 'Send a text message', deprecated: true })
+  sendTextGet(@Query() query: MessageTextQuery) {
+    const whatsapp = this.manager.getSession(query.session);
+    const msg = new MessageTextRequest();
+    msg.chatId = query.phone;
+    msg.text = query.text;
+    return whatsapp.sendText(msg);
   }
 }
