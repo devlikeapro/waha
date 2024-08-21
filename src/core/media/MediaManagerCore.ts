@@ -26,7 +26,7 @@ export class MediaManagerCore implements IMediaManager {
         extension: '',
       },
     };
-    const url = await this.storage.getUrl(mediaData);
+    const { url } = await this.storage.getStorageData(mediaData);
 
     const filename = processor.getFilename(message);
     const media: WAMedia = {

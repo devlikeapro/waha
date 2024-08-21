@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { S3MediaData } from '@waha/structures/media.s3.dto';
 
 import { WAMessageAck } from './enums.dto';
 import { ChatIdProperty, MessageIdProperty } from './properties.dto';
@@ -28,6 +29,13 @@ export class WAMedia {
     example: 'example.pdf',
   })
   filename?: string;
+
+  @ApiProperty({
+    description:
+      'S3 attributes for the media in the message ' +
+      'if you are using S3 media storage',
+  })
+  s3?: S3MediaData;
 }
 
 class WAMessageBase {

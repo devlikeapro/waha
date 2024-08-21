@@ -1,3 +1,5 @@
+import { S3MediaData } from '@waha/structures/media.s3.dto';
+
 /**
  * Handles saving data to the physical storage
  */
@@ -15,12 +17,20 @@ export interface MediaData {
   file: File;
 }
 
+/**
+ * For stored media data
+ */
+export interface MediaStorageData {
+  url: string;
+  s3?: S3MediaData;
+}
+
 abstract class IMediaStorage {
   abstract save(buffer: Buffer, data: MediaData): Promise<boolean>;
 
   abstract exists(data: MediaData): Promise<boolean>;
 
-  abstract getUrl(data: MediaData): Promise<string>;
+  abstract getStorageData(data: MediaData): Promise<MediaStorageData>;
 
   abstract purge(): Promise<void>;
 }

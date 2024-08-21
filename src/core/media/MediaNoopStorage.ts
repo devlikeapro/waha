@@ -10,10 +10,9 @@ export class MediaNoopStorage implements IMediaStorage {
     return false;
   }
 
-  async getUrl(data: MediaData): Promise<string> {
-    return Promise.resolve(
-      `Media attachment's available only in WAHA Plus version. ${DOCS_URL}`,
-    );
+  async getStorageData(data: MediaData) {
+    const url = `Media attachment's available only in WAHA Plus version. ${DOCS_URL}`;
+    return { url };
   }
 
   async purge() {
