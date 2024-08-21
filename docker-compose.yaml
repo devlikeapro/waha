@@ -188,16 +188,19 @@ services:
       # https://waha.devlike.pro/docs/how-to/storages/#sessions---mongodb
       #- WHATSAPP_SESSIONS_MONGO_URL=mongodb://mongodb:27017
       #
-# NOTE: Uncomment this block to run WAHA+ with MongoDB
-#  mongodb:
-#    image: mongo
-#    container_name: mongodb
-#    ports:
-#      - '27017:27017/tcp'
-#    volumes:
-#      - mongodb_data:/data/db
-#    restart: always
 
-# NOTE: Uncomment this block to run WAHA+ with MongoDB
-#volumes:
-#  mongodb_data: {}
+  # NOTE: Only if you're using MongoDB
+  # https://waha.devlike.pro/docs/how-to/storages/#sessions---mongodb
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - '27017:27017/tcp'
+    volumes:
+      - mongodb_data:/data/db
+    restart: always
+
+volumes:
+  # NOTE: Only if you're using MongoDB
+  mongodb_data: {}
+  minio_data: {}
