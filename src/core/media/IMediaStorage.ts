@@ -13,6 +13,7 @@ interface File {
 }
 
 export interface MediaData {
+  session: string;
   message: Message;
   file: File;
 }

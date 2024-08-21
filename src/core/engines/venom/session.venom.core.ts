@@ -248,7 +248,7 @@ export class WhatsappSessionVenomCore extends WhatsappSession {
 
   protected downloadMedia(message: Message) {
     const processor = new EngineMediaProcessor(this);
-    return this.mediaManager.processMedia(processor, message);
+    return this.mediaManager.processMedia(processor, message, this.name);
   }
 
   private processIncomingMessage(message: Message) {

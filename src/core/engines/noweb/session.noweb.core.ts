@@ -1471,7 +1471,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   protected downloadMedia(message) {
     const processor = new EngineMediaProcessor(this);
-    return this.mediaManager.processMedia(processor, message);
+    return this.mediaManager.processMedia(processor, message, this.name);
   }
 }
 

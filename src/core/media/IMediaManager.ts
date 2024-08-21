@@ -8,6 +8,7 @@ interface IMediaManager {
   processMedia<Message>(
     processor: IMediaEngineProcessor<Message>,
     message: Message,
+    session: string,
   ): Promise<Message>;
 }
 

@@ -13,12 +13,14 @@ export class MediaManagerCore implements IMediaManager {
   async processMedia<Message>(
     processor: IMediaEngineProcessor<Message>,
     message: Message,
+    session: string,
   ): Promise<Message> {
     if (!processor.hasMedia(message)) {
       return message;
     }
     const mimetype = '';
     const mediaData: MediaData = {
+      session: session,
       message: {
         id: '',
       },
