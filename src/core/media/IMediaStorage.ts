@@ -28,6 +28,8 @@ export interface MediaStorageData {
 }
 
 abstract class IMediaStorage {
+  abstract init(): Promise<void>;
+
   abstract save(buffer: Buffer, data: MediaData): Promise<boolean>;
 
   abstract exists(data: MediaData): Promise<boolean>;

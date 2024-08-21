@@ -2,6 +2,10 @@ import { DOCS_URL } from '@waha/core/exceptions';
 import { IMediaStorage, MediaData } from '@waha/core/media/IMediaStorage';
 
 export class MediaNoopStorage implements IMediaStorage {
+  async init() {
+    return;
+  }
+
   async save(buffer: Buffer, data: MediaData): Promise<boolean> {
     return Promise.resolve(true);
   }
