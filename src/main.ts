@@ -96,4 +96,7 @@ async function bootstrap() {
   logger.info(VERSION, 'Environment');
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  logger.error(error, 'Failed to start WAHA');
+  process.exit(1);
+});
