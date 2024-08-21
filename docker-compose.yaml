@@ -165,14 +165,27 @@ services:
       # Download only specific media types
       #- WHATSAPP_FILES_MIMETYPES=image/jpeg,image/png
       #
+
+      # Media - Local Storage
+      # https://waha.devlike.pro/docs/how-to/storages/#media---local
+      #
       # Set to 0 to keep media files forever
       # https://waha.devlike.pro/docs/how-to/storages/#save-media-files-between-the-container-restarts
+      - WAHA_MEDIA_STORAGE=LOCAL
       - WHATSAPP_FILES_LIFETIME=0
       - WHATSAPP_FILES_FOLDER=/app/.media
-      #
       # Keep media files for 180 seconds (3 minutes)
       #- WHATSAPP_FILES_LIFETIME=180
       #
+
+      # Media - S3 Storage
+      # https://waha.devlike.pro/docs/how-to/storages/#media---s3
+      #- WAHA_MEDIA_STORAGE=S3
+      #- WAHA_S3_REGION=eu-west-2
+      #- WAHA_S3_BUCKET=waha
+      #- WAHA_S3_ACCESS_KEY_ID=minioadmin
+      #- WAHA_S3_SECRET_ACCESS_KEY=minioadmin
+      #- WAHA_S3_ENDPOINT=http://minio:9000 # Not required if you're using AWS S3
 
       #
       # Global Webhooks
@@ -199,6 +212,23 @@ services:
     volumes:
       - mongodb_data:/data/db
     restart: always
+
+  # NOTE: Only if you're using S3 to save media files
+  # https://waha.devlike.pro/docs/how-to/storages/#media---s3
+  minio:
+    image: quay.io/minio/minio
+    container_name: minio
+    restart: always
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      MINIO_REGION: 'eu-west-2'
+      MINIO_ROOT_USER: 'minioadmin'
+      MINIO_ROOT_PASSWORD: 'minioadmin'
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
 
 volumes:
   # NOTE: Only if you're using MongoDB
