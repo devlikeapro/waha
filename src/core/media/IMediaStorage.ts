@@ -10,6 +10,7 @@ interface Message {
 
 interface File {
   extension: string;
+  filename?: string;
 }
 
 export interface MediaData {
