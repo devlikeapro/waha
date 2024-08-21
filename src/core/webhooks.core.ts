@@ -1,5 +1,3 @@
-import { ConsoleLogger } from '@nestjs/common';
-
 import { WAHAEvents } from '../structures/enums.dto';
 import { WebhookConfig } from '../structures/webhooks.config.dto';
 import { WAHAWebhook } from '../structures/webhooks.dto';

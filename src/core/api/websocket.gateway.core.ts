@@ -1,6 +1,5 @@
 import {
   BeforeApplicationShutdown,
-  ConsoleLogger,
   Logger,
   LoggerService,
 } from '@nestjs/common';

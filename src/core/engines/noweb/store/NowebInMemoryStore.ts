@@ -1,6 +1,6 @@
 import { Chat, Contact, makeInMemoryStore, proto } from '@adiwajshing/baileys';
 import { Label } from '@adiwajshing/baileys/lib/Types/Label';
-import { BadRequestException, ConsoleLogger } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 
 import { INowebStore } from './INowebStore';
 
