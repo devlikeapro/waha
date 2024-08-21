@@ -7,6 +7,7 @@ import { TerminusModule } from '@nestjs/terminus';
 import { ChannelsController } from '@waha/api/channels.controller';
 import { ServerController } from '@waha/api/server.controller';
 import { WebsocketGatewayCore } from '@waha/core/api/websocket.gateway.core';
+import { MediaLocalStorageConfig } from '@waha/core/media/local/MediaLocalStorageConfig';
 import { BufferJsonReplacerInterceptor } from '@waha/nestjs/BufferJsonReplacerInterceptor';
 import {
   getPinoHttpUseLevel,
@@ -71,26 +72,18 @@ export const IMPORTS = [
   }),
   ServeStaticModule.forRootAsync({
     imports: [],
-    extraProviders: [WhatsappConfigService, DashboardConfigServiceCore],
-    inject: [WhatsappConfigService, DashboardConfigServiceCore],
-    useFactory: (
-      config: WhatsappConfigService,
-      dashboardConfig: DashboardConfigServiceCore,
-    ) => {
-      const options = [
-        // Serve files (media)
+    extraProviders: [DashboardConfigServiceCore],
+    inject: [DashboardConfigServiceCore],
+    useFactory: (dashboardConfig: DashboardConfigServiceCore) => {
+      if (!dashboardConfig.enabled) {
+        return [];
+      }
+      return [
         {
-          rootPath: config.filesFolder,
-          serveRoot: config.filesUri,
-        },
-      ];
-      if (dashboardConfig.enabled) {
-        options.push({
           rootPath: join(__dirname, '..', 'dashboard'),
           serveRoot: dashboardConfig.dashboardUri,
-        });
-      }
-      return options;
+        },
+      ];
     },
   }),
   PassportModule,
@@ -131,6 +124,7 @@ const PROVIDERS = [
   WhatsappConfigService,
   EngineConfigService,
   WebsocketGatewayCore,
+  MediaLocalStorageConfig,
 ];
 
 @Module({

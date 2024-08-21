@@ -7,14 +7,7 @@ import { WebhookConfig } from './structures/webhooks.config.dto';
 
 @Injectable()
 export class WhatsappConfigService {
-  public filesUri = '/api/files';
-  public schema = 'http';
-
   constructor(private configService: ConfigService) {}
-
-  get filesURL(): string {
-    return `${this.schema}://${this.hostname}:${this.port}${this.filesUri}/`;
-  }
 
   get hostname(): string {
     return this.configService.get('WHATSAPP_API_HOSTNAME', 'localhost');
@@ -22,17 +15,6 @@ export class WhatsappConfigService {
 
   get port(): string {
     return this.configService.get('WHATSAPP_API_PORT', '3000');
-  }
-
-  get filesFolder(): string {
-    return this.configService.get(
-      'WHATSAPP_FILES_FOLDER',
-      '/tmp/whatsapp-files',
-    );
-  }
-
-  get filesLifetime(): number {
-    return this.configService.get<number>('WHATSAPP_FILES_LIFETIME', 180);
   }
 
   get mimetypes(): string[] {
