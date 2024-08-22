@@ -4,12 +4,11 @@ import { WhatsappConfigService } from '@waha/config.service';
 @Injectable()
 export class MediaLocalStorageConfig {
   public filesUri = '/api/files';
-  public schema = 'http';
 
   constructor(private config: WhatsappConfigService) {}
 
   get filesURL(): string {
-    return `${this.schema}://${this.config.hostname}:${this.config.port}${this.filesUri}/`;
+    return `${this.config.schema}://${this.config.hostname}:${this.config.port}${this.filesUri}/`;
   }
 
   get filesFolder(): string {
