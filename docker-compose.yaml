@@ -187,6 +187,7 @@ services:
       #- WAHA_S3_SECRET_ACCESS_KEY=minioadmin
       #- WAHA_S3_ENDPOINT=http://minio:9000 # Not required if you're using AWS S3
       #- WAHA_S3_FORCE_PATH_STYLE=True # Required for Minio
+      #- WAHA_S3_PROXY_FILES=True # Required for docker-compose setup
 
       #
       # Global Webhooks
