@@ -675,14 +675,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       toJID(chatId),
       toNumber(limit),
     );
-    const result = [];
+
+    const promises = [];
     for (const msg of messages) {
-      const wamsg = await this.processIncomingMessage(msg, downloadMedia);
-      if (!wamsg) {
-        continue;
-      }
-      result.push(wamsg);
+      promises.push(this.processIncomingMessage(msg, downloadMedia));
     }
+    let result = await Promise.all(promises);
+    result = result.filter(Boolean);
     return result;
   }
 
