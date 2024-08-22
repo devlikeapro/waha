@@ -468,12 +468,12 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     const messages = await chat.fetchMessages({
       limit: limit,
     });
-    // Go over messages, download media, and convert to right format.
-    const result = [];
-    for (const message of messages) {
-      const msg = await this.processIncomingMessage(message, downloadMedia);
-      result.push(msg);
+    const promises = [];
+    for (const msg of messages) {
+      promises.push(this.processIncomingMessage(msg, downloadMedia));
     }
+    let result = await Promise.all(promises);
+    result = result.filter(Boolean);
     return result;
   }
 
