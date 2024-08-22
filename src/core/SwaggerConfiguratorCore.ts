@@ -79,6 +79,7 @@ export class SwaggerConfiguratorCore {
         'Labels - available only for WhatsApp Business accounts',
       )
       .addTag('🔍 Observability', 'Other methods')
+      .addTag('🗄️ Storage', 'Storage methods')
       .addApiKey({
         type: 'apiKey',
         description: 'Your secret api key',
