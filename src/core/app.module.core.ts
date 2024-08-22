@@ -50,7 +50,11 @@ export const IMPORTS = [
       transport: getPinoTransport(),
       autoLogging: {
         ignore: (req) => {
-          return req.url.startsWith('/dashboard/');
+          return (
+            req.url.startsWith('/dashboard/') ||
+            req.url.startsWith('/api/files/') ||
+            req.url.startsWith('/api/s3/')
+          );
         },
       },
       serializers: {
