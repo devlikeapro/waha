@@ -152,9 +152,14 @@ export abstract class WhatsappSession {
     // Run optimized version of Chrome
     // References:
     // https://github.com/pedroslopez/whatsapp-web.js/issues/1420
+    // https://github.com/wppconnect-team/wppconnect/issues/1326
     // https://www.bannerbear.com/blog/ways-to-speed-up-puppeteer-screenshots/
     return [
+      '--aggressive-cache-discard',
       '--disable-accelerated-2d-canvas',
+      '--disable-application-cache',
+      '--disable-background-networking',
+      '--disable-cache',
       '--disable-client-side-phishing-detection',
       '--disable-component-update',
       '--disable-default-apps',
@@ -162,10 +167,18 @@ export abstract class WhatsappSession {
       '--disable-extensions',
       '--disable-gpu',
       '--disable-offer-store-unmasked-wallet-cards',
+      '--disable-offline-load-stale-cache',
       '--disable-popup-blocking',
       '--disable-setuid-sandbox',
       '--disable-speech-api',
+      '--disable-sync',
+      '--disable-translate',
+      '--disable-web-security',
+      '--disk-cache-size=0',
       '--hide-scrollbars',
+      '--ignore-certificate-errors',
+      '--ignore-ssl-errors',
+      '--metrics-recording-only',
       '--mute-audio',
       '--no-default-browser-check',
       '--no-first-run',
@@ -173,6 +186,7 @@ export abstract class WhatsappSession {
       '--no-sandbox',
       '--no-zygote',
       '--password-store=basic',
+      '--safebrowsing-disable-auto-update',
       '--single-process',
       '--use-mock-keychain',
     ];
