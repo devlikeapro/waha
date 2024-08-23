@@ -154,27 +154,27 @@ export abstract class WhatsappSession {
     // https://github.com/pedroslopez/whatsapp-web.js/issues/1420
     // https://www.bannerbear.com/blog/ways-to-speed-up-puppeteer-screenshots/
     return [
-      '--no-sandbox',
+      '--disable-accelerated-2d-canvas',
       '--disable-client-side-phishing-detection',
-      '--disable-setuid-sandbox',
       '--disable-component-update',
       '--disable-default-apps',
-      '--disable-popup-blocking',
+      '--disable-dev-shm-usage',
+      '--disable-extensions',
+      '--disable-gpu',
       '--disable-offer-store-unmasked-wallet-cards',
+      '--disable-popup-blocking',
+      '--disable-setuid-sandbox',
       '--disable-speech-api',
       '--hide-scrollbars',
       '--mute-audio',
-      '--disable-extensions',
-      '--disable-dev-shm-usage',
-      '--disable-accelerated-2d-canvas',
-      '--no-first-run',
       '--no-default-browser-check',
+      '--no-first-run',
       '--no-pings',
-      '--password-store=basic',
-      '--use-mock-keychain',
+      '--no-sandbox',
       '--no-zygote',
+      '--password-store=basic',
       '--single-process',
-      '--disable-gpu',
+      '--use-mock-keychain',
     ];
   }
 
