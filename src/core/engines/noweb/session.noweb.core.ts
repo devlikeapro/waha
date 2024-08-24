@@ -548,14 +548,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   public deleteMessage(chatId: string, messageId: string) {
     const jid = toJID(this.ensureSuffix(chatId));
     const key = parseMessageId(messageId);
-    const options = {
-      statusJidList: [
-        '79521562380@s.whatsapp.net',
-        '79069571990@s.whatsapp.net',
-        '79069471990@s.whatsapp.net',
-      ],
-    };
-    return this.sock.sendMessage(jid, { delete: key }, options);
+    return this.sock.sendMessage(jid, { delete: key });
   }
 
   public editMessage(
