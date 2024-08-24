@@ -238,7 +238,6 @@ class SessionsController {
       'Create session (if not exists) or update a config (if exists) and start it.',
     deprecated: true,
   })
-  @UsePipes(new WAHAValidationPipe())
   async DEPRACATED_start(
     @Body() request: SessionStartDeprecatedRequest,
   ): Promise<SessionDTO> {
@@ -263,7 +262,6 @@ class SessionsController {
     description: 'Stop session and Logout by default.',
     deprecated: true,
   })
-  @UsePipes(new WAHAValidationPipe())
   async DEPRECATED_stop(
     @Body() request: SessionStopDeprecatedRequest,
   ): Promise<void> {
@@ -289,7 +287,6 @@ class SessionsController {
     description: 'Stop, Logout and Delete session.',
     deprecated: true,
   })
-  @UsePipes(new WAHAValidationPipe())
   async DEPRECATED_logout(
     @Body() request: SessionLogoutDeprecatedRequest,
   ): Promise<void> {
