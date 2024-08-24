@@ -58,7 +58,10 @@ export class WAMessage extends WAMessageBase {
   })
   hasMedia: boolean;
 
-  media?: WAMedia = null;
+  @ApiProperty({
+    description: 'Media object for the message if any and downloaded',
+  })
+  media?: WAMedia;
 
   @ApiProperty({
     description:

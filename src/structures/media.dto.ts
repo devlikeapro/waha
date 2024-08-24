@@ -7,7 +7,7 @@ export class WAMedia {
     example:
       'http://localhost:3000/api/files/false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA.oga',
   })
-  url: string;
+  url?: string;
 
   @ApiProperty({
     description: 'mimetype for the media in the message if any',
@@ -27,4 +27,11 @@ export class WAMedia {
       'if you are using S3 media storage',
   })
   s3?: S3MediaData;
+
+  @ApiProperty({
+    description: "Error message if there's an error downloading the media",
+    example: null,
+  })
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  error?: object;
 }
