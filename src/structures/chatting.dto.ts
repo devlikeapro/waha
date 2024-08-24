@@ -163,8 +163,19 @@ export class MessageReplyRequest extends MessageTextRequest {
 }
 
 export class MessageLocationRequest extends ChatRequest {
+  @ApiProperty({
+    example: 38.8937255,
+  })
   latitude: number;
+
+  @ApiProperty({
+    example: -77.0969763,
+  })
   longitude: number;
+
+  @ApiProperty({
+    example: 'Our office',
+  })
   title: string;
 }
 
