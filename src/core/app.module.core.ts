@@ -14,6 +14,7 @@ import {
   getPinoLogLevel,
   getPinoTransport,
 } from '@waha/utils/logging';
+import * as Joi from 'joi';
 import { LoggerModule } from 'nestjs-pino';
 import { join } from 'path';
 import { Logger } from 'pino';
@@ -73,6 +74,9 @@ export const IMPORTS = [
   }),
   ConfigModule.forRoot({
     isGlobal: true,
+    validationSchema: Joi.object({
+      WHATSAPP_API_SCHEMA: Joi.string().valid('http', 'https').default('http'),
+    }),
   }),
   ServeStaticModule.forRootAsync({
     imports: [],

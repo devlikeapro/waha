@@ -7,9 +7,11 @@ import { WebhookConfig } from './structures/webhooks.config.dto';
 
 @Injectable()
 export class WhatsappConfigService {
-  public schema = 'http';
-
   constructor(private configService: ConfigService) {}
+
+  get schema() {
+    return this.configService.get('WHATSAPP_API_SCHEMA', 'http');
+  }
 
   get hostname(): string {
     return this.configService.get('WHATSAPP_API_HOSTNAME', 'localhost');
