@@ -57,6 +57,7 @@ services:
       # If you know the right URL, you can use it here.
       # Use any port in WHATSAPP_API_PORT and domain in WHATSAPP_API_HOSTNAME
       # https://waha.devlike.pro/docs/how-to/config/#common
+      #- WHATSAPP_API_SCHEMA=http
       #- WHATSAPP_API_PORT=3000
       #- WHATSAPP_API_HOSTNAME=localhost
 
@@ -147,11 +148,13 @@ services:
       # https://waha.devlike.pro/docs/how-to/config/#https
       # Consider using certbot for HTTPS
       # https://waha.devlike.pro/blog/setting-up-https-for-waha/#lets-encrypt-certbot--waha
-      #- WHATSAPP_API_HOSTNAME=waha.example.pro
       #- WAHA_HTTPS_ENABLED=true
       #- WAHA_HTTPS_PATH_KEY=/etc/letsencrypt/live/waha.example.pro/privkey.pem
       #- WAHA_HTTPS_PATH_CERT=/etc/letsencrypt/live/waha.example.pro/cert.pem \
       #- WAHA_HTTPS_PATH_CA=/etc/letsencrypt/live/waha.example.pro/chain.pem
+      #- WHATSAPP_API_SCHEMA=https
+      #- WHATSAPP_API_PORT=3000
+      #- WHATSAPP_API_HOSTNAME=waha.example.pro
       #
 
       #
