@@ -15,6 +15,7 @@
     "start:prod": "node dist/main",
     "start:prod-exit": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix --max-warnings=0",
+    "lint-cache": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix --cache --max-warnings=0",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",

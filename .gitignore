@@ -13,6 +13,7 @@ src/test.js
 test.js
 .wwebjs_cache
 src/dashboard
+.eslintcache
 
 # compiled output
 /dist

@@ -20,7 +20,7 @@ repos:
         stages: [pre-commit]
         name: lint
         language: system
-        entry: bash -c '$HOME/.nvm/nvm-exec npm run lint'
+        entry: bash -c '$HOME/.nvm/nvm-exec npm run lint-cache'
         pass_filenames: false
         files: |
           (?x)^(
