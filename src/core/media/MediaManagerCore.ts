@@ -1,7 +1,7 @@
 import { IMediaEngineProcessor } from '@waha/core/media/IMediaEngineProcessor';
 import { IMediaStorage, MediaData } from '@waha/core/media/IMediaStorage';
+import { WAMedia } from '@waha/structures/media.dto';
 
-import { WAMedia } from '../../structures/responses.dto';
 import { IMediaManager } from './IMediaManager';
 
 export class MediaManagerCore implements IMediaManager {
