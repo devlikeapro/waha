@@ -536,13 +536,14 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     };
   }
 
-  sendText(request: MessageTextRequest) {
+  async sendText(request: MessageTextRequest) {
     const chatId = toJID(this.ensureSuffix(request.chatId));
     const message = {
       text: request.text,
       mentions: request.mentions?.map(toJID),
     };
-    return this.sock.sendMessage(chatId, message);
+    const options = await this.getMessageOptions(request);
+    return this.sock.sendMessage(chatId, message, options);
   }
 
   public deleteMessage(chatId: string, messageId: string) {
@@ -587,23 +588,18 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     };
     const message = { poll: poll };
     const remoteJid = toJID(request.chatId);
-    const result = await this.sock.sendMessage(remoteJid, message);
+    const options = await this.getMessageOptions(request);
+    const result = await this.sock.sendMessage(remoteJid, message, options);
     return this.toWAMessage(result);
   }
 
   async reply(request: MessageReplyRequest) {
-    const { id } = parseMessageId(request.reply_to);
-    const quotedMessage = await this.store.loadMessage(
-      toJID(request.chatId),
-      id,
-    );
+    const options = await this.getMessageOptions(request);
     const message = {
       text: request.text,
       mentions: request.mentions?.map(toJID),
     };
-    return await this.sock.sendMessage(request.chatId, message, {
-      quoted: quotedMessage,
-    });
+    return await this.sock.sendMessage(request.chatId, message, options);
   }
 
   sendImage(request: MessageImageRequest) {
@@ -1464,6 +1460,18 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   protected downloadMedia(message) {
     const processor = new EngineMediaProcessor(this);
     return this.mediaManager.processMedia(processor, message, this.name);
+  }
+
+  protected async getMessageOptions(request: any): Promise<any> {
+    let quoted;
+    if (request.reply_to) {
+      const { id } = parseMessageId(request.reply_to);
+      quoted = await this.store.loadMessage(toJID(request.chatId), id);
+    }
+
+    return {
+      quoted: quoted,
+    };
   }
 }
 

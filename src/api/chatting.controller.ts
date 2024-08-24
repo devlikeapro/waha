@@ -113,13 +113,6 @@ export class ChattingController {
     return whatsapp.sendVideo(request);
   }
 
-  @Post('/reply')
-  @ApiOperation({ summary: 'Reply to a text message' })
-  reply(@Body() request: MessageReplyRequest) {
-    const whatsapp = this.manager.getSession(request.session);
-    return whatsapp.reply(request);
-  }
-
   @Post('/sendSeen')
   sendSeen(@Body() chat: SendSeenRequest) {
     const whatsapp = this.manager.getSession(chat.session);
@@ -171,5 +164,16 @@ export class ChattingController {
     msg.chatId = query.phone;
     msg.text = query.text;
     return whatsapp.sendText(msg);
+  }
+
+  @Post('/reply')
+  @ApiOperation({
+    summary:
+      'DEPRECATED - you can set "reply_to" field when sending text, image, etc',
+    deprecated: true,
+  })
+  reply(@Body() request: MessageReplyRequest) {
+    const whatsapp = this.manager.getSession(request.session);
+    return whatsapp.reply(request);
   }
 }

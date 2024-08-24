@@ -352,10 +352,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   sendText(request: MessageTextRequest) {
-    const options = {
-      // It's fine to sent just ids instead of Contact object
-      mentions: request.mentions as unknown as string[],
-    };
+    const options = this.getMessageOptions(request);
     return this.whatsapp.sendMessage(
       this.ensureSuffix(request.chatId),
       request.text,
@@ -382,11 +379,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   reply(request: MessageReplyRequest) {
-    const options = {
-      quotedMessageId: request.reply_to,
-      // It's fine to sent just ids instead of Contact object
-      mentions: request.mentions as unknown as string[],
-    };
+    const options = this.getMessageOptions(request);
     return this.whatsapp.sendMessage(request.chatId, request.text, options);
   }
 
@@ -406,7 +399,8 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     const location = new Location(request.latitude, request.longitude, {
       name: request.title,
     });
-    return this.whatsapp.sendMessage(request.chatId, location);
+    const options = this.getMessageOptions(request);
+    return this.whatsapp.sendMessage(request.chatId, location, options);
   }
 
   async sendSeen(request: SendSeenRequest) {
@@ -972,6 +966,18 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   protected downloadMedia(message: Message) {
     const processor = new EngineMediaProcessor();
     return this.mediaManager.processMedia(processor, message, this.name);
+  }
+
+  protected getMessageOptions(request: any): any {
+    let mentions = request.mentions;
+    mentions = mentions ? mentions.map(this.ensureSuffix) : undefined;
+
+    const quotedMessageId = request.reply_to;
+
+    return {
+      mentions: mentions,
+      quotedMessageId: quotedMessageId,
+    };
   }
 }
 
