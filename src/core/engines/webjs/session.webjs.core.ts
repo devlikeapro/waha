@@ -52,6 +52,7 @@ import {
   SettingsSecurityChangeInfo,
 } from '@waha/structures/groups.dto';
 import { Label, LabelID } from '@waha/structures/labels.dto';
+import { ReplyToMessage } from '@waha/structures/message.dto';
 import { WAMessage, WAMessageReaction } from '@waha/structures/responses.dto';
 import { MeInfo } from '@waha/structures/sessions.dto';
 import { WAMessageRevokedBody } from '@waha/structures/webhooks.dto';
@@ -925,6 +926,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   protected toWAMessage(message: Message): Promise<WAMessage> {
+    const replyTo = this.extractReplyTo(message);
     // @ts-ignore
     return Promise.resolve({
       id: message.id._serialized,
@@ -945,8 +947,22 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       ackName: WAMessageAck[message.ack] || ACK_UNKNOWN,
       location: message.location,
       vCards: message.vCards,
+      replyTo: replyTo,
       _data: message.rawData,
     });
+  }
+
+  protected extractReplyTo(message: Message): ReplyToMessage | null {
+    // @ts-ignore
+    const quotedMsg = message.rawData.quotedMsg;
+    if (!quotedMsg) {
+      return;
+    }
+    return {
+      id: quotedMsg.id?.id,
+      participant: quotedMsg.author || quotedMsg.from,
+      body: quotedMsg.caption || quotedMsg.body,
+    };
   }
 
   public async getEngineInfo() {

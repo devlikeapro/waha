@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { WAMedia } from '@waha/structures/media.dto';
+import { ReplyToMessage } from '@waha/structures/message.dto';
 
 import { WAMessageAck } from './enums.dto';
 import { ChatIdProperty, MessageIdProperty } from './properties.dto';
@@ -98,6 +99,8 @@ export class WAMessage extends WAMessageBase {
     description: 'List of vCards contained in the message.',
   })
   vCards?: string[];
+
+  replyTo?: ReplyToMessage;
 
   /** Returns message in a raw format */
   @ApiProperty({

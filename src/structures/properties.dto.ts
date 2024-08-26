@@ -15,6 +15,13 @@ function MessageIdProperty() {
   });
 }
 
+function MessageIdOnlyProperty() {
+  return ApiProperty({
+    description: 'Message ID',
+    example: 'AAAAAAAAAAAAAAAAAAAA',
+  });
+}
+
 function ReplyToProperty() {
   return ApiProperty({
     description:
@@ -23,4 +30,9 @@ function ReplyToProperty() {
   });
 }
 
-export { ChatIdProperty, MessageIdProperty, ReplyToProperty };
+export {
+  ChatIdProperty,
+  MessageIdOnlyProperty,
+  MessageIdProperty,
+  ReplyToProperty,
+};

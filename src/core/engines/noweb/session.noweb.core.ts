@@ -4,6 +4,7 @@ import makeWASocket, {
   DisconnectReason,
   extractMessageContent,
   getAggregateVotesInPollMessage,
+  getContentType,
   getKeyAuthor,
   getUrlFromDirectPath,
   isJidGroup,
@@ -42,6 +43,7 @@ import {
   LabelChatAssociation,
   LabelID,
 } from '@waha/structures/labels.dto';
+import { ReplyToMessage } from '@waha/structures/message.dto';
 import {
   PollVote,
   PollVotePayload,
@@ -1261,18 +1263,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   protected toWAMessage(message): Promise<WAMessage> {
     const fromToParticipant = getFromToParticipant(message);
     const id = buildMessageId(message.key);
-    let body = message.message.conversation;
-    if (!body) {
-      // Some of the messages have no conversation, but instead have text in extendedTextMessage
-      // https://github.com/devlikeapro/waha/issues/90
-      body = message.message.extendedTextMessage?.text;
-    }
-    if (!body) {
-      // Populate from caption
-      const mediaContent = extractMediaContent(message.message);
-      // @ts-ignore - AudioMessage doesn't have caption field
-      body = mediaContent?.caption;
-    }
+    const body = this.extractBody(message.message);
+    const replyTo = this.extractReplyTo(message.message);
     const ack = message.ack || message.status - 1;
     return Promise.resolve({
       id: id,
@@ -1292,8 +1284,40 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       ackName: WAMessageAck[ack] || ACK_UNKNOWN,
       location: message.location,
       vCards: message.vCards,
+      replyTo: replyTo,
       _data: message,
     });
+  }
+
+  protected extractBody(message) {
+    let body = message.conversation;
+    if (!body) {
+      // Some of the messages have no conversation, but instead have text in extendedTextMessage
+      // https://github.com/devlikeapro/waha/issues/90
+      body = message.extendedTextMessage?.text;
+    }
+    if (!body) {
+      // Populate from caption
+      const mediaContent = extractMediaContent(message);
+      // @ts-ignore - AudioMessage doesn't have caption field
+      body = mediaContent?.caption;
+    }
+    return body;
+  }
+
+  protected extractReplyTo(message): ReplyToMessage | null {
+    const msgType = getContentType(message);
+    const contextInfo = message[msgType]?.contextInfo;
+    if (!contextInfo) {
+      return null;
+    }
+    const quotedMessage = contextInfo.quotedMessage;
+    const body = this.extractBody(quotedMessage);
+    return {
+      id: contextInfo.stanzaId,
+      participant: contextInfo.participant,
+      body: body,
+    };
   }
 
   protected toWAContact(contact: Contact) {
