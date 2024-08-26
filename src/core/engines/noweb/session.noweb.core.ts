@@ -550,7 +550,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   public deleteMessage(chatId: string, messageId: string) {
     const jid = toJID(this.ensureSuffix(chatId));
-    const key = parseMessageId(messageId);
+    const key = parseMessageIdSerialized(messageId);
     return this.sock.sendMessage(jid, { delete: key });
   }
 
@@ -560,7 +560,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     request: EditMessageRequest,
   ) {
     const jid = toJID(this.ensureSuffix(chatId));
-    const key = parseMessageId(messageId);
+    const key = parseMessageIdSerialized(messageId);
     const message = {
       text: request.text,
       mentions: request.mentions?.map(toJID),
@@ -632,7 +632,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async sendSeen(request: SendSeenRequest) {
-    const key = parseMessageId(request.messageId);
+    const key = parseMessageIdSerialized(request.messageId);
     const participant = request.participant
       ? toJID(this.ensureSuffix(request.participant))
       : undefined;
@@ -677,7 +677,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async setReaction(request: MessageReactionRequest) {
-    const key = parseMessageId(request.messageId);
+    const key = parseMessageIdSerialized(request.messageId);
     const reactionMessage = {
       react: {
         text: request.reaction,
@@ -688,7 +688,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async setStar(request: MessageStarRequest) {
-    const key = parseMessageId(request.messageId);
+    const key = parseMessageIdSerialized(request.messageId);
     await this.sock.chatModify(
       {
         star: {
@@ -927,13 +927,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   public deleteStatus(request: DeleteStatusRequest) {
     const messageId = request.id;
-    let key: any;
-    if (messageId.includes('_')) {
-      key = parseMessageId(messageId);
-    } else {
-      key = { id: messageId };
-    }
-
+    const key = parseMessageIdSerialized(messageId, true);
     key.fromMe = true;
     key.remoteJid = BROADCAST_ID;
     const JIDs = request.contacts.map(toJID);
@@ -1489,8 +1483,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   protected async getMessageOptions(request: any): Promise<any> {
     let quoted;
     if (request.reply_to) {
-      const { id } = parseMessageId(request.reply_to);
-      quoted = await this.store.loadMessage(toJID(request.chatId), id);
+      const key = parseMessageIdSerialized(request.reply_to, true);
+      quoted = await this.store.loadMessage(toJID(request.chatId), key.id);
     }
 
     return {
@@ -1586,7 +1580,11 @@ function buildMessageId({ id, remoteJid, fromMe }) {
  * false_11111111111@c.us_AAA
  * {id: "AAA", remoteJid: "11111111111@s.whatsapp.net", "fromMe": false}
  */
-function parseMessageId(messageId) {
+function parseMessageIdSerialized(messageId: string, soft: boolean = false) {
+  if (!messageId.includes('_') && soft) {
+    return { id: messageId };
+  }
+
   const parts = messageId.split('_');
   if (parts.length != 3) {
     throw new Error(
