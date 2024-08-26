@@ -209,6 +209,7 @@ services:
 
   # NOTE: Only if you're using MongoDB
   # https://waha.devlike.pro/docs/how-to/storages/#sessions---mongodb
+  # Comment this block if you're using MongoDB
   mongodb:
     image: mongo
     container_name: mongodb
@@ -220,6 +221,7 @@ services:
 
   # NOTE: Only if you're using S3 to save media files
   # https://waha.devlike.pro/docs/how-to/storages/#media---s3
+  # Comment this block if you're using AWS S3
   minio:
     image: quay.io/minio/minio
     container_name: minio
