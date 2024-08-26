@@ -57,7 +57,7 @@ export class WebhookConfig {
     description:
       'You can use https://docs.webhook.site/ to test webhooks and see the payload',
   })
-  @IsUrl({ require_protocol: true })
+  @IsUrl({ require_protocol: true, require_tld: false })
   url: string;
 
   @ApiProperty({
