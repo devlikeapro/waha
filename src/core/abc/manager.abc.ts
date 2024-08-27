@@ -60,7 +60,7 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
       const data: WAHAWebhook = {
         event: event,
         session: session.name,
-        metadata: session.sessionConfig.metadata,
+        metadata: session.sessionConfig?.metadata,
         me: me,
         payload: payload,
         engine: session.engine,

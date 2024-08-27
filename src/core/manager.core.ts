@@ -113,7 +113,7 @@ export class SessionManagerCore extends SessionManager {
   //
   async exists(name: string): Promise<boolean> {
     this.onlyDefault(name);
-    return !!this.session;
+    return this.session !== undefined;
   }
 
   isRunning(name: string): boolean {
@@ -246,7 +246,7 @@ export class SessionManagerCore extends SessionManager {
   getSession(name: string): WhatsappSession {
     this.onlyDefault(name);
     const session = this.session;
-    if (!session) {
+    if (session === undefined) {
       throw new NotFoundException(
         `We didn't find a session with name '${name}'. 
         Please start it first by using POST /sessions/${name}/start request`,
