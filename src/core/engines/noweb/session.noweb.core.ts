@@ -1283,7 +1283,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     });
   }
 
-  protected extractBody(message) {
+  protected extractBody(message): string | null {
+    if (!message) {
+      return null;
+    }
     let body = message.conversation;
     if (!body) {
       // Some of the messages have no conversation, but instead have text in extendedTextMessage
