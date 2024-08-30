@@ -1312,7 +1312,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     const body = this.extractBody(quotedMessage);
     return {
       id: contextInfo.stanzaId,
-      participant: contextInfo.participant,
+      participant: toCusFormat(contextInfo.participant),
       body: body,
     };
   }
