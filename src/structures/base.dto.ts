@@ -15,5 +15,5 @@ export class SessionQuery {
  */
 
 export class SessionBaseRequest {
-  session = WHATSAPP_DEFAULT_SESSION_NAME;
+  session: string = WHATSAPP_DEFAULT_SESSION_NAME;
 }

@@ -54,7 +54,8 @@ export class ChattingController {
 
   @Post('/sendPoll')
   @ApiOperation({
-    summary: 'Send a poll with options. You can use it as buttons replace',
+    summary: 'Send a poll with options',
+    description: 'You can use it as buttons or list replacement',
   })
   sendPoll(@Body() request: MessagePollRequest) {
     const whatsapp = this.manager.getSession(request.session);
@@ -75,8 +76,9 @@ export class ChattingController {
 
   @Post('/sendImage')
   @ApiOperation({
-    summary:
-      'Send an image. Either from an URL or base64 data - look at the request schemas for details.',
+    summary: 'Send an image',
+    description:
+      'Either from an URL or base64 data - look at the request schemas for details.',
   })
   sendImage(@Body() request: MessageImageRequest) {
     const whatsapp = this.manager.getSession(request.session);
@@ -85,8 +87,9 @@ export class ChattingController {
 
   @Post('/sendFile')
   @ApiOperation({
-    summary:
-      'Send a file. Either from an URL or base64 data - look at the request schemas for details.',
+    summary: 'Send a file',
+    description:
+      'Either from an URL or base64 data - look at the request schemas for details.',
   })
   sendFile(@Body() request: MessageFileRequest) {
     const whatsapp = this.manager.getSession(request.session);
@@ -95,8 +98,9 @@ export class ChattingController {
 
   @Post('/sendVoice')
   @ApiOperation({
-    summary:
-      'Send an voice message. Either from an URL or base64 data - look at the request schemas for details.',
+    summary: 'Send an voice message',
+    description:
+      'Either from an URL or base64 data - look at the request schemas for details.',
   })
   sendVoice(@Body() request: MessageVoiceRequest) {
     const whatsapp = this.manager.getSession(request.session);
