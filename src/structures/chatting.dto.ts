@@ -142,7 +142,8 @@ export class MessageContactVcardRequest extends ChatRequest {
 }
 
 export class MessageTextRequest extends ChatRequest {
-  text = 'Hi there!';
+  text: string = 'Hi there!';
+
   @ApiHideProperty()
   mentions?: string[];
 
@@ -151,14 +152,14 @@ export class MessageTextRequest extends ChatRequest {
 }
 
 export class EditMessageRequest {
-  text = 'Hello, world!';
+  text: string = 'Hello, world!';
 
   @ApiHideProperty()
   mentions?: string[];
 }
 
 export class MessageReplyRequest extends MessageTextRequest {
-  text = 'Reply text';
+  text: string = 'Reply text';
 }
 
 export class MessageLocationRequest extends ChatRequest {
