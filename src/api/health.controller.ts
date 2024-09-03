@@ -13,7 +13,9 @@ export class HealthController {
   @Get()
   @HealthCheck()
   @ApiOperation({
-    summary: 'Check the health of the server, performing all health checks.',
+    summary: 'Check the health of the server',
+    description:
+      "Perform all health checks and return the server's health status.",
   })
   async check() {
     return this.wahaHealth.check();
