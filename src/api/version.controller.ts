@@ -14,7 +14,11 @@ import { VERSION } from '../version';
 @ApiTags('🔍 Observability')
 export class VersionController {
   @Get('')
-  @ApiOperation({ summary: 'Get the version of the server', deprecated: true })
+  @ApiOperation({
+    summary: 'Get the server version ',
+    deprecated: true,
+    description: "Use 'GET /api/server/version' instead ",
+  })
   get(): WAHAEnvironment {
     return VERSION;
   }
