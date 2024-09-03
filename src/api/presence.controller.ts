@@ -7,6 +7,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ChatIdApiParam } from '@waha/nestjs/params/ChatIdApiParam';
 import {
   SessionApiParam,
   SessionParam,
@@ -67,6 +68,7 @@ export class PresenceController {
 
   @Get(':chatId')
   @SessionApiParam
+  @ChatIdApiParam
   @ApiOperation({
     summary:
       "Get the presence for the chat id. If it hasn't been subscribed - it also subscribes to it.",
@@ -80,6 +82,7 @@ export class PresenceController {
 
   @Post(':chatId/subscribe')
   @SessionApiParam
+  @ChatIdApiParam
   @ApiOperation({
     summary: 'Subscribe to presence events for the chat.',
   })
