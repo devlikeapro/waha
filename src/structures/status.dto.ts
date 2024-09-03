@@ -36,7 +36,7 @@ export class ImageStatus extends StatusRequest {
   })
   file: RemoteFile | BinaryFile;
 
-  caption: string;
+  caption?: string;
 }
 
 @ApiExtraModels(VoiceRemoteFile, VoiceBinaryFile)
@@ -49,7 +49,7 @@ export class VoiceStatus extends StatusRequest {
   })
   file: VoiceRemoteFile | VoiceBinaryFile;
 
-  backgroundColor = '#38b42f';
+  backgroundColor: string = '#38b42f';
 }
 
 @ApiExtraModels(VideoRemoteFile, VideoBinaryFile)
@@ -62,7 +62,7 @@ export class VideoStatus extends StatusRequest {
   })
   file: VideoRemoteFile | VideoBinaryFile;
 
-  caption: string;
+  caption?: string;
 }
 
 export class DeleteStatusRequest extends StatusRequest {
