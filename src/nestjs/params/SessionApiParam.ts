@@ -12,7 +12,7 @@ export const SessionApiParam = ApiParam({
   schema: {
     default: 'default',
   },
-  description: 'Session <code>name</code>',
+  description: 'Session name',
 });
 /**
  * Session param
