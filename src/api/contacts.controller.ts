@@ -17,8 +17,9 @@ export class ContactsController {
 
   @Get('/')
   @ApiOperation({
-    summary:
-      'Get contact basic info. The method always return result, even if the phone number is not registered in WhatsApp. For that - use /check-exists endpoint below.',
+    summary: 'Get contact basic info',
+    description:
+      'The method always return result, even if the phone number is not registered in WhatsApp. For that - use /contacts/check-exists endpoint below.',
   })
   get(@Query() query: ContactQuery) {
     const whatsapp = this.manager.getSession(query.session);
@@ -43,8 +44,9 @@ export class ContactsController {
 
   @Get('/about')
   @ApiOperation({
-    summary:
-      'Gets the Contact\'s current "about" info. Returns null if you don\'t have permission to read their status.',
+    summary: 'Gets the Contact\'s "about" info',
+    description:
+      'Returns null if you do not have permission to read their status.',
   })
   getAbout(@Query() query: ContactQuery) {
     const whatsapp = this.manager.getSession(query.session);
@@ -53,8 +55,9 @@ export class ContactsController {
 
   @Get('/profile-picture')
   @ApiOperation({
-    summary:
-      "Returns the contact's profile picture URL, if privacy settings allow it.",
+    summary: "Get contact's profile picture URL",
+    description:
+      'If privacy settings do not allow to get the picture, the method will return null.',
   })
   getProfilePicture(@Query() query: ContactQuery) {
     const whatsapp = this.manager.getSession(query.session);

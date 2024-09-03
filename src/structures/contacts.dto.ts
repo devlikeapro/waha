@@ -1,3 +1,4 @@
+import { ChatIdProperty } from '@waha/structures/properties.dto';
 import { IsString } from 'class-validator';
 
 import { SessionBaseRequest, SessionQuery } from './base.dto';
@@ -7,6 +8,7 @@ import { SessionBaseRequest, SessionQuery } from './base.dto';
  */
 
 export class ContactQuery extends SessionQuery {
+  @ChatIdProperty()
   @IsString()
   contactId: string;
 }
@@ -16,6 +18,7 @@ export class ContactQuery extends SessionQuery {
  */
 
 export class ContactRequest extends SessionBaseRequest {
+  @ChatIdProperty()
   @IsString()
   contactId: string;
 }
