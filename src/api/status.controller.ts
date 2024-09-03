@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import {
   SessionApiParam,
@@ -31,7 +23,7 @@ class StatusController {
 
   @Post('text')
   @SessionApiParam
-  @ApiOperation({ summary: 'Send text status.' })
+  @ApiOperation({ summary: 'Send text status' })
   sendTextStatus(
     @SessionParam session: WhatsappSession,
     @Body() status: TextStatus,
@@ -41,7 +33,7 @@ class StatusController {
 
   @Post('image')
   @SessionApiParam
-  @ApiOperation({ summary: 'Send image status.' })
+  @ApiOperation({ summary: 'Send image status' })
   sendImageStatus(
     @SessionParam session: WhatsappSession,
     @Body() status: ImageStatus,
@@ -51,7 +43,7 @@ class StatusController {
 
   @Post('voice')
   @SessionApiParam
-  @ApiOperation({ summary: 'Send voice status.' })
+  @ApiOperation({ summary: 'Send voice status' })
   sendVoiceStatus(
     @SessionParam session: WhatsappSession,
     @Body() status: VoiceStatus,
@@ -61,7 +53,7 @@ class StatusController {
 
   @Post('video')
   @SessionApiParam
-  @ApiOperation({ summary: 'Send video status.' })
+  @ApiOperation({ summary: 'Send video status' })
   sendVideoStatus(
     @SessionParam session: WhatsappSession,
     @Body() status: VideoStatus,
@@ -71,7 +63,7 @@ class StatusController {
 
   @Post('delete')
   @SessionApiParam
-  @ApiOperation({ summary: 'DELETE sent status.' })
+  @ApiOperation({ summary: 'DELETE sent status' })
   deleteStatus(
     @SessionParam session: WhatsappSession,
     @Body() status: DeleteStatusRequest,
