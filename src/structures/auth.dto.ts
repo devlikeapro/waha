@@ -4,6 +4,7 @@ export enum QRCodeFormat {
   IMAGE = 'image',
   RAW = 'raw',
 }
+
 export class QRCodeQuery {
   format: QRCodeFormat = QRCodeFormat.IMAGE;
 }

@@ -45,6 +45,10 @@ export class Channel {
   })
   id: string;
 
+  @ApiProperty({
+    description: 'Channel name',
+    example: 'Channel Name',
+  })
   name: string;
 
   description?: string;

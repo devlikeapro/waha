@@ -36,7 +36,7 @@ class AuthController {
 
   @Get('qr')
   @ApiOperation({
-    summary: 'Get QR code for pairing WhatsApp Web.',
+    summary: 'Get QR code for pairing WhatsApp API.',
   })
   @SessionApiParam
   @ApiFileAcceptHeader(Base64File, QRCodeValue)

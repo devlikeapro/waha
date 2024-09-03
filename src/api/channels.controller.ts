@@ -61,7 +61,10 @@ export class ChannelsController {
   @SessionApiParam
   @NewsletterIdOrInviteCodeApiParam
   @ApiOperation({
-    summary: 'Get the channel info - either by id @newsletter OR invite code.',
+    summary: 'Get the channel info',
+    description:
+      'You can use either id (123@newsletter) ' +
+      'OR invite code (https://www.whatsapp.com/channel/123)',
   })
   get(
     @SessionParam session: WhatsappSession,
