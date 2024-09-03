@@ -44,6 +44,7 @@ class ChatsController {
   @Delete(':chatId')
   @SessionApiParam
   @ApiOperation({ summary: 'Deletes the chat' })
+  @ChatIdApiParam
   deleteChat(
     @SessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
@@ -54,6 +55,7 @@ class ChatsController {
   @Get(':chatId/messages')
   @SessionApiParam
   @ApiOperation({ summary: 'Gets messages in the chat' })
+  @ChatIdApiParam
   getChatMessages(
     @Query() query: GetChatMessagesQuery,
     @SessionParam session: WhatsappSession,
@@ -66,6 +68,7 @@ class ChatsController {
   @Delete(':chatId/messages')
   @SessionApiParam
   @ApiOperation({ summary: 'Clears all messages from the chat' })
+  @ChatIdApiParam
   clearMessages(
     @SessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
