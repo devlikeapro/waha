@@ -60,6 +60,7 @@ export class NowebStoreConfig {
   @ApiProperty({
     description:
       'Enable or disable the store for contacts, chats, and messages.',
+    example: true,
   })
   @IsBoolean()
   enabled: boolean = false;
