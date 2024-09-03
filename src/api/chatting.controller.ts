@@ -30,48 +30,11 @@ import { WAMessage } from '../structures/responses.dto';
 export class ChattingController {
   constructor(private manager: SessionManager) {}
 
-  @Get('/checkNumberStatus')
-  @ApiOperation({ summary: 'Check number status' })
-  async checkNumberStatus(
-    @Query() request: CheckNumberStatusQuery,
-  ): Promise<WANumberExistResult> {
-    const whatsapp = this.manager.getSession(request.session);
-    return whatsapp.checkNumberStatus(request);
-  }
-
-  @Post('/sendContactVcard')
-  sendContactVcard(@Body() request: MessageContactVcardRequest) {
-    const whatsapp = this.manager.getSession(request.session);
-    return whatsapp.sendContactVCard(request);
-  }
-
   @Post('/sendText')
   @ApiOperation({ summary: 'Send a text message' })
   sendText(@Body() request: MessageTextRequest): Promise<WAMessage> {
     const whatsapp = this.manager.getSession(request.session);
     return whatsapp.sendText(request);
-  }
-
-  @Post('/sendPoll')
-  @ApiOperation({
-    summary: 'Send a poll with options',
-    description: 'You can use it as buttons or list replacement',
-  })
-  sendPoll(@Body() request: MessagePollRequest) {
-    const whatsapp = this.manager.getSession(request.session);
-    return whatsapp.sendPoll(request);
-  }
-
-  @Post('/sendLocation')
-  sendLocation(@Body() request: MessageLocationRequest) {
-    const whatsapp = this.manager.getSession(request.session);
-    return whatsapp.sendLocation(request);
-  }
-
-  @Post('/sendLinkPreview')
-  sendLinkPreview(@Body() request: MessageLinkPreviewRequest) {
-    const whatsapp = this.manager.getSession(request.session);
-    return whatsapp.sendLinkPreview(request);
   }
 
   @Post('/sendImage')
@@ -109,8 +72,9 @@ export class ChattingController {
 
   @Post('/sendVideo')
   @ApiOperation({
-    summary:
-      'Send a video. Either from an URL or base64 data - look at the request schemas for details.',
+    summary: 'Send a video',
+    description:
+      'Either from an URL or base64 data - look at the request schemas for details.',
   })
   sendVideo(@Body() request: MessageVideoRequest) {
     const whatsapp = this.manager.getSession(request.session);
@@ -153,6 +117,28 @@ export class ChattingController {
     return;
   }
 
+  @Post('/sendPoll')
+  @ApiOperation({
+    summary: 'Send a poll with options',
+    description: 'You can use it as buttons or list replacement',
+  })
+  sendPoll(@Body() request: MessagePollRequest) {
+    const whatsapp = this.manager.getSession(request.session);
+    return whatsapp.sendPoll(request);
+  }
+
+  @Post('/sendLocation')
+  sendLocation(@Body() request: MessageLocationRequest) {
+    const whatsapp = this.manager.getSession(request.session);
+    return whatsapp.sendLocation(request);
+  }
+
+  @Post('/sendLinkPreview')
+  sendLinkPreview(@Body() request: MessageLinkPreviewRequest) {
+    const whatsapp = this.manager.getSession(request.session);
+    return whatsapp.sendLinkPreview(request);
+  }
+
   @Get('/messages')
   @ApiOperation({ summary: 'Get messages in a chat' })
   getMessages(@Query() query: GetMessageQuery) {
@@ -168,6 +154,25 @@ export class ChattingController {
     msg.chatId = query.phone;
     msg.text = query.text;
     return whatsapp.sendText(msg);
+  }
+
+  @Post('/sendContactVcard')
+  sendContactVcard(@Body() request: MessageContactVcardRequest) {
+    const whatsapp = this.manager.getSession(request.session);
+    return whatsapp.sendContactVCard(request);
+  }
+
+  @Get('/checkNumberStatus')
+  @ApiOperation({
+    summary: 'Check number status',
+    description: 'DEPRECATED. Use "POST /contacts/check-exists" instead',
+    deprecated: true,
+  })
+  async DEPRECATED_checkNumberStatus(
+    @Query() request: CheckNumberStatusQuery,
+  ): Promise<WANumberExistResult> {
+    const whatsapp = this.manager.getSession(request.session);
+    return whatsapp.checkNumberStatus(request);
   }
 
   @Post('/reply')

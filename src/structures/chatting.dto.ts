@@ -21,6 +21,10 @@ import { ChatIdProperty, ReplyToProperty } from './properties.dto';
  * Queries
  */
 export class CheckNumberStatusQuery extends SessionQuery {
+  @ApiProperty({
+    description: 'The phone number to check',
+    example: '1213213213',
+  })
   @IsString()
   phone: string;
 }
