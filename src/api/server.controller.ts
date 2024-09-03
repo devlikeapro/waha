@@ -38,7 +38,7 @@ export class ServerController {
   }
 
   @Get('environment')
-  @ApiOperation({ summary: 'Return the server environment' })
+  @ApiOperation({ summary: 'Get the server environment' })
   environment(
     @Query(new WAHAValidationPipe()) query: EnvironmentQuery,
     // eslint-disable-next-line @typescript-eslint/ban-types
@@ -64,7 +64,7 @@ export class ServerController {
   }
 
   @Get('status')
-  @ApiOperation({ summary: 'The server status' })
+  @ApiOperation({ summary: 'Get the server status' })
   async status(): Promise<ServerStatusResponse> {
     const now = Date.now();
     const uptime = Math.floor(process.uptime() * 1000);
