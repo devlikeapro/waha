@@ -1,11 +1,12 @@
 import { Body, Controller, Get, Param, Put } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { WhatsappSession } from '@waha/core/abc/session.abc';
+import { ChatIdApiParam } from '@waha/nestjs/params/ChatIdApiParam';
 import {
   SessionApiParam,
   SessionParam,
 } from '@waha/nestjs/params/SessionApiParam';
-import { Label, LabelID, SetLabelsRequest } from '@waha/structures/labels.dto';
+import { Label, SetLabelsRequest } from '@waha/structures/labels.dto';
 
 import { SessionManager } from '../core/abc/manager.abc';
 
@@ -24,6 +25,7 @@ export class LabelsController {
 
   @Get('/chats/:chatId')
   @SessionApiParam
+  @ChatIdApiParam
   @ApiOperation({ summary: 'Get labels for the chat' })
   getChatLabels(
     @SessionParam session: WhatsappSession,
@@ -34,6 +36,7 @@ export class LabelsController {
 
   @Put('/chats/:chatId')
   @SessionApiParam
+  @ChatIdApiParam
   @ApiOperation({ summary: 'Save labels for the chat' })
   putChatLabels(
     @SessionParam session: WhatsappSession,
