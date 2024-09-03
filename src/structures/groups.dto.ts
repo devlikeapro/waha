@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsString } from 'class-validator';
 
 /**
@@ -5,6 +6,9 @@ import { IsArray, IsString } from 'class-validator';
  */
 export class Participant {
   @IsString()
+  @ApiProperty({
+    example: '123456789@c.us',
+  })
   id: string;
 }
 
@@ -29,6 +33,7 @@ export class DescriptionRequest {
   @IsString()
   description: string;
 }
+
 export class SubjectRequest {
   @IsString()
   subject: string;
