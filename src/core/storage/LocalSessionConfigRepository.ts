@@ -18,7 +18,13 @@ export class LocalSessionConfigRepository extends ISessionConfigRepository {
 
   async exists(sessionName: string): Promise<boolean> {
     const filepath = this.getFilePath(sessionName);
-    return await fileExists(filepath);
+    const exists = await fileExists(filepath);
+    if (!exists) {
+      // check directory exist for empty config sessions
+      const folder = this.store.getSessionDirectory(sessionName);
+      return await fileExists(folder);
+    }
+    return true;
   }
 
   async get(sessionName: string): Promise<SessionConfig | null> {
