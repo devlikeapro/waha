@@ -249,9 +249,7 @@ class SessionsController {
 
     return await this.withLock(name, async () => {
       const config = request.config;
-      if (config) {
-        await this.manager.upsert(name, config);
-      }
+      await this.manager.upsert(name, config);
       return await this.manager.start(name);
     });
   }
