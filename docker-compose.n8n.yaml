@@ -1,0 +1,33 @@
+services:
+  waha:
+    restart: always
+    container_name: waha
+    # image: devlikeapro/waha:latest
+    image: devlikeapro/waha-plus:latest
+    ports:
+      - '3000:3000/tcp'
+    volumes:
+      - './.sessions:/app/.sessions'
+      - './.media:/app/.media'
+    environment:
+      - WHATSAPP_API_KEY=321
+      - WAHA_DASHBOARD_USERNAME=waha
+      - WAHA_DASHBOARD_PASSWORD=waha
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+      - WHATSAPP_RESTART_ALL_SESSIONS=True
+      - WAHA_PRINT_QR=False
+      - WAHA_MEDIA_STORAGE=LOCAL
+      - WHATSAPP_FILES_LIFETIME=0
+      - WHATSAPP_FILES_FOLDER=/app/.media
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
+    restart: always
+    ports:
+      - '5678:5678'
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data: {}
