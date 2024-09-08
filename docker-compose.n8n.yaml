@@ -24,6 +24,8 @@ services:
     image: docker.n8n.io/n8nio/n8n
     container_name: n8n
     restart: always
+    environment:
+      - WEBHOOK_URL=http://n8n:5678
     ports:
       - '5678:5678'
     volumes:
