@@ -85,10 +85,10 @@ services:
       # Logging
       # https://waha.devlike.pro/docs/how-to/observability/#logging
       #
-      - WAHA_LOG_FORMAT=PRETTY
       # Set log format to JSON if you consume logs with log management systems
-      #- WAHA_LOG_FORMAT=JSON
+      - WAHA_LOG_FORMAT=JSON
       - WAHA_LOG_LEVEL=info
+      # - WAHA_LOG_FORMAT=PRETTY
       # If you want to see more logs, you can set the log level to debug
       #- WAHA_LOG_LEVEL=debug
       # DEBUG=1 # shortcut for setting log level to debug
