@@ -136,4 +136,9 @@ export class WhatsappConfigService {
       3000,
     );
   }
+
+  get debugModeEnabled(): boolean {
+    const value = this.configService.get('WAHA_DEBUG_MODE', 'false');
+    return parseBool(value);
+  }
 }

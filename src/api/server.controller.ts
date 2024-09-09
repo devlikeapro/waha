@@ -1,15 +1,21 @@
 import * as process from 'node:process';
+import * as v8 from 'node:v8';
 
 import {
   Body,
   Controller,
   Get,
   Logger,
+  NotFoundException,
   Post,
   Query,
+  Res,
+  StreamableFile,
+  UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { WhatsappConfigService } from '@waha/config.service';
 import { getApp } from '@waha/main';
 import { WAHAValidationPipe } from '@waha/nestjs/pipes/WAHAValidationPipe';
 import { WAHAEnvironment } from '@waha/structures/environment.dto';
@@ -103,5 +109,36 @@ export class ServerController {
         process.exit(0);
       }, timeout);
     }
+  }
+}
+
+@ApiSecurity('api_key')
+@Controller('api/server/debug')
+@ApiTags('🔍 Observability')
+export class ServerDebugController {
+  private logger: Logger;
+  private readonly enabled: boolean;
+
+  constructor(protected config: WhatsappConfigService) {
+    this.logger = new Logger('ServerDebugController');
+    this.enabled = this.config.debugModeEnabled;
+  }
+
+  @Get('heapsnapshot')
+  @ApiOperation({
+    summary: 'Return a heapsnapshot',
+    description: "Return a heapsnapshot of the server's memory",
+  })
+  async heapsnapshot() {
+    if (!this.enabled) {
+      throw new NotFoundException('WAHA_DEBUG_MODE is disabled');
+    }
+    this.logger.log('Creating a heap snapshot...');
+    const heap = v8.getHeapSnapshot();
+    const fileName = `${Date.now()}.heapsnapshot`;
+    return new StreamableFile(heap, {
+      type: 'application/octet-stream',
+      disposition: `attachment; filename=${fileName}`,
+    });
   }
 }

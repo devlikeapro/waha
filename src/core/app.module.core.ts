@@ -5,7 +5,10 @@ import { PassportModule } from '@nestjs/passport';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { TerminusModule } from '@nestjs/terminus';
 import { ChannelsController } from '@waha/api/channels.controller';
-import { ServerController } from '@waha/api/server.controller';
+import {
+  ServerController,
+  ServerDebugController,
+} from '@waha/api/server.controller';
 import { WebsocketGatewayCore } from '@waha/core/api/websocket.gateway.core';
 import { MediaLocalStorageConfig } from '@waha/core/media/local/MediaLocalStorageConfig';
 import { BufferJsonReplacerInterceptor } from '@waha/nestjs/BufferJsonReplacerInterceptor';
@@ -112,6 +115,7 @@ export const CONTROLLERS = [
   PingController,
   HealthController,
   ServerController,
+  ServerDebugController,
   VersionController,
 ];
 const PROVIDERS = [
