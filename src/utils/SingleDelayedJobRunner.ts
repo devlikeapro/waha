@@ -30,9 +30,9 @@ export class SingleDelayedJobRunner {
     }
 
     this.timeout = setTimeout(() => {
-      this.timeout = null;
       this.logger.debug(`Running job...`);
       fn().finally(() => {
+        this.timeout = null;
         this.logger.debug(`Job finished`);
       });
     }, this.timeoutMs);
