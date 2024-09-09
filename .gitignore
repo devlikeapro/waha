@@ -1,3 +1,4 @@
+*.heapsnapshot
 .yarn
 example.ts
 .*sessions
