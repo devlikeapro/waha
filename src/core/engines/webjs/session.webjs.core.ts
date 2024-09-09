@@ -235,6 +235,8 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   private async end() {
     try {
       this.whatsapp?.removeAllListeners();
+      this.whatsapp?.pupBrowser?.removeAllListeners();
+      this.whatsapp?.pupPage?.removeAllListeners();
       this.startDelayedJob.cancel();
       // It's possible that browser yet starting
       await waitUntil(

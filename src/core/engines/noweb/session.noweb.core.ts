@@ -284,6 +284,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async buildClient() {
+    // @ts-ignore
+    this.sock?.ev?.removeAllListeners();
     this.sock = await this.makeSocket();
     this.issueMessageUpdateOnEdits();
     this.issuePresenceUpdateOnMessageUpsert();
