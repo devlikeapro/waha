@@ -51,6 +51,7 @@ export class SinglePeriodicJobRunner {
 
   stop() {
     clearInterval(this.interval);
+    this.interval = null;
     this.logger.info(`Job stopped`);
   }
 
