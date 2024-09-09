@@ -138,10 +138,7 @@ export class SessionManagerCore extends SessionManager {
       new MediaNoopStorage(),
       this.config.mimetypes,
     );
-    const logger = this.log.logger.child({
-      session: name,
-      sessionRunTimestamp: Date.now(),
-    });
+    const logger = this.log.logger.child({ session: name });
     logger.level = getPinoLogLevel(this.sessionConfig?.debug);
     const loggerBuilder: LoggerBuilder = logger;
 
