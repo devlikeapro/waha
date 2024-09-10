@@ -98,5 +98,7 @@ async function bootstrap() {
 
 bootstrap().catch((error) => {
   logger.error(error, `Failed to start WAHA: ${error}`);
+  // @ts-ignore
+  logger.error(error.stack);
   process.exit(1);
 });
