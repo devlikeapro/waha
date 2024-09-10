@@ -1,7 +1,7 @@
 #
 # Build
 #
-ARG NODE_VERSION=20.17.0-bullseye
+ARG NODE_VERSION=22.8-bullseye
 FROM node:${NODE_VERSION} as build
 ENV PUPPETEER_SKIP_DOWNLOAD=True
 
