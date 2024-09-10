@@ -170,6 +170,7 @@ export abstract class WhatsappSession {
       '--disable-offline-load-stale-cache',
       '--disable-popup-blocking',
       '--disable-setuid-sandbox',
+      '--disable-site-isolation-trials', // https://superuser.com/questions/654565/how-to-run-google-chrome-in-a-single-process
       '--disable-speech-api',
       '--disable-sync',
       '--disable-translate',
@@ -178,6 +179,7 @@ export abstract class WhatsappSession {
       '--hide-scrollbars',
       '--ignore-certificate-errors',
       '--ignore-ssl-errors',
+      '--in-process-gpu', // https://superuser.com/questions/654565/how-to-run-google-chrome-in-a-single-process
       '--metrics-recording-only',
       '--mute-audio',
       '--no-default-browser-check',
@@ -186,6 +188,7 @@ export abstract class WhatsappSession {
       '--no-sandbox',
       '--no-zygote',
       '--password-store=basic',
+      '--renderer-process-limit=2', // https://superuser.com/questions/654565/how-to-run-google-chrome-in-a-single-process
       '--safebrowsing-disable-auto-update',
       '--single-process',
       '--use-mock-keychain',
