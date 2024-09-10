@@ -8,4 +8,4 @@ uv_threadpool_size=$(($cpus * 2))
 export UV_THREADPOOL_SIZE="${UV_THREADPOOL_SIZE:-$uv_threadpool_size}"
 
 # Start your application using yarn
-yarn start:prod
+node dist/main
