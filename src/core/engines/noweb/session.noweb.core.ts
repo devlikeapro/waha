@@ -647,11 +647,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async startTyping(request: ChatRequest) {
-    return this.sock.sendPresenceUpdate('composing', request.chatId);
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    return this.sock.sendPresenceUpdate('composing', chatId);
   }
 
   async stopTyping(request: ChatRequest) {
-    return this.sock.sendPresenceUpdate('paused', request.chatId);
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    return this.sock.sendPresenceUpdate('paused', chatId);
   }
 
   async getMessages(query: GetMessageQuery) {
@@ -888,6 +890,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       throw new NotImplementedByEngineError(
         `NOWEB engine doesn't support '${presence}' presence.`,
       );
+    }
+    if (chatId) {
+      chatId = toJID(this.ensureSuffix(chatId));
     }
     await this.sock.sendPresenceUpdate(enginePresence, chatId);
   }
