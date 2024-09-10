@@ -9,6 +9,7 @@ ENV PUPPETEER_SKIP_DOWNLOAD=True
 WORKDIR /src
 COPY package.json .
 COPY yarn.lock .
+ENV YARN_CHECKSUM_BEHAVIOR=update
 RUN npm install -g corepack && corepack enable
 RUN yarn set version 3.6.3
 RUN yarn install
