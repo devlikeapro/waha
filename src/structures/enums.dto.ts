@@ -32,7 +32,6 @@ export enum WAHASessionStatus {
 }
 
 export enum WAHAEngine {
-  VENOM = 'VENOM',
   WEBJS = 'WEBJS',
   NOWEB = 'NOWEB',
 }
