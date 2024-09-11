@@ -42,6 +42,10 @@ export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
     );
   }
 }
+enum DefaultSessionStatus {
+  REMOVED = undefined,
+  STOPPED = null,
+}
 
 @Injectable()
 export class SessionManagerCore extends SessionManager {
@@ -50,7 +54,7 @@ export class SessionManagerCore extends SessionManager {
   // session - exists and running (or failed or smth)
   // null - stopped
   // undefined - removed
-  private session: WhatsappSession | undefined | null;
+  private session: WhatsappSession | DefaultSessionStatus;
   private sessionConfig?: SessionConfig;
   DEFAULT = 'default';
 
@@ -65,7 +69,7 @@ export class SessionManagerCore extends SessionManager {
   ) {
     super();
     this.events = new EventEmitter();
-    this.session = null;
+    this.session = DefaultSessionStatus.STOPPED;
     this.sessionConfig = null;
     this.log.setContext(SessionManagerCore.name);
     const engineName = this.engineConfigService.getDefaultEngineName();
@@ -110,7 +114,7 @@ export class SessionManagerCore extends SessionManager {
   //
   async exists(name: string): Promise<boolean> {
     this.onlyDefault(name);
-    return this.session !== undefined;
+    return this.session !== DefaultSessionStatus.REMOVED;
   }
 
   isRunning(name: string): boolean {
@@ -193,7 +197,7 @@ export class SessionManagerCore extends SessionManager {
       }
     }
     this.log.info(`Session has been stopped.`, { session: name });
-    this.session = null;
+    this.session = DefaultSessionStatus.STOPPED;
     await sleep(this.SESSION_STOP_TIMEOUT);
   }
 
@@ -204,7 +208,7 @@ export class SessionManagerCore extends SessionManager {
 
   async delete(name: string): Promise<void> {
     this.onlyDefault(name);
-    this.session = undefined;
+    this.session = DefaultSessionStatus.REMOVED;
     this.sessionConfig = undefined;
   }
 
@@ -233,20 +237,20 @@ export class SessionManagerCore extends SessionManager {
     if (!this.session) {
       return undefined;
     }
-    const sessions = { [this.DEFAULT]: this.session };
+    const sessions = { [this.DEFAULT]: this.session as WhatsappSession };
     return getProxyConfig(this.config, sessions, this.DEFAULT);
   }
 
   getSession(name: string): WhatsappSession {
     this.onlyDefault(name);
     const session = this.session;
-    if (session === undefined) {
+    if (!session) {
       throw new NotFoundException(
-        `We didn't find a session with name '${name}'. 
-        Please start it first by using POST /sessions/${name}/start request`,
+        `We didn't find a session with name '${name}'.\n` +
+          `Please start it first by using POST /sessions/${name}/start request`,
       );
     }
-    return session;
+    return session as WhatsappSession;
   }
 
   async getSessions(all: boolean): Promise<SessionInfo[]> {
@@ -264,12 +268,13 @@ export class SessionManagerCore extends SessionManager {
       return [];
     }
 
-    const me = this.session.getSessionMeInfo();
+    const session = this.session as WhatsappSession;
+    const me = session.getSessionMeInfo();
     // Get engine info
     let engineInfo = {};
-    if (this.session) {
+    if (session) {
       try {
-        engineInfo = await promiseTimeout(10, this.session.getEngineInfo());
+        engineInfo = await promiseTimeout(10, session.getEngineInfo());
       } catch (e) {
         this.log.warn(
           { session: this.session },
@@ -278,14 +283,14 @@ export class SessionManagerCore extends SessionManager {
       }
     }
     const engine = {
-      engine: this.session?.engine,
+      engine: session?.engine,
       ...engineInfo,
     };
     return [
       {
-        name: this.session.name,
-        status: this.session.status,
-        config: this.session.sessionConfig,
+        name: session.name,
+        status: session.status,
+        config: session.sessionConfig,
         me: me,
         engine: engine,
       },
