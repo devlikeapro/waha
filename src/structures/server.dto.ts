@@ -28,6 +28,14 @@ export class StopRequest {
   force: boolean = false;
 }
 
+export class StopResponse {
+  @ApiProperty({
+    example: true,
+    description: "Always 'true' if the server is stopping.",
+  })
+  stopping: boolean = true;
+}
+
 export class ServerStatusResponse {
   @ApiProperty({
     example: 1723788847247,

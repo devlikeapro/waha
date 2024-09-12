@@ -23,6 +23,7 @@ import {
   EnvironmentQuery,
   ServerStatusResponse,
   StopRequest,
+  StopResponse,
 } from '@waha/structures/server.dto';
 import { VERSION } from '@waha/version';
 import * as lodash from 'lodash';
@@ -89,7 +90,7 @@ export class ServerController {
       'so you can use this endpoint to restart the server',
   })
   @UsePipes(new WAHAValidationPipe())
-  async stop(@Body() request: StopRequest) {
+  async stop(@Body() request: StopRequest): Promise<StopResponse> {
     const timeout = 1_000;
     if (request.force) {
       this.logger.log(`Force stopping the server in ${timeout}ms`);
@@ -109,6 +110,7 @@ export class ServerController {
         process.exit(0);
       }, timeout);
     }
+    return { stopping: true };
   }
 }
 
