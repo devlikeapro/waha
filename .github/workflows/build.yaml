@@ -102,8 +102,6 @@ jobs:
         working-directory: tests/smoke
         timeout-minutes: 2
         run: |
-          export GOSS_PATH=/usr/local/bin/goss
-
           docker run -d --name smoke --rm -p3000:3000 ${{ vars.DOCKER_IMAGE }}:${{ matrix.tag }}
           sleep 3
           docker logs smoke
