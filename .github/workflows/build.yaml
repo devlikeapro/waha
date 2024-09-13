@@ -17,36 +17,42 @@ jobs:
             tag: 'latest'
             platform: 'amd64'
             browser: 'chromium'
+            goss: 'goss-linux-amd64'
 
           # Chromium - ARM
           - runner: 'buildjet-4vcpu-ubuntu-2204-arm'
             tag: 'arm'
             platform: 'linux/arm64'
             browser: 'chromium'
+            goss: 'goss-linux-arm'
 
           # Chrome - x86
           - runner: 'buildjet-4vcpu-ubuntu-2204'
             tag: 'chrome'
             platform: 'amd64'
             browser: 'chrome'
+            goss: 'goss-linux-amd64'
 
           # Chrome - ARM (Chrome is not available for ARM)
           #- runner: "buildjet-4vcpu-ubuntu-2204-arm"
           #  tag: "chrome-arm"
           #  platform: "linux/arm64"
           #  browser: "chrome"
+          #  goss: 'goss-linux-arm'
 
           # No browser - x86
           - runner: 'buildjet-4vcpu-ubuntu-2204'
             tag: 'noweb'
             platform: 'amd64'
             browser: 'none'
+            goss: 'goss-linux-amd64'
 
           # No browser - ARM
           - runner: 'buildjet-4vcpu-ubuntu-2204-arm'
             tag: 'noweb-arm'
             platform: 'linux/arm64'
             browser: 'none'
+            goss: 'goss-linux-arm'
 
     steps:
       - name: Checkout
@@ -71,7 +77,38 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Build and push
+      - name: Build
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          platforms: ${{ matrix.platform }}
+          build-args: |
+            USE_BROWSER=${{ matrix.browser }}
+          push: false
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Install goss
+        env:
+          GOSS_DOWNLOAD: 'https://github.com/goss-org/goss/releases/download'
+          GOSS_VERSION: 'v0.4.8'
+        run: |
+          curl -L https://github.com/goss-org/goss/releases/download/${{ env.GOSS_VERSION }}/${{ matrix.goss }} -o /usr/local/bin/goss
+          chmod +rx /usr/local/bin/goss
+
+      - name: Run smoke tests
+        working-directory: tests/smoke
+        timeout-minutes: 2
+        run: |
+          export GOSS_PATH=/usr/local/bin/goss
+
+          docker run -d --name smoke --rm -p3000:3000 ${{ vars.DOCKER_IMAGE }}:${{ matrix.tag }}
+          goss validate --retry-timeout 30s --sleep 1s
+          docker rm --force smoke
+
+      - name: Push
         uses: docker/build-push-action@v4
         with:
           context: .
