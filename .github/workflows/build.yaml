@@ -2,6 +2,8 @@ name: Release
 
 on:
   push:
+    branches:
+      - "smoke-tests"
     tags:
       - '*'
 
