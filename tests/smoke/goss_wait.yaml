@@ -1,0 +1,5 @@
+port:
+  tcp:3000:
+    listening: true
+    ip:
+      - 127.0.0.1
