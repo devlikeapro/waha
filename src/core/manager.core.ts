@@ -275,9 +275,9 @@ export class SessionManagerCore extends SessionManager {
     if (session) {
       try {
         engineInfo = await promiseTimeout(10, session.getEngineInfo());
-      } catch (e) {
+      } catch (error) {
         this.log.warn(
-          { session: this.session },
+          { session: this.session, error: error },
           'Error while getting engine info',
         );
       }
