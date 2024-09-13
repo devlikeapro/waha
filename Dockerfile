@@ -2,7 +2,7 @@
 # Build
 #
 ARG NODE_VERSION=22.8-bullseye
-FROM node:${NODE_VERSION} as build
+FROM node:${NODE_VERSION} AS build
 ENV PUPPETEER_SKIP_DOWNLOAD=True
 
 # npm packages
@@ -23,7 +23,7 @@ RUN yarn build && find ./dist -name "*.d.ts" -delete
 #
 # Dashboard
 #
-FROM node:${NODE_VERSION} as dashboard
+FROM node:${NODE_VERSION} AS dashboard
 
 # Download WAHA Dashboard
 ENV WAHA_DASHBOARD_SHA 9afbd7b68618ea67be01bdefa978cf98a6336611
@@ -38,7 +38,7 @@ RUN \
 #
 # Final
 #
-FROM node:${NODE_VERSION} as release
+FROM node:${NODE_VERSION} AS release
 ENV PUPPETEER_SKIP_DOWNLOAD=True
 # Quick fix for memory potential memory leaks
 # https://github.com/devlikeapro/waha/issues/347
