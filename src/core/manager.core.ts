@@ -19,6 +19,7 @@ import {
 import {
   ProxyConfig,
   SessionConfig,
+  SessionDetailedInfo,
   SessionDTO,
   SessionInfo,
 } from '../structures/sessions.dto';
@@ -270,11 +271,23 @@ export class SessionManagerCore extends SessionManager {
 
     const session = this.session as WhatsappSession;
     const me = session.getSessionMeInfo();
+    return [
+      {
+        name: session.name,
+        status: session.status,
+        config: session.sessionConfig,
+        me: me,
+      },
+    ];
+  }
+
+  private async fetchEngineInfo() {
+    const session = this.session as WhatsappSession;
     // Get engine info
     let engineInfo = {};
     if (session) {
       try {
-        engineInfo = await promiseTimeout(10, session.getEngineInfo());
+        engineInfo = await promiseTimeout(1000, session.getEngineInfo());
       } catch (error) {
         this.log.warn(
           { session: this.session, error: error },
@@ -286,21 +299,19 @@ export class SessionManagerCore extends SessionManager {
       engine: session?.engine,
       ...engineInfo,
     };
-    return [
-      {
-        name: session.name,
-        status: session.status,
-        config: session.sessionConfig,
-        me: me,
-        engine: engine,
-      },
-    ];
+    return engine;
   }
 
-  async getSessionInfo(name: string): Promise<SessionInfo | null> {
+  async getSessionInfo(name: string): Promise<SessionDetailedInfo | null> {
     if (name !== this.DEFAULT) {
       return null;
     }
-    return this.getSessions(true).then((sessions) => sessions[0]);
+    const sessions = await this.getSessions(true);
+    if (sessions.length === 0) {
+      return null;
+    }
+    const session = sessions[0];
+    const engine = await this.fetchEngineInfo();
+    return { ...session, engine: engine };
   }
 }

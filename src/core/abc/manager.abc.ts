@@ -6,6 +6,7 @@ import { EventEmitter } from 'events';
 import { WAHAEngine, WAHAEvents } from '../../structures/enums.dto';
 import {
   SessionConfig,
+  SessionDetailedInfo,
   SessionDTO,
   SessionInfo,
 } from '../../structures/sessions.dto';
@@ -50,7 +51,7 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
 
   abstract getSession(name: string): WhatsappSession;
 
-  abstract getSessionInfo(name: string): Promise<SessionInfo | null>;
+  abstract getSessionInfo(name: string): Promise<SessionDetailedInfo | null>;
 
   abstract getSessions(all: boolean): Promise<SessionInfo[]>;
 

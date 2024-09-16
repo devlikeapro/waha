@@ -153,6 +153,9 @@ export class MeInfo {
 
 export class SessionInfo extends SessionDTO {
   me?: MeInfo;
+}
+
+export class SessionDetailedInfo extends SessionInfo {
   engine?: any;
 }
 

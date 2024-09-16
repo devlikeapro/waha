@@ -67,7 +67,7 @@ class SessionsController {
   @SessionApiParam
   @UsePipes(new WAHAValidationPipe())
   async get(@Param('session') name: string): Promise<SessionInfo> {
-    const session = this.manager.getSessionInfo(name);
+    const session = await this.manager.getSessionInfo(name);
     if (session === null) {
       throw new NotFoundException('Session not found');
     }
