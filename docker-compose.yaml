@@ -60,7 +60,10 @@ services:
       #- WHATSAPP_API_SCHEMA=http
       #- WHATSAPP_API_PORT=3000
       #- WHATSAPP_API_HOSTNAME=localhost
+      #
       # Set your timezone to see the right time on screenshots
+      # Find your timezone name in the list
+      # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       #- TZ=Europe/Dublin
 
       #
