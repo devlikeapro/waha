@@ -255,7 +255,7 @@ export class SessionManagerCore extends SessionManager {
   }
 
   async getSessions(all: boolean): Promise<SessionInfo[]> {
-    if (this.session === null && all) {
+    if (this.session === DefaultSessionStatus.STOPPED && all) {
       return [
         {
           name: this.DEFAULT,
@@ -265,12 +265,15 @@ export class SessionManagerCore extends SessionManager {
         },
       ];
     }
-    if (this.session === undefined && all) {
+    if (this.session === DefaultSessionStatus.REMOVED && all) {
+      return [];
+    }
+    if (!this.session && !all) {
       return [];
     }
 
     const session = this.session as WhatsappSession;
-    const me = session.getSessionMeInfo();
+    const me = session?.getSessionMeInfo();
     return [
       {
         name: session.name,
