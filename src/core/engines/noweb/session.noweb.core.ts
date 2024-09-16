@@ -329,7 +329,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   private restartClient() {
     this.startDelayedJob.schedule(async () => {
-      await this.buildClient();
+      await this.start();
     });
   }
 
