@@ -113,6 +113,7 @@ export class WebsocketGatewayCore
     // Do not turn off heartbeat service here,
     // it's responsible for terminating the connection that is not alive
     this.logger.log('Websocket server is down');
+    this.heartbeat?.stop();
   }
 
   afterInit(server: Server) {

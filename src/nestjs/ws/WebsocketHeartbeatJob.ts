@@ -34,6 +34,7 @@ export class WebsocketHeartbeatJob {
 
   stop() {
     clearInterval(this.interval);
+    this.interval = null;
   }
 
   private onPong(ws: WebSocket) {
