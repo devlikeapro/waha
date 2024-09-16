@@ -11,7 +11,7 @@ import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { GroupIdApiParam } from '@waha/nestjs/params/ChatIdApiParam';
 import {
   SessionApiParam,
-  SessionParam,
+  WorkingSessionParam,
 } from '@waha/nestjs/params/SessionApiParam';
 
 import { SessionManager } from '../core/abc/manager.abc';
@@ -34,7 +34,7 @@ export class GroupsController {
   @SessionApiParam
   @ApiOperation({ summary: 'Create a new group.' })
   createGroup(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Body() request: CreateGroupRequest,
   ) {
     return session.createGroup(request);
@@ -43,7 +43,7 @@ export class GroupsController {
   @Get('')
   @SessionApiParam
   @ApiOperation({ summary: 'Get all groups.' })
-  getGroups(@SessionParam session: WhatsappSession) {
+  getGroups(@WorkingSessionParam session: WhatsappSession) {
     return session.getGroups();
   }
 
@@ -51,7 +51,10 @@ export class GroupsController {
   @GroupIdApiParam
   @SessionApiParam
   @ApiOperation({ summary: 'Get the group.' })
-  getGroup(@SessionParam session: WhatsappSession, @Param('id') id: string) {
+  getGroup(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+  ) {
     return session.getGroup(id);
   }
 
@@ -64,7 +67,7 @@ export class GroupsController {
       'You can allow only admins to edit group info (title, description, photo).',
   })
   setInfoAdminOnly(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
     @Body() request: SettingsSecurityChangeInfo,
   ) {
@@ -80,7 +83,7 @@ export class GroupsController {
       'You can allow only admins to edit group info (title, description, photo).',
   })
   getInfoAdminOnly(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
   ): Promise<SettingsSecurityChangeInfo> {
     return session.getInfoAdminsOnly(id);
@@ -95,7 +98,7 @@ export class GroupsController {
       'Updates the group settings to only allow admins to send messages.',
   })
   setMessagesAdminOnly(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
     @Body() request: SettingsSecurityChangeInfo,
   ) {
@@ -110,7 +113,7 @@ export class GroupsController {
     description: 'The group settings to only allow admins to send messages.',
   })
   getMessagesAdminOnly(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
   ): Promise<SettingsSecurityChangeInfo> {
     return session.getMessagesAdminsOnly(id);
@@ -120,7 +123,10 @@ export class GroupsController {
   @SessionApiParam
   @GroupIdApiParam
   @ApiOperation({ summary: 'Delete the group.' })
-  deleteGroup(@SessionParam session: WhatsappSession, @Param('id') id: string) {
+  deleteGroup(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+  ) {
     return session.deleteGroup(id);
   }
 
@@ -128,7 +134,10 @@ export class GroupsController {
   @SessionApiParam
   @GroupIdApiParam
   @ApiOperation({ summary: 'Leave the group.' })
-  leaveGroup(@SessionParam session: WhatsappSession, @Param('id') id: string) {
+  leaveGroup(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+  ) {
     return session.leaveGroup(id);
   }
 
@@ -141,7 +150,7 @@ export class GroupsController {
   @SessionApiParam
   @GroupIdApiParam
   setDescription(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
     @Body() request: DescriptionRequest,
   ) {
@@ -157,7 +166,7 @@ export class GroupsController {
       'Returns "true" if the subject was properly updated. This can return "false" if the user does not have the necessary permissions.',
   })
   setSubject(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
     @Body() request: SubjectRequest,
   ) {
@@ -169,7 +178,7 @@ export class GroupsController {
   @GroupIdApiParam
   @ApiOperation({ summary: 'Gets the invite code for the group.' })
   getInviteCode(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
   ): Promise<string> {
     return session.getInviteCode(id);
@@ -183,7 +192,7 @@ export class GroupsController {
       'Invalidates the current group invite code and generates a new one.',
   })
   revokeInviteCode(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
   ): Promise<string> {
     return session.revokeInviteCode(id);
@@ -194,7 +203,7 @@ export class GroupsController {
   @GroupIdApiParam
   @ApiOperation({ summary: 'Get participants' })
   getParticipants(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
   ) {
     return session.getParticipants(id);
@@ -205,7 +214,7 @@ export class GroupsController {
   @GroupIdApiParam
   @ApiOperation({ summary: 'Add participants' })
   addParticipants(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
     @Body() request: ParticipantsRequest,
   ) {
@@ -219,7 +228,7 @@ export class GroupsController {
     summary: 'Remove participants',
   })
   removeParticipants(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
     @Body() request: ParticipantsRequest,
   ) {
@@ -231,7 +240,7 @@ export class GroupsController {
   @GroupIdApiParam
   @ApiOperation({ summary: 'Promote participants to admin users.' })
   promoteToAdmin(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
     @Body() request: ParticipantsRequest,
   ) {
@@ -243,7 +252,7 @@ export class GroupsController {
   @GroupIdApiParam
   @ApiOperation({ summary: 'Demotes participants to regular users.' })
   demoteToAdmin(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
     @Body() request: ParticipantsRequest,
   ) {

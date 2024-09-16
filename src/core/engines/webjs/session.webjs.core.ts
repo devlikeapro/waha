@@ -327,11 +327,6 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   async getScreenshot(): Promise<Buffer> {
-    if (this.status === WAHASessionStatus.FAILED) {
-      throw new UnprocessableEntityException(
-        `The session under FAILED status. Please try to restart it.`,
-      );
-    }
     const screenshot = await this.whatsapp.pupPage.screenshot({
       encoding: 'binary',
     });

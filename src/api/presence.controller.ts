@@ -10,7 +10,7 @@ import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { ChatIdApiParam } from '@waha/nestjs/params/ChatIdApiParam';
 import {
   SessionApiParam,
-  SessionParam,
+  WorkingSessionParam,
 } from '@waha/nestjs/params/SessionApiParam';
 
 import { SessionManager } from '../core/abc/manager.abc';
@@ -31,7 +31,7 @@ export class PresenceController {
   @SessionApiParam
   @ApiOperation({ summary: 'Set session presence' })
   setPresence(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Body() request: WAHASessionPresence,
   ) {
     // Validate request
@@ -61,7 +61,7 @@ export class PresenceController {
   @SessionApiParam
   @ApiOperation({ summary: 'Get all subscribed presence information.' })
   getPresenceAll(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
   ): Promise<WAHAChatPresences[]> {
     return session.getPresences();
   }
@@ -74,7 +74,7 @@ export class PresenceController {
       "Get the presence for the chat id. If it hasn't been subscribed - it also subscribes to it.",
   })
   getPresence(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
   ): Promise<WAHAChatPresences> {
     return session.getPresence(chatId);
@@ -87,7 +87,7 @@ export class PresenceController {
     summary: 'Subscribe to presence events for the chat.',
   })
   subscribe(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
   ): Promise<void> {
     return session.subscribePresence(chatId);

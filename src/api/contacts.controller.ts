@@ -21,15 +21,15 @@ export class ContactsController {
     description:
       'The method always return result, even if the phone number is not registered in WhatsApp. For that - use /contacts/check-exists endpoint below.',
   })
-  get(@Query() query: ContactQuery) {
-    const whatsapp = this.manager.getSession(query.session);
+  async get(@Query() query: ContactQuery) {
+    const whatsapp = await this.manager.getWorkingSession(query.session);
     return whatsapp.getContact(query);
   }
 
   @Get('/all')
   @ApiOperation({ summary: 'Get all contacts' })
-  getAll(@Query() query: SessionQuery) {
-    const whatsapp = this.manager.getSession(query.session);
+  async getAll(@Query() query: SessionQuery) {
+    const whatsapp = await this.manager.getWorkingSession(query.session);
     return whatsapp.getContacts();
   }
 
@@ -38,7 +38,7 @@ export class ContactsController {
   async checkExists(
     @Query() request: CheckNumberStatusQuery,
   ): Promise<WANumberExistResult> {
-    const whatsapp = this.manager.getSession(request.session);
+    const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.checkNumberStatus(request);
   }
 
@@ -48,8 +48,8 @@ export class ContactsController {
     description:
       'Returns null if you do not have permission to read their status.',
   })
-  getAbout(@Query() query: ContactQuery) {
-    const whatsapp = this.manager.getSession(query.session);
+  async getAbout(@Query() query: ContactQuery) {
+    const whatsapp = await this.manager.getWorkingSession(query.session);
     return whatsapp.getContactAbout(query);
   }
 
@@ -59,22 +59,22 @@ export class ContactsController {
     description:
       'If privacy settings do not allow to get the picture, the method will return null.',
   })
-  getProfilePicture(@Query() query: ContactQuery) {
-    const whatsapp = this.manager.getSession(query.session);
+  async getProfilePicture(@Query() query: ContactQuery) {
+    const whatsapp = await this.manager.getWorkingSession(query.session);
     return whatsapp.getContactProfilePicture(query);
   }
 
   @Post('/block')
   @ApiOperation({ summary: 'Block contact' })
-  block(@Body() request: ContactRequest) {
-    const whatsapp = this.manager.getSession(request.session);
+  async block(@Body() request: ContactRequest) {
+    const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.blockContact(request);
   }
 
   @Post('/unblock')
   @ApiOperation({ summary: 'Unblock contact' })
-  unblock(@Body() request: ContactRequest) {
-    const whatsapp = this.manager.getSession(request.session);
+  async unblock(@Body() request: ContactRequest) {
+    const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.unblockContact(request);
   }
 }

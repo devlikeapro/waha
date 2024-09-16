@@ -1,9 +1,17 @@
-import { BeforeApplicationShutdown } from '@nestjs/common';
+import {
+  BeforeApplicationShutdown,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { WAHAWebhook } from '@waha/structures/webhooks.dto';
+import { waitUntil } from '@waha/utils/promiseTimeout';
 import { VERSION } from '@waha/version';
 import { EventEmitter } from 'events';
 
-import { WAHAEngine, WAHAEvents } from '../../structures/enums.dto';
+import {
+  WAHAEngine,
+  WAHAEvents,
+  WAHASessionStatus,
+} from '../../structures/enums.dto';
 import {
   SessionConfig,
   SessionDetailedInfo,
@@ -20,6 +28,8 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
   public sessionAuthRepository: ISessionAuthRepository;
   public sessionConfigRepository: ISessionConfigRepository;
   public events: EventEmitter;
+  WAIT_STATUS_INTERVAL = 500;
+  WAIT_STATUS_TIMEOUT = 5_000;
 
   protected abstract getEngine(engine: WAHAEngine): typeof WhatsappSession;
 
@@ -69,5 +79,35 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
       };
       this.events.emit(event, data);
     };
+  }
+
+  async getWorkingSession(sessionName: string): Promise<WhatsappSession> {
+    return this.waitUntilStatus(sessionName, [WAHASessionStatus.WORKING]);
+  }
+
+  /**
+   * Wait until session is in expected status
+   */
+  async waitUntilStatus(
+    sessionName: string,
+    expected: WAHASessionStatus[],
+  ): Promise<WhatsappSession> {
+    const session = this.getSession(sessionName);
+    const valid = await waitUntil(
+      async () => expected.includes(session.status),
+      this.WAIT_STATUS_INTERVAL,
+      this.WAIT_STATUS_TIMEOUT,
+    );
+    if (!valid) {
+      const msg = {
+        error:
+          'Session status is not as expected. Try again later or restart the session',
+        session: sessionName,
+        status: session.status,
+        expected: expected,
+      };
+      throw new UnprocessableEntityException(msg);
+    }
+    return session;
   }
 }

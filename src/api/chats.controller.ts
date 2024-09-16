@@ -15,7 +15,7 @@ import { ChatIdApiParam } from '@waha/nestjs/params/ChatIdApiParam';
 import { MessageIdApiParam } from '@waha/nestjs/params/MessageIdApiParam';
 import {
   SessionApiParam,
-  SessionParam,
+  WorkingSessionParam,
 } from '@waha/nestjs/params/SessionApiParam';
 
 import { SessionManager } from '../core/abc/manager.abc';
@@ -35,7 +35,7 @@ class ChatsController {
   @SessionApiParam
   @ApiOperation({ summary: 'Get chats' })
   getChats(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Query() query: GetChatsQuery,
   ) {
     return session.getChats(query);
@@ -46,7 +46,7 @@ class ChatsController {
   @ApiOperation({ summary: 'Deletes the chat' })
   @ChatIdApiParam
   deleteChat(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
   ) {
     return session.deleteChat(chatId);
@@ -58,7 +58,7 @@ class ChatsController {
   @ChatIdApiParam
   getChatMessages(
     @Query() query: GetChatMessagesQuery,
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
   ) {
     const downloadMedia = parseBool(query.downloadMedia);
@@ -70,7 +70,7 @@ class ChatsController {
   @ApiOperation({ summary: 'Clears all messages from the chat' })
   @ChatIdApiParam
   clearMessages(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
   ) {
     return session.clearMessages(chatId);
@@ -82,7 +82,7 @@ class ChatsController {
   @MessageIdApiParam
   @ApiOperation({ summary: 'Deletes a message from the chat' })
   deleteMessage(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
     @Param('messageId') messageId: string,
   ) {
@@ -95,7 +95,7 @@ class ChatsController {
   @MessageIdApiParam
   @ApiOperation({ summary: 'Edits a message in the chat' })
   editMessage(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
     @Param('messageId') messageId: string,
     @Body() body: EditMessageRequest,
@@ -108,7 +108,7 @@ class ChatsController {
   @ChatIdApiParam
   @ApiOperation({ summary: 'Archive the chat' })
   archiveChat(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
   ) {
     return session.chatsArchiveChat(chatId);
@@ -119,7 +119,7 @@ class ChatsController {
   @ChatIdApiParam
   @ApiOperation({ summary: 'Unarchive the chat' })
   unarchiveChat(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
   ) {
     return session.chatsUnarchiveChat(chatId);

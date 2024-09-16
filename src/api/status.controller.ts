@@ -2,7 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import {
   SessionApiParam,
-  SessionParam,
+  WorkingSessionParam,
 } from '@waha/nestjs/params/SessionApiParam';
 
 import { SessionManager } from '../core/abc/manager.abc';
@@ -25,7 +25,7 @@ class StatusController {
   @SessionApiParam
   @ApiOperation({ summary: 'Send text status' })
   sendTextStatus(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Body() status: TextStatus,
   ) {
     return session.sendTextStatus(status);
@@ -35,7 +35,7 @@ class StatusController {
   @SessionApiParam
   @ApiOperation({ summary: 'Send image status' })
   sendImageStatus(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Body() status: ImageStatus,
   ) {
     return session.sendImageStatus(status);
@@ -45,7 +45,7 @@ class StatusController {
   @SessionApiParam
   @ApiOperation({ summary: 'Send voice status' })
   sendVoiceStatus(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Body() status: VoiceStatus,
   ) {
     return session.sendVoiceStatus(status);
@@ -55,7 +55,7 @@ class StatusController {
   @SessionApiParam
   @ApiOperation({ summary: 'Send video status' })
   sendVideoStatus(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Body() status: VideoStatus,
   ) {
     return session.sendVideoStatus(status);
@@ -65,7 +65,7 @@ class StatusController {
   @SessionApiParam
   @ApiOperation({ summary: 'DELETE sent status' })
   deleteStatus(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Body() status: DeleteStatusRequest,
   ) {
     return session.deleteStatus(status);

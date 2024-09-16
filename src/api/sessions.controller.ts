@@ -17,14 +17,12 @@ import {
   SessionParam,
 } from '@waha/nestjs/params/SessionApiParam';
 import { WAHAValidationPipe } from '@waha/nestjs/pipes/WAHAValidationPipe';
-import { WAHASessionStatus } from '@waha/structures/enums.dto';
 import {
   SessionLogoutDeprecatedRequest,
   SessionStartDeprecatedRequest,
   SessionStopDeprecatedRequest,
 } from '@waha/structures/sessions.deprecated.dto';
 import { generatePrefixedId } from '@waha/utils/ids';
-import { sleep } from '@waha/utils/promiseTimeout';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';

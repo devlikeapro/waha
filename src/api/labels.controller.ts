@@ -4,7 +4,7 @@ import { WhatsappSession } from '@waha/core/abc/session.abc';
 import { ChatIdApiParam } from '@waha/nestjs/params/ChatIdApiParam';
 import {
   SessionApiParam,
-  SessionParam,
+  WorkingSessionParam,
 } from '@waha/nestjs/params/SessionApiParam';
 import { Label, SetLabelsRequest } from '@waha/structures/labels.dto';
 
@@ -19,7 +19,7 @@ export class LabelsController {
   @Get('/')
   @SessionApiParam
   @ApiOperation({ summary: 'Get all labels' })
-  getAll(@SessionParam session: WhatsappSession): Promise<Label[]> {
+  getAll(@WorkingSessionParam session: WhatsappSession): Promise<Label[]> {
     return session.getLabels();
   }
 
@@ -28,7 +28,7 @@ export class LabelsController {
   @ChatIdApiParam
   @ApiOperation({ summary: 'Get labels for the chat' })
   getChatLabels(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
   ): Promise<Label[]> {
     return session.getChatLabels(chatId);
@@ -39,7 +39,7 @@ export class LabelsController {
   @ChatIdApiParam
   @ApiOperation({ summary: 'Save labels for the chat' })
   putChatLabels(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
     @Body() request: SetLabelsRequest,
   ) {
@@ -50,7 +50,7 @@ export class LabelsController {
   @SessionApiParam
   @ApiOperation({ summary: 'Get chats by label' })
   getChatsByLabel(
-    @SessionParam session: WhatsappSession,
+    @WorkingSessionParam session: WhatsappSession,
     @Param('labelId') labelId: string,
   ) {
     return session.getChatsByLabelId(labelId);
