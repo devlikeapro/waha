@@ -248,7 +248,7 @@ export class SessionManagerCore extends SessionManager {
     if (!session) {
       throw new NotFoundException(
         `We didn't find a session with name '${name}'.\n` +
-          `Please start it first by using POST /sessions/${name}/start request`,
+          `Please start it first by using POST /api/sessions/${name}/start request`,
       );
     }
     return session as WhatsappSession;
