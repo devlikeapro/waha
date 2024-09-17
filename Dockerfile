@@ -26,7 +26,7 @@ RUN yarn build && find ./dist -name "*.d.ts" -delete
 FROM node:${NODE_VERSION} AS dashboard
 
 # Download WAHA Dashboard
-ENV WAHA_DASHBOARD_SHA 9afbd7b68618ea67be01bdefa978cf98a6336611
+ENV WAHA_DASHBOARD_SHA 57810922006508f74078b6ef18f22982a7483a2e
 RUN \
     wget https://github.com/devlikeapro/dashboard/archive/${WAHA_DASHBOARD_SHA}.zip \
     && unzip ${WAHA_DASHBOARD_SHA}.zip -d /tmp/dashboard \
