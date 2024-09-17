@@ -155,6 +155,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   authFactory = new NowebAuthFactoryCore();
   storageFactory = new NowebStorageFactoryCore();
   private startDelayedJob: SingleDelayedJobRunner;
+  private shouldRestart: boolean;
+
   private autoRestartJob: SinglePeriodicJobRunner;
   private msgRetryCounterCache: NodeCache;
   protected engineLogger: BaileysLogger;
@@ -169,6 +171,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   public constructor(config) {
     super(config);
+    this.shouldRestart = true;
+
     this.qr = new QR();
     // external map to store retry counts of messages when decryption/encryption fails
     // keep this out of the socket itself, to prevent a message decryption/encryption loop across socket restarts
@@ -284,6 +288,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async buildClient() {
+    this.shouldRestart = true;
     // @ts-ignore
     this.sock?.ev?.removeAllListeners();
     this.sock = await this.makeSocket();
@@ -328,7 +333,19 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   private restartClient() {
+    if (!this.shouldRestart) {
+      this.logger.debug(
+        'Should not restart the client, ignoring restart request',
+      );
+      return;
+    }
     this.startDelayedJob.schedule(async () => {
+      if (!this.shouldRestart) {
+        this.logger.warn(
+          'Should not restart the client, ignoring restart request',
+        );
+        return;
+      }
       await this.start();
     });
   }
@@ -378,8 +395,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async stop() {
+    this.shouldRestart = false;
     this.status = WAHASessionStatus.STOPPED;
     this.events.removeAllListeners();
+    this.startDelayedJob.cancel();
     await this.end();
     return;
   }
@@ -444,7 +463,6 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   private async end() {
     this.autoRestartJob.stop();
-    this.startDelayedJob.cancel();
     // @ts-ignore
     this.sock?.ev?.removeAllListeners();
     this.sock?.ws?.removeAllListeners();
