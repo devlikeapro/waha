@@ -1,12 +1,7 @@
-import { BufferJSON } from '@adiwajshing/baileys/lib/Utils';
-import {
-  convertProtobufToPlainObject,
-  replaceLongsWithNumber,
-} from '@waha/core/engines/noweb/utils';
 import { Database } from 'better-sqlite3';
 import Knex from 'knex';
 
-import { Field, Schema } from '../Schema';
+import { Field, Schema } from './Schema';
 
 /**
  * Key value repository with extra metadata
@@ -52,16 +47,15 @@ export class Sqlite3KVRepository<Entity> {
     return this.get(query);
   }
 
-  private dump(entity: Entity) {
+  protected dump(entity: Entity) {
     const data = {};
-    const raw = convertProtobufToPlainObject(entity);
-    replaceLongsWithNumber(raw);
+    const raw = entity;
     for (const field of this.columns) {
       const fn = this.metadata.get(field.fieldName);
       if (fn) {
         data[field.fieldName] = fn(raw);
       } else if (field.fieldName == 'data') {
-        data['data'] = JSON.stringify(raw, BufferJSON.replacer);
+        data['data'] = this.stringify(raw);
       } else {
         data[field.fieldName] = raw[field.fieldName];
       }
@@ -143,7 +137,7 @@ export class Sqlite3KVRepository<Entity> {
     const sql = query.toSQL().sql;
     const bind = query.toSQL().bindings;
     const rows: any[] = this.db.prepare(sql).all(bind);
-    return rows.map((row) => JSON.parse(row.data, BufferJSON.reviver));
+    return rows.map((row) => this.parse(row));
   }
 
   protected async get(query: any) {
@@ -153,12 +147,20 @@ export class Sqlite3KVRepository<Entity> {
     if (!row) {
       return null;
     }
-    return JSON.parse(row.data, BufferJSON.reviver);
+    return this.parse(row);
   }
 
   protected async run(query: any) {
     const sql = query.toSQL().sql;
     const bind = query.toSQL().bindings;
     return this.db.prepare(sql).run(bind);
+  }
+
+  protected stringify(data: any): string {
+    return JSON.stringify(data);
+  }
+
+  protected parse(row: any) {
+    return JSON.parse(row.data);
   }
 }

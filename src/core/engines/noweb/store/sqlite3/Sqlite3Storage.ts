@@ -4,9 +4,10 @@ import { ILabelAssociationRepository } from '@waha/core/engines/noweb/store/ILab
 import { ILabelsRepository } from '@waha/core/engines/noweb/store/ILabelsRepository';
 import { Sqlite3LabelAssociationsRepository } from '@waha/core/engines/noweb/store/sqlite3/Sqlite3LabelAssociationsRepository';
 import { Sqlite3LabelsRepository } from '@waha/core/engines/noweb/store/sqlite3/Sqlite3LabelsRepository';
+import { Field, Index, Schema } from '@waha/core/storage/sqlite3/Schema';
 
 import { INowebStorage } from '../INowebStorage';
-import { Field, Index, NOWEB_STORE_SCHEMA, Schema } from '../Schema';
+import { NOWEB_STORE_SCHEMA } from '../Schema';
 import { Sqlite3ChatRepository } from './Sqlite3ChatRepository';
 import { Sqlite3ContactRepository } from './Sqlite3ContactRepository';
 import { Sqlite3MessagesRepository } from './Sqlite3MessagesRepository';

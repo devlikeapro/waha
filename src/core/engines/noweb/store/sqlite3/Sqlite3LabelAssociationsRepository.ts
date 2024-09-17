@@ -4,10 +4,10 @@ import {
 } from '@adiwajshing/baileys/lib/Types/LabelAssociation';
 import { ILabelAssociationRepository } from '@waha/core/engines/noweb/store/ILabelAssociationsRepository';
 
-import { Sqlite3KVRepository } from './Sqlite3KVRepository';
+import { NOWEBSqlite3KVRepository } from './NOWEBSqlite3KVRepository';
 
 export class Sqlite3LabelAssociationsRepository
-  extends Sqlite3KVRepository<LabelAssociation>
+  extends NOWEBSqlite3KVRepository<LabelAssociation>
   implements ILabelAssociationRepository
 {
   async deleteOne(association: LabelAssociation): Promise<void> {

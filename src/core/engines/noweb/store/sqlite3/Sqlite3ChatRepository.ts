@@ -1,10 +1,10 @@
 import { Chat } from '@adiwajshing/baileys';
 
 import { IChatRepository } from '../IChatRepository';
-import { Sqlite3KVRepository } from './Sqlite3KVRepository';
+import { NOWEBSqlite3KVRepository } from './NOWEBSqlite3KVRepository';
 
 export class Sqlite3ChatRepository
-  extends Sqlite3KVRepository<Chat>
+  extends NOWEBSqlite3KVRepository<Chat>
   implements IChatRepository
 {
   async getAllWithMessages(limit?: number, offset?: number): Promise<Chat[]> {

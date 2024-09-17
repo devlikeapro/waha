@@ -1,8 +1,8 @@
 import { IMessagesRepository } from '../IMessagesRepository';
-import { Sqlite3KVRepository } from './Sqlite3KVRepository';
+import { NOWEBSqlite3KVRepository } from './NOWEBSqlite3KVRepository';
 
 export class Sqlite3MessagesRepository
-  extends Sqlite3KVRepository<any>
+  extends NOWEBSqlite3KVRepository<any>
   implements IMessagesRepository
 {
   upsert(messages: any[]): Promise<void> {

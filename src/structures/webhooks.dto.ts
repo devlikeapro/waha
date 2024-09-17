@@ -132,7 +132,7 @@ export class WAHAWebhook {
     | object;
 }
 
-class WAHAWebhookSessionStatus extends WAHAWebhook {
+export class WAHAWebhookSessionStatus extends WAHAWebhook {
   @ApiProperty({
     description: 'The event is triggered when the session status changes.',
   })

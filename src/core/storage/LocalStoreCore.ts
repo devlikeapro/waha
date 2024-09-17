@@ -5,6 +5,9 @@ import * as path from 'path';
 
 import { LocalStore } from './LocalStore';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Database = require('better-sqlite3');
+
 export class LocalStoreCore extends LocalStore {
   protected readonly baseDirectory: string = path.join(
     os.tmpdir(),
@@ -12,6 +15,7 @@ export class LocalStoreCore extends LocalStore {
   );
 
   private readonly engine: string;
+  private db: any;
 
   constructor(engine: string) {
     super();
@@ -52,5 +56,18 @@ export class LocalStoreCore extends LocalStore {
   protected getDirectoryPath(name: string): string {
     const suffix = crypto.createHash('md5').update(name).digest('hex');
     return path.join(this.getEngineDirectory(), `${name}-${suffix}`);
+  }
+
+  getWAHADatabase(): any {
+    if (!this.db) {
+      const engineDir = this.getEngineDirectory();
+      const database = path.join(engineDir, 'waha.sqlite3');
+      this.db = new Database(database);
+    }
+    return this.db;
+  }
+
+  async close() {
+    this.db?.close();
   }
 }

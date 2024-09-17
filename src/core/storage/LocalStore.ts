@@ -22,4 +22,6 @@ export abstract class LocalStore extends DataStore {
    * Get the file path for a session
    */
   abstract getFilePath(session: string, file: string): string;
+
+  abstract getWAHADatabase(): any;
 }

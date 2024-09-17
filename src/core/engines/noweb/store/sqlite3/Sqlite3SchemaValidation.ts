@@ -1,4 +1,4 @@
-import { Schema } from '../Schema';
+import { Schema } from '@waha/core/storage/sqlite3/Schema';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Database = require('better-sqlite3');

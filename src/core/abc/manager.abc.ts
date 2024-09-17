@@ -2,6 +2,7 @@ import {
   BeforeApplicationShutdown,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { ISessionMeRepository } from '@waha/core/storage/ISessionMeRepository';
 import { WAHAWebhook } from '@waha/structures/webhooks.dto';
 import { waitUntil } from '@waha/utils/promiseTimeout';
 import { VERSION } from '@waha/version';
@@ -27,6 +28,7 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
   public store: any;
   public sessionAuthRepository: ISessionAuthRepository;
   public sessionConfigRepository: ISessionConfigRepository;
+  protected sessionMeRepository: ISessionMeRepository;
   public events: EventEmitter;
   WAIT_STATUS_INTERVAL = 500;
   WAIT_STATUS_TIMEOUT = 5_000;
@@ -36,8 +38,6 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
   protected abstract get EngineClass(): typeof WhatsappSession;
 
   protected abstract get WebhookConductorClass(): typeof WebhookConductor;
-
-  abstract beforeApplicationShutdown(signal?: string);
 
   //
   // API Methods
@@ -109,5 +109,9 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
       throw new UnprocessableEntityException(msg);
     }
     return session;
+  }
+
+  async beforeApplicationShutdown(signal?: string) {
+    this.events.removeAllListeners();
   }
 }
