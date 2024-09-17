@@ -1,4 +1,3 @@
-import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
 import {
   getChannelInviteLink,
   WAHAInternalEvent,
@@ -11,7 +10,8 @@ import {
 } from '@waha/core/exceptions';
 import { IMediaEngineProcessor } from '@waha/core/media/IMediaEngineProcessor';
 import { QR } from '@waha/core/QR';
-import { parseBool } from '@waha/helpers';
+import { parseBool, splitAt } from '@waha/helpers';
+import { PairingCodeResponse } from '@waha/structures/auth.dto';
 import { CallData } from '@waha/structures/calls.dto';
 import {
   Channel,
@@ -324,6 +324,20 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
    */
   public getQR(): QR {
     return this.qr;
+  }
+
+  public async requestCode(
+    phoneNumber: string,
+    method: string,
+    params?: any,
+  ): Promise<PairingCodeResponse> {
+    const code = await this.whatsapp.requestPairingCode(phoneNumber, true);
+
+    // show it as ABCD-ABCD
+    const parts = splitAt(code, 4);
+    const codeRepr = parts.join('-');
+    this.logger.info(`Your code: ${codeRepr}`);
+    return { code: codeRepr };
   }
 
   async getScreenshot(): Promise<Buffer> {
