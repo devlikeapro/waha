@@ -80,6 +80,12 @@ export class NowebConfig {
   @Type(() => NowebStoreConfig)
   @IsOptional()
   store?: NowebStoreConfig;
+
+  @ApiProperty({
+    description: 'Mark the session as online when it connects to the server.',
+  })
+  @IsBoolean()
+  markOnline: boolean = true;
 }
 
 export class SessionConfig {

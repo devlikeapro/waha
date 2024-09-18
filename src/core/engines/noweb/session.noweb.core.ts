@@ -212,6 +212,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     const browser = fullSyncEnabled
       ? Browsers.ubuntu('Desktop')
       : Browsers.ubuntu('Chrome');
+    let markOnlineOnConnect = this.sessionConfig?.noweb?.markOnline;
+    if (markOnlineOnConnect == undefined) {
+      markOnlineOnConnect = true;
+    }
     return {
       agent: agent,
       fetchAgent: agent,
@@ -229,6 +233,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       getMessage: (key) => this.getMessage(key),
       syncFullHistory: fullSyncEnabled,
       msgRetryCounterCache: this.msgRetryCounterCache,
+      markOnlineOnConnect: markOnlineOnConnect,
     };
   }
 
