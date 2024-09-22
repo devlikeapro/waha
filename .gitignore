@@ -15,6 +15,7 @@ test.js
 .wwebjs_cache
 src/dashboard
 .eslintcache
+__pycache__
 
 # compiled output
 /dist
