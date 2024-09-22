@@ -7,6 +7,7 @@ import { WhatsappSession } from './session.abc';
 export abstract class WebhookSender {
   protected url: string;
   protected logger: Logger;
+  protected readonly config: WebhookConfig;
 
   constructor(
     loggerBuilder: LoggerBuilder,
@@ -14,9 +15,10 @@ export abstract class WebhookSender {
   ) {
     this.url = webhookConfig.url;
     this.logger = loggerBuilder.child({ name: WebhookSender.name });
+    this.config = webhookConfig;
   }
 
-  abstract send(json);
+  abstract send(json: any): void;
 }
 
 export abstract class WebhookConductor {
