@@ -842,6 +842,11 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
           this.processIncomingMessage(message).then(handler),
         );
         return true;
+      case WAHAEvents.MESSAGE_WAITING:
+        this.whatsapp.on(Events.MESSAGE_CIPHERTEXT, (message) =>
+          this.processIncomingMessage(message).then(handler),
+        );
+        return true;
       case WAHAEvents.MESSAGE_REVOKED:
         this.whatsapp.on(
           Events.MESSAGE_REVOKED_EVERYONE,
