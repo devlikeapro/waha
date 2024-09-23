@@ -1,10 +1,9 @@
 import {
   Injectable,
-  LogLevel,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { MediaNoopStorage } from '@waha/core/media/MediaNoopStorage';
+import { MediaStorageFactory } from '@waha/core/media/MediaStorageFactory';
 import { getPinoLogLevel, LoggerBuilder } from '@waha/utils/logging';
 import { promiseTimeout, sleep } from '@waha/utils/promiseTimeout';
 import { EventEmitter } from 'events';
@@ -31,7 +30,7 @@ import { WhatsappSessionNoWebCore } from './engines/noweb/session.noweb.core';
 import { WhatsappSessionWebJSCore } from './engines/webjs/session.webjs.core';
 import { DOCS_URL } from './exceptions';
 import { getProxyConfig } from './helpers.proxy';
-import { MediaManagerCore } from './media/MediaManagerCore';
+import { MediaManager } from './media/MediaManager';
 import { LocalSessionAuthRepository } from './storage/LocalSessionAuthRepository';
 import { LocalStoreCore } from './storage/LocalStoreCore';
 import { WebhookConductorCore } from './webhooks.core';
@@ -43,6 +42,7 @@ export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
     );
   }
 }
+
 enum DefaultSessionStatus {
   REMOVED = undefined,
   STOPPED = null,
@@ -67,6 +67,7 @@ export class SessionManagerCore extends SessionManager {
     private config: WhatsappConfigService,
     private engineConfigService: EngineConfigService,
     private log: PinoLogger,
+    private mediaStorageFactory: MediaStorageFactory,
   ) {
     super();
     this.events = new EventEmitter();
@@ -78,6 +79,9 @@ export class SessionManagerCore extends SessionManager {
     this.store = new LocalStoreCore(engineName.toLowerCase());
     this.sessionAuthRepository = new LocalSessionAuthRepository(this.store);
     this.startPredefinedSessions();
+    this.clearStorage().catch((error) => {
+      this.log.error({ error }, 'Error while clearing storage');
+    });
   }
 
   protected startPredefinedSessions() {
@@ -110,6 +114,13 @@ export class SessionManagerCore extends SessionManager {
     await this.stop(this.DEFAULT, true);
   }
 
+  private async clearStorage() {
+    const storage = this.mediaStorageFactory.build(
+      this.log.logger.child({ name: 'Storage' }),
+    );
+    await storage.purge();
+  }
+
   //
   // API Methods
   //
@@ -136,13 +147,19 @@ export class SessionManagerCore extends SessionManager {
       );
     }
     this.log.info(`'${name}' - starting session...`);
-    const mediaManager = new MediaManagerCore(
-      new MediaNoopStorage(),
-      this.config.mimetypes,
-    );
     const logger = this.log.logger.child({ session: name });
     logger.level = getPinoLogLevel(this.sessionConfig?.debug);
     const loggerBuilder: LoggerBuilder = logger;
+
+    const storage = this.mediaStorageFactory.build(
+      loggerBuilder.child({ name: 'Storage' }),
+    );
+    await storage.init();
+    const mediaManager = new MediaManager(
+      storage,
+      this.config.mimetypes,
+      loggerBuilder.child({ name: 'MediaManager' }),
+    );
 
     const webhook = new this.WebhookConductorClass(loggerBuilder);
     const proxyConfig = this.getProxyConfig();

@@ -69,6 +69,7 @@ import {
   Label as WEBJSLabel,
   Location,
   Message,
+  MessageMedia,
   Reaction,
 } from 'whatsapp-web.js';
 import { Message as MessageInstance } from 'whatsapp-web.js/src/structures';
@@ -991,7 +992,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   protected downloadMedia(message: Message) {
-    const processor = new EngineMediaProcessor();
+    const processor = new WEBJSEngineMediaProcessor();
     return this.mediaManager.processMedia(processor, message, this.name);
   }
 
@@ -1008,7 +1009,9 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 }
 
-export class EngineMediaProcessor implements IMediaEngineProcessor<Message> {
+export class WEBJSEngineMediaProcessor
+  implements IMediaEngineProcessor<Message>
+{
   hasMedia(message: Message): boolean {
     if (!message.hasMedia) {
       return false;
@@ -1018,15 +1021,21 @@ export class EngineMediaProcessor implements IMediaEngineProcessor<Message> {
   }
 
   getMessageId(message: Message): string {
-    return '';
+    return message.id._serialized;
   }
 
   getMimetype(message: Message): string {
-    return '';
+    // @ts-ignore
+    return message.rawData.mimetype;
   }
 
-  getMediaBuffer(message: Message): Promise<Buffer | null> {
-    return Promise.resolve(undefined);
+  async getMediaBuffer(message: Message): Promise<Buffer | null> {
+    return message.downloadMedia().then((media: MessageMedia) => {
+      if (!media) {
+        return null;
+      }
+      return Buffer.from(media.data, 'base64');
+    });
   }
 
   getFilename(message: Message): string | null {

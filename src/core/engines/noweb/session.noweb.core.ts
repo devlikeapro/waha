@@ -19,6 +19,7 @@ import makeWASocket, {
   WAMessageContent,
   WAMessageKey,
 } from '@adiwajshing/baileys';
+import { downloadMediaMessage } from '@adiwajshing/baileys';
 import { WACallEvent } from '@adiwajshing/baileys/lib/Types/Call';
 import { Label as NOWEBLabel } from '@adiwajshing/baileys/lib/Types/Label';
 import { LabelAssociationType } from '@adiwajshing/baileys/lib/Types/LabelAssociation';
@@ -49,6 +50,7 @@ import {
   PollVotePayload,
   WAMessageAckBody,
 } from '@waha/structures/webhooks.dto';
+import { LoggerBuilder } from '@waha/utils/logging';
 import { waitUntil } from '@waha/utils/promiseTimeout';
 import { SingleDelayedJobRunner } from '@waha/utils/SingleDelayedJobRunner';
 import { SinglePeriodicJobRunner } from '@waha/utils/SinglePeriodicJobRunner';
@@ -1509,7 +1511,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   protected downloadMedia(message) {
-    const processor = new EngineMediaProcessor(this);
+    const processor = new NOWEBEngineMediaProcessor(this, this.loggerBuilder);
     return this.mediaManager.processMedia(processor, message, this.name);
   }
 
@@ -1526,23 +1528,66 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 }
 
-export class EngineMediaProcessor implements IMediaEngineProcessor<any> {
-  constructor(public session: WhatsappSessionNoWebCore) {}
+function hasPath(url: string) {
+  if (!url) {
+    return false;
+  }
+  try {
+    const urlObj = new URL(url);
+    return urlObj.pathname !== '/';
+  } catch (error) {
+    return false;
+  }
+}
+
+export class NOWEBEngineMediaProcessor implements IMediaEngineProcessor<any> {
+  private readonly logger: BaileysLogger;
+
+  constructor(
+    public session: WhatsappSessionNoWebCore,
+    loggerBuilder: LoggerBuilder,
+  ) {
+    this.logger = loggerBuilder.child({
+      name: NOWEBEngineMediaProcessor.name,
+    }) as unknown as BaileysLogger;
+  }
 
   hasMedia(message: any): boolean {
     return Boolean(extractMediaContent(message.message));
   }
 
   getMessageId(message: any): string {
-    return '';
+    return message.key.id;
   }
 
   getMimetype(message: any): string {
-    return '';
+    const content = extractMediaContent(message.message);
+    return content.mimetype;
   }
 
-  getMediaBuffer(message: any): Promise<Buffer | null> {
-    return Promise.resolve(undefined);
+  async getMediaBuffer(message: any): Promise<Buffer | null> {
+    const content = extractMediaContent(message.message);
+    // Fix Stickers
+    // https://github.com/devlikeapro/waha/issues/504
+    const url = content.url;
+    if (!hasPath(url)) {
+      // Set it to null so the engine handles it right
+      content.url = null;
+    }
+
+    return (await downloadMediaMessage(
+      message,
+      'buffer',
+      {},
+      {
+        logger: this.logger,
+        reuploadRequest: this.session.sock.updateMediaMessage,
+      },
+    ).finally(() => {
+      // Fix Stickers - set url back, just to have it in the response
+      // https://github.com/devlikeapro/waha/issues/504
+      content.url = url;
+    })) as Buffer;
   }
 
   getFilename(message: any): string | null {

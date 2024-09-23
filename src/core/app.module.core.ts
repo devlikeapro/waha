@@ -10,6 +10,7 @@ import {
   ServerDebugController,
 } from '@waha/api/server.controller';
 import { WebsocketGatewayCore } from '@waha/core/api/websocket.gateway.core';
+import { MediaLocalStorageModule } from '@waha/core/media/local/media.local.storage.module';
 import { MediaLocalStorageConfig } from '@waha/core/media/local/MediaLocalStorageConfig';
 import { BufferJsonReplacerInterceptor } from '@waha/nestjs/BufferJsonReplacerInterceptor';
 import {
@@ -44,7 +45,7 @@ import { SwaggerConfigServiceCore } from './config/SwaggerConfigServiceCore';
 import { WAHAHealthCheckServiceCore } from './health/WAHAHealthCheckServiceCore';
 import { SessionManagerCore } from './manager.core';
 
-export const IMPORTS = [
+export const IMPORTS_CORE = [
   LoggerModule.forRoot({
     renameContext: 'name',
     pinoHttp: {
@@ -100,6 +101,18 @@ export const IMPORTS = [
   PassportModule,
   TerminusModule,
 ];
+
+const IMPORTS_MEDIA = [
+  ConfigModule.forRoot({
+    validationSchema: Joi.object({
+      WAHA_MEDIA_STORAGE: Joi.string().valid('LOCAL', 'S3').default('LOCAL'),
+    }),
+  }),
+  MediaLocalStorageModule,
+];
+
+const IMPORTS = [...IMPORTS_CORE, ...IMPORTS_MEDIA];
+
 export const CONTROLLERS = [
   AuthController,
   SessionsController,
