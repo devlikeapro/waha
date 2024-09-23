@@ -24,6 +24,16 @@ export class WhatsappConfigService {
     return this.configService.get('WHATSAPP_API_PORT', '3000');
   }
 
+  get baseUrl(): string {
+    let baseUrl = this.configService.get('WAHA_BASE_URL', '');
+    if (!baseUrl) {
+      // combine schema+hostname+port
+      baseUrl = `${this.schema}://${this.hostname}:${this.port}`;
+    }
+    // remove / at the end
+    return baseUrl.replace(/\/$/, '');
+  }
+
   get mimetypes(): string[] {
     if (!this.shouldDownloadMedia) {
       return ['mimetype/ignore-all-media'];

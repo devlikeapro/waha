@@ -8,7 +8,7 @@ export class MediaLocalStorageConfig {
   constructor(private config: WhatsappConfigService) {}
 
   get filesURL(): string {
-    return `${this.config.schema}://${this.config.hostname}:${this.config.port}${this.filesUri}/`;
+    return `${this.config.baseUrl}${this.filesUri}/`;
   }
 
   get filesFolder(): string {
