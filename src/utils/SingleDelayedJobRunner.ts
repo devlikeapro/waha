@@ -22,8 +22,12 @@ export class SingleDelayedJobRunner {
     });
   }
 
+  get scheduled(): boolean {
+    return !!this.timeout;
+  }
+
   schedule(fn: FunctionNoArgs): boolean {
-    if (this.timeout) {
+    if (this.scheduled) {
       const msg = `Job has been started before, do not schedule it again`;
       this.log(this.warningOverride, msg);
       return false;

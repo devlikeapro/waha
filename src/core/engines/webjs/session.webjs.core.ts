@@ -71,6 +71,7 @@ import {
   Message,
   MessageMedia,
   Reaction,
+  WAState,
 } from 'whatsapp-web.js';
 import { Message as MessageInstance } from 'whatsapp-web.js/src/structures';
 
@@ -88,6 +89,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   protected engineConfig?: WebJSConfig;
 
   private startDelayedJob: SingleDelayedJobRunner;
+  private engineStateCheckDelayedJob: SingleDelayedJobRunner;
   private shouldRestart: boolean;
 
   whatsapp: WebjsClient;
@@ -102,6 +104,11 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     this.startDelayedJob = new SingleDelayedJobRunner(
       'start-engine',
       this.START_ATTEMPT_DELAY_SECONDS * SECOND,
+      this.logger,
+    );
+    this.engineStateCheckDelayedJob = new SingleDelayedJobRunner(
+      'engine-state-check',
+      2 * SECOND,
       this.logger,
     );
   }
@@ -313,6 +320,45 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       this.status = WAHASessionStatus.FAILED;
       this.qr.save('');
       this.logger.info(`Session '${this.name}' has been disconnected!`);
+    });
+
+    this.whatsapp.on(Events.STATE_CHANGED, (state: WAState) => {
+      const badStates = [WAState.OPENING, WAState.TIMEOUT];
+      const log = this.logger.child({ state: state, event: 'change_state' });
+
+      log.debug('Session engine state changed');
+      if (!badStates.includes(state)) {
+        return;
+      }
+
+      log.info(`Session state changed to bad state, waiting for recovery...`);
+      this.engineStateCheckDelayedJob.schedule(async () => {
+        if (!this.startDelayedJob.scheduled) {
+          log.info('Session is restarting already, skip check.');
+          return;
+        }
+
+        if (!this.whatsapp) {
+          log.warn('Session is not initialized, skip recovery.');
+          return;
+        }
+
+        const currentState = await this.whatsapp.getState().catch((error) => {
+          log.error('Failed to get current state');
+          log.error(error, error.stack);
+          return null;
+        });
+        log.setBindings({ currentState: currentState });
+        if (!currentState) {
+          log.warn('Session has no current state, skip restarting.');
+          return;
+        } else if (badStates.includes(currentState)) {
+          log.info('Session is still in bad state, restarting...');
+          this.restartClient();
+          return;
+        }
+        log.info('Session has recovered, no need to restart.');
+      });
     });
   }
 
