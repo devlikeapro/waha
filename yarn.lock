@@ -3752,13 +3752,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"adm-zip@npm:^0.5.10":
-  version: 0.5.14
-  resolution: "adm-zip@npm:0.5.14"
-  checksum: 83a4bc0bdff70f3276992810db96b10ffbf3c07667a9c3395e3dc60ca40ecbb920812dde212e1e21633b1508f1ea6fc427ac451aa68ee1a597b7251b2c1fc844
-  languageName: node
-  linkType: hard
-
 "agent-base@npm:6":
   version: 6.0.2
   resolution: "agent-base@npm:6.0.2"
@@ -12224,7 +12217,7 @@ __metadata:
     ts-node: ^10.9.1
     tsconfig-paths: ^4.1.0
     typescript: ^4.8.4
-    whatsapp-web.js: "github:devlikeapro/whatsapp-web.js#fork-webpack-exodus-channels"
+    whatsapp-web.js: "github:devlikeapro/whatsapp-web.js#fork-main-channels"
   languageName: unknown
   linkType: soft
 
@@ -12321,12 +12314,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-webpack-exodus-channels":
-  version: 1.24.0
-  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=f28dad2d12136192e9ee45370d768323196c10c0"
+"whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-channels":
+  version: 1.26.0
+  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=4c4cc9817bac3fc1369f09571f9efd2477ba10a9"
   dependencies:
     "@pedroslopez/moduleraid": ^5.0.2
-    adm-zip: ^0.5.10
     archiver: ^5.3.1
     fluent-ffmpeg: 2.1.2
     fs-extra: ^10.1.0
@@ -12342,7 +12334,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 0bd28b1f332aafaa6f9d467de04c33da99c139208d03bef78c5323c0e3ada6762f31e156d63cc2f6a46bb90e298ad08ddd2db25e13fb045fc2d1a2e69595758b
+  checksum: ac30714d3e55fe9da1a1cd23db6988e1f060414a2b2c60e9d280938c4e620098da75edf85e54cd24efd976e884f5bc401e96d3cdabe583fae0332258f4d62b4d
   languageName: node
   linkType: hard
 
