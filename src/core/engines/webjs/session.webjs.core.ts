@@ -242,6 +242,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   private async end() {
+    this.engineStateCheckDelayedJob.cancel();
     try {
       this.whatsapp?.removeAllListeners();
       this.whatsapp?.pupBrowser?.removeAllListeners();
