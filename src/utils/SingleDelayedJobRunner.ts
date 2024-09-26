@@ -45,6 +45,9 @@ export class SingleDelayedJobRunner {
   }
 
   cancel() {
+    if (!this.timeout) {
+      return;
+    }
     clearTimeout(this.timeout);
     this.timeout = null;
     this.logger.info(`Job cancelled`);
