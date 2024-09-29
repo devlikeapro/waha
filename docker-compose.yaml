@@ -39,10 +39,6 @@ services:
       # https://waha.devlike.pro/docs/how-to/storages/#save-media-files-between-the-container-restarts
       - './.media:/app/.media'
 
-      # If you're using certbot for HTTPS, you can use the following volume mapping
-      # https://waha.devlike.pro/blog/setting-up-https-for-waha/#lets-encrypt-certbot--waha
-      # - '/etc/letsencrypt:/etc/letsencrypt'
-
     env_file:
       - .env
 
