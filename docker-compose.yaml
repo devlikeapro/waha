@@ -25,7 +25,7 @@ services:
     # The second port must be the same as WHATSAPP_API_PORT or 3000 by default
     # Consider using the same port for simplicity
     ports:
-      - '3000:3000/tcp'
+      - '127.0.0.1:3000:3000/tcp'
       # NOTE: if you're using HTTP, you can use the following port mapping
       #- '80:3000/tcp'
       # NOTE: if you're using HTTPS, you can use the following port mapping
@@ -53,7 +53,7 @@ services:
     image: mongo
     container_name: mongodb
     ports:
-      - '27017:27017/tcp'
+      - '127.0.0.1:27017:27017/tcp'
     volumes:
       - mongodb_data:/data/db
     restart: always
@@ -66,8 +66,8 @@ services:
     container_name: minio
     restart: always
     ports:
-      - '9000:9000'
-      - '9001:9001'
+      - '127.0.0.1:9000:9000'
+      - '127.0.0.1:9001:9001'
     environment:
       MINIO_REGION: 'eu-west-2'
       MINIO_ROOT_USER: 'minioadmin'
