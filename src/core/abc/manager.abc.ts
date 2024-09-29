@@ -24,14 +24,27 @@ import { ISessionConfigRepository } from '../storage/ISessionConfigRepository';
 import { WhatsappSession } from './session.abc';
 import { WebhookConductor } from './webhooks.abc';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const AsyncLock = require('async-lock');
+
 export abstract class SessionManager implements BeforeApplicationShutdown {
   public store: any;
   public sessionAuthRepository: ISessionAuthRepository;
   public sessionConfigRepository: ISessionConfigRepository;
   protected sessionMeRepository: ISessionMeRepository;
   public events: EventEmitter;
+  private lock: any;
+
   WAIT_STATUS_INTERVAL = 500;
   WAIT_STATUS_TIMEOUT = 5_000;
+
+  protected constructor() {
+    this.lock = new AsyncLock({ maxPending: Infinity });
+  }
+
+  public withLock(name: string, fn: () => any) {
+    return this.lock.acquire(name, fn);
+  }
 
   protected abstract getEngine(engine: WAHAEngine): typeof WhatsappSession;
 
