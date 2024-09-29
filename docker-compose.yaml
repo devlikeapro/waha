@@ -45,32 +45,32 @@ services:
   # NOTE: Only if you're using MongoDB
   # https://waha.devlike.pro/docs/how-to/storages/#sessions---mongodb
   # Comment this block if you're using MongoDB
-  mongodb:
-    image: mongo
-    container_name: mongodb
-    ports:
-      - '127.0.0.1:27017:27017/tcp'
-    volumes:
-      - mongodb_data:/data/db
-    restart: always
+#  mongodb:
+#    image: mongo
+#    container_name: mongodb
+#    ports:
+#      - '127.0.0.1:27017:27017/tcp'
+#    volumes:
+#      - mongodb_data:/data/db
+#    restart: always
 
-  # NOTE: Only if you're using S3 to save media files
-  # https://waha.devlike.pro/docs/how-to/storages/#media---s3
-  # Comment this block if you're using AWS S3
-  minio:
-    image: quay.io/minio/minio
-    container_name: minio
-    restart: always
-    ports:
-      - '127.0.0.1:9000:9000'
-      - '127.0.0.1:9001:9001'
-    environment:
-      MINIO_REGION: 'eu-west-2'
-      MINIO_ROOT_USER: 'minioadmin'
-      MINIO_ROOT_PASSWORD: 'minioadmin'
-    volumes:
-      - minio_data:/data
-    command: server /data --console-address ":9001"
+# NOTE: Only if you're using S3 to save media files
+# https://waha.devlike.pro/docs/how-to/storages/#media---s3
+# Comment this block if you're using AWS S3
+#  minio:
+#    image: quay.io/minio/minio
+#    container_name: minio
+#    restart: always
+#    ports:
+#      - '127.0.0.1:9000:9000'
+#      - '127.0.0.1:9001:9001'
+#    environment:
+#      MINIO_REGION: 'eu-west-2'
+#      MINIO_ROOT_USER: 'minioadmin'
+#      MINIO_ROOT_PASSWORD: 'minioadmin'
+#    volumes:
+#      - minio_data:/data
+#    command: server /data --console-address ":9001"
 
 volumes:
   # NOTE: Only if you're using MongoDB
