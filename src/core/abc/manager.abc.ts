@@ -2,6 +2,7 @@ import {
   BeforeApplicationShutdown,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { WhatsappConfigService } from '@waha/config.service';
 import { ISessionMeRepository } from '@waha/core/storage/ISessionMeRepository';
 import { WAHAWebhook } from '@waha/structures/webhooks.dto';
 import { waitUntil } from '@waha/utils/promiseTimeout';
@@ -39,7 +40,10 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
   WAIT_STATUS_INTERVAL = 500;
   WAIT_STATUS_TIMEOUT = 5_000;
 
-  protected constructor(protected log: PinoLogger) {
+  protected constructor(
+    protected config: WhatsappConfigService,
+    protected log: PinoLogger,
+  ) {
     this.lock = new AsyncLock({ maxPending: Infinity });
     this.log.setContext(SessionManager.name);
   }

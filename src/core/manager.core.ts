@@ -64,12 +64,12 @@ export class SessionManagerCore extends SessionManager {
   protected readonly EngineClass: typeof WhatsappSession;
 
   constructor(
-    private config: WhatsappConfigService,
+    config: WhatsappConfigService,
     private engineConfigService: EngineConfigService,
     log: PinoLogger,
     private mediaStorageFactory: MediaStorageFactory,
   ) {
-    super(log);
+    super(config, log);
     this.events = new EventEmitter();
     this.session = DefaultSessionStatus.STOPPED;
     this.sessionConfig = null;
