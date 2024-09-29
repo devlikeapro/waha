@@ -78,7 +78,7 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
 
   abstract getSessions(all: boolean): Promise<SessionInfo[]>;
 
-  handleSessionEvent(event: WAHAEvents, session: WhatsappSession) {
+  protected handleSessionEvent(event: WAHAEvents, session: WhatsappSession) {
     return (payload: any) => {
       const me = session.getSessionMeInfo();
       const data: WAHAWebhook = {
