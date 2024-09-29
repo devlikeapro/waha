@@ -48,6 +48,25 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
     this.log.setContext(SessionManager.name);
   }
 
+  protected startPredefinedSessions() {
+    const startSessions = this.config.startSessions;
+    startSessions.forEach((sessionName) => {
+      this.withLock(sessionName, async () => {
+        this.log.info(
+          { session: sessionName },
+          `Restarting PREDEFINED session...`,
+        );
+        this.start(sessionName).catch((error) => {
+          this.log.error(
+            { session: sessionName },
+            `Failed to start predefined session: ${error}`,
+          );
+          this.log.error(error.stack);
+        });
+      });
+    });
+  }
+
   public withLock(name: string, fn: () => any) {
     return this.lock.acquire(name, fn);
   }

@@ -83,13 +83,6 @@ export class SessionManagerCore extends SessionManager {
     });
   }
 
-  protected startPredefinedSessions() {
-    const startSessions = this.config.startSessions;
-    startSessions.forEach((sessionName) => {
-      this.start(sessionName);
-    });
-  }
-
   protected getEngine(engine: WAHAEngine): typeof WhatsappSession {
     if (engine === WAHAEngine.WEBJS) {
       return WhatsappSessionWebJSCore;
