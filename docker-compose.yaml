@@ -1,41 +1,21 @@
-#
 # https://waha.devlike.pro/docs/how-to/install/
-# Here's we provide a simple example of how to install WAHA using Docker Compose.
-#
-# We're assuming you have Docker and Docker Compose installed.
-# If you don't have Docker Compose installed, you can follow the official guide:
-# https://docs.docker.com/compose/install/
-#
-
 services:
   waha:
     restart: always
-
-    # We strongly recommend using the pinned version of WAHA
-    # https://waha.devlike.pro/docs/how-to/engines/#versions
-    # image: devlikeapro/waha-plus:latest-2024.7.6 # 'latest' is not mistaken here
-    #
-    # Multiple images are available
     # https://waha.devlike.pro/docs/how-to/engines/#docker-images
-    # image: devlikeapro/waha-plus:chrome
-    #
-    image: devlikeapro/waha-plus:latest # or devlikeapro/waha:latest if you're using WAHA Core
+    # https://portal.devlike.pro/docker-image
+    image: devlikeapro/waha-plus:latest
+    # WAHA Core
+    # image: devlikeapro/waha:latest
 
-    # The first port can be any free port you want
-    # The second port must be the same as WHATSAPP_API_PORT or 3000 by default
-    # Consider using the same port for simplicity
     ports:
       - '127.0.0.1:3000:3000/tcp'
-      # NOTE: if you're using HTTP, you can use the following port mapping
-      #- '80:3000/tcp'
-      # NOTE: if you're using HTTPS, you can use the following port mapping
-      #- '443:3000/tcp'
 
     volumes:
       # Store sessions in the .sessions folder (comment it if you're using MongoDB)
-      # Doesn't work with WAHA Core
       - './.sessions:/app/.sessions'
 
+      # Save media files
       # https://waha.devlike.pro/docs/how-to/storages/#save-media-files-between-the-container-restarts
       - './.media:/app/.media'
 
