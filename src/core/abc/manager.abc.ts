@@ -7,6 +7,7 @@ import { WAHAWebhook } from '@waha/structures/webhooks.dto';
 import { waitUntil } from '@waha/utils/promiseTimeout';
 import { VERSION } from '@waha/version';
 import { EventEmitter } from 'events';
+import { PinoLogger } from 'nestjs-pino';
 
 import {
   WAHAEngine,
@@ -38,8 +39,9 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
   WAIT_STATUS_INTERVAL = 500;
   WAIT_STATUS_TIMEOUT = 5_000;
 
-  protected constructor() {
+  protected constructor(protected log: PinoLogger) {
     this.lock = new AsyncLock({ maxPending: Infinity });
+    this.log.setContext(SessionManager.name);
   }
 
   public withLock(name: string, fn: () => any) {
