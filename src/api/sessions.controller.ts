@@ -153,10 +153,7 @@ class SessionsController {
       if (!exists) {
         throw new NotFoundException('Session not found');
       }
-      const isRunning = this.manager.isRunning(name);
-      if (!isRunning) {
-        await this.manager.start(name);
-      }
+      await this.manager.start(name);
     });
     return await this.manager.getSessionInfo(name);
   }
