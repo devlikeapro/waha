@@ -35,10 +35,15 @@ export class SingleDelayedJobRunner {
 
     this.timeout = setTimeout(() => {
       this.logger.debug(`Running job...`);
-      fn().finally(() => {
-        this.timeout = null;
-        this.logger.debug(`Job finished`);
-      });
+      fn()
+        .catch((error) => {
+          this.logger.error(`Job failed: ${error}`);
+          this.logger.error(error.stack);
+        })
+        .finally(() => {
+          this.timeout = null;
+          this.logger.debug(`Job finished`);
+        });
     }, this.timeoutMs);
     this.logger.info(`Job scheduled with timeout ${this.timeoutMs} ms`);
     return true;
