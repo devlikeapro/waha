@@ -8962,9 +8962,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:^6.3.0":
-  version: 6.7.0
-  resolution: "mongodb@npm:6.7.0"
+"mongodb@npm:6.9.0":
+  version: 6.9.0
+  resolution: "mongodb@npm:6.9.0"
   dependencies:
     "@mongodb-js/saslprep": ^1.1.5
     bson: ^6.7.0
@@ -8992,7 +8992,7 @@ __metadata:
       optional: true
     socks:
       optional: true
-  checksum: 11677b416ba2bd8c8835663445b89db7f32faca763c5c3ce6d9de246826b4796ec628c35e84d1dc0b3c11be9623a1ebd6ecdb8eb90a40eededb8bc4fd75e4693
+  checksum: 754beb9acf605bbb4d55383fd1df1915ec25043f1e6ad0226d34a5d32b85ad822f784cf77d2751592696f5af72b5dc62a01514c4eb5fc0c7c0f495bf5764555a
   languageName: node
   linkType: hard
 
@@ -12194,7 +12194,7 @@ __metadata:
     link-preview-js: ^3.0.4
     lodash: ^4.17.21
     mime-types: ^2.1.27
-    mongodb: ^6.3.0
+    mongodb: 6.9.0
     nestjs-pino: ^4.1.0
     passport: ^0.6.0
     passport-headerapikey: ^1.2.2
