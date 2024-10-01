@@ -1,3 +1,4 @@
+.env
 *.heapsnapshot
 .yarn
 example.ts
