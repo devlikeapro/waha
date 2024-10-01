@@ -277,6 +277,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
           this.logger.error(`Failed to initialize storage or store: ${err}`);
           this.status = WAHASessionStatus.FAILED;
           this.end();
+          this.store?.close();
           throw err;
         });
       } else {
@@ -407,6 +408,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.events.removeAllListeners();
     this.startDelayedJob.cancel();
     await this.end();
+    await this.store?.close();
     return;
   }
 
@@ -473,7 +475,6 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     // @ts-ignore
     this.sock?.ev?.removeAllListeners();
     this.sock?.ws?.removeAllListeners();
-    await this.store?.close();
     // wait until connection is not connecting to avoid error:
     // "WebSocket was closed before the connection was established"
     await waitUntil(async () => !this.sock?.ws?.isConnecting, 1_000, 10_000);
