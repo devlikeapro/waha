@@ -1,8 +1,8 @@
-import { NOWEBSqlite3KVRepository } from '@waha/core/engines/noweb/store/sqlite3/NOWEBSqlite3KVRepository';
 import { Sqlite3SchemaValidation } from '@waha/core/engines/noweb/store/sqlite3/Sqlite3SchemaValidation';
 import { ISessionMeRepository } from '@waha/core/storage/ISessionMeRepository';
 import { LocalStore } from '@waha/core/storage/LocalStore';
 import { Field, Index, Schema } from '@waha/core/storage/sqlite3/Schema';
+import { Sqlite3KVRepository } from '@waha/core/storage/sqlite3/Sqlite3KVRepository';
 import { MeInfo } from '@waha/structures/sessions.dto';
 import * as path from 'path';
 
@@ -21,7 +21,7 @@ class SessionMeInfo {
 }
 
 export class LocalSessionMeRepository
-  extends NOWEBSqlite3KVRepository<SessionMeInfo>
+  extends Sqlite3KVRepository<SessionMeInfo>
   implements ISessionMeRepository
 {
   constructor(store: LocalStore) {
