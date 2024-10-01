@@ -144,7 +144,7 @@ class SessionsController {
   @ApiOperation({
     summary: 'Start the session',
     description:
-      'Start the session with the given name. The session must exist. Identity operation.',
+      'Start the session with the given name. The session must exist. Idempotent operation.',
   })
   @UsePipes(new WAHAValidationPipe())
   async start(@Param('session') name: string): Promise<SessionDTO> {
