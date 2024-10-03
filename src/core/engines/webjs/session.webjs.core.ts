@@ -305,29 +305,29 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       this.logger.info(`Session '${this.name}' is ready!`);
     });
 
-    this.whatsapp.on(Events.AUTHENTICATED, () => {
+    this.whatsapp.on(Events.AUTHENTICATED, (args) => {
       this.status = WAHASessionStatus.WORKING;
       this.qr.save('');
-      this.logger.info(`Session '${this.name}' has been authenticated!`);
+      this.logger.info({ args: args }, `Session has been authenticated!`);
     });
 
-    this.whatsapp.on(Events.AUTHENTICATION_FAILURE, () => {
+    this.whatsapp.on(Events.AUTHENTICATION_FAILURE, (args) => {
       this.status = WAHASessionStatus.FAILED;
       this.qr.save('');
-      this.logger.info(`Session '${this.name}' has been disconnected!`);
+      this.logger.info({ args: args }, `Session has failed to authenticate!`);
     });
 
-    this.whatsapp.on(Events.DISCONNECTED, () => {
+    this.whatsapp.on(Events.DISCONNECTED, (args) => {
       this.status = WAHASessionStatus.FAILED;
       this.qr.save('');
-      this.logger.info(`Session '${this.name}' has been disconnected!`);
+      this.logger.info({ args: args }, `Session has been disconnected!`);
     });
 
     this.whatsapp.on(Events.STATE_CHANGED, (state: WAState) => {
       const badStates = [WAState.OPENING, WAState.TIMEOUT];
       const log = this.logger.child({ state: state, event: 'change_state' });
 
-      log.debug('Session engine state changed');
+      log.info('Session engine state changed');
       if (!badStates.includes(state)) {
         return;
       }
