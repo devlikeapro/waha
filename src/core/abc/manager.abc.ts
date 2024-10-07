@@ -4,6 +4,7 @@ import {
 } from '@nestjs/common';
 import { WhatsappConfigService } from '@waha/config.service';
 import { ISessionMeRepository } from '@waha/core/storage/ISessionMeRepository';
+import { ISessionWorkerRepository } from '@waha/core/storage/ISessionWorkerRepository';
 import { WAHAWebhook } from '@waha/structures/webhooks.dto';
 import { waitUntil } from '@waha/utils/promiseTimeout';
 import { VERSION } from '@waha/version';
@@ -34,6 +35,7 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
   public sessionAuthRepository: ISessionAuthRepository;
   public sessionConfigRepository: ISessionConfigRepository;
   protected sessionMeRepository: ISessionMeRepository;
+  protected sessionWorkerRepository: ISessionWorkerRepository;
   public events: EventEmitter;
   private lock: any;
 
@@ -52,16 +54,11 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
     const startSessions = this.config.startSessions;
     startSessions.forEach((sessionName) => {
       this.withLock(sessionName, async () => {
-        this.log.info(
-          { session: sessionName },
-          `Restarting PREDEFINED session...`,
-        );
+        const log = this.log.logger.child({ session: sessionName });
+        log.info(`Restarting PREDEFINED session...`);
         this.start(sessionName).catch((error) => {
-          this.log.error(
-            { session: sessionName },
-            `Failed to start predefined session: ${error}`,
-          );
-          this.log.error(error.stack);
+          log.error(`Failed to start PREDEFINED session: ${error}`);
+          log.error(error.stack);
         });
       });
     });
@@ -102,6 +99,18 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
   abstract getSessionInfo(name: string): Promise<SessionDetailedInfo | null>;
 
   abstract getSessions(all: boolean): Promise<SessionInfo[]>;
+
+  get workerId() {
+    return this.config.workerId;
+  }
+
+  async assign(name: string) {
+    await this.sessionWorkerRepository?.assign(name, this.workerId);
+  }
+
+  async unassign(name: string) {
+    await this.sessionWorkerRepository?.unassign(name, this.workerId);
+  }
 
   protected handleSessionEvent(event: WAHAEvents, session: WhatsappSession) {
     return (payload: any) => {

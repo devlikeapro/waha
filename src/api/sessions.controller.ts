@@ -91,6 +91,7 @@ class SessionsController {
       const start = request.start || false;
       await this.manager.upsert(name, config);
       if (start) {
+        await this.manager.assign(name);
         await this.manager.start(name);
       }
     });
@@ -133,6 +134,7 @@ class SessionsController {
   @UsePipes(new WAHAValidationPipe())
   async delete(@Param('session') name: string): Promise<void> {
     await this.withLock(name, async () => {
+      await this.manager.unassign(name);
       await this.manager.stop(name, true);
       await this.manager.logout(name);
       await this.manager.delete(name);
@@ -153,6 +155,7 @@ class SessionsController {
       if (!exists) {
         throw new NotFoundException('Session not found');
       }
+      await this.manager.assign(name);
       await this.manager.start(name);
     });
     return await this.manager.getSessionInfo(name);
@@ -167,6 +170,7 @@ class SessionsController {
   @UsePipes(new WAHAValidationPipe())
   async stop(@Param('session') name: string): Promise<SessionDTO> {
     await this.withLock(name, async () => {
+      await this.manager.unassign(name);
       await this.manager.stop(name, false);
     });
     return await this.manager.getSessionInfo(name);
@@ -208,6 +212,7 @@ class SessionsController {
       if (!exists) {
         throw new NotFoundException('Session not found');
       }
+      await this.manager.assign(name);
       await this.manager.stop(name, true);
       await this.manager.start(name);
     });
@@ -234,6 +239,7 @@ class SessionsController {
     return await this.withLock(name, async () => {
       const config = request.config;
       await this.manager.upsert(name, config);
+      await this.manager.assign(name);
       return await this.manager.start(name);
     });
   }
@@ -251,12 +257,14 @@ class SessionsController {
     if (request.logout) {
       // Old API did remove the session complete
       await this.withLock(name, async () => {
+        await this.manager.unassign(name);
         await this.manager.stop(name, true);
         await this.manager.logout(name);
         await this.manager.delete(name);
       });
     } else {
       await this.withLock(name, async () => {
+        await this.manager.unassign(name);
         await this.manager.stop(name, false);
       });
     }
@@ -274,6 +282,7 @@ class SessionsController {
   ): Promise<void> {
     const name = request.name;
     await this.withLock(name, async () => {
+      await this.manager.unassign(name);
       await this.manager.stop(name, true);
       await this.manager.logout(name);
       await this.manager.delete(name);

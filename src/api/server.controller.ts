@@ -32,7 +32,7 @@ import * as lodash from 'lodash';
 export class ServerController {
   private logger: Logger;
 
-  constructor() {
+  constructor(private config: WhatsappConfigService) {
     this.logger = new Logger('ServerController');
   }
 
@@ -77,6 +77,9 @@ export class ServerController {
     return {
       startTimestamp: startTimestamp,
       uptime: uptime,
+      worker: {
+        id: this.config.workerId,
+      },
     };
   }
 

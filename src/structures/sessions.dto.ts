@@ -159,6 +159,7 @@ export class MeInfo {
 
 export class SessionInfo extends SessionDTO {
   me?: MeInfo;
+  assignedWorker?: string;
 }
 
 export class SessionDetailedInfo extends SessionInfo {

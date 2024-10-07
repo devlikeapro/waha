@@ -34,6 +34,18 @@ export class WhatsappConfigService {
     return baseUrl.replace(/\/$/, '');
   }
 
+  get workerId(): string {
+    return this.configService.get('WAHA_WORKER_ID', '');
+  }
+
+  get shouldRestartWorkerSessions(): boolean {
+    const value = this.configService.get(
+      'WAHA_WORKER_RESTART_SESSIONS',
+      'true',
+    );
+    return parseBool(value);
+  }
+
   get mimetypes(): string[] {
     if (!this.shouldDownloadMedia) {
       return ['mimetype/ignore-all-media'];
