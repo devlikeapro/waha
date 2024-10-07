@@ -1,0 +1,97 @@
+# https://waha.devlike.pro/docs/how-to/install/
+services:
+  # Just to connect
+  waha-dashboard:
+    restart: unless-stopped
+    image: devlikeapro/waha-plus:latest
+    ports:
+      - '127.0.0.1:3000:3000/tcp'
+    env_file:
+      - .env
+    environment:
+      - WAHA_WORKER_ID=waha-dashboard
+
+  waha1:
+    restart: unless-stopped
+    image: devlikeapro/waha-plus:latest
+    ports:
+      - '127.0.0.1:3001:3000/tcp'
+    volumes:
+      - './.media:/app/.media'
+    env_file:
+      - .env
+    environment:
+      - WAHA_WORKER_ID=waha1
+      - WAHA_BASE_URL=http://localhost:3001
+      - WHATSAPP_DEFAULT_ENGINE=NOWEB
+      # MongoDB
+      - WHATSAPP_SESSIONS_MONGO_URL=mongodb://mongodb:27017
+      # S3
+      - WAHA_MEDIA_STORAGE=S3
+      - WAHA_S3_REGION=eu-west-2
+      - WAHA_S3_BUCKET=waha
+      - WAHA_S3_ACCESS_KEY_ID=minioadmin
+      - WAHA_S3_SECRET_ACCESS_KEY=minioadmin
+      - WAHA_S3_ENDPOINT=http://minio:9000 # Not required if you're using AWS S3
+      - WAHA_S3_FORCE_PATH_STYLE=True # Required for Minio
+      - WAHA_S3_PROXY_FILES=True # Required for docker-compose setup
+
+  waha2:
+    restart: unless-stopped
+    image: devlikeapro/waha-plus:latest
+    ports:
+      - '127.0.0.1:3002:3000/tcp'
+    volumes:
+      - './.media:/app/.media'
+    env_file:
+      - .env
+    environment:
+      - WAHA_WORKER_ID=waha2
+      - WAHA_BASE_URL=http://localhost:3002
+      - WHATSAPP_DEFAULT_ENGINE=NOWEB
+      # MongoDB
+      - WHATSAPP_SESSIONS_MONGO_URL=mongodb://mongodb:27017
+      # S3
+      - WAHA_MEDIA_STORAGE=S3
+      - WAHA_S3_REGION=eu-west-2
+      - WAHA_S3_BUCKET=waha
+      - WAHA_S3_ACCESS_KEY_ID=minioadmin
+      - WAHA_S3_SECRET_ACCESS_KEY=minioadmin
+      - WAHA_S3_ENDPOINT=http://minio:9000 # Not required if you're using AWS S3
+      - WAHA_S3_FORCE_PATH_STYLE=True # Required for Minio
+      - WAHA_S3_PROXY_FILES=True # Required for docker-compose setup
+
+  # NOTE: Only if you're using MongoDB
+  # https://waha.devlike.pro/docs/how-to/storages/#sessions---mongodb
+  # Comment this block if you're not using MongoDB
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - '127.0.0.1:27017:27017/tcp'
+    volumes:
+      - mongodb_data:/data/db
+    restart: always
+
+  # NOTE: Only if you're using S3 to save media files
+  # https://waha.devlike.pro/docs/how-to/storages/#media---s3
+  # Comment this block if you're using S3
+  minio:
+    image: quay.io/minio/minio
+    container_name: minio
+    restart: always
+    ports:
+      - '127.0.0.1:9000:9000'
+      - '127.0.0.1:9001:9001'
+    environment:
+      MINIO_REGION: 'eu-west-2'
+      MINIO_ROOT_USER: 'minioadmin'
+      MINIO_ROOT_PASSWORD: 'minioadmin'
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
+volumes:
+  # NOTE: Only if you're using MongoDB
+  mongodb_data: {}
+  minio_data: {}
