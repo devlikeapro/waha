@@ -80,7 +80,6 @@ async function bootstrap() {
   // https://github.com/iamolegga/nestjs-pino?tab=readme-ov-file#expose-stack-trace-and-error-class-in-err-property
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
-  app.enableShutdownHooks();
   app.useGlobalFilters(new AllExceptionsFilter());
   app.enableCors();
   // Ideally, we should apply it globally.
@@ -97,6 +96,7 @@ async function bootstrap() {
   swaggerConfigurator.configure(WAHA_WEBHOOKS);
 
   AppModule.appReady(app, logger);
+  app.enableShutdownHooks();
   const config = app.get(WhatsappConfigService);
   await app.listen(config.port);
   logger.info(`WhatsApp HTTP API is running on: ${await app.getUrl()}`);
