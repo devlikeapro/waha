@@ -163,6 +163,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   private msgRetryCounterCache: NodeCache;
   protected engineLogger: BaileysLogger;
 
+  private authNOWEBStore: any;
+
   get listenConnectionEventsFromTheStart() {
     return true;
   }
@@ -202,6 +204,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       delay * SECOND,
       this.logger,
     );
+    this.authNOWEBStore = null;
   }
 
   async start() {
@@ -240,10 +243,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async makeSocket(): Promise<any> {
-    const { state, saveCreds } = await this.authFactory.buildAuth(
-      this.sessionStore,
-      this.name,
-    );
+    if (!this.authNOWEBStore) {
+      this.authNOWEBStore = await this.authFactory.buildAuth(
+        this.sessionStore,
+        this.name,
+      );
+    }
+    const { state, saveCreds } = this.authNOWEBStore;
     const agent = this.makeAgent();
     const socketConfig = this.getSocketConfig(agent, state);
     const sock = makeWASocket(socketConfig);
