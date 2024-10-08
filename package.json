@@ -23,7 +23,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-channels-2",
+    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-channels-678",
     "@adiwajshing/keyed-db": "^0.2.4",
     "@aws-sdk/client-s3": "^3.633.0",
     "@aws-sdk/s3-request-presigner": "^3.633.0",

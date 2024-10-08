@@ -5,16 +5,16 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-channels-2":
-  version: 6.7.7
-  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=ffc61c22bea5143051ea6704fcf39d8d4bb52892"
+"@adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-channels-678":
+  version: 6.7.8
+  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=d0323b92eb8365e6f32a61e41dd00010602d07f1"
   dependencies:
     "@adiwajshing/keyed-db": ^0.2.4
     "@hapi/boom": ^9.1.3
     async-lock: ^1.4.1
     audio-decode: ^2.1.3
     axios: ^1.6.0
-    cache-manager: 4.0.1
+    cache-manager: ^5.7.6
     futoin-hkdf: ^1.5.1
     libphonenumber-js: ^1.10.20
     libsignal: "github:WhiskeySockets/libsignal-node"
@@ -39,7 +39,7 @@ __metadata:
       optional: true
     sharp:
       optional: true
-  checksum: 7254ddc761ab8235b645ad69ff998240df5636a4cdec97cefb26d7d43721839835d05663d57c95bd013318f9c7378a2a4882721c51a2cc055f9e1a92eaaa696c
+  checksum: a3b461006443713074401a17c3481aef571301e83f1fba193d06e7f9ea4c47359b5c973d0b3804e34d4e48c35bdc1a64d8c3e59a0a744e5bc9bcca591d180901
   languageName: node
   linkType: hard
 
@@ -4132,13 +4132,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async@npm:3.2.3":
-  version: 3.2.3
-  resolution: "async@npm:3.2.3"
-  checksum: c4bee57ab2249af3dc83ca3ef9acfa8e822c0d5e5aa41bae3eaf7f673648343cd64ecd7d26091ffd357f3f044428b17b5f00098494b6cf8b6b3e9681f0636ca1
-  languageName: node
-  linkType: hard
-
 "async@npm:>=0.2.9, async@npm:^3.2.4":
   version: 3.2.5
   resolution: "async@npm:3.2.5"
@@ -4642,14 +4635,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cache-manager@npm:4.0.1":
-  version: 4.0.1
-  resolution: "cache-manager@npm:4.0.1"
+"cache-manager@npm:^5.7.6":
+  version: 5.7.6
+  resolution: "cache-manager@npm:5.7.6"
   dependencies:
-    async: 3.2.3
+    eventemitter3: ^5.0.1
     lodash.clonedeep: ^4.5.0
-    lru-cache: ^7.10.1
-  checksum: 8ca25b1e603111f033d1a3f1463b2a9203e9ea61a0706265a4d4f63d54a8be95f9e79efb04fc43103219becb4903a5db747a346e009e7102767a47e5677219b2
+    lru-cache: ^10.2.2
+    promise-coalesce: ^1.1.2
+  checksum: c61d30e2824f99f04af8e14a2e98c2274daa276cce82f64f0ac4c4bd59cf30e1ad9dec4028148206ad729196b242940476602e2f12496366d6f3f4b9da7c24c5
   languageName: node
   linkType: hard
 
@@ -6244,6 +6238,13 @@ __metadata:
   version: 5.0.1
   resolution: "event-target-shim@npm:5.0.1"
   checksum: 1ffe3bb22a6d51bdeb6bf6f7cf97d2ff4a74b017ad12284cc9e6a279e727dc30a5de6bb613e5596ff4dc3e517841339ad09a7eec44266eccb1aa201a30448166
+  languageName: node
+  linkType: hard
+
+"eventemitter3@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "eventemitter3@npm:5.0.1"
+  checksum: 543d6c858ab699303c3c32e0f0f47fc64d360bf73c3daf0ac0b5079710e340d6fe9f15487f94e66c629f5f82cd1a8678d692f3dbb6f6fcd1190e1b97fcad36f8
   languageName: node
   linkType: hard
 
@@ -8581,6 +8582,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lru-cache@npm:^10.2.2":
+  version: 10.4.3
+  resolution: "lru-cache@npm:10.4.3"
+  checksum: 6476138d2125387a6d20f100608c2583d415a4f64a0fecf30c9e2dda976614f09cad4baa0842447bd37dd459a7bd27f57d9d8f8ce558805abd487c583f3d774a
+  languageName: node
+  linkType: hard
+
 "lru-cache@npm:^5.1.1":
   version: 5.1.1
   resolution: "lru-cache@npm:5.1.1"
@@ -8590,7 +8598,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^7.10.1, lru-cache@npm:^7.14.1":
+"lru-cache@npm:^7.14.1":
   version: 7.18.3
   resolution: "lru-cache@npm:7.18.3"
   checksum: e550d772384709deea3f141af34b6d4fa392e2e418c1498c078de0ee63670f1f46f5eee746e8ef7e69e1c895af0d4224e62ee33e66a543a14763b0f2e74c1356
@@ -9952,6 +9960,13 @@ __metadata:
   version: 2.0.3
   resolution: "progress@npm:2.0.3"
   checksum: f67403fe7b34912148d9252cb7481266a354bd99ce82c835f79070643bb3c6583d10dbcfda4d41e04bbc1d8437e9af0fb1e1f2135727878f5308682a579429b7
+  languageName: node
+  linkType: hard
+
+"promise-coalesce@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "promise-coalesce@npm:1.1.2"
+  checksum: 6f951b5db40ca78d09ad0f72adea0a2e9c5bdb0fc5b3ef218c611e2191c6ce2e9f752f815630fd07875dd1c9f04cc7327d6bada04b662dce986ce86ab88c2d5e
   languageName: node
   linkType: hard
 
@@ -12141,7 +12156,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "waha@workspace:."
   dependencies:
-    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-channels-2"
+    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-channels-678"
     "@adiwajshing/keyed-db": ^0.2.4
     "@aws-sdk/client-s3": ^3.633.0
     "@aws-sdk/s3-request-presigner": ^3.633.0
