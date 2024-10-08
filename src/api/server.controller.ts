@@ -9,14 +9,11 @@ import {
   NotFoundException,
   Post,
   Query,
-  Res,
   StreamableFile,
-  UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { WhatsappConfigService } from '@waha/config.service';
-import { getApp } from '@waha/main';
 import { WAHAValidationPipe } from '@waha/nestjs/pipes/WAHAValidationPipe';
 import { WAHAEnvironment } from '@waha/structures/environment.dto';
 import {
@@ -97,17 +94,13 @@ export class ServerController {
       setTimeout(() => {
         this.logger.log('Force stopping the server');
         process.kill(process.pid, 'SIGKILL');
+        process.exit(0);
       }, timeout);
     } else {
       this.logger.log(`Gracefully stopping the server in ${timeout}ms`);
       setTimeout(async () => {
         this.logger.log('Gracefully closing the application...');
-        const app = getApp();
-        if (app) {
-          await app.close();
-        }
-        this.logger.log('Application closed');
-        process.exit(0);
+        process.kill(process.pid, 'SIGTERM');
       }, timeout);
     }
     return { stopping: true };
