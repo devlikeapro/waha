@@ -58,18 +58,12 @@ async function loadModules(): Promise<
   return [AppModulePlus, SwaggerConfiguratorPlus];
 }
 
-let app = undefined;
-
-export function getApp() {
-  return app;
-}
-
 async function bootstrap() {
   const version = getWAHAVersion();
   logger.info(`WAHA (WhatsApp HTTP API) - Running ${version} version...`);
   const [AppModule, SwaggerModule] = await loadModules();
   const httpsOptions = AppModule.getHttpsOptions(logger);
-  app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create(AppModule, {
     logger: getNestJSLogLevels(),
     httpsOptions: httpsOptions,
     bufferLogs: true,
