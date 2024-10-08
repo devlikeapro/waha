@@ -22,6 +22,7 @@ import {
   StopRequest,
   StopResponse,
 } from '@waha/structures/server.dto';
+import { sleep } from '@waha/utils/promiseTimeout';
 import { VERSION } from '@waha/version';
 import * as lodash from 'lodash';
 
@@ -101,6 +102,8 @@ export class ServerController {
       setTimeout(async () => {
         this.logger.log('Gracefully closing the application...');
         process.kill(process.pid, 'SIGTERM');
+        await sleep(10_000);
+        process.exit(0);
       }, timeout);
     }
     return { stopping: true };
