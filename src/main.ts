@@ -29,6 +29,13 @@ process.on('unhandledRejection', (reason, promise) => {
   // @ts-ignore
   logger.error(reason.stack);
 });
+process.on('SIGINT', () => {
+  logger.info('SIGINT received');
+});
+
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM received');
+});
 
 async function loadModules(): Promise<
   [typeof AppModuleCore, typeof SwaggerConfiguratorCore]
