@@ -409,6 +409,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async stop() {
+    this.shouldRestart = false;
+    this.startDelayedJob.cancel();
+    this.autoRestartJob.stop();
     if (this.authNOWEBStore && this.status == WAHASessionStatus.WORKING) {
       this.logger.info('Saving creds before stopping...');
       await this.authNOWEBStore.saveCreds().catch((e) => {
@@ -418,10 +421,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       this.logger.info('Creds saved');
       this.authNOWEBStore = null;
     }
-    this.shouldRestart = false;
     this.status = WAHASessionStatus.STOPPED;
     this.events.removeAllListeners();
-    this.startDelayedJob.cancel();
     await this.end();
     await this.store?.close();
     return;
