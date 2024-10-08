@@ -2,6 +2,7 @@ import makeWASocket, {
   Browsers,
   Contact,
   DisconnectReason,
+  downloadMediaMessage,
   extractMessageContent,
   getAggregateVotesInPollMessage,
   getContentType,
@@ -19,7 +20,6 @@ import makeWASocket, {
   WAMessageContent,
   WAMessageKey,
 } from '@adiwajshing/baileys';
-import { downloadMediaMessage } from '@adiwajshing/baileys';
 import { WACallEvent } from '@adiwajshing/baileys/lib/Types/Call';
 import { Label as NOWEBLabel } from '@adiwajshing/baileys/lib/Types/Label';
 import { LabelAssociationType } from '@adiwajshing/baileys/lib/Types/LabelAssociation';
@@ -409,6 +409,15 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async stop() {
+    if (this.authNOWEBStore && this.status == WAHASessionStatus.WORKING) {
+      this.logger.info('Saving creds before stopping...');
+      await this.authNOWEBStore.saveCreds().catch((e) => {
+        this.logger.error('Failed to save creds');
+        this.logger.error(e, e.stack);
+      });
+      this.logger.info('Creds saved');
+      this.authNOWEBStore = null;
+    }
     this.shouldRestart = false;
     this.status = WAHASessionStatus.STOPPED;
     this.events.removeAllListeners();
