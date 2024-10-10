@@ -243,6 +243,12 @@ export class MessageVideoRequest extends ChatRequest {
     example: null,
   })
   reply_to?: string;
+
+  @ApiProperty({
+    description: 'Send as video note (aka instant or round video).',
+    example: false,
+  })
+  asNote?: boolean;
 }
 
 export class MessageLinkPreviewRequest extends ChatRequest {
