@@ -393,8 +393,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
           this.logger.error(
             `Connection closed due to '${lastDisconnect.error}', do not reconnect the session.`,
           );
-          await this.end();
           this.status = WAHASessionStatus.FAILED;
+          await this.end();
         }
       }
 
