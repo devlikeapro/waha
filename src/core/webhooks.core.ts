@@ -42,20 +42,31 @@ export class WebhookSenderCore extends WebhookSender {
   }
 
   send(json: any, headers?: Record<string, string>) {
-    this.logger.info({ url: this.url }, `Sending POST ...`);
-    this.logger.debug({ data: json }, `POST DATA`);
+    this.logger.info(
+      { id: headers['X-Webhook-Request-Id'], url: this.url },
+      `Sending POST ...`,
+    );
+    this.logger.debug(
+      { id: headers['X-Webhook-Request-Id'], data: json },
+      `POST DATA`,
+    );
 
     this.axios
       .post(this.url, json, { headers: headers })
       .then((response) => {
         this.logger.info(
+          { id: headers['X-Webhook-Request-Id'] },
           `POST request was sent with status code: ${response.status}`,
         );
-        this.logger.debug({ body: response.data }, `Response`);
+        this.logger.debug(
+          { id: headers['X-Webhook-Request-Id'], body: response.data },
+          `Response`,
+        );
       })
       .catch((error) => {
         this.logger.error(
           {
+            id: headers['X-Webhook-Request-Id'],
             error: error.message,
             data: error.response?.data,
           },
