@@ -256,6 +256,13 @@ export class MessageLinkPreviewRequest extends ChatRequest {
   title: string;
 }
 
+export class MessageForwardRequest extends ChatRequest {
+  @ApiProperty({
+    example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
+  })
+  messageId: string;
+}
+
 export class MessageReactionRequest extends MessageRequest {
   @ApiProperty({
     description:

@@ -68,6 +68,7 @@ import {
   MessageContactVcardRequest,
   MessageDestination,
   MessageFileRequest,
+  MessageForwardRequest,
   MessageImageRequest,
   MessageLinkPreviewRequest,
   MessageLocationRequest,
@@ -667,6 +668,23 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         degreesLongitude: request.longitude,
       },
     });
+  }
+
+  async forwardMessage(request: MessageForwardRequest): Promise<WAMessage> {
+    const key = parseMessageIdSerialized(request.messageId);
+    const forwardMessage = await this.store.loadMessage(key.remoteJid, key.id);
+    if (!forwardMessage) {
+      throw new UnprocessableEntityException(
+        `Message with id '${request.messageId}' not found`,
+      );
+    }
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    const message = {
+      forward: forwardMessage,
+      force: true,
+    };
+    const result = await this.sock.sendMessage(chatId, message, {});
+    return this.toWAMessage(result);
   }
 
   sendLinkPreview(request: MessageLinkPreviewRequest) {

@@ -8,6 +8,7 @@ import {
   GetMessageQuery,
   MessageContactVcardRequest,
   MessageFileRequest,
+  MessageForwardRequest,
   MessageImageRequest,
   MessageLinkPreviewRequest,
   MessageLocationRequest,
@@ -79,6 +80,14 @@ export class ChattingController {
   async sendVideo(@Body() request: MessageVideoRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.sendVideo(request);
+  }
+
+  @Post('/forwardMessage')
+  async forwardMessage(
+    @Body() request: MessageForwardRequest,
+  ): Promise<WAMessage> {
+    const whatsapp = await this.manager.getWorkingSession(request.session);
+    return await whatsapp.forwardMessage(request);
   }
 
   @Post('/sendSeen')

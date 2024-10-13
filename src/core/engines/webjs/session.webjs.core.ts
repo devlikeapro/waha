@@ -26,6 +26,7 @@ import {
   EditMessageRequest,
   GetMessageQuery,
   MessageFileRequest,
+  MessageForwardRequest,
   MessageImageRequest,
   MessageLocationRequest,
   MessageReactionRequest,
@@ -461,6 +462,15 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     });
     const options = this.getMessageOptions(request);
     return this.whatsapp.sendMessage(request.chatId, location, options);
+  }
+
+  async forwardMessage(request: MessageForwardRequest): Promise<WAMessage> {
+    const forwardMessage = this.recreateMessage(request.messageId);
+    const msg = await forwardMessage.forward(request.chatId);
+    // Return "sent: true" for now
+    // need to research how to get the data from WebJS
+    // @ts-ignore
+    return { sent: msg || false };
   }
 
   async sendSeen(request: SendSeenRequest) {
