@@ -1,5 +1,15 @@
-import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Query,
+  UsePipes,
+} from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { WAHAValidationPipe } from '@waha/nestjs/pipes/WAHAValidationPipe';
+import { SendButtonsRequest } from '@waha/structures/chatting.buttons.dto';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import {
@@ -80,6 +90,17 @@ export class ChattingController {
   async sendVideo(@Body() request: MessageVideoRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.sendVideo(request);
+  }
+
+  @Post('/sendButtons')
+  @ApiOperation({
+    summary: 'Send buttons (interactive message)',
+    description: 'Send Buttons',
+  })
+  @UsePipes(new WAHAValidationPipe())
+  async sendButtons(@Body() request: SendButtonsRequest) {
+    const whatsapp = await this.manager.getWorkingSession(request.session);
+    return whatsapp.sendButtons(request);
   }
 
   @Post('/forwardMessage')

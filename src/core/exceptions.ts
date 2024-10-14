@@ -13,9 +13,9 @@ export class NotImplementedByEngineError extends UnprocessableEntityException {
 }
 
 export class AvailableInPlusVersion extends UnprocessableEntityException {
-  constructor() {
+  constructor(feature: string = 'The feature') {
     super(
-      `The feature is available only in Plus version. Check this out: ${DOCS_URL}`,
+      `${feature} is available only in Plus version. Check this out: ${DOCS_URL}`,
     );
   }
 }

@@ -4,6 +4,7 @@ import {
   ListChannelsQuery,
 } from '@waha/structures/channels.dto';
 import { GetChatsQuery } from '@waha/structures/chats.dto';
+import { SendButtonsRequest } from '@waha/structures/chatting.buttons.dto';
 import { Label, LabelID } from '@waha/structures/labels.dto';
 import { WAMessage } from '@waha/structures/responses.dto';
 import { LoggerBuilder } from '@waha/utils/logging';
@@ -290,6 +291,10 @@ export abstract class WhatsappSession {
   abstract sendVoice(request: MessageVoiceRequest);
 
   sendVideo(request: MessageVideoRequest) {
+    throw new NotImplementedByEngineError();
+  }
+
+  sendButtons(request: SendButtonsRequest) {
     throw new NotImplementedByEngineError();
   }
 

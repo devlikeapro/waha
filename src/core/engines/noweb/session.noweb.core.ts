@@ -15,17 +15,20 @@ import makeWASocket, {
   makeCacheableSignalKeyStore,
   NewsletterMetadata,
   normalizeMessageContent,
+  prepareWAMessageMedia,
   PresenceData,
   proto,
   WAMessageContent,
   WAMessageKey,
 } from '@adiwajshing/baileys';
+import { MediaGenerationOptions } from '@adiwajshing/baileys/lib/Types';
 import { WACallEvent } from '@adiwajshing/baileys/lib/Types/Call';
 import { Label as NOWEBLabel } from '@adiwajshing/baileys/lib/Types/Label';
 import { LabelAssociationType } from '@adiwajshing/baileys/lib/Types/LabelAssociation';
 import { isLidUser } from '@adiwajshing/baileys/lib/WABinary/jid-utils';
 import { Logger as BaileysLogger } from '@adiwajshing/baileys/node_modules/pino';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { sendButtonMessage } from '@waha/core/engines/noweb/noweb.buttons';
 import { NowebInMemoryStore } from '@waha/core/engines/noweb/store/NowebInMemoryStore';
 import { IMediaEngineProcessor } from '@waha/core/media/IMediaEngineProcessor';
 import { flipObject, parseBool, splitAt } from '@waha/helpers';
@@ -38,7 +41,9 @@ import {
   ListChannelsQuery,
 } from '@waha/structures/channels.dto';
 import { GetChatsQuery } from '@waha/structures/chats.dto';
+import { SendButtonsRequest } from '@waha/structures/chatting.buttons.dto';
 import { ContactQuery, ContactRequest } from '@waha/structures/contacts.dto';
+import { BinaryFile, RemoteFile } from '@waha/structures/files.dto';
 import {
   Label,
   LabelChatAssociation,
@@ -659,6 +664,30 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   sendVoice(request: MessageVoiceRequest) {
     throw new AvailableInPlusVersion();
+  }
+
+  protected async uploadMedia(
+    file: RemoteFile | BinaryFile,
+    type,
+  ): Promise<any> {
+    if (file && ('url' in file || 'data' in file)) {
+      throw new AvailableInPlusVersion('Sending media (image, video, pdf)');
+    }
+    return;
+  }
+
+  async sendButtons(request: SendButtonsRequest) {
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    const headerImage = await this.uploadMedia(request.headerImage, 'image');
+    return await sendButtonMessage(
+      this.sock,
+      chatId,
+      request.buttons,
+      request.header,
+      headerImage,
+      request.body,
+      request.footer,
+    );
   }
 
   sendLocation(request: MessageLocationRequest) {
