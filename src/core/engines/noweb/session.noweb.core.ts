@@ -15,13 +15,11 @@ import makeWASocket, {
   makeCacheableSignalKeyStore,
   NewsletterMetadata,
   normalizeMessageContent,
-  prepareWAMessageMedia,
   PresenceData,
   proto,
   WAMessageContent,
   WAMessageKey,
 } from '@adiwajshing/baileys';
-import { MediaGenerationOptions } from '@adiwajshing/baileys/lib/Types';
 import { WACallEvent } from '@adiwajshing/baileys/lib/Types/Call';
 import { Label as NOWEBLabel } from '@adiwajshing/baileys/lib/Types/Label';
 import { LabelAssociationType } from '@adiwajshing/baileys/lib/Types/LabelAssociation';
@@ -215,7 +213,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   async start() {
     this.status = WAHASessionStatus.STARTING;
-    await this.buildClient();
+    await this.buildClient().catch((err) => {
+      this.logger.error('Failed to start the client');
+      this.logger.error(err, err.stack);
+      this.status = WAHASessionStatus.FAILED;
+      this.restartClient();
+    });
   }
 
   getSocketConfig(agent, state): any {
@@ -285,13 +288,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
           this.loggerBuilder.child({ name: NowebPersistentStore.name }),
           storage,
         );
-        await this.store.init().catch((err) => {
-          this.logger.error(`Failed to initialize storage or store: ${err}`);
-          this.status = WAHASessionStatus.FAILED;
-          this.end();
-          this.store?.close();
-          throw err;
-        });
+        await this.store.init();
       } else {
         this.logger.debug('Using NowebInMemoryStore');
         this.store = new NowebInMemoryStore();
@@ -366,6 +363,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         );
         return;
       }
+      await this.end();
       await this.start();
     });
   }
@@ -399,8 +397,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
           this.logger.error(
             `Connection closed due to '${lastDisconnect.error}', do not reconnect the session.`,
           );
-          this.status = WAHASessionStatus.FAILED;
-          await this.end();
+          await this.failed();
         }
       }
 
@@ -418,6 +415,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.shouldRestart = false;
     this.startDelayedJob.cancel();
     this.autoRestartJob.stop();
+
     if (this.authNOWEBStore && this.status == WAHASessionStatus.WORKING) {
       this.logger.info('Saving creds before stopping...');
       await this.authNOWEBStore.saveCreds().catch((e) => {
@@ -429,9 +427,20 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     }
     this.status = WAHASessionStatus.STOPPED;
     this.events.removeAllListeners();
+
     await this.end();
     await this.store?.close();
-    return;
+  }
+
+  protected async failed() {
+    this.shouldRestart = false;
+    this.startDelayedJob.cancel();
+    this.autoRestartJob.stop();
+
+    this.status = WAHASessionStatus.FAILED;
+
+    await this.end();
+    await this.store?.close();
   }
 
   private issueMessageUpdateOnEdits() {
