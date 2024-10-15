@@ -230,7 +230,12 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   async start() {
     this.status = WAHASessionStatus.STARTING;
-    await this.init();
+    await this.init().catch((err) => {
+      this.logger.error('Failed to start the client');
+      this.logger.error(err, err.stack);
+      this.status = WAHASessionStatus.FAILED;
+      this.restartClient();
+    });
     return this;
   }
 
