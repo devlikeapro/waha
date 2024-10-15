@@ -11,6 +11,12 @@ import {
   ValidateNested,
 } from 'class-validator';
 
+export enum RetryPolicy {
+  LINEAR = 'linear',
+  EXPONENTIAL = 'exponential',
+  CONSTANT = 'constant',
+}
+
 export class RetriesConfiguration {
   @ApiProperty({
     example: 2,
@@ -25,6 +31,13 @@ export class RetriesConfiguration {
   @IsNumber()
   @IsOptional()
   attempts?: number;
+
+  @ApiProperty({
+    example: RetryPolicy.LINEAR,
+  })
+  @IsOptional()
+  @IsEnum(RetryPolicy)
+  policy?: RetryPolicy;
 }
 
 export class CustomHeader {
