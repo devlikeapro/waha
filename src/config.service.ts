@@ -46,6 +46,15 @@ export class WhatsappConfigService {
     return parseBool(value);
   }
 
+  get autoStartDelaySeconds(): number {
+    const value = this.configService.get('WAHA_AUTO_START_DELAY_SECONDS', '0');
+    try {
+      return parseInt(value, 10);
+    } catch (error) {
+      return 2;
+    }
+  }
+
   get mimetypes(): string[] {
     if (!this.shouldDownloadMedia) {
       return ['mimetype/ignore-all-media'];
