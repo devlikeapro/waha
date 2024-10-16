@@ -56,7 +56,7 @@ export abstract class SessionManager implements BeforeApplicationShutdown {
       this.withLock(sessionName, async () => {
         const log = this.log.logger.child({ session: sessionName });
         log.info(`Restarting PREDEFINED session...`);
-        this.start(sessionName).catch((error) => {
+        await this.start(sessionName).catch((error) => {
           log.error(`Failed to start PREDEFINED session: ${error}`);
           log.error(error.stack);
         });
