@@ -51,7 +51,7 @@ export class WhatsappConfigService {
     try {
       return parseInt(value, 10);
     } catch (error) {
-      return 2;
+      return 0;
     }
   }
 
