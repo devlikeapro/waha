@@ -1404,6 +1404,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       // @ts-ignore - AudioMessage doesn't have caption field
       body = mediaContent?.caption;
     }
+    // Response for buttons
+    if (!body) {
+      body = message.templateButtonReplyMessage?.selectedDisplayText;
+    }
     return body;
   }
 
