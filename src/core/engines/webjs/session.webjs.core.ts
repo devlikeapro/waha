@@ -390,7 +390,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     // show it as ABCD-ABCD
     const parts = splitAt(code, 4);
     const codeRepr = parts.join('-');
-    this.logger.info(`Your code: ${codeRepr}`);
+    this.logger.debug(`Your code: ${codeRepr}`);
     return { code: codeRepr };
   }
 

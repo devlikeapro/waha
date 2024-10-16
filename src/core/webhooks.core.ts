@@ -44,7 +44,7 @@ export class WebhookSenderCore extends WebhookSender {
   send(json: any, headers?: Record<string, string>) {
     this.logger.info(
       { id: headers['X-Webhook-Request-Id'], url: this.url },
-      `Sending POST ...`,
+      `Sending POST...`,
     );
     this.logger.debug(
       { id: headers['X-Webhook-Request-Id'], data: json },
@@ -171,7 +171,7 @@ export class WebhookConductorCore implements WebhookConductor {
     if (!found) {
       return false;
     }
-    this.logger.info(`Event '${event}' is enabled for url: ${url}`);
+    this.logger.debug(`Event '${event}' is enabled for url: ${url}`);
     return true;
   }
 
