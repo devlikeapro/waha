@@ -41,6 +41,13 @@ export class Button {
   text: string;
 
   @ApiProperty({
+    example: '321321',
+  })
+  @IsOptional()
+  @IsString()
+  id?: string;
+
+  @ApiProperty({
     example: 'https://example.com',
   })
   @ValidateIf((o) => o.type === ButtonType.URL)

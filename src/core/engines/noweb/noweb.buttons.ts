@@ -1,15 +1,5 @@
-import {
-  generateWAMessageFromContent,
-  prepareWAMessageMedia,
-  proto,
-} from '@adiwajshing/baileys';
-import {
-  Button,
-  ButtonType,
-  SendButtonsRequest,
-} from '@waha/structures/chatting.buttons.dto';
-import { BinaryFile, RemoteFile } from '@waha/structures/files.dto';
-import { isURL } from 'class-validator';
+import { generateWAMessageFromContent, proto } from '@adiwajshing/baileys';
+import { Button, ButtonType } from '@waha/structures/chatting.buttons.dto';
 
 function toName(type: ButtonType) {
   switch (type) {
@@ -33,7 +23,7 @@ export function buttonToJson(button: Button) {
   const name = toName(button.type);
   const buttonParams: any = {
     display_text: button.text,
-    id: randomId(),
+    id: button.id || randomId(),
     disabled: false,
   };
   switch (button.type) {
