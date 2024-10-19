@@ -42,6 +42,7 @@ export class WebhookSenderCore extends WebhookSender {
   }
 
   send(json: any, headers?: Record<string, string>) {
+    headers = headers || {};
     this.logger.info(
       { id: headers['X-Webhook-Request-Id'], url: this.url },
       `Sending POST...`,
