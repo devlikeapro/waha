@@ -6,26 +6,25 @@ labels: bug
 assignees: ''
 ---
 
-**Describe the bug**
+### Describe the bug
 
-> A clear and concise description of what the bug is. Feel free to remove
-> sections that you don't feel to make the text shorter!
+A clear and concise description of what the bug is. Feel free to remove sections that you don't feel to make the text shorter!
 
-**Version**
+### Version
+
+Get the WAHA version by calling `GET /api/version`
 
 ```json
 {
-  "version": "2023.11.1",
-  "engine": "NOWEB",
-  "tier": "PLUS",
-  "browser": "/usr/bin/google-chrome-stable"
+  "version": "YYYY.MM.DD",
+  "engine": "ENGINE",
+  "tier": "TIER"
 }
 ```
 
-> You can get the WAHA version by calling `GET /api/version` Try to update to
-> [the latest version](https://github.com/devlikeapro/waha/releases) before
-> creating an issue!
+Try to update to [the latest version](https://github.com/devlikeapro/waha/releases) before creating an issue!
 
+## Steps
 **To Reproduce** Steps to reproduce the behavior:
 
 1. Go to '...'
@@ -33,29 +32,23 @@ assignees: ''
 3. Scroll down to '....'
 4. See error
 
-**Expected behavior**
+### Expected behavior
 
-> A clear and concise description of what you expected to happen.
+A clear and concise description of what you expected to happen.
 
-**Engine** I'm using **WEBJS** engine.
+### Requests - Responses
 
-> If you set `WHATSAPP_DEFAULT_ENGINE` explicitly to
-> [one of the engine](https://waha.devlike.pro/docs/how-to/engines/) - please
-> provide that information here and in the issue title.
+Please attach all sent requests, responses that you sent.
 
-**Requests - Responses**
+### Docker Logs
 
-> Please attach all sent requests, responses that you sent.
+Collect and attach related docker logs if you have any
+https://waha.devlike.pro/docs/how-to/deploy/#viewing-the-logs
 
-**Docker Logs**
+### Screenshots
 
-> Collect and attach related docker logs if you have any
-> https://waha.devlike.pro/docs/how-to/deploy/#viewing-the-logs
+If applicable, add screenshots to help explain your problem.
 
-**Screenshots**
+### Additional context
 
-> If applicable, add screenshots to help explain your problem.
-
-**Additional context**
-
-> Add any other context about the problem here.
+Add any other context about the problem here.
