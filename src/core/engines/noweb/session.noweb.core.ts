@@ -1424,6 +1424,40 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     // Ignore poll votes, we have dedicated handler for that
     if (message.message.pollUpdateMessage) return;
 
+    // Check for Instagram advertisement messages
+    const isInstagramAd = this.isInstagramAdvertisement(message);
+
+    if (downloadMedia) {
+      try {
+        message = await this.downloadMedia(message);
+      } catch (e) {
+        this.logger.error('Failed when tried to download media for a message');
+        this.logger.error(e, e.stack);
+      }
+    }
+
+    try {
+      const processedMessage = await this.toWAMessage(message);
+      if (isInstagramAd) {
+        processedMessage.isInstagramAd = true;
+      }
+      return processedMessage;
+    } catch (error) {
+      this.logger.error('Failed to process incoming message');
+      this.logger.error(error);
+      console.trace(error);
+      return null;
+    }
+  }
+  private async processIncomingMessage(message, downloadMedia = true) {
+    // if there is no text or media message
+    if (!message) return;
+    if (!message.message) return;
+    // Ignore reactions, we have dedicated handler for that
+    if (message.message.reactionMessage) return;
+    // Ignore poll votes, we have dedicated handler for that
+    if (message.message.pollUpdateMessage) return;
+
     if (downloadMedia) {
       try {
         message = await this.downloadMedia(message);
@@ -1443,6 +1477,45 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     }
   }
 
+  private isInstagramAdvertisement(message: any): boolean {
+    // Check for specific patterns or properties that indicate an Instagram advertisement
+    // This is a placeholder implementation and may need to be adjusted based on the actual message structure
+    const messageContent = message.message;
+    return (
+      messageContent &&
+      typeof messageContent === 'object' &&
+      ('productMessage' in messageContent || 'listMessage' in messageContent) &&
+      message.key &&
+      message.key.fromMe === false
+    );
+  }
+
+  protected async toWAMessage(message): Promise<WAMessage> {
+    const fromToParticipant = getFromToParticipant(message);
+    const id = buildMessageId(message.key);
+    const body = this.extractBody(message.message);
+    const replyTo = this.extractReplyTo(message.message);
+    const ack = message.ack || message.status - 1;
+    return {
+      id: id,
+      timestamp: message.messageTimestamp,
+      from: toCusFormat(fromToParticipant.from),
+      fromMe: message.key.fromMe,
+      body: body,
+      to: toCusFormat(fromToParticipant.to),
+      participant: toCusFormat(fromToParticipant.participant),
+      hasMedia: Boolean(message.media),
+      media: message.media,
+      mediaUrl: message.media?.url,
+      ack: ack,
+      ackName: WAMessageAck[ack] || ACK_UNKNOWN,
+      location: message.location,
+      vCards: message.vCards,
+      replyTo: replyTo,
+      _data: message,
+      isInstagramAd: this.isInstagramAdvertisement(message)
+    };
+  }
   protected toWAMessage(message): Promise<WAMessage> {
     const fromToParticipant = getFromToParticipant(message);
     const id = buildMessageId(message.key);
