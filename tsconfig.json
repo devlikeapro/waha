@@ -15,8 +15,6 @@
     },
     "incremental": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true
-  },
-  "exclude": ["node_modules", "dist"]
+    "skipLibCheck": true
+  }
 }

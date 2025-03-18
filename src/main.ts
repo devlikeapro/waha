@@ -11,8 +11,6 @@ import { Logger as NestJSPinoLogger } from 'nestjs-pino';
 import { LoggerErrorInterceptor } from 'nestjs-pino';
 import { Logger } from 'pino';
 import pino from 'pino';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import serverlessExpress from '@vendia/serverless-express';
 
 import { WhatsappConfigService } from './config.service';
 import { AppModuleCore } from './core/app.module.core';
@@ -70,15 +68,12 @@ async function loadModules(): Promise<
   return [AppModulePlus, SwaggerConfiguratorPlus];
 }
 
-// Global variable to store the serverless handler
-let serverlessHandler: any;
-
 async function bootstrap() {
   const version = getWAHAVersion();
   logger.info(`WAHA (WhatsApp HTTP API) - Running ${version} version...`);
   const [AppModule, SwaggerModule] = await loadModules();
   const httpsOptions = AppModule.getHttpsOptions(logger);
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+  const app = await NestFactory.create(AppModule, {
     logger: getNestJSLogLevels(),
     httpsOptions: httpsOptions,
     bufferLogs: true,
@@ -107,40 +102,15 @@ async function bootstrap() {
 
   AppModule.appReady(app, logger);
   app.enableShutdownHooks();
-  
-  // Initialize the application
-  await app.init();
-  
-  // Create serverless handler
-  const expressApp = app.getHttpAdapter().getInstance();
-  return serverlessExpress({ app: expressApp });
-}
-
-// For traditional Node.js server environments
-export const startServer = async () => {
-  const [AppModule, _] = await loadModules();
-  const app = await NestFactory.create(AppModule);
   const config = app.get(WhatsappConfigService);
   await app.listen(config.port);
   logger.info(`WhatsApp HTTP API is running on: ${await app.getUrl()}`);
   logger.info(VERSION, 'Environment');
-};
-
-// For serverless environments (Vercel)
-export const handler = async (event: any, context: any) => {
-  if (!serverlessHandler) {
-    serverlessHandler = await bootstrap();
-    logger.info('Serverless handler initialized');
-  }
-  return serverlessHandler(event, context);
-};
-
-// If this file is executed directly (not imported)
-if (require.main === module) {
-  startServer().catch((error) => {
-    logger.error(error, `Failed to start WAHA: ${error}`);
-    // @ts-ignore
-    logger.error(error.stack);
-    process.exit(1);
-  });
 }
+
+bootstrap().catch((error) => {
+  logger.error(error, `Failed to start WAHA: ${error}`);
+  // @ts-ignore
+  logger.error(error.stack);
+  process.exit(1);
+});
