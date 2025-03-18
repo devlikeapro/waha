@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/serverless.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "src/dashboard/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/favicon.ico",
+      "dest": "/src/dashboard/favicon.ico"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/src/dashboard/assets/$1"
+    },
+    {
+      "src": "/docs/(.*)",
+      "dest": "/src/serverless.ts"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/src/serverless.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/src/serverless.ts"
+    }
+  ]
+}
