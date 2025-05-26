@@ -47,7 +47,7 @@ function daysToMs(days: number) {
 
 export function MessagesForRead(
   chatId: string,
-  request: ReadChatMessagesQuery,
+  request: ReadChatMessagesQuery & { includeSent?: boolean },
 ): {
   query: GetChatMessagesQuery;
   filter: GetChatMessagesFilter;
@@ -62,9 +62,11 @@ export function MessagesForRead(
   const after = Math.floor(afterMs / 1000);
   const filter: GetChatMessagesFilter = {
     'filter.ack': WAMessageAck.DEVICE,
-    'filter.fromMe': false,
     'filter.timestamp.gte': after,
   };
+  if (!request.includeSent) {
+    filter['filter.fromMe'] = false;
+  }
   return {
     query: query,
     filter: filter,
