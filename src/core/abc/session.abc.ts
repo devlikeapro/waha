@@ -516,7 +516,7 @@ export abstract class WhatsappSession {
     chatId: string,
     request: ReadChatMessagesQuery,
   ): Promise<ReadChatMessagesResponse> {
-    const { query, filter } = MessagesForRead(chatId, request);
+    const { query, filter } = MessagesForRead(chatId, { ...request, includeSent: true });
     const messages = await this.getChatMessages(chatId, query, filter);
     this.logger.debug(`Found ${messages.length} messages to read`);
     if (messages.length === 0) {
