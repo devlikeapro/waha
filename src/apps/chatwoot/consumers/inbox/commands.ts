@@ -107,6 +107,24 @@ class SessionCommandHandler {
     this.logger.info(
       `Executing command ${command} for session ${this.session}`,
     );
+
+    // Check privileged command access
+    const privilegedCommands = [Command.SERVER_REBOOT, Command.SERVER_REBOOT_FORCE, Command.SERVER_STATUS];
+    if (privilegedCommands.includes(command)) {
+      const privilegedSessionsEnv = process.env.CHATWOOT_PRIVILEGED_SESSIONS || '';
+      const privilegedSessions = privilegedSessionsEnv
+        ? privilegedSessionsEnv.split(',').map(s => s.trim()).filter(s => s.length > 0)
+        : [];
+
+      const hasAccess = privilegedSessions.length === 0 || this.isSessionAllowed(this.session, privilegedSessions);
+      if (!hasAccess) {
+        this.logger.warn(`Access denied: session ${this.session} attempted privileged command ${command}`);
+        const conversation = await this.repo.InboxNotifications();
+        await conversation.incoming('❌ You are not authorized to execute this server command.');
+        return;
+      }
+    }
+
     switch (command) {
       case Command.RESTART:
         await this.waha.restart(this.session);
@@ -194,6 +212,27 @@ class SessionCommandHandler {
       default:
         throw new CommandIsNotImplementedError(cmd);
     }
+  }
+
+  /**
+   * Check if a session is allowed based on exact match or wildcard patterns
+   */
+  private isSessionAllowed(sessionId: string, allowedPatterns: string[]): boolean {
+    for (const pattern of allowedPatterns) {
+      // Exact match
+      if (pattern === sessionId) {
+        return true;
+      }
+      
+      // Wildcard pattern matching (supports * at the end)
+      if (pattern.endsWith('*')) {
+        const prefix = pattern.slice(0, -1); // Remove the '*'
+        if (sessionId.startsWith(prefix)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   findCommand(text: string): Command {
