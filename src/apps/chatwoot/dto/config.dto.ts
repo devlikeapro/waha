@@ -1,6 +1,6 @@
 import { ChatWootAPIConfig } from '@waha/apps/chatwoot/client/interfaces';
 import { DEFAULT_LOCALE, LOCALES } from '@waha/apps/chatwoot/locale';
-import { IsIn, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class ChatWootAppConfig implements ChatWootAPIConfig {
   @IsString()
@@ -21,4 +21,8 @@ export class ChatWootAppConfig implements ChatWootAPIConfig {
   @IsString()
   @IsIn(LOCALES)
   locale: string = DEFAULT_LOCALE;
+
+  @IsBoolean()
+  @IsOptional()
+  disableServerCommands: boolean = false;
 }

@@ -36,6 +36,7 @@ export class ChatWootInboxCommandsConsumer extends ChatWootInboxMessageConsumer 
       job.data.session,
       container.Locale(),
       container.WAHASelf(),
+      container.isServerCommandsDisabled(),
     );
     return await handler.handle(body);
   }
@@ -99,6 +100,7 @@ class SessionCommandHandler {
     private session: string,
     private l: Locale,
     private waha: WAHASelf,
+    private serverCommandsDisabled: boolean,
   ) {}
 
   async handle(message: any) {
@@ -107,6 +109,15 @@ class SessionCommandHandler {
     this.logger.info(
       `Executing command ${command} for session ${this.session}`,
     );
+
+    // Check if server commands are disabled for this app
+    const serverCommands = [Command.SERVER_STATUS, Command.SERVER_REBOOT, Command.SERVER_REBOOT_FORCE];
+    if (this.serverCommandsDisabled && serverCommands.includes(command)) {
+      this.logger.warn(`Server command ${command} is disabled for session ${this.session}`);
+      const conversation = await this.repo.InboxNotifications();
+      await conversation.incoming('❌ Server commands are disabled for this ChatWoot integration.');
+      return;
+    }
 
     switch (command) {
       case Command.RESTART:

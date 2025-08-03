@@ -7,60 +7,39 @@ By default, any session connected to ChatWoot can execute server commands like:
 - `server reboot` - Gracefully reboot the server
 - `server reboot force` - Force reboot the server
 
-For security reasons, you may want to restrict these commands to only specific trusted sessions. This is especially the case when using the same instance for several customers and want to restrict sensitive commands to certain privileged sessions, or to avoid accidental server reboots that can disrupt the service level.
+For security reasons, you may want to restrict these commands. This is especially important when using the same instance for multiple customers or to prevent accidental server reboots that can disrupt service.
 
 ## Configuration
 
-### Environment Variable
+### Per-App Configuration (Dashboard)
 
-Use the `CHATWOOT_PRIVILEGED_SESSIONS` environment variable to specify which session IDs are allowed to execute privileged commands. Supports both exact matches and wildcard patterns. ****Wildcard `*` will only be accepted at the end of the session ID.****
+Each ChatWoot app can be configured individually through the WAHA dashboard. This provides granular control and better security isolation.
 
-```env
-# Allow specific sessions and wildcard patterns to execute server commands
-CHATWOOT_PRIVILEGED_SESSIONS=session1,session2,admins_*,monitoring_*
+#### Dashboard Configuration
 
-# Or leave empty/unset to allow all sessions (default behavior)
-# CHATWOOT_PRIVILEGED_SESSIONS=
-```
+1. **Navigate to App Configuration**: Go to the WAHA dashboard and access "App Configuration"
+2. **Select ChatWoot App**: Choose the ChatWoot integration you want to configure
+3. **Toggle Server Commands**: Use the "Disable Server Commands" setting:
+   - `false` (default): Server commands are allowed
+   - `true`: Server commands are disabled for this app
 
-#### Pattern Matching
+#### Configuration Field
 
-- **Exact Match**: `session1` - matches only "session1"
-- **Wildcard Pattern**: `admins_*` - matches any session starting with "admins_" (e.g., "admins_john", "admins_mary", "admins_bot")
-- **Mixed**: `session1,admins_*,monitoring_*` - combines exact matches and patterns
-
-### Docker Compose
-
-Add the environment variable to your `docker-compose.yaml`:
-
-```yaml
-version: '3'
-services:
-  waha:
-    image: devlikeapro/waha:latest
-    environment:
-      - CHATWOOT_PRIVILEGED_SESSIONS=session1,session2
-    # ... other configuration
-```
-
-### Docker Run
-
-Pass the environment variable when running the container:
-
-```bash
-docker run -e CHATWOOT_PRIVILEGED_SESSIONS="session1,session2" devlikeapro/waha
+The ChatWoot app configuration includes:
+```typescript
+disableServerCommands: boolean = false  // Default: allow server commands
 ```
 
 ## Behavior
 
-### When Restricted
-- Only sessions listed in `CHATWOOT_PRIVILEGED_SESSIONS` can execute `server status`, `server reboot`, and `server reboot force` commands
-- Unauthorized sessions receive the message: "❌ You are not authorized to execute this server command."
-- Access attempts are logged with a warning for security auditing
+### When Server Commands are Enabled (Default)
+- All sessions can execute `server status`, `server reboot`, and `server reboot force` commands
+- This maintains backward compatibility with existing installations
 
-### When Unrestricted (Default)
-- When `CHATWOOT_PRIVILEGED_SESSIONS` is empty or unset, all sessions can execute privileged commands
-- This maintains backward compatibility with existing installations, until needed.
+### When Server Commands are Disabled
+- Attempts to execute server commands will be blocked
+- Users receive the message: "❌ Server commands are disabled for this ChatWoot integration."
+- Access attempts are logged with a warning for security auditing
 
 ## Session Commands
 
@@ -75,8 +54,8 @@ These commands are available to all sessions regardless of the restriction:
 - `screenshot` - Get screenshot of the session
 - `help` - Show available commands
 
-### Privileged Commands (Restricted)
-These commands require session ID to be in `CHATWOOT_PRIVILEGED_SESSIONS`:
+### Server Commands (Can be Restricted)
+These commands can be disabled per ChatWoot app:
 - `server status` - Get server version and status
 - `server reboot` - Gracefully reboot the server
 - `server reboot force` - Force reboot the server
@@ -84,60 +63,72 @@ These commands require session ID to be in `CHATWOOT_PRIVILEGED_SESSIONS`:
 ## Example Scenarios
 
 ### Development Environment
-```env
-# Allow all sessions (default)
-# CHATWOOT_PRIVILEGED_SESSIONS=
-```
+- **Setting**: `disableServerCommands: false`
+- **Result**: All server commands available for testing and development
 
-### Production Environment
-```env
-# Only allow admin and monitoring sessions
-CHATWOOT_PRIVILEGED_SESSIONS=admin-session,monitoring-bot
-```
+### Production Environment - Customer Facing
+- **Setting**: `disableServerCommands: true` 
+- **Result**: Customers cannot accidentally reboot the server
+
+### Production Environment - Admin Access
+- **Setting**: `disableServerCommands: false`
+- **Result**: Admin teams retain full server control
 
 ### Multi-tenant Setup
-```env
-# Only allow specific tenant admin sessions
-CHATWOOT_PRIVILEGED_SESSIONS=tenant1-admin,tenant2-admin,system-admin
+Create separate ChatWoot apps for different access levels:
+- **Customer Apps**: `disableServerCommands: true`
+- **Admin Apps**: `disableServerCommands: false`
+- **Monitoring Apps**: `disableServerCommands: false`
+
+## API Configuration
+
+You can also configure this programmatically when creating or updating ChatWoot apps:
+
+```json
+{
+  "url": "https://chatwoot.example.com",
+  "accountId": 12345,
+  "accountToken": "your-account-token",
+  "inboxId": 67890,
+  "inboxIdentifier": "your-inbox-token",
+  "locale": "en-US",
+  "disableServerCommands": true
+}
 ```
-
-### Wildcard Pattern Examples
-```env
-# Allow all admin sessions (admins_john, admins_mary, etc.)
-CHATWOOT_PRIVILEGED_SESSIONS=admins_*
-
-# Allow multiple patterns and specific sessions
-CHATWOOT_PRIVILEGED_SESSIONS=admins_*,monitoring_*,support_*,emergency-session
-
-# Department-based access
-CHATWOOT_PRIVILEGED_SESSIONS=ops_*,devops_*,sysadmin_*
-```
-
-#### Pattern Matching Examples
-| Pattern | Session ID | Match? | Explanation |
-|---------|------------|--------|-------------|
-| `admins_*` | `admins_john` | ✅ Yes | Starts with "admins_" |
-| `admins_*` | `admins_mary_team` | ✅ Yes | Starts with "admins_" |
-| `admins_*` | `admin_john` | ❌ No | Singular "admin" word |
-| `admins_*` | `john_admin` | ❌ No | Doesn't start with "admins_" |
-| `ops_*` | `ops_monitoring` | ✅ Yes | Starts with "ops_" |
-| `session1` | `session1` | ✅ Yes | Exact match |
-| `session1` | `session12` | ❌ No | Not exact match |
 
 ## Troubleshooting
 
 ### Command Rejected
-If you receive "❌ You are not authorized to execute this server command.":
-1. Check that your session ID is included in `CHATWOOT_PRIVILEGED_SESSIONS`
-2. Verify the session ID matches exactly (case-sensitive, no extra spaces)
-3. Restart the container after changing the environment variable
+If you receive "❌ Server commands are disabled for this ChatWoot integration.":
+1. Check the ChatWoot app configuration in the dashboard
+2. Verify if `disableServerCommands` is set to `true`
+3. Update the setting if you need server command access
 
 ### Logs
-Access denied attempts are logged as warnings:
+When server commands are blocked, you'll see:
 ```
-WARN: Access denied: session mysession attempted privileged command server reboot
+WARN: Server command server reboot is disabled for session mysession
 ```
 
 ## Migration
 
-This feature is backward compatible. Existing installations will continue to work without any changes. To enable restrictions, simply add the `CHATWOOT_PRIVILEGED_SESSIONS` environment variable with your desired session IDs.
+This feature is backward compatible:
+- **Existing Apps**: Continue working unchanged (`disableServerCommands: false` by default) and has validations on DTO and DIContainer.
+- **New Apps**: Can be configured with restrictions as needed
+- **No Breaking Changes**: All existing functionality remains intact
+
+## Security Best Practices
+
+1. **Principle of Least Privilege**: Only enable server commands for apps that truly need them
+2. **Separate Apps by Role**: Create different ChatWoot apps for different user types
+3. **Monitor Access**: Review logs for any blocked command attempts
+4. **Regular Audits**: Periodically review which apps have server command access
+5. **Environment Isolation**: Use stricter settings in production environments
+
+## Benefits of Per-App Configuration
+
+- **Granular Control**: Configure each ChatWoot integration independently
+- **Multi-tenant Safe**: Different customers can have different access levels
+- **Easy Management**: Control through the familiar dashboard interface
+- **Audit Trail**: Clear logging of configuration changes and access attempts
+- **No Environment Variables**: No need to manage complex environment variable lists

@@ -198,4 +198,8 @@ export class DIContainer {
   public CustomAttributesAPI() {
     return new CustomAttributesAPI(this.config, this.AccountAPI());
   }
+
+  public isServerCommandsDisabled(): boolean {
+    return this.config.disableServerCommands || false;
+  }
 }
