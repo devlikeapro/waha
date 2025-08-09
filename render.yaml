@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: waha
+    env: docker
+    plan: free
+    branch: main
+    autoDeploy: true
+    envVars:
+      - key: WAHA_LICENSE_KEY
+        value: your-license-key-here
+      - key: WAHA_API_KEY
+        value: mysecretapikey
+      - key: WAHA_WEBHOOK_URL
+        value: https://your-webhook-handler.com
+      - key: WAHA_SESSIONS_DIR
+        value: /data/sessions
+    disk:
+      name: waha-data
+      mountPath: /data
+      sizeGB: 1
