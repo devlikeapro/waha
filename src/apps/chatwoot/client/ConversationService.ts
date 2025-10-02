@@ -54,4 +54,31 @@ export class ConversationService {
     );
     return conversation;
   }
+
+  async markAsRead(conversationId: number, sourceId: string): Promise<void> {
+    try {
+      // Call the update_last_seen endpoint using direct HTTP request
+      // since the SDK doesn't have this method
+      const axios = require('axios');
+      const response = await axios.post(
+        `${this.config.url}/public/api/v1/inboxes/${this.config.inboxIdentifier}/contacts/${sourceId}/conversations/${conversationId}/update_last_seen`,
+        {},
+        {
+          headers: {
+            'api_access_token': this.config.inboxIdentifier,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      
+      this.logger.info(
+        `Marked conversation.id: ${conversationId} as read in inbox: ${this.config.inboxIdentifier} for contact: ${sourceId}`,
+      );
+    } catch (err) {
+      this.logger.error(
+        `Error marking conversation.id: ${conversationId} as read: ${err.message}`,
+      );
+      throw err;
+    }
+  }
 }

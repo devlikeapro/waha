@@ -46,6 +46,11 @@ export class ChatwootWebhookController {
       return { success: true };
     }
 
+    // Ignore messages with status "read" (from update_last_seen endpoint)
+    if (body.status === 'read') {
+      return { success: true };
+    }
+
     const data: InboxData = {
       session: session,
       app: id,

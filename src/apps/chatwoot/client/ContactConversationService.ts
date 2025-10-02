@@ -160,4 +160,13 @@ export class ContactConversationService {
       }
     }
   }
+
+  public async markConversationAsRead(conversationId: number, sourceId: string): Promise<void> {
+    await this.conversationService.markAsRead(conversationId, sourceId);
+  }
+
+  public async getSourceIdByChatId(chatId: string): Promise<string | null> {
+    const contact = await this.contactService.searchByAnyID(chatId);
+    return contact ? contact.sourceId : null;
+  }
 }

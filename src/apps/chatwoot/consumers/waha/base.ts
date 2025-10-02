@@ -42,6 +42,7 @@ export function ListenEventsForChatWoot() {
     WAHAEvents.MESSAGE_REACTION,
     WAHAEvents.MESSAGE_EDITED,
     WAHAEvents.MESSAGE_REVOKED,
+    WAHAEvents.MESSAGE_ACK,
     WAHAEvents.SESSION_STATUS,
   ];
 }
