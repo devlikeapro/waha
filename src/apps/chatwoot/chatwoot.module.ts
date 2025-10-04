@@ -21,7 +21,7 @@ import { WAHAMessageAnyConsumer } from './consumers/waha/message.any';
 import { WAHAMessageEditedConsumer } from './consumers/waha/message.edited';
 import { WAHAMessageReactionConsumer } from './consumers/waha/message.reaction';
 import { WAHAMessageRevokedConsumer } from './consumers/waha/message.revoked';
-import { WAHAMessageReadConsumer } from './consumers/waha/message.read';
+import { WAHAMessageReadConsumer } from './consumers/waha/message.ack';
 import { WAHASessionStatusConsumer } from './consumers/waha/session.status';
 import { ChatWootQueueService } from './services/ChatWootQueueService';
 import { ChatWootScheduleService } from './services/ChatWootScheduleService';
