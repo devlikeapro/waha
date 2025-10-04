@@ -218,11 +218,15 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
     webhook.configure(session, webhooks);
 
     // Apps
-    await this.configureApps(session);
+    await this.appsService.beforeSessionStart(session, this.store);
 
     // start session
     await session.start();
     logger.info('Session has been started.');
+
+    // Apps
+    await this.appsService.afterSessionStart(session, this.store);
+
     return {
       name: session.name,
       status: session.status,

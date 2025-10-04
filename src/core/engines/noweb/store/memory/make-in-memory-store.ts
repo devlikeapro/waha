@@ -414,7 +414,7 @@ export default (config: BaileysInMemoryStoreConfig) => {
     for (const jid in json.messages) {
       const list = assertMessageList(jid);
       for (const msg of json.messages[jid]) {
-        list.upsert(esm.b.proto.WebMessageInfo.create(msg), 'append');
+        list.upsert(esm.b.proto.WebMessageInfo.create(msg) as any, 'append');
       }
     }
   };

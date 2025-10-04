@@ -23,5 +23,7 @@ export interface IAppService {
 
   beforeDeleted(app: App): Promise<void>;
 
-  beforeSessionStart(app: App, session: WhatsappSession): Promise<void>;
+  beforeSessionStart(app: App, session: WhatsappSession): void;
+
+  afterSessionStart(app: App, session: WhatsappSession): void;
 }

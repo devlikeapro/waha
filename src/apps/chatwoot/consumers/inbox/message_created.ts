@@ -80,7 +80,10 @@ export class MessageHandler {
   async handle(body: any) {
     const chatId = await LookupAndCheckChatId(this.session, body);
     const message = body;
-    if (message.content_type != 'text') {
+    if (
+      message.content_type != 'text' &&
+      message.content_type != 'input_csat'
+    ) {
       this.logger.info(
         `Message content type not supported. Content type: ${message.content_type}`,
       );

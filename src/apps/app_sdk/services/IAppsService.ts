@@ -17,6 +17,8 @@ export interface IAppsService {
 
   beforeSessionStart(session: WhatsappSession, store: DataStore): Promise<void>;
 
+  afterSessionStart(session: WhatsappSession, store: DataStore): Promise<void>;
+
   migrate(knex: Knex): Promise<void>;
 }
 

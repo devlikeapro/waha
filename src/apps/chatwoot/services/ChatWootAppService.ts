@@ -119,12 +119,15 @@ export class ChatWootAppService implements IAppService {
     await conversation.incoming(updated);
   }
 
-  async beforeSessionStart(
-    app: App<ChatWootAppConfig>,
-    session: WhatsappSession,
-  ) {
+  beforeSessionStart(app: App<ChatWootAppConfig>, session: WhatsappSession) {
     this.chatWootWAHAQueueService.listenEvents(app.id, session);
-    await this.chatWootScheduleService.schedule(app.id, session.name);
+  }
+
+  afterSessionStart(app: App<ChatWootAppConfig>, session: WhatsappSession) {
+    this.chatWootScheduleService.schedule(app.id, session.name).catch((err) => {
+      this.logger.error('Error scheduling session for ChatWoot');
+      this.logger.error(err, err.stack);
+    });
   }
 
   private async setupCustomAttributes(app: App<ChatWootAppConfig>) {

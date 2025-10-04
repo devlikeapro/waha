@@ -44,4 +44,8 @@ export class AppsDisabledService implements IAppsService {
   async beforeSessionStart(session: WhatsappSession, store: DataStore) {
     return;
   }
+
+  async afterSessionStart(session: WhatsappSession, store: DataStore) {
+    return;
+  }
 }

@@ -145,7 +145,17 @@ export class AppsEnabledService implements IAppsService {
     const apps = await repo.getEnabledBySession(session.name);
     for (const app of apps) {
       const service = this.getAppService(app);
-      await service.beforeSessionStart(app, session);
+      service.beforeSessionStart(app, session);
+    }
+  }
+
+  async afterSessionStart(session: WhatsappSession, store: DataStore) {
+    const knex = store.getWAHADatabase();
+    const repo = new AppRepository(knex);
+    const apps = await repo.getEnabledBySession(session.name);
+    for (const app of apps) {
+      const service = this.getAppService(app);
+      service.afterSessionStart(app, session);
     }
   }
 

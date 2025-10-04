@@ -104,10 +104,6 @@ export abstract class SessionManager
     );
   }
 
-  async configureApps(session: WhatsappSession) {
-    await this.appsService.beforeSessionStart(session, this.store);
-  }
-
   //
   // API Methods
   //

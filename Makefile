@@ -35,13 +35,13 @@ for-swagger:
 	WHATSAPP_SWAGGER_CONFIG_ADVANCED=true . ${NVM_DIR}/nvm.sh && nvm exec yarn start
 
 up-noweb:
-	. ${NVM_DIR}/nvm.sh && nvm exec yarn up @adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-2025-09-21
+	yarn up @adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-2025-10-03
 
 up-noweb-libsignal:
-	. ${NVM_DIR}/nvm.sh && nvm exec yarn up libsignal@github:devlikeapro/libsignal-node#fork-master
+	yarn up libsignal@github:devlikeapro/libsignal-node#fork-master
 
 up-webjs:
-	. ${NVM_DIR}/nvm.sh && nvm exec yarn up whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-2025-09-10
+	yarn up whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-2025-09-10
 
 start-proxy:
 	docker run --rm -d --name squid-container -e TZ=UTC -p 3128:3128 ubuntu/squid:5.2-22.04_beta
