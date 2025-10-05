@@ -229,6 +229,72 @@ whatsapp.to.chatwoot.message.location: |-
   {{/liveLocationMessage}}
   {{/message}}
 
+
+whatsapp.to.chatwoot.message.poll: |-
+  {{#message}}
+  {{#pollCreationMessageV3}}
+  📊 **استطلاع**
+
+  **{{name}}**
+
+  {{#options}}
+  - {{optionName}}
+  {{/options}}
+  {{/pollCreationMessageV3}}
+  {{/message}}
+
+whatsapp.to.chatwoot.message.event: |-
+  {{#message}}
+  {{#eventMessage}}
+  {{#isCanceled}}
+  ❌ **تم إلغاء الحدث**
+  {{/isCanceled}}
+  {{^isCanceled}}
+  📅 **حدث**
+  {{/isCanceled}}
+
+  **{{name}}**
+
+  {{#description}}
+  {{description}}
+  {{/description}}
+
+  {{#location.name}}
+  📍 **الموقع:** {{location.name}}
+  {{/location.name}}
+
+  {{#startTime}}
+  🕐 **البداية:** {{startTime}}
+  {{/startTime}}
+
+  {{#endTime}}
+  🕐 **النهاية:** {{endTime}}
+  {{/endTime}}
+
+  {{#joinLink}}
+  🔗 **رابط المشاركة:** {{joinLink}}
+  {{/joinLink}}
+  {{/eventMessage}}
+  {{/message}}
+
+whatsapp.to.chatwoot.message.pix: |-
+  💳 **PIX - Copy and Paste**
+
+  {{#pixData}}
+  **{{merchantName}}**
+
+  **PIX Key:** {{key}}
+  **Type:** {{keyType}}
+  {{#totalAmount}}
+  **Amount:** R$ {{totalAmount}}
+  {{/totalAmount}}
+  {{#referenceId}}
+  **Reference:** {{referenceId}}
+  {{/referenceId}}
+
+  💳 **PIX Copy and Paste sent**
+  {{/pixData}}
+
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **هذا النوع من الرسائل غير مدعوم في ChatWoot.**
   📱 يرجى فتح **WhatsApp** لعرضه.

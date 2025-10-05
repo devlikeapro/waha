@@ -232,6 +232,72 @@ whatsapp.to.chatwoot.message.location: |-
   {{/liveLocationMessage}}
   {{/message}}
 
+
+whatsapp.to.chatwoot.message.poll: |-
+  {{#message}}
+  {{#pollCreationMessageV3}}
+  📊 **Umfrage**
+
+  **{{name}}**
+
+  {{#options}}
+  - {{optionName}}
+  {{/options}}
+  {{/pollCreationMessageV3}}
+  {{/message}}
+
+whatsapp.to.chatwoot.message.event: |-
+  {{#message}}
+  {{#eventMessage}}
+  {{#isCanceled}}
+  ❌ **Event Abgesagt**
+  {{/isCanceled}}
+  {{^isCanceled}}
+  📅 **Event**
+  {{/isCanceled}}
+
+  **{{name}}**
+
+  {{#description}}
+  {{description}}
+  {{/description}}
+
+  {{#location.name}}
+  📍 **Ort:** {{location.name}}
+  {{/location.name}}
+
+  {{#startTime}}
+  🕐 **Start:** {{startTime}}
+  {{/startTime}}
+
+  {{#endTime}}
+  🕐 **Ende:** {{endTime}}
+  {{/endTime}}
+
+  {{#joinLink}}
+  🔗 **Teilnahme-Link:** {{joinLink}}
+  {{/joinLink}}
+  {{/eventMessage}}
+  {{/message}}
+
+whatsapp.to.chatwoot.message.pix: |-
+  💳 **PIX - Copy and Paste**
+
+  {{#pixData}}
+  **{{merchantName}}**
+
+  **PIX-Schlüssel:** {{key}}
+  **Typ:** {{keyType}}
+  {{#totalAmount}}
+  **Betrag:** R$ {{totalAmount}}
+  {{/totalAmount}}
+  {{#referenceId}}
+  **Referenz:** {{referenceId}}
+  {{/referenceId}}
+
+  💳 **PIX Copy and Paste gesendet**
+  {{/pixData}}
+
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **Dieser Nachrichtentyp wird in ChatWoot nicht unterstützt.**
   📱 Bitte öffne **WhatsApp**, um ihn anzusehen.
