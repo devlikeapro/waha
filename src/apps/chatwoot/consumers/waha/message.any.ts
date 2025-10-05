@@ -75,6 +75,12 @@ class MessageAnyHandler extends MessageBaseHandler<WAMessage> {
     payload: WAMessage,
   ): Promise<ChatWootMessagePartial> {
     const protoMessage = this.getProtoMessage(payload);
+    
+    // Check for Facebook Ad first - but let it use the normal flow
+    if (this.isFacebookAd(payload, protoMessage)) {
+      return this.getFacebookAdMessage(payload, protoMessage);
+    }
+    
     let msg = await this.getTextMessage(payload, protoMessage);
     if (msg) {
       return msg;
@@ -184,6 +190,92 @@ class MessageAnyHandler extends MessageBaseHandler<WAMessage> {
     };
   }
 
+  private isFacebookAd(payload: WAMessage, protoMessage: proto.Message | null): boolean {
+    // Check GOWS engine structure (_data with PascalCase)
+    const gowsExtendedText = payload._data?.Message?.extendedTextMessage;
+    if (gowsExtendedText?.contextInfo?.externalAdReply) {
+      return true;
+    }
+    
+    // Check other engines structure (protoMessage with camelCase)
+    if (protoMessage?.extendedTextMessage?.contextInfo?.externalAdReply) {
+      return true;
+    }
+    
+    return false;
+  }
+
+  private extractAdReply(payload: WAMessage, protoMessage: proto.Message | null): any {
+    // First try: GOWS engine structure (_data with PascalCase)
+    const gowsExtendedText = payload._data?.Message?.extendedTextMessage;
+    if (gowsExtendedText?.contextInfo?.externalAdReply) {
+      return gowsExtendedText.contextInfo.externalAdReply;
+    }
+    
+    // Second try: Other engines structure (protoMessage with camelCase)
+    if (protoMessage?.extendedTextMessage?.contextInfo?.externalAdReply) {
+      return protoMessage.extendedTextMessage.contextInfo.externalAdReply;
+    }
+    
+    return null;
+  }
+
+  private extractAdData(adReply: any): any {
+    return {
+      title: adReply.title || '',
+      body: adReply.body || '',
+      thumbnailURL: adReply.thumbnailURL || adReply.thumbnailUrl || '',
+      originalImageURL: adReply.originalImageURL || adReply.originalImageUrl || '',
+      sourceURL: adReply.sourceURL || adReply.sourceUrl || '',
+      sourceID: adReply.sourceID || adReply.sourceId || '',
+    };
+  }
+
+  private async getFacebookAdMessage(
+    payload: WAMessage,
+    protoMessage: proto.Message | null,
+  ): Promise<ChatWootMessagePartial> {
+    const adReply = this.extractAdReply(payload, protoMessage);
+    const adData = this.extractAdData(adReply);
+
+    // Create caption using the Facebook Ad template (reuse existing media caption system)
+    const content = this.l
+      .key(TKey.WA_TO_CW_MESSAGE_FACEBOOK_AD)
+      .render({ 
+        payload: payload,
+        adData: adData
+      });
+
+    // Download Facebook Ad image and create attachment (reuse existing media flow)
+    const attachments: SendAttachment[] = [];
+    const imageURL = adData.originalImageURL || adData.thumbnailURL;
+    
+    if (imageURL) {
+      try {
+        this.logger.info(`Downloading Facebook Ad image from '${imageURL}'...`);
+        const buffer = await this.waha.fetch(imageURL);
+        const fileContent = buffer.toString('base64');
+        
+        const attachment: SendAttachment = {
+          content: fileContent,
+          filename: 'facebook-ad-image.jpg',
+          encoding: 'base64',
+        };
+        attachments.push(attachment);
+        this.logger.info(`Downloaded Facebook Ad image from '${imageURL}'`);
+      } catch (error) {
+        this.logger.error(`Failed to download Facebook Ad image: ${error.message}`);
+      }
+    }
+
+    // Return as image with caption (same pattern as regular media messages)
+    return {
+      content: WhatsappToMarkdown(content), // This becomes the caption
+      attachments: attachments, // This becomes the image attachment
+      private: undefined,
+    };
+  }
+
   private getProtoMessage(payload: WAMessage): proto.Message | null {
     // GOWS
     if (payload._data.Message) {
@@ -207,32 +299,32 @@ class MessageAnyHandler extends MessageBaseHandler<WAMessage> {
   }
 
   async getAttachments(payload: WAMessage): Promise<SendAttachment[]> {
-    //
-    // WAHA
-    //
-    const hasMedia = payload.media?.url;
-    if (!hasMedia) {
-      return [];
-    }
-
     const attachments: SendAttachment[] = [];
-    const media = payload.media;
-    this.logger.info(`Downloading media from '${media.url}'...`);
-    const buffer = await this.waha.fetch(media.url);
-    const fileContent = buffer.toString('base64');
-    let filename = media.filename;
-    if (!filename) {
-      const extension = mime.extension(media.mimetype);
-      filename = `no-filename.${extension}`;
-    }
+    
+    // Handle regular media attachments
+    const hasMedia = payload.media?.url;
+    if (hasMedia) {
+      const media = payload.media;
+      this.logger.info(`Downloading media from '${media.url}'...`);
+      const buffer = await this.waha.fetch(media.url);
+      const fileContent = buffer.toString('base64');
+      let filename = media.filename;
+      if (!filename) {
+        const extension = mime.extension(media.mimetype);
+        filename = `no-filename.${extension}`;
+      }
 
-    const attachment: SendAttachment = {
-      content: fileContent,
-      filename: filename,
-      encoding: 'base64',
-    };
-    attachments.push(attachment);
-    this.logger.info(`Downloaded media from '${media.url}' as '${filename}'`);
+      const attachment: SendAttachment = {
+        content: fileContent,
+        filename: filename,
+        encoding: 'base64',
+      };
+      attachments.push(attachment);
+      this.logger.info(`Downloaded media from '${media.url}' as '${filename}'`);
+    }
+    // Facebook Ad images are handled directly in getFacebookAdMessage method
+    // This method only handles regular media attachments
+
     return attachments;
   }
 }
