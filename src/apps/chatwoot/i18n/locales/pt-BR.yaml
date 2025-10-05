@@ -219,7 +219,19 @@ whatsapp.to.chatwoot.message.location: |-
   {{#locationMessage}}
   📍 **Localização compartilhada**
 
-  https://www.google.com/maps?q={{degreesLatitude}},{{degreesLongitude}}
+  {{#name}}
+  **{{name}}**
+  {{/name}}
+
+  {{#address}}
+  📍 **Endereço:** {{address}}
+  {{/address}}
+
+  {{#URL}}
+  🌐 **Website:** {{URL}}
+  {{/URL}}
+
+  🔗 **Ver no mapa:** https://www.google.com/maps?q={{degreesLatitude}},{{degreesLongitude}}
   {{#caption}}{{caption}}{{/caption}}
   {{/locationMessage}}
 
@@ -227,10 +239,87 @@ whatsapp.to.chatwoot.message.location: |-
   📍📡 **Compartilhando localização ao vivo**
   Abra o **WhatsApp** para ver as atualizações em tempo real.
 
-  https://www.google.com/maps?q={{degreesLatitude}},{{degreesLongitude}}
+  {{#name}}
+  **{{name}}**
+  {{/name}}
+
+  {{#address}}
+  📍 **Endereço:** {{address}}
+  {{/address}}
+
+  {{#URL}}
+  🌐 **Website:** {{URL}}
+  {{/URL}}
+
+  🔗 **Ver no mapa:** https://www.google.com/maps?q={{degreesLatitude}},{{degreesLongitude}}
   {{#caption}}{{caption}}{{/caption}}
   {{/liveLocationMessage}}
   {{/message}}
+
+whatsapp.to.chatwoot.message.poll: |-
+  {{#message}}
+  {{#pollCreationMessageV3}}
+  📊 **Enquete**
+
+  **{{name}}**
+
+  {{#options}}
+  - {{optionName}}
+  {{/options}}
+  {{/pollCreationMessageV3}}
+  {{/message}}
+
+whatsapp.to.chatwoot.message.event: |-
+  {{#message}}
+  {{#eventMessage}}
+  {{#isCanceled}}
+  ❌ **Evento Cancelado**
+  {{/isCanceled}}
+  {{^isCanceled}}
+  📅 **Evento**
+  {{/isCanceled}}
+
+  **{{name}}**
+
+  {{#description}}
+  {{description}}
+  {{/description}}
+
+  {{#location.name}}
+  📍 **Local:** {{location.name}}
+  {{/location.name}}
+
+  {{#formattedStartTime}}
+  🕐 **Início:** {{formattedStartTime}}
+  {{/formattedStartTime}}
+
+  {{#formattedEndTime}}
+  🕐 **Fim:** {{formattedEndTime}}
+  {{/formattedEndTime}}
+
+  {{#joinLink}}
+  🔗 **Link de participação:** {{joinLink}}
+  {{/joinLink}}
+  {{/eventMessage}}
+  {{/message}}
+
+whatsapp.to.chatwoot.message.pix: |-
+  💳 **PIX - Copia e Cola**
+
+  {{#pixData}}
+  **{{merchantName}}**
+
+  **Chave PIX:** {{key}}
+  **Tipo:** {{keyType}}
+  {{#totalAmount}}
+  **Valor:** R$ {{totalAmount}}
+  {{/totalAmount}}
+  {{#referenceId}}
+  **Referência:** {{referenceId}}
+  {{/referenceId}}
+
+  💳 **PIX Copia e Cola enviado**
+  {{/pixData}}
 
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **Esse tipo de mensagem não é suportado no ChatWoot.**

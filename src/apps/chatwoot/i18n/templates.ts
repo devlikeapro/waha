@@ -51,6 +51,9 @@ export enum TKey {
   WA_TO_CW_MESSAGE = 'whatsapp.to.chatwoot.message',
   WA_TO_CW_MESSAGE_CONTACTS = 'whatsapp.to.chatwoot.message.contacts',
   WA_TO_CW_MESSAGE_LOCATION = 'whatsapp.to.chatwoot.message.location',
+  WA_TO_CW_MESSAGE_POLL = 'whatsapp.to.chatwoot.message.poll',
+  WA_TO_CW_MESSAGE_EVENT = 'whatsapp.to.chatwoot.message.event',
+  WA_TO_CW_MESSAGE_PIX = 'whatsapp.to.chatwoot.message.pix',
   WA_TO_CW_MESSAGE_UNSUPPORTED = 'whatsapp.to.chatwoot.message.unsupported',
 
   //
@@ -131,6 +134,20 @@ export type TemplatePayloads = {
   };
   [TKey.WA_TO_CW_MESSAGE_CONTACTS]: { contacts: SimpleVCardInfo[] };
   [TKey.WA_TO_CW_MESSAGE_LOCATION]: { payload: any; message: proto.Message };
+  [TKey.WA_TO_CW_MESSAGE_POLL]: { payload: any; message: proto.Message };
+  [TKey.WA_TO_CW_MESSAGE_EVENT]: { payload: any; message: any };
+  [TKey.WA_TO_CW_MESSAGE_PIX]: { 
+    payload: any; 
+    message: proto.Message;
+    pixData: {
+      merchantName: string;
+      key: string;
+      keyType: string;
+      currency: string;
+      totalAmount: number;
+      referenceId: string;
+    };
+  };
   [TKey.WA_TO_CW_MESSAGE_UNSUPPORTED]: { details: Link };
   [TKey.JOB_SCHEDULED_ERROR_HEADER]: void;
   [TKey.JOB_REPORT_ERROR]: {

@@ -87,6 +87,18 @@ class MessageAnyHandler extends MessageBaseHandler<WAMessage> {
     if (msg) {
       return msg;
     }
+    msg = this.getPollMessage(payload, protoMessage);
+    if (msg) {
+      return msg;
+    }
+    msg = this.getEventMessage(payload, protoMessage);
+    if (msg) {
+      return msg;
+    }
+    msg = this.getPixMessage(payload, protoMessage);
+    if (msg) {
+      return msg;
+    }
     return this.getUnsupportedMessage();
   }
 
@@ -171,6 +183,170 @@ class MessageAnyHandler extends MessageBaseHandler<WAMessage> {
       attachments: attachments,
       private: undefined,
     };
+  }
+
+  private getPollMessage(
+    payload: WAMessage,
+    message: proto.Message | null,
+  ): ChatWootMessagePartial | null {
+    const hasPoll = !lodash.isEmpty(message?.pollCreationMessageV3);
+    if (!hasPoll) {
+      return null;
+    }
+    const poll = this.l.key(TKey.WA_TO_CW_MESSAGE_POLL).r({
+      payload,
+      message,
+    });
+    if (isEmptyString(poll)) {
+      return null;
+    }
+    return {
+      content: WhatsappToMarkdown(poll),
+      attachments: [],
+      private: undefined,
+    };
+  }
+
+  private getEventMessage(
+    payload: WAMessage,
+    message: proto.Message | null,
+  ): ChatWootMessagePartial | null {
+    const hasEvent = !lodash.isEmpty(message?.eventMessage);
+    if (!hasEvent) {
+      return null;
+    }
+
+    // Converter timestamps Unix para datas legíveis
+    const eventData = message.eventMessage;
+    const formatTimestamp = (timestamp: number | string | any | undefined): string | undefined => {
+      if (!timestamp) return undefined;
+      
+      // Converter Long para number se necessário
+      let ts: number;
+      if (typeof timestamp === 'object' && timestamp.toNumber) {
+        ts = timestamp.toNumber();
+      } else if (typeof timestamp === 'string') {
+        ts = parseInt(timestamp);
+      } else {
+        ts = timestamp as number;
+      }
+      
+      if (isNaN(ts)) return undefined;
+      
+      // Converter de segundos para milissegundos se necessário
+      const date = new Date(ts > 10000000000 ? ts : ts * 1000);
+      return date.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'America/Sao_Paulo'
+      });
+    };
+
+    const event = this.l.key(TKey.WA_TO_CW_MESSAGE_EVENT).r({
+      payload,
+      message: {
+        ...message,
+        eventMessage: eventData,
+        // Adicionar campos formatados separadamente para o template
+        formattedStartTime: formatTimestamp(eventData.startTime),
+        formattedEndTime: formatTimestamp(eventData.endTime),
+      },
+    });
+    if (isEmptyString(event)) {
+      return null;
+    }
+    return {
+      content: WhatsappToMarkdown(event),
+      attachments: [],
+      private: undefined,
+    };
+  }
+
+  private getPixMessage(
+    payload: WAMessage,
+    message: proto.Message | null,
+  ): ChatWootMessagePartial | null {
+    // Verificar se há dados PIX no payload
+    const pixData = this.extractPixData(payload);
+    if (!pixData) {
+      return null;
+    }
+
+    const pix = this.l.key(TKey.WA_TO_CW_MESSAGE_PIX).r({
+      payload,
+      message,
+      pixData,
+    });
+    if (isEmptyString(pix)) {
+      return null;
+    }
+    return {
+      content: WhatsappToMarkdown(pix),
+      attachments: [],
+      private: undefined,
+    };
+  }
+
+  private extractPixData(payload: WAMessage): any | null {
+    try {
+      this.logger.info('Starting PIX data extraction...');
+      
+      // Tentar primeiro em Message, depois em RawMessage
+      const messageData = payload._data?.Message || payload._data?.RawMessage;
+      this.logger.info(`Message data found: ${!!messageData}`);
+      
+      // Log da estrutura completa para debug
+      this.logger.info(`Message data structure: ${JSON.stringify(messageData, null, 2).substring(0, 500)}...`);
+      
+      if (!messageData?.interactiveMessage?.InteractiveMessage?.NativeFlowMessage?.buttons) {
+        this.logger.warn('No interactive message buttons found');
+        this.logger.info(`Available keys in messageData: ${Object.keys(messageData || {}).join(', ')}`);
+        if (messageData?.interactiveMessage) {
+          this.logger.info(`interactiveMessage keys: ${Object.keys(messageData.interactiveMessage).join(', ')}`);
+        }
+        return null;
+      }
+
+      const buttons = messageData.interactiveMessage.InteractiveMessage.NativeFlowMessage.buttons;
+      this.logger.info(`Found ${buttons.length} buttons`);
+      
+      const paymentButton = buttons.find((btn: any) => btn.name === 'payment_info');
+      this.logger.info(`Payment button found: ${!!paymentButton}`);
+      
+      if (!paymentButton?.buttonParamsJSON) {
+        this.logger.warn('No buttonParamsJSON found');
+        return null;
+      }
+
+      this.logger.info(`ButtonParamsJSON: ${paymentButton.buttonParamsJSON.substring(0, 100)}...`);
+      
+      const pixInfo = JSON.parse(paymentButton.buttonParamsJSON);
+      const pixSettings = pixInfo.payment_settings?.find((setting: any) => setting.type === 'pix_static_code');
+      
+      if (!pixSettings?.pix_static_code) {
+        this.logger.warn('No PIX static code settings found');
+        return null;
+      }
+
+      const pixCode = pixSettings.pix_static_code;
+      const result = {
+        merchantName: pixCode.merchant_name,
+        key: pixCode.key,
+        keyType: pixCode.key_type,
+        currency: pixInfo.currency,
+        totalAmount: pixInfo.total_amount?.value || 0,
+        referenceId: pixInfo.reference_id,
+      };
+      
+      this.logger.info(`PIX data extracted successfully: ${JSON.stringify(result)}`);
+      return result;
+    } catch (error) {
+      this.logger.warn(`Failed to extract PIX data: ${error}`);
+      return null;
+    }
   }
 
   private getUnsupportedMessage(): ChatWootMessagePartial {
