@@ -678,6 +678,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   async stop(): Promise<void> {
+    this.cleanupPresenceTimeout();
     if (this.client) {
       const response = await promisify(this.client.StopSession)(this.session);
       response.toObject();
@@ -792,6 +793,8 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   async sendText(request: MessageTextRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const jid = toJID(this.ensureSuffix(request.chatId));
     const message = new messages.MessageRequest({
       jid: jid,
@@ -827,6 +830,8 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   async sendContactVCard(request: MessageContactVcardRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const jid = toJID(this.ensureSuffix(request.chatId));
     const contacts = request.contacts.map((el) => ({ vcard: toVcardV3(el) }));
     const message = new messages.MessageRequest({
@@ -841,6 +846,8 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   async sendPoll(request: MessagePollRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const jid = toJID(request.chatId);
     const message = new messages.MessageRequest({
       jid: jid,
@@ -956,6 +963,8 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   async sendLocation(request: MessageLocationRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const jid = toJID(this.ensureSuffix(request.chatId));
     const message = new messages.MessageRequest({
       jid: jid,
@@ -999,6 +1008,8 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   async sendSeen(request: SendSeenRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const keys = ExtractMessageKeysForRead(request);
     if (keys.length === 0) {
       return;
@@ -1020,8 +1031,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     return;
   }
 
-  startTyping(chat: ChatRequest) {
-    return this.setPresence(WAHAPresenceStatus.TYPING, chat.chatId);
+  async startTyping(chat: ChatRequest): Promise<void> {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
+    await this.setPresence(WAHAPresenceStatus.TYPING, chat.chatId);
   }
 
   stopTyping(chat: ChatRequest) {
@@ -1225,6 +1238,8 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   async setReaction(request: MessageReactionRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const key = parseMessageIdSerialized(request.messageId);
     const message = new messages.MessageReaction({
       session: this.session,

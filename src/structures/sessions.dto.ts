@@ -237,6 +237,7 @@ export class MeInfo {
 export class SessionInfo extends SessionDTO {
   me?: MeInfo;
   assignedWorker?: string;
+  lastActivityTimestamp?: number; // Timestamp of the last activity in milliseconds
 }
 
 export class SessionDetailedInfo extends SessionInfo {

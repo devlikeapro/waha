@@ -722,6 +722,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   private async end() {
+    this.cleanupPresenceTimeout();
     this.autoRestartJob.stop();
     // @ts-ignore
     this.sock?.ev?.removeAllListeners();
@@ -845,6 +846,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async sendText(request: MessageTextRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const chatId = toJID(this.ensureSuffix(request.chatId));
     const message = {
       text: request.text,
@@ -886,6 +889,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async sendContactVCard(request: MessageContactVcardRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const chatId = toJID(this.ensureSuffix(request.chatId));
     const contacts = request.contacts.map((el) => ({ vcard: toVcardV3(el) }));
     const options = await this.getMessageOptions(request);
@@ -894,6 +899,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async sendPoll(request: MessagePollRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const requestPoll = request.poll;
     const poll = {
       name: requestPoll.name,
@@ -910,6 +917,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async reply(request: MessageReplyRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const options = await this.getMessageOptions(request);
     const message = {
       text: request.text,
@@ -947,6 +956,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async sendButtons(request: SendButtonsRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const chatId = toJID(this.ensureSuffix(request.chatId));
     const headerImage = await this.uploadMedia(request.headerImage, 'image');
     return await sendButtonMessage(
@@ -965,6 +976,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async sendLocation(request: MessageLocationRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const chatId = toJID(this.ensureSuffix(request.chatId));
     const msg = {
       location: {
@@ -996,6 +1009,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async sendLinkPreview(request: MessageLinkPreviewRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const text = `${request.title}\n${request.url}`;
     const chatId = toJID(this.ensureSuffix(request.chatId));
     const msg = { text: text };
@@ -1004,6 +1019,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async sendSeen(request: SendSeenRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const keys = ExtractMessageKeysForRead(request);
     if (keys.length === 0) {
       return;
@@ -1020,9 +1037,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.sock?.ev.emit('messages.update', updates);
   }
 
-  async startTyping(request: ChatRequest) {
+  async startTyping(request: ChatRequest): Promise<void> {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const chatId = toJID(this.ensureSuffix(request.chatId));
-    return this.sock.sendPresenceUpdate('composing', chatId);
+    await this.sock.sendPresenceUpdate('composing', chatId);
   }
 
   async stopTyping(request: ChatRequest) {
@@ -1099,6 +1118,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   async setReaction(request: MessageReactionRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const key = parseMessageIdSerialized(request.messageId);
     if (isJidNewsletter(key.remoteJid)) {
       let serverId = Number(key.id);

@@ -363,6 +363,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   async stop() {
+    this.cleanupPresenceTimeout();
     this.shouldRestart = false;
     this.status = WAHASessionStatus.STOPPED;
     this.stopEvents();
@@ -667,6 +668,8 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   async sendContactVCard(request: MessageContactVcardRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const chatId = this.ensureSuffix(request.chatId);
     const vcards = request.contacts.map((el) => toVcardV3(el as any));
     const options = this.getMessageOptions(request);
@@ -688,7 +691,9 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     return this.whatsapp.sendMessage(chatId, '', { ...options, extra });
   }
 
-  reply(request: MessageReplyRequest) {
+  async reply(request: MessageReplyRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const options = this.getMessageOptions(request);
     return this.whatsapp.sendMessage(
       this.ensureSuffix(request.chatId),
@@ -714,6 +719,8 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   async sendLocation(request: MessageLocationRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const location = new Location(request.latitude, request.longitude, {
       name: request.title,
     });
@@ -735,13 +742,17 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   async sendSeen(request: SendSeenRequest) {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const chat: Chat = await this.whatsapp.getChatById(
       this.ensureSuffix(request.chatId),
     );
     await chat.sendSeen();
   }
 
-  async startTyping(request: ChatRequest) {
+  async startTyping(request: ChatRequest): Promise<void> {
+    await this.maintainPresenceOnline();
+    this.updateActivity();
     const chat: Chat = await this.whatsapp.getChatById(
       this.ensureSuffix(request.chatId),
     );

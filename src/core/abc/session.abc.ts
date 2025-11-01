@@ -195,6 +195,14 @@ export abstract class WhatsappSession {
     stdTTL: 10 * 60, // 10 minutes
   });
 
+  // Activity tracking
+  private lastActivityTimestamp?: number;
+  private presenceOfflineTimeout?: ReturnType<typeof setTimeout>;
+  private isPresenceOnlineActive: boolean = false;
+
+  // Time that stays ONLINE before going back to OFFLINE (60 seconds)
+  private PRESENCE_ONLINE_DURATION_MS = 60_000; // 60 seconds
+
   public mediaConverter: IMediaConverter = new CoreMediaConverter();
 
   public constructor({
@@ -308,6 +316,17 @@ export abstract class WhatsappSession {
       return;
     }
     this._status = value;
+    
+    // Update activity when session becomes WORKING
+    if (value === WAHASessionStatus.WORKING) {
+      this.updateActivity();
+    }
+    
+    // Cleanup presence timeout when session stops
+    if (value === WAHASessionStatus.STOPPED) {
+      this.cleanupPresenceTimeout();
+    }
+    
     this.status$.next(value);
   }
 
@@ -533,9 +552,86 @@ export abstract class WhatsappSession {
 
   abstract sendSeen(chat: SendSeenRequest);
 
-  abstract startTyping(chat: ChatRequest);
+  abstract startTyping(chat: ChatRequest): Promise<void>;
 
   abstract stopTyping(chat: ChatRequest);
+
+  /**
+   * Activity tracking and presence management
+   */
+
+  /**
+   * Updates the last activity timestamp
+   * Called whenever there is real interaction with WhatsApp
+   */
+  protected updateActivity() {
+    this.lastActivityTimestamp = Date.now();
+  }
+
+  /**
+   * Returns the timestamp of the last activity of the session
+   * @returns Timestamp in milliseconds or undefined if there was never any activity
+   */
+  public getLastActivityTimestamp(): number | undefined {
+    return this.lastActivityTimestamp;
+  }
+
+  /**
+   * Maintains ONLINE presence active while there is activity
+   * Resets the timer on each activity, only goes OFFLINE after 60s without activity
+   */
+  protected async maintainPresenceOnline(): Promise<void> {
+    if (this.status !== WAHASessionStatus.WORKING) {
+      return;
+    }
+
+    // If not ONLINE yet, send ONLINE
+    if (!this.isPresenceOnlineActive) {
+      try {
+        await this.setPresence(WAHAPresenceStatus.ONLINE);
+        this.isPresenceOnlineActive = true;
+        this.logger.debug('Set presence to ONLINE due to activity');
+      } catch (error) {
+        this.logger.debug('Failed to set presence ONLINE', error);
+        return;
+      }
+    }
+
+    // Cancel the previous timeout (if exists)
+    if (this.presenceOfflineTimeout) {
+      clearTimeout(this.presenceOfflineTimeout);
+    }
+
+    // Schedule to go back OFFLINE after 60 seconds without activity
+    this.presenceOfflineTimeout = setTimeout(async () => {
+      try {
+        if (
+          this.status === WAHASessionStatus.WORKING &&
+          this.isPresenceOnlineActive
+        ) {
+          await this.setPresence(WAHAPresenceStatus.OFFLINE);
+          this.isPresenceOnlineActive = false;
+          this.logger.debug(
+            'Auto-set presence to OFFLINE after 60s without activity',
+          );
+        }
+      } catch (error) {
+        this.logger.debug('Failed to set presence OFFLINE', error);
+      }
+      this.presenceOfflineTimeout = null;
+    }, this.PRESENCE_ONLINE_DURATION_MS);
+  }
+
+  /**
+   * Cleans up the timeout when the session stops
+   */
+  protected cleanupPresenceTimeout() {
+    if (this.presenceOfflineTimeout) {
+      clearTimeout(this.presenceOfflineTimeout);
+      this.presenceOfflineTimeout = null;
+    }
+    this.isPresenceOnlineActive = false;
+  }
 
   abstract setReaction(request: MessageReactionRequest);
 
