@@ -120,6 +120,7 @@ import {
 } from '@waha/structures/presence.dto';
 import {
   MessageSource,
+  WALocation,
   WAMessage,
   WAMessageReaction,
 } from '@waha/structures/responses.dto';
@@ -484,15 +485,15 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         );
       }),
       mergeMap(async (message): Promise<WAMessageRevokedBody> => {
-        const afterMessage = await this.toWAMessage(message);
-        // Extract the revoked message ID from protocolMessage.key
-        const revokedMessageId = message.Message.protocolMessage.key?.ID;
-        return {
-          after: afterMessage,
-          before: null,
-          revokedMessageId: revokedMessageId,
-          _data: message,
-        };
+          const afterMessage = await this.toWAMessage(message);
+          // Extract the revoked message ID from protocolMessage.key
+          const revokedMessageId = message.Message.protocolMessage.key?.ID;
+          return {
+            after: afterMessage,
+            before: null,
+            revokedMessageId: revokedMessageId,
+            _data: message,
+          };
       }),
     );
     this.events2.get(WAHAEvents.MESSAGE_REVOKED).switch(messagesRevoked$);
@@ -501,19 +502,19 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     const messagesEdited$ = messages$.pipe(
       filter((message) => IsEditedMessage(message.Message)),
       mergeMap(async (message): Promise<WAMessageEditedBody> => {
-        const waMessage = await this.toWAMessage(message);
-        const content = normalizeMessageContent(message.Message);
-        // Extract the body from editedMessage using extractBody function
-        const body = extractBody(content.protocolMessage.editedMessage) || '';
-        // Extract the original message ID from protocolMessage.key
-        // @ts-ignore
-        const editedMessageId = content.protocolMessage.key?.ID;
-        return {
-          ...waMessage,
-          body: body,
-          editedMessageId: editedMessageId,
-          _data: message,
-        };
+          const waMessage = await this.toWAMessage(message);
+          const content = normalizeMessageContent(message.Message);
+          // Extract the body from editedMessage using extractBody function
+          const body = extractBody(content.protocolMessage.editedMessage) || '';
+          // Extract the original message ID from protocolMessage.key
+          // @ts-ignore
+          const editedMessageId = content.protocolMessage.key?.ID;
+          return {
+            ...waMessage,
+            body: body,
+            editedMessageId: editedMessageId,
+            _data: message,
+          };
       }),
     );
     this.events2.get(WAHAEvents.MESSAGE_EDITED).switch(messagesEdited$);
@@ -2057,6 +2058,8 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       // @ts-ignore
       ack: ack,
       // @ts-ignore
+      location: this.extractLocation(message),
+      vCards: this.extractVCards(message),
       ackName: WAMessageAck[ack] || ACK_UNKNOWN,
       replyTo: replyTo,
       _data: message,
@@ -2155,6 +2158,33 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       body: body,
       _data: quotedMessage,
     };
+  }
+
+  protected extractLocation(message: any): WALocation | null {
+    const rawLocation = message.Message?.locationMessage;
+    if (!rawLocation) {
+      return null;
+    }
+
+    return {
+      latitude: rawLocation.degreesLatitude,
+      longitude: rawLocation.degreesLongitude,
+      thumbnail: rawLocation.JPEGThumbnail,
+    };
+  }
+
+  protected extractVCards(message: any): string[] {
+    if (message.contactMessage) {
+      return [message.contactMessage.vcard];
+    }
+
+    if (message.contactsArrayMessage) {
+      return message.contactsArrayMessage.contacts.map(
+        (contact) => contact.vcard,
+      );
+    }
+
+    return [];
   }
 
   public async getEngineInfo() {

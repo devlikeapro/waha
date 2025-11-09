@@ -7,6 +7,7 @@ import { ChatIdProperty, MessageIdProperty } from './properties.dto';
 
 export class WALocation {
   description?: string;
+  thumbnail?: string;
   latitude: string;
   longitude: string;
 }

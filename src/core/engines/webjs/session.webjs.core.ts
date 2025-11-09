@@ -110,7 +110,7 @@ import {
   WAHAChatPresences,
   WAHAPresenceData,
 } from '@waha/structures/presence.dto';
-import { WAMessage, WAMessageReaction } from '@waha/structures/responses.dto';
+import { WALocation, WAMessage, WAMessageReaction } from '@waha/structures/responses.dto';
 import { BrowserTraceQuery } from '@waha/structures/server.debug.dto';
 import { MeInfo } from '@waha/structures/sessions.dto';
 import { StatusRequest, TextStatus } from '@waha/structures/status.dto';
@@ -1523,16 +1523,16 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       ),
       map((event): WAMessageRevokedBody => {
         const afterMessage = event.after ? this.toWAMessage(event.after) : null;
-        const beforeMessage = event.before
-          ? this.toWAMessage(event.before)
-          : null;
-        // Extract the revoked message ID from the protocolMessageKey.id field
-        const revokedMessageId = afterMessage?._data?.protocolMessageKey?.id;
-        return {
-          after: afterMessage,
-          before: beforeMessage,
-          revokedMessageId: revokedMessageId,
-        };
+          const beforeMessage = event.before
+            ? this.toWAMessage(event.before)
+            : null;
+          // Extract the revoked message ID from the protocolMessageKey.id field
+          const revokedMessageId = afterMessage?._data?.protocolMessageKey?.id;
+          return {
+            after: afterMessage,
+            before: beforeMessage,
+            revokedMessageId: revokedMessageId,
+          };
       }),
     );
     this.events2.get(WAHAEvents.MESSAGE_REVOKED).switch(messagesRevoked$);
@@ -1555,13 +1555,13 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     const messagesEdit$ = messageEdit$.pipe(
       filter((event: any) => this.jids.include(event?.message?.id?.remote)),
       map((event): WAMessageEditedBody => {
-        const message = this.toWAMessage(event.message);
-        return {
-          ...message,
-          body: event.newBody,
-          editedMessageId: message._data?.id?.id,
-          _data: event,
-        };
+          const message = this.toWAMessage(event.message);
+          return {
+            ...message,
+            body: event.newBody,
+            editedMessageId: message._data?.id?.id,
+            _data: event,
+          };
       }),
     );
     this.events2.get(WAHAEvents.MESSAGE_EDITED).switch(messagesEdit$);
@@ -1802,7 +1802,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       // @ts-ignore
       ack: message.ack,
       ackName: WAMessageAck[message.ack] || ACK_UNKNOWN,
-      location: message.location,
+      location: this.extractLocation(message),
       vCards: message.vCards,
       replyTo: replyTo,
       _data: message.rawData,
@@ -1820,6 +1820,19 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       participant: quotedMsg.author || quotedMsg.from,
       body: quotedMsg.caption || quotedMsg.body,
       _data: quotedMsg,
+    };
+  }
+
+  protected extractLocation(message: Message): WALocation | null {
+    const rawLocation = message.location;
+    if (!rawLocation) {
+      return null;
+    }
+    return {
+      latitude: rawLocation.latitude,
+      longitude: rawLocation.longitude,
+      description: rawLocation.description,
+      thumbnail: message.body,
     };
   }
 
