@@ -137,7 +137,7 @@ const qrcode = require('qrcode-terminal');
 
 axiosRetry(axios, { retries: 3 });
 
-const CHROME_PATH = '/usr/bin/google-chrome-stable';
+const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const CHROMIUM_PATH = '/usr/bin/chromium';
 
 export function getBrowserExecutablePath() {

@@ -163,6 +163,8 @@ export interface WebJSConfig {
 }
 
 export class WhatsappSessionWebJSCore extends WhatsappSession {
+  declare whatsapp: WebjsClientCore;
+
   private START_ATTEMPT_DELAY_SECONDS = 2;
 
   engine = WAHAEngine.WEBJS;
@@ -173,7 +175,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   private shouldRestart: boolean;
   private lastQRDate: Date = null;
 
-  whatsapp: WebjsClientCore;
+  // whatsapp: WebjsClientCore;
   protected qr: QR;
 
   public constructor(config) {
@@ -700,17 +702,135 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     );
   }
 
-  sendImage(request: MessageImageRequest) {
-    throw new AvailableInPlusVersion();
+
+async sendImage(request: MessageImageRequest) {
+  const chatId = this.ensureSuffix(request.chatId);
+  const options = this.getMessageOptions(request);
+
+  if (!request.file) {
+    throw new UnprocessableEntityException('Missing file field in request');
   }
 
-  sendFile(request: MessageFileRequest) {
-    throw new AvailableInPlusVersion();
+  const file = request.file as any;
+  let media: MessageMedia;
+
+  // Handle BinaryFile: base64 data + mimeType
+  if (file.data) {
+    media = new MessageMedia(
+      file.mimeType || 'image/jpeg',
+      file.data.replace(/^data:.*;base64,/, ''),
+      file.filename || 'image.jpg'
+    );
   }
 
-  sendVoice(request: MessageVoiceRequest) {
-    throw new AvailableInPlusVersion();
+  // Handle RemoteFile: download from URL
+  else if (file.url) {
+    const response = await fetch(file.url);
+    const buffer = await response.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString('base64');
+    const mimeType =
+      (response.headers.get('content-type') as string) || 'image/jpeg';
+    const filename = file.filename || file.url.split('/').pop() || 'remote.jpg';
+    media = new MessageMedia(mimeType, base64, filename);
   }
+
+  else {
+    throw new UnprocessableEntityException(
+      'Unsupported file type: must be BinaryFile or RemoteFile',
+    );
+  }
+
+  return this.whatsapp.sendMessage(chatId, media, {
+    ...options,
+    caption: request.caption,
+  });
+}
+
+
+async sendFile(request: MessageFileRequest) {
+  const chatId = this.ensureSuffix(request.chatId);
+  const options = this.getMessageOptions(request);
+
+  if (!request.file) {
+    throw new UnprocessableEntityException('Missing file field in request');
+  }
+
+  const file = request.file as any;
+  let media: MessageMedia;
+
+  // Handle BinaryFile (base64 encoded file)
+  if (file.data) {
+    media = new MessageMedia(
+      file.mimeType || 'application/octet-stream',
+      file.data.replace(/^data:.*;base64,/, ''),
+      file.filename || 'file.bin'
+    );
+  }
+
+  // Handle RemoteFile (download from URL)
+  else if (file.url) {
+    const response = await fetch(file.url);
+    const buffer = await response.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString('base64');
+    const mimeType =
+      (response.headers.get('content-type') as string) ||
+      'application/octet-stream';
+    const filename = file.filename || file.url.split('/').pop() || 'downloaded';
+    media = new MessageMedia(mimeType, base64, filename);
+  }
+
+  else {
+    throw new UnprocessableEntityException(
+      'Unsupported file type: must be BinaryFile or RemoteFile',
+    );
+  }
+
+  return this.whatsapp.sendMessage(chatId, media, options);
+}
+
+async sendVoice(request: MessageVoiceRequest) {
+  const chatId = this.ensureSuffix(request.chatId);
+  const options = this.getMessageOptions(request);
+
+  if (!request.file) {
+    throw new UnprocessableEntityException('Missing file field in request');
+  }
+
+  const file = request.file as any;
+  let media: MessageMedia;
+
+  // Handle BinaryFile (Base64 voice data)
+  if (file.data) {
+    media = new MessageMedia(
+      file.mimeType || 'audio/ogg; codecs=opus',
+      file.data.replace(/^data:.*;base64,/, ''),
+      file.filename || 'voice.ogg'
+    );
+  }
+
+  // Handle RemoteFile (URL)
+  else if (file.url) {
+    const response = await fetch(file.url);
+    const buffer = await response.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString('base64');
+    const mimeType =
+      (response.headers.get('content-type') as string) ||
+      'audio/ogg; codecs=opus';
+    const filename = file.filename || file.url.split('/').pop() || 'voice.ogg';
+    media = new MessageMedia(mimeType, base64, filename);
+  }
+
+  else {
+    throw new UnprocessableEntityException(
+      'Unsupported file type: must be BinaryFile or RemoteFile',
+    );
+  }
+
+  return this.whatsapp.sendMessage(chatId, media, {
+    ...options,
+    sendAudioAsVoice: true,
+  });
+}
 
   sendButtonsReply(request: MessageButtonReply) {
     throw new AvailableInPlusVersion();
