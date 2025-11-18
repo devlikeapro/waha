@@ -35,7 +35,7 @@ export class WAHAMessageReactionConsumer extends ChatWootWAHABaseConsumer {
     if (event.environment?.engine == WAHAEngine.WEBJS) {
       // chat in "to" field for WEBJS for message.reaction
       // probably we need to set it to "from"
-      // but for backward compatability we do this
+      // but for backward compatibility we do this
       return event.payload.to;
     }
     return EngineHelper.ChatID(event.payload);
