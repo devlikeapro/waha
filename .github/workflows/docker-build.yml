@@ -15,8 +15,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  DOCKER_IMAGE_CORE: ghcr.io/${{ github.repository_owner }}/waha
-  DOCKER_IMAGE_PLUS: ghcr.io/${{ github.repository_owner }}/waha-plus
 
 jobs:
   build:
@@ -29,9 +27,9 @@ jobs:
     strategy:
       matrix:
         image:
-          - name: ${{ env.DOCKER_IMAGE_CORE }}
+          - name: ghcr.io/${{ github.repository_owner }}/waha
             dockerfile: Dockerfile
-          - name: ${{ env.DOCKER_IMAGE_PLUS }}
+          - name: ghcr.io/${{ github.repository_owner }}/waha-plus
             dockerfile: Dockerfile
             # Uncomment if Plus has a separate Dockerfile
             # dockerfile: Dockerfile.plus
