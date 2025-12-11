@@ -161,7 +161,7 @@ import { isFromFullSync } from '@waha/core/engines/gows/appstate';
 import { toVcardV3 } from '@waha/core/vcard';
 import { AckToStatus } from '@waha/core/utils/acks';
 import { ParseEventResponseType } from '@waha/core/utils/events';
-import { DistinctAck } from '@waha/core/utils/reactive';
+import { DistinctAck, DistinctMessages } from '@waha/core/utils/reactive';
 import { Label, LabelDTO, LabelID } from '@waha/structures/labels.dto';
 import { LidToPhoneNumber } from '@waha/structures/lids.dto';
 import { exclude } from '@waha/utils/reactive/ops/exclude';
@@ -477,6 +477,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         return msg;
       }),
       mergeMap((msg) => this.processIncomingMessage(msg, true)),
+      filter(Boolean),
+      // Deduplicate messages by ID to prevent duplicate webhooks
+      // @see https://github.com/devlikeapro/waha/issues/1564
+      DistinctMessages(),
       share(), // share it so we don't process twice in message.any
     );
     messagesFromOthers$ = messagesFromOthers$.pipe(
@@ -485,6 +489,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         return msg;
       }),
       mergeMap((msg) => this.processIncomingMessage(msg, true)),
+      filter(Boolean),
+      // Deduplicate messages by ID to prevent duplicate webhooks
+      // @see https://github.com/devlikeapro/waha/issues/1564
+      DistinctMessages(),
       share(), // share it so we don't process twice in message.any
     );
     const messagesFromAll$ = merge(messagesFromMe$, messagesFromOthers$);
