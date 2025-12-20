@@ -161,6 +161,24 @@ class ChatsController {
     return message;
   }
 
+  @Get(':chatId/messages/:messageId/reactions')
+  @SessionApiParam
+  @ApiOperation({ summary: 'Gets reactions for a message' })
+  @ChatIdApiParam
+  async getMessageReactions(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('chatId') chatId: string,
+    @Param('messageId') messageId: string,
+  ) {
+    const message = await session.getChatMessage(chatId, messageId, {
+      downloadMedia: false,
+    });
+    if (!message) {
+      throw new NotFoundException('Message not found');
+    }
+    return message.reactions || [];
+  }
+
   @Post(':chatId/messages/:messageId/pin')
   @SessionApiParam
   @ApiOperation({ summary: 'Pins a message in the chat' })

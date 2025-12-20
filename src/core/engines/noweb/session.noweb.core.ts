@@ -154,7 +154,7 @@ import {
   WAHAChatPresences,
   WAHAPresenceData,
 } from '@waha/structures/presence.dto';
-import { WAMessage, WAMessageReaction } from '@waha/structures/responses.dto';
+import { WAMessage, WAMessageReaction, WAReactionInfo } from '@waha/structures/responses.dto';
 import { MeInfo } from '@waha/structures/sessions.dto';
 import {
   BROADCAST_ID,
@@ -2432,8 +2432,18 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       location: extractWALocation(waproto),
       vCards: extractVCards(waproto),
       replyTo: replyTo,
+      reactions: this.extractReactions(message.reactions),
       _data: message,
     };
+  }
+
+  protected extractReactions(reactions: any[]): WAReactionInfo[] {
+    if (!reactions || !Array.isArray(reactions)) return [];
+    return reactions.map((r) => ({
+      reaction: r.text || '',
+      senderId: toCusFormat(r.key?.participant || r.key?.remoteJid),
+      timestamp: ensureNumber(r.senderTimestampMs) || 0,
+    }));
   }
 
   protected extractReplyTo(message): ReplyToMessage | null {

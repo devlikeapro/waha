@@ -125,6 +125,33 @@ export class WAMessage extends WAMessageBase {
       'Message in a raw format that we get from WhatsApp. May be changed anytime, use it with caution! It depends a lot on the underlying backend.',
   })
   _data?: any;
+
+  @ApiProperty({
+    description: 'Reactions to this message',
+    type: () => [WAReactionInfo],
+    required: false,
+  })
+  reactions?: WAReactionInfo[];
+}
+
+export class WAReactionInfo {
+  @ApiProperty({
+    description: 'Emoji reaction',
+    example: '👍',
+  })
+  reaction: string;
+
+  @ApiProperty({
+    description: 'Who sent the reaction',
+    example: '1234567890@c.us',
+  })
+  senderId: string;
+
+  @ApiProperty({
+    description: 'Unix timestamp when reaction was sent',
+    example: 1666943582,
+  })
+  timestamp: number;
 }
 
 export class WAReaction {
