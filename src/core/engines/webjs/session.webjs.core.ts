@@ -711,7 +711,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     const message = this.recreateMessage(messageId);
     const options = {
       // It's fine to sent just ids instead of Contact object
-      mentions: request.mentions as unknown as string[],
+      mentions: (request.mentions as unknown) as string[],
       linkPreview: request.linkPreview,
     };
     return message.edit(request.text, options);
@@ -900,6 +900,9 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       id: chat.id._serialized,
       name: chat.name || null,
       picture: picture,
+      archived: chat.archived || false,
+      pinned: chat.pinned || false,
+      unreadCount: chat.unreadCount || 0,
       lastMessage: lastMessage,
       _chat: chat,
     };
@@ -1652,19 +1655,23 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       filter((evt: any) =>
         this.jids.include(evt?.after?.id?.remote || evt?.before?.id?.remote),
       ),
-      map((event): WAMessageRevokedBody => {
-        const afterMessage = event.after ? this.toWAMessage(event.after) : null;
-        const beforeMessage = event.before
-          ? this.toWAMessage(event.before)
-          : null;
-        // Extract the revoked message ID from the protocolMessageKey.id field
-        const revokedMessageId = afterMessage?._data?.protocolMessageKey?.id;
-        return {
-          after: afterMessage,
-          before: beforeMessage,
-          revokedMessageId: revokedMessageId,
-        };
-      }),
+      map(
+        (event): WAMessageRevokedBody => {
+          const afterMessage = event.after
+            ? this.toWAMessage(event.after)
+            : null;
+          const beforeMessage = event.before
+            ? this.toWAMessage(event.before)
+            : null;
+          // Extract the revoked message ID from the protocolMessageKey.id field
+          const revokedMessageId = afterMessage?._data?.protocolMessageKey?.id;
+          return {
+            after: afterMessage,
+            before: beforeMessage,
+            revokedMessageId: revokedMessageId,
+          };
+        },
+      ),
     );
     this.events2.get(WAHAEvents.MESSAGE_REVOKED).switch(messagesRevoked$);
 
@@ -1685,15 +1692,17 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     );
     const messagesEdit$ = messageEdit$.pipe(
       filter((event: any) => this.jids.include(event?.message?.id?.remote)),
-      map((event): WAMessageEditedBody => {
-        const message = this.toWAMessage(event.message);
-        return {
-          ...message,
-          body: event.newBody,
-          editedMessageId: message._data?.id?.id,
-          _data: event,
-        };
-      }),
+      map(
+        (event): WAMessageEditedBody => {
+          const message = this.toWAMessage(event.message);
+          return {
+            ...message,
+            body: event.newBody,
+            editedMessageId: message._data?.id?.id,
+            _data: event,
+          };
+        },
+      ),
     );
     this.events2.get(WAHAEvents.MESSAGE_EDITED).switch(messagesEdit$);
 
@@ -2105,8 +2114,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 }
 
 export class WEBJSEngineMediaProcessor
-  implements IMediaEngineProcessor<Message>
-{
+  implements IMediaEngineProcessor<Message> {
   hasMedia(message: Message): boolean {
     if (!message.hasMedia) {
       return false;

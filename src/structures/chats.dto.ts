@@ -230,6 +230,9 @@ export class ChatSummary {
   id: string;
   name: string | null;
   picture: string | null;
+  archived?: boolean;
+  pinned?: boolean;
+  unreadCount?: number;
   lastMessage: any;
   _chat: any;
 }

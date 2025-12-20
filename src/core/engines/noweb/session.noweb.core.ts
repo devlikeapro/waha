@@ -1271,6 +1271,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       id: id,
       name: name || null,
       picture: picture,
+      archived: chat.archived,
+      pinned: (chat as any).pinned, // Cast to any if pinned is missing from type definition but exists at runtime
+      unreadCount: chat.unreadCount,
       lastMessage: message,
       _chat: chat,
     };
