@@ -509,38 +509,42 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
           msg?.Message?.protocolMessage?.key !== undefined
         );
       }),
-      mergeMap(async (message): Promise<WAMessageRevokedBody> => {
-        const afterMessage = await this.toWAMessage(message);
-        // Extract the revoked message ID from protocolMessage.key
-        const revokedMessageId = message.Message.protocolMessage.key?.ID;
-        return {
-          after: afterMessage,
-          before: null,
-          revokedMessageId: revokedMessageId,
-          _data: message,
-        };
-      }),
+      mergeMap(
+        async (message): Promise<WAMessageRevokedBody> => {
+          const afterMessage = await this.toWAMessage(message);
+          // Extract the revoked message ID from protocolMessage.key
+          const revokedMessageId = message.Message.protocolMessage.key?.ID;
+          return {
+            after: afterMessage,
+            before: null,
+            revokedMessageId: revokedMessageId,
+            _data: message,
+          };
+        },
+      ),
     );
     this.events2.get(WAHAEvents.MESSAGE_REVOKED).switch(messagesRevoked$);
 
     // Handle edited messages
     const messagesEdited$ = messages$.pipe(
       filter((message) => IsEditedMessage(message.Message)),
-      mergeMap(async (message): Promise<WAMessageEditedBody> => {
-        const waMessage = await this.toWAMessage(message);
-        const content = normalizeMessageContent(message.Message);
-        // Extract the body from editedMessage using extractBody function
-        const body = extractBody(content.protocolMessage.editedMessage) || '';
-        // Extract the original message ID from protocolMessage.key
-        // @ts-ignore
-        const editedMessageId = content.protocolMessage.key?.ID;
-        return {
-          ...waMessage,
-          body: body,
-          editedMessageId: editedMessageId,
-          _data: message,
-        };
-      }),
+      mergeMap(
+        async (message): Promise<WAMessageEditedBody> => {
+          const waMessage = await this.toWAMessage(message);
+          const content = normalizeMessageContent(message.Message);
+          // Extract the body from editedMessage using extractBody function
+          const body = extractBody(content.protocolMessage.editedMessage) || '';
+          // Extract the original message ID from protocolMessage.key
+          // @ts-ignore
+          const editedMessageId = content.protocolMessage.key?.ID;
+          return {
+            ...waMessage,
+            body: body,
+            editedMessageId: editedMessageId,
+            _data: message,
+          };
+        },
+      ),
     );
     this.events2.get(WAHAEvents.MESSAGE_EDITED).switch(messagesEdited$);
 
@@ -1844,6 +1848,14 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       id: id,
       name: name || null,
       picture: picture,
+      isGroup: chat.id?.endsWith?.('@g.us') || false,
+      isReadOnly: chat.readOnly || false,
+      timestamp: chat.conversationTimestamp || chat.timestamp || null,
+      archived: chat.archived || false,
+      pinned: chat.pinned || false,
+      isMuted: chat.mute !== undefined ? chat.mute !== 0 : false,
+      muteExpiration: chat.mute || 0,
+      unreadCount: chat.unreadCount || 0,
       lastMessage: message,
       _chat: chat,
     };
