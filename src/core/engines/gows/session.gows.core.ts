@@ -85,6 +85,7 @@ import {
   MessageReactionRequest,
   MessageReplyRequest,
   MessageTextRequest,
+  MessageVideoRequest,
   MessageVoiceRequest,
   SendSeenRequest,
   WANumberExistResult,
@@ -185,8 +186,8 @@ import { extractVCards } from '@waha/core/engines/waproto/vcards';
 import { Activity } from '@waha/core/abc/activity';
 import { TmpDir } from '@waha/utils/tmpdir';
 import * as path from 'path';
-import MessageServiceClient = messages.MessageServiceClient;
 import * as fsp from 'fs/promises';
+import MessageServiceClient = messages.MessageServiceClient;
 
 enum WhatsMeowEvent {
   CONNECTED = 'gows.ConnectedEventData',
@@ -861,12 +862,34 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     return true;
   }
 
-  protected setProfilePicture(file: BinaryFile | RemoteFile): Promise<boolean> {
-    throw new AvailableInPlusVersion();
+  protected async setProfilePicture(
+    file: BinaryFile | RemoteFile,
+  ): Promise<boolean> {
+    const buffer = await this.getMediaBuffer(file);
+    const request = new messages.SetProfilePictureRequest({
+      session: this.session,
+      picture: buffer,
+    });
+    await promisify(this.client.SetProfilePicture)(request);
+    return true;
   }
 
-  protected deleteProfilePicture(): Promise<boolean> {
-    throw new AvailableInPlusVersion();
+  protected async deleteProfilePicture(): Promise<boolean> {
+    const request = new messages.SetProfilePictureRequest({
+      session: this.session,
+      picture: undefined,
+    });
+    await promisify(this.client.SetProfilePicture)(request);
+    return true;
+  }
+
+  protected async getMediaBuffer(
+    file: BinaryFile | RemoteFile,
+  ): Promise<Buffer> {
+    if ('url' in file) {
+      return await this.fetch(file.url);
+    }
+    return Buffer.from(file.data, 'base64');
   }
 
   /**
@@ -1082,20 +1105,103 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     throw new NotImplementedByEngineError();
   }
 
-  sendImage(request: MessageImageRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendImage(request: MessageImageRequest) {
+    const jid = toJID(this.ensureSuffix(request.chatId));
+    const { file } = request;
+    const buffer = await this.getMediaBuffer(file);
+    const media = new messages.Media({
+      content: buffer,
+      type: messages.MediaType.IMAGE,
+      mimetype: file.mimetype,
+    });
+    const message = new messages.MessageRequest({
+      jid: jid,
+      session: this.session,
+      text: request.caption,
+      media: media,
+      replyTo: getMessageIdFromSerialized(request.reply_to),
+      mentions: request.mentions?.map((mention) => toJID(mention)),
+    });
+    const response = await promisify(this.client.SendMessage)(message);
+    const data = response.toObject();
+    return this.messageResponse(jid, data);
   }
 
-  sendFile(request: MessageFileRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendFile(request: MessageFileRequest) {
+    const jid = toJID(this.ensureSuffix(request.chatId));
+    const { file } = request;
+    const buffer = await this.getMediaBuffer(file);
+    const media = new messages.Media({
+      content: buffer,
+      type: messages.MediaType.DOCUMENT,
+      mimetype: file.mimetype,
+      filename: file.filename,
+    });
+    const message = new messages.MessageRequest({
+      jid: jid,
+      session: this.session,
+      text: request.caption,
+      media: media,
+      replyTo: getMessageIdFromSerialized(request.reply_to),
+      mentions: request.mentions?.map((mention) => toJID(mention)),
+    });
+    const response = await promisify(this.client.SendMessage)(message);
+    const data = response.toObject();
+    return this.messageResponse(jid, data);
   }
 
-  sendVoice(request: MessageVoiceRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendVoice(request: MessageVoiceRequest) {
+    const jid = toJID(this.ensureSuffix(request.chatId));
+    const { file } = request;
+    const buffer = await this.getMediaBuffer(file);
+    const media = new messages.Media({
+      content: buffer,
+      type: messages.MediaType.AUDIO,
+      mimetype: file.mimetype || 'audio/ogg; codecs=opus',
+      audio: new messages.AudioInfo({
+        duration: 0,
+      }),
+    });
+    const message = new messages.MessageRequest({
+      jid: jid,
+      session: this.session,
+      media: media,
+      replyTo: getMessageIdFromSerialized(request.reply_to),
+    });
+    const response = await promisify(this.client.SendMessage)(message);
+    const data = response.toObject();
+    return this.messageResponse(jid, data);
+  }
+
+  @Activity()
+  async sendVideo(request: MessageVideoRequest) {
+    const jid = toJID(this.ensureSuffix(request.chatId));
+    const { file } = request;
+    const buffer = await this.getMediaBuffer(file);
+    const media = new messages.Media({
+      content: buffer,
+      type: messages.MediaType.VIDEO,
+      mimetype: file.mimetype || 'video/mp4',
+      filename: file.filename,
+    });
+    const message = new messages.MessageRequest({
+      jid: jid,
+      session: this.session,
+      text: request.caption,
+      media: media,
+      replyTo: getMessageIdFromSerialized(request.reply_to),
+      mentions: request.mentions?.map((mention) => toJID(mention)),
+    });
+    const response = await promisify(this.client.SendMessage)(message);
+    const data = response.toObject();
+    return this.messageResponse(jid, data);
   }
 
   sendLinkCustomPreview(
-    request: MessageLinkCustomPreviewRequest,
+    _request: MessageLinkCustomPreviewRequest,
   ): Promise<any> {
     throw new AvailableInPlusVersion();
   }
@@ -2482,7 +2588,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 }
 
 export class GOWSEngineMediaProcessor implements IMediaEngineProcessor<any> {
-  constructor(public session: WhatsappSessionGoWSCore) {}
+  constructor(public session: WhatsappSessionGoWSCore) { }
 
   hasMedia(message: any): boolean {
     return Boolean(extractMediaContent(message.Message));

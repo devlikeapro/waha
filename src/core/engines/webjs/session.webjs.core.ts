@@ -78,6 +78,7 @@ import {
   MessageReplyRequest,
   MessageStarRequest,
   MessageTextRequest,
+  MessageVideoRequest,
   MessageVoiceRequest,
   SendSeenRequest,
   WANumberExistResult,
@@ -121,11 +122,7 @@ import {
 } from '@waha/structures/responses.dto';
 import { BrowserTraceQuery } from '@waha/structures/server.debug.dto';
 import { MeInfo } from '@waha/structures/sessions.dto';
-import {
-  DeleteStatusRequest,
-  StatusRequest,
-  TextStatus,
-} from '@waha/structures/status.dto';
+import { DeleteStatusRequest, TextStatus } from '@waha/structures/status.dto';
 import {
   EnginePayload,
   PollVote as WAHAPollVote,
@@ -666,12 +663,22 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     return true;
   }
 
-  protected setProfilePicture(file: BinaryFile | RemoteFile): Promise<boolean> {
-    throw new AvailableInPlusVersion();
+  protected async getMediaFromFile(file: BinaryFile | RemoteFile) {
+    if ('url' in file) {
+      return await MessageMedia.fromUrl(file.url);
+    }
+    return new MessageMedia(file.mimetype, file.data, file.filename);
   }
 
-  protected deleteProfilePicture(): Promise<boolean> {
-    throw new AvailableInPlusVersion();
+  protected async setProfilePicture(
+    file: BinaryFile | RemoteFile,
+  ): Promise<boolean> {
+    const media = await this.getMediaFromFile(file);
+    return await this.whatsapp.setProfilePicture(media);
+  }
+
+  protected async deleteProfilePicture(): Promise<boolean> {
+    return await this.whatsapp.deleteProfilePicture();
   }
 
   /**
@@ -711,7 +718,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     const message = this.recreateMessage(messageId);
     const options = {
       // It's fine to sent just ids instead of Contact object
-      mentions: request.mentions as unknown as string[],
+      mentions: (request.mentions as unknown) as string[],
       linkPreview: request.linkPreview,
     };
     return message.edit(request.text, options);
@@ -764,16 +771,56 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     );
   }
 
-  sendImage(request: MessageImageRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendImage(request: MessageImageRequest) {
+    const { file } = request;
+    const media = await this.getMediaFromFile(file);
+    const options = this.getMessageOptions(request);
+    options.caption = request.caption;
+    return this.whatsapp.sendMessage(
+      this.ensureSuffix(request.chatId),
+      media,
+      options,
+    );
   }
 
-  sendFile(request: MessageFileRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendFile(request: MessageFileRequest) {
+    const { file } = request;
+    const media = await this.getMediaFromFile(file);
+    const options = this.getMessageOptions(request);
+    options.caption = request.caption;
+    return this.whatsapp.sendMessage(
+      this.ensureSuffix(request.chatId),
+      media,
+      options,
+    );
   }
 
-  sendVoice(request: MessageVoiceRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendVoice(request: MessageVoiceRequest) {
+    const { file } = request;
+    const media = await this.getMediaFromFile(file);
+    const options = this.getMessageOptions(request);
+    options.sendAudioAsVoice = true;
+    return this.whatsapp.sendMessage(
+      this.ensureSuffix(request.chatId),
+      media,
+      options,
+    );
+  }
+
+  @Activity()
+  async sendVideo(request: MessageVideoRequest) {
+    const { file } = request;
+    const media = await this.getMediaFromFile(file);
+    const options = this.getMessageOptions(request);
+    options.caption = request.caption;
+    return this.whatsapp.sendMessage(
+      this.ensureSuffix(request.chatId),
+      media,
+      options,
+    );
   }
 
   sendButtonsReply(request: MessageButtonReply) {
@@ -1652,19 +1699,23 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       filter((evt: any) =>
         this.jids.include(evt?.after?.id?.remote || evt?.before?.id?.remote),
       ),
-      map((event): WAMessageRevokedBody => {
-        const afterMessage = event.after ? this.toWAMessage(event.after) : null;
-        const beforeMessage = event.before
-          ? this.toWAMessage(event.before)
-          : null;
-        // Extract the revoked message ID from the protocolMessageKey.id field
-        const revokedMessageId = afterMessage?._data?.protocolMessageKey?.id;
-        return {
-          after: afterMessage,
-          before: beforeMessage,
-          revokedMessageId: revokedMessageId,
-        };
-      }),
+      map(
+        (event): WAMessageRevokedBody => {
+          const afterMessage = event.after
+            ? this.toWAMessage(event.after)
+            : null;
+          const beforeMessage = event.before
+            ? this.toWAMessage(event.before)
+            : null;
+          // Extract the revoked message ID from the protocolMessageKey.id field
+          const revokedMessageId = afterMessage?._data?.protocolMessageKey?.id;
+          return {
+            after: afterMessage,
+            before: beforeMessage,
+            revokedMessageId: revokedMessageId,
+          };
+        },
+      ),
     );
     this.events2.get(WAHAEvents.MESSAGE_REVOKED).switch(messagesRevoked$);
 
@@ -1685,15 +1736,17 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     );
     const messagesEdit$ = messageEdit$.pipe(
       filter((event: any) => this.jids.include(event?.message?.id?.remote)),
-      map((event): WAMessageEditedBody => {
-        const message = this.toWAMessage(event.message);
-        return {
-          ...message,
-          body: event.newBody,
-          editedMessageId: message._data?.id?.id,
-          _data: event,
-        };
-      }),
+      map(
+        (event): WAMessageEditedBody => {
+          const message = this.toWAMessage(event.message);
+          return {
+            ...message,
+            body: event.newBody,
+            editedMessageId: message._data?.id?.id,
+            _data: event,
+          };
+        },
+      ),
     );
     this.events2.get(WAHAEvents.MESSAGE_EDITED).switch(messagesEdit$);
 
@@ -2105,8 +2158,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 }
 
 export class WEBJSEngineMediaProcessor
-  implements IMediaEngineProcessor<Message>
-{
+  implements IMediaEngineProcessor<Message> {
   hasMedia(message: Message): boolean {
     if (!message.hasMedia) {
       return false;

@@ -114,6 +114,7 @@ import {
   MessageReplyRequest,
   MessageStarRequest,
   MessageTextRequest,
+  MessageVideoRequest,
   MessageVoiceRequest,
   SendSeenRequest,
   WANumberExistResult,
@@ -864,12 +865,36 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return true;
   }
 
-  protected setProfilePicture(file: BinaryFile | RemoteFile): Promise<boolean> {
-    throw new AvailableInPlusVersion();
+  protected async getMediaFromFile(file: BinaryFile | RemoteFile) {
+        let buffer: Buffer;
+    if ('url' in file) {
+      buffer = await this.fetch(file.url);
+    } else {
+      buffer = Buffer.from(file.data, 'base64');
+    }
+    return buffer
+
   }
 
-  protected deleteProfilePicture(): Promise<boolean> {
-    throw new AvailableInPlusVersion();
+  protected async getBaileysMedia(file: BinaryFile | RemoteFile) {
+    if ('url' in file) {
+      return { url: file.url };
+    }
+    return Buffer.from(file.data, 'base64');
+  }
+
+  protected async setProfilePicture(file: BinaryFile | RemoteFile): Promise<boolean> {
+    const buffer = await this.getMediaFromFile(file);
+    const me = this.getSessionMeInfo();
+    await this.sock.updateProfilePicture(toJID(me.id), buffer);
+    return true;
+  }
+
+  protected async deleteProfilePicture(): Promise<boolean> {
+    const me = this.getSessionMeInfo();
+    // @ts-ignore
+    await this.sock.removeProfilePicture(toJID(me.id));
+    return true;
   }
 
   /**
@@ -979,16 +1004,63 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return await this.sock.sendMessage(request.chatId, message, options);
   }
 
-  sendImage(request: MessageImageRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendImage(request: MessageImageRequest) {
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    const { file } = request;
+    const media = await this.getBaileysMedia(file);
+    const options = await this.getMessageOptions(request);
+    const message = {
+      image: media,
+      caption: request.caption,
+      mentions: request.mentions?.map(toJID),
+    };
+    return this.sock.sendMessage(chatId, message, options);
   }
 
-  sendFile(request: MessageFileRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendFile(request: MessageFileRequest) {
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    const { file } = request;
+    const media = await this.getBaileysMedia(file);
+    const options = await this.getMessageOptions(request);
+    const message = {
+      document: media,
+      mimetype: file.mimetype,
+      fileName: file.filename,
+      caption: request.caption,
+      mentions: request.mentions?.map(toJID),
+    };
+    return this.sock.sendMessage(chatId, message, options);
   }
 
-  sendVoice(request: MessageVoiceRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendVoice(request: MessageVoiceRequest) {
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    const { file } = request;
+    const media = await this.getBaileysMedia(file);
+    const options = await this.getMessageOptions(request);
+    const message = {
+      audio: media,
+      ptt: true,
+      mimetype: 'audio/ogg; codecs=opus',
+    };
+    return this.sock.sendMessage(chatId, message, options);
+  }
+
+  @Activity()
+  async sendVideo (request: MessageVideoRequest) {
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    const { file } = request;
+    const media = await this.getBaileysMedia(file);
+    const options = await this.getMessageOptions(request);
+    const message = {
+      video: media,
+      caption: request.caption,
+      mentions: request.mentions?.map(toJID),
+      ptv: request.asNote,
+    };
+    return this.sock.sendMessage(chatId, message, options);
   }
 
   sendLinkCustomPreview(
