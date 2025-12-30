@@ -247,9 +247,9 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     args.unshift(`--a-waha-timestamp=${new Date()}`);
     args.unshift(`--a-waha-session=${this.name}`);
     const deviceName =
-      this.sessionConfig.client?.deviceName ?? WAHA_CLIENT_DEVICE_NAME;
+      this.sessionConfig?.client?.deviceName ?? WAHA_CLIENT_DEVICE_NAME;
     const browserName =
-      this.sessionConfig.client?.browserName ?? WAHA_CLIENT_BROWSER_NAME;
+      this.sessionConfig?.client?.browserName ?? WAHA_CLIENT_BROWSER_NAME;
     return {
       puppeteer: {
         protocolTimeout: 300_000,
