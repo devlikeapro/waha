@@ -45,6 +45,12 @@ export class ChatWootErrorReporter {
       // There's retries more left - ignore it for now
       return;
     }
+    if (!conversation) {
+      this.logger.error(
+        'Chatwoot error report skipped: conversation not ready',
+      );
+      return;
+    }
     const attempts = {
       current: this.job.attemptsMade + 1,
       max: this.job.opts?.attempts || 1,
@@ -87,6 +93,12 @@ export class ChatWootErrorReporter {
     // https://github.com/devlikeapro/waha/issues/1395
     return null;
 
+    if (!conversation) {
+      this.logger.warn(
+        'Chatwoot success report skipped: conversation not ready',
+      );
+      return;
+    }
     const template = this.l.key(TKey.JOB_REPORT_SUCCEEDED);
     const attempts = {
       current: this.job.attemptsMade + 1,

@@ -16,9 +16,4 @@ export function validateRequestMentions(request: {
       `"mentions":["all"] can be used only in group chats, not in '${request.chatId}'`,
     );
   }
-  if (request.mentions.length > 1) {
-    throw new UnprocessableEntityException(
-      `"mentions":["all"] cannot be used with other mentions`,
-    );
-  }
 }

@@ -11,6 +11,7 @@ import { PinoLogger } from 'nestjs-pino';
 
 import { AppRepository } from '../../storage';
 import { TKey } from '@waha/apps/chatwoot/i18n/templates';
+import { ChatWootAppNotFoundError } from '@waha/apps/chatwoot/errors';
 
 /**
  * Base class for ChatWoot scheduled consumers
@@ -35,7 +36,11 @@ export abstract class ChatWootScheduledConsumer extends AppConsumer {
     const knex = this.manager.store.getWAHADatabase();
     this.appRepository = new AppRepository(knex);
     const logger = new JobLoggerWrapper(job, this.logger);
-    const app = await this.appRepository.getById(appId);
+    const app = await this.appRepository.findEnabledAppById(appId);
+    if (!app) {
+      logger.warn(`Chatwoot app not found or disabled: ${appId}`);
+      throw new ChatWootAppNotFoundError(appId);
+    }
     return new DIContainer(app.pk, app.config, logger, knex);
   }
 
@@ -62,6 +67,10 @@ export abstract class ChatWootScheduledConsumer extends AppConsumer {
       await this.ReportErrorRecovered(job);
       return result;
     } catch (err) {
+      if (err instanceof ChatWootAppNotFoundError) {
+        this.logger.warn(err.message);
+        throw err;
+      }
       await this.ReportErrorForJob(job, err);
       throw err;
     }

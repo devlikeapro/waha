@@ -23,7 +23,8 @@ export namespace messages {
         IMAGE = 0,
         AUDIO = 1,
         VIDEO = 2,
-        DOCUMENT = 3
+        DOCUMENT = 3,
+        PTV = 4
     }
     export enum Presence {
         AVAILABLE = 0,

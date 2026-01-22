@@ -8,6 +8,7 @@ import { InboxData } from '@waha/apps/chatwoot/consumers/types';
 import { DIContainer } from '@waha/apps/chatwoot/di/DIContainer';
 import {
   ChatIDNotFoundForContactError,
+  ChatWootAppNotFoundError,
   PhoneNumberNotFoundInWhatsAppError,
 } from '@waha/apps/chatwoot/errors';
 import { WAHASessionAPI } from '@waha/apps/app_sdk/waha/WAHASelf';
@@ -43,7 +44,11 @@ export abstract class ChatWootInboxMessageConsumer extends AppConsumer {
     const knex = this.manager.store.getWAHADatabase();
     this.appRepository = new AppRepository(knex);
     const logger = new JobLoggerWrapper(job, this.logger);
-    const app = await this.appRepository.getById(appId);
+    const app = await this.appRepository.findEnabledAppById(appId);
+    if (!app) {
+      logger.warn(`Chatwoot app not found or disabled: ${appId}`);
+      throw new ChatWootAppNotFoundError(appId);
+    }
     return new DIContainer(app.pk, app.config, logger, knex);
   }
 
@@ -86,6 +91,10 @@ export abstract class ChatWootInboxMessageConsumer extends AppConsumer {
       await this.ReportErrorRecovered(job, body);
       return result;
     } catch (err) {
+      if (err instanceof ChatWootAppNotFoundError) {
+        this.logger.warn(err.message);
+        throw err;
+      }
       await this.ReportErrorForMessage(job, err, body);
       throw err;
     }

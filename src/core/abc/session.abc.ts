@@ -50,7 +50,6 @@ import * as lodash from 'lodash';
 import * as NodeCache from 'node-cache';
 import { Logger } from 'pino';
 import {
-  BehaviorSubject,
   catchError,
   delay,
   filter,
@@ -228,7 +227,8 @@ export abstract class WhatsappSession {
     engineConfig,
     ignore,
   }: SessionParams) {
-    this.status$ = new BehaviorSubject(WAHASessionStatus.STOPPED);
+    this._status = WAHASessionStatus.STOPPED;
+    this.status$ = new Subject<WAHASessionStatus>();
 
     this.name = name;
     this.proxyConfig = proxyConfig;
@@ -381,6 +381,7 @@ export abstract class WhatsappSession {
       '--disable-default-apps',
       '--disable-dev-shm-usage',
       '--disable-extensions',
+      '--disable-metrics',
       // '--disable-features=site-per-process', // COMMENTED to test WEBJS stability
       '--disable-gpu', // COMMENTED to test WEBJS stability
       '--disable-offer-store-unmasked-wallet-cards',

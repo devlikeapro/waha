@@ -155,6 +155,16 @@ export class IgnoreConfig {
   broadcast?: boolean;
 }
 
+export class ClientSessionConfig {
+  @IsString()
+  @IsOptional()
+  deviceName?: string;
+
+  @IsString()
+  @IsOptional()
+  browserName?: string;
+}
+
 export class SessionConfig {
   @ValidateNested({ each: true })
   @Type(() => WebhookConfig)
@@ -203,6 +213,19 @@ export class SessionConfig {
   @Type(() => IgnoreConfig)
   @IsOptional()
   ignore?: IgnoreConfig;
+
+  @ApiProperty({
+    description:
+      "How connected session renders in device - in format 'Browser (Device)' - Firefox (MacOS)",
+    example: {
+      browserName: 'Firefox',
+      deviceName: 'MacOS',
+    },
+  })
+  @ValidateNested()
+  @Type(() => ClientSessionConfig)
+  @IsOptional()
+  client?: ClientSessionConfig;
 
   @ApiProperty({
     example: {

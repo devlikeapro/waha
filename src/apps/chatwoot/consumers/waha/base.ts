@@ -12,6 +12,7 @@ import { WhatsAppChatIdKey } from '@waha/apps/chatwoot/consumers/mutex';
 import { EventData } from '@waha/apps/chatwoot/consumers/types';
 import { WhatsAppContactInfo } from '@waha/apps/chatwoot/contacts/WhatsAppContactInfo';
 import { DIContainer } from '@waha/apps/chatwoot/di/DIContainer';
+import { ChatWootAppNotFoundError } from '@waha/apps/chatwoot/errors';
 import { Locale } from '@waha/apps/chatwoot/i18n/locale';
 import { WAHASelf, WAHASessionAPI } from '@waha/apps/app_sdk/waha/WAHASelf';
 import {
@@ -83,6 +84,10 @@ export abstract class ChatWootWAHABaseConsumer extends AppConsumer {
       await this.ReportErrorRecovered(errorReportInfo, job);
       return result;
     } catch (err) {
+      if (err instanceof ChatWootAppNotFoundError) {
+        this.logger.warn(err.message);
+        throw err;
+      }
       await this.ReportErrorForMessage(errorReportInfo, job, err);
       throw err;
     }
@@ -95,7 +100,11 @@ export abstract class ChatWootWAHABaseConsumer extends AppConsumer {
     const knex = this.manager.store.getWAHADatabase();
     this.appRepository = new AppRepository(knex);
     const logger = new JobLoggerWrapper(job, this.logger);
-    const app = await this.appRepository.getById(appId);
+    const app = await this.appRepository.findEnabledAppById(appId);
+    if (!app) {
+      logger.warn(`Chatwoot app not found or disabled: ${appId}`);
+      throw new ChatWootAppNotFoundError(appId);
+    }
     return new DIContainer(app.pk, app.config, logger, knex);
   }
 

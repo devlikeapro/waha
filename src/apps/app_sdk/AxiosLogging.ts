@@ -40,7 +40,7 @@ export class AxiosLogging {
 
     // Log debug for 2xx/3xx responses
     this.logger.debug(`${methodStr} ${status}:OK ${url}`);
-    if (type.startsWith('application/json')) {
+    if (type?.startsWith('application/json')) {
       const data = JSON.stringify(response.data);
       this.logger.trace(`${methodStr} ${status}:OK ${url} ${data}`);
     } else {

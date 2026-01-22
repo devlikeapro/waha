@@ -121,11 +121,7 @@ import {
 } from '@waha/structures/responses.dto';
 import { BrowserTraceQuery } from '@waha/structures/server.debug.dto';
 import { MeInfo } from '@waha/structures/sessions.dto';
-import {
-  DeleteStatusRequest,
-  StatusRequest,
-  TextStatus,
-} from '@waha/structures/status.dto';
+import { DeleteStatusRequest, TextStatus } from '@waha/structures/status.dto';
 import {
   EnginePayload,
   PollVote as WAHAPollVote,
@@ -185,6 +181,10 @@ import {
 import { Activity } from '@waha/core/abc/activity';
 import { CallData } from '@waha/structures/calls.dto';
 import { Jid } from '@waha/core/engines/const';
+import {
+  WAHA_CLIENT_BROWSER_NAME,
+  WAHA_CLIENT_DEVICE_NAME,
+} from '@waha/core/env';
 
 export interface WebJSConfig {
   webVersion?: string;
@@ -246,6 +246,10 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     // add at the start
     args.unshift(`--a-waha-timestamp=${new Date()}`);
     args.unshift(`--a-waha-session=${this.name}`);
+    const deviceName =
+      this.sessionConfig?.client?.deviceName ?? WAHA_CLIENT_DEVICE_NAME;
+    const browserName =
+      this.sessionConfig?.client?.browserName ?? WAHA_CLIENT_BROWSER_NAME;
     return {
       puppeteer: {
         protocolTimeout: 300_000,
@@ -255,7 +259,9 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         dumpio: this.isDebugEnabled(),
       },
       userAgent:
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36',
+      deviceName: deviceName,
+      browserName: browserName,
       webVersion: webVersion,
       webVersionCache: {
         type: cacheType,
@@ -521,10 +527,29 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       }
     });
 
-    this.whatsapp.on(Events.AUTHENTICATED, (args) => {
+    this.whatsapp.on(Events.AUTHENTICATED, async (args) => {
       this.status = WAHASessionStatus.WORKING;
       this.qr.save('');
       this.logger.info({ args: args }, `Session has been authenticated!`);
+
+      // Try to get client info from puppeter if nothing set
+      // Fix https://github.com/devlikeapro/waha/issues/1735
+      await sleep(3_000);
+      if (!this.whatsapp.info) {
+        // try to load client info few times with a delay
+        for (let attempt = 0; attempt < 3; attempt++) {
+          await this.loadClientInfo().catch((error) =>
+            this.logger.error(
+              error,
+              `Failed to load client info, attempt ${attempt + 1}`,
+            ),
+          );
+          if (this.whatsapp.info) {
+            break;
+          }
+          await sleep(3_000);
+        }
+      }
     });
 
     this.whatsapp.on(Events.AUTHENTICATION_FAILURE, (args) => {
@@ -583,6 +608,21 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         log.info('Session has recovered, no need to restart.');
       });
     });
+  }
+
+  private async loadClientInfo() {
+    const data = await this.whatsapp.pupPage.evaluate(() => {
+      return {
+        // @ts-ignore
+        ...window.Store.Conn.serialize(),
+        wid:
+          // @ts-ignore
+          window.Store.User.getMaybeMePnUser() ||
+          // @ts-ignore
+          window.Store.User.getMaybeMeLidUser(),
+      };
+    });
+    this.whatsapp.info = data as any;
   }
 
   /**

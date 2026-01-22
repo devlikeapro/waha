@@ -36,7 +36,7 @@ export class WebjsClientCore extends Client {
   ) {
     super(options);
     // Wait until it's READY and inject more utils
-    this.on(Events.READY, async () => {
+    this.on(Events.AUTHENTICATED, async () => {
       await this.attachCustomEventListeners();
       await this.injectWaha();
     });
