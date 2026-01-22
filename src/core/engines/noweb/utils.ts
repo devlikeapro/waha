@@ -10,8 +10,15 @@ export function extractMediaContent(
     content?.imageMessage ||
     content?.videoMessage ||
     content?.audioMessage ||
+    content?.ptvMessage ||
     content?.stickerMessage;
-  return mediaContent;
+  if (mediaContent) {
+    return mediaContent;
+  }
+  if (content?.associatedChildMessage?.message) {
+    return extractMediaContent(content.associatedChildMessage.message);
+  }
+  return null;
 }
 
 interface Long {

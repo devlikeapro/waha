@@ -16,6 +16,7 @@ import {
   MessageMappingService,
 } from '@waha/apps/chatwoot/storage';
 import { MarkdownToWhatsApp } from '@waha/apps/chatwoot/messages/to/whatsapp/markdown';
+import { parseMentionsFromText } from '@waha/apps/chatwoot/messages/to/whatsapp/mentions';
 import { SessionManager } from '@waha/core/abc/manager.abc';
 import { RMutexService } from '@waha/modules/rmutex/rmutex.service';
 import {
@@ -36,6 +37,7 @@ import {
   LinkPreview,
 } from '@waha/apps/chatwoot/dto/config.dto';
 import { Locale } from '@waha/apps/chatwoot/i18n/locale';
+import { isJidGroup } from '@waha/core/utils/jids';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const mime = require('mime-types');
@@ -90,7 +92,16 @@ export class MessageHandler {
       return;
     }
 
-    const content = MarkdownToWhatsApp(message.content);
+    let content: string = message.content;
+    let mentions: null | string[] = null;
+    if (isJidGroup(chatId)) {
+      // Parse any mention in the text and get a new clean text if required
+      const parsed = parseMentionsFromText(message.content);
+      content = parsed.text;
+      mentions = parsed.mentions;
+    }
+
+    content = MarkdownToWhatsApp(content);
     const results = [];
     let part = 0; // Start from 0 and increment before each send/check
     const replyTo = await this.getReplyTo(message).catch((err) => {
@@ -116,7 +127,7 @@ export class MessageHandler {
           content: content,
           chatwoot: body,
         });
-        const msg = await this.sendTextMessage(chatId, text, replyTo);
+        const msg = await this.sendTextMessage(chatId, text, replyTo, mentions);
         results.push(msg);
         await this.saveMapping(message, msg, part);
         this.logger.info(`Text message sent: ${msg.id}`);
@@ -139,7 +150,7 @@ export class MessageHandler {
         chatwoot: body,
         singleAttachment: attachments.length == 1,
       });
-      const msg = await this.sendFile(chatId, caption, file, replyTo);
+      const msg = await this.sendFile(chatId, caption, replyTo, mentions, file);
       this.logger.info(
         `File message sent: ${msg.id} - ${file.data_url} - ${file.file_type}`,
       );
@@ -196,6 +207,7 @@ export class MessageHandler {
     chatId: string,
     content: string,
     replyTo: string,
+    mentions: string[] | null,
   ) {
     const request: MessageTextRequest = {
       session: '',
@@ -206,6 +218,7 @@ export class MessageHandler {
         this.config.linkPreview,
       ),
       linkPreviewHighQuality: this.config.linkPreview == LinkPreview.HQ,
+      mentions: mentions,
     };
     const session = this.session;
     await session.readMessages(chatId);
@@ -219,8 +232,9 @@ export class MessageHandler {
   private async sendFile(
     chatId: string,
     content: string,
-    file: MessageAttachment,
     replyTo: string,
+    mentions: string[] | null,
+    file: MessageAttachment,
   ) {
     const url = file.data_url;
     let filename = url.split('/').pop();
@@ -245,6 +259,7 @@ export class MessageHandler {
             url: url,
             mimetype: mimetype,
           },
+          mentions: mentions,
         };
         return session.sendImage(imageRequest);
       case 'video':
@@ -262,6 +277,7 @@ export class MessageHandler {
             filename: filename,
           },
           convert: true,
+          mentions: mentions,
         };
         return session.sendVideo(videoRequest);
       case 'audio':
@@ -288,6 +304,7 @@ export class MessageHandler {
         url: url,
         mimetype: mimetype,
       },
+      mentions: mentions,
     };
     return session.sendFile(fileRequest);
   }

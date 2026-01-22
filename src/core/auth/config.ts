@@ -142,7 +142,7 @@ export function ReportGeneratedValue() {
     'Save these values to your environment (.env or WAHA_*) to reuse them; new keys are generated on every start otherwise.',
   );
   console.warn('');
-  console.warn("cat <<'EOF' > .env");
+  console.warn("cat <<'EOF' >> .env");
   console.warn('');
   for (const key of values) {
     console.warn(`${key.param}=${key.value}`);

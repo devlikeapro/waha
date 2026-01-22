@@ -1,4 +1,4 @@
-import type { WABrowserDescription } from '@adiwajshing/baileys';
+import { Browsers, WABrowserDescription } from '@adiwajshing/baileys';
 import makeWASocket, {
   Chat,
   Contact,
@@ -205,6 +205,10 @@ import {
 import { extractWALocation } from '@waha/core/engines/waproto/locaiton';
 import { extractVCards } from '@waha/core/engines/waproto/vcards';
 import { Activity } from '@waha/core/abc/activity';
+import {
+  WAHA_CLIENT_BROWSER_NAME,
+  WAHA_CLIENT_DEVICE_NAME,
+} from '@waha/core/env';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const promiseRetry = require('promise-retry');
 
@@ -314,8 +318,37 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   getSocketConfig(agents: Agents | undefined, state): Partial<SocketConfig> {
+    // Detect browser
+    let browser = ['Ubuntu', 'Chrome', '22.04.4'] as WABrowserDescription;
+    let deviceName =
+      this.sessionConfig?.client?.deviceName ?? WAHA_CLIENT_DEVICE_NAME;
+    let browserName =
+      this.sessionConfig?.client?.browserName ?? WAHA_CLIENT_BROWSER_NAME;
+    if (browserName && !deviceName) {
+      browser = Browsers.appropriate(browserName);
+    } else if (!browserName && deviceName) {
+      browser = [deviceName, 'Chrome', '22.04.4'];
+    } else if (browserName && deviceName) {
+      switch (deviceName) {
+        case 'Mac OS':
+        case 'MacOS':
+        case 'macos':
+          browser = Browsers.macOS(browserName);
+          break;
+        case 'ubuntu':
+        case 'Ubuntu':
+          browser = Browsers.ubuntu(browserName);
+          break;
+        case 'windows':
+        case 'Windows':
+          browser = Browsers.windows(browserName);
+          break;
+        default:
+          browser = [deviceName, browserName, '22.04.4'];
+      }
+    }
+
     const fullSyncEnabled = this.sessionConfig?.noweb?.store?.fullSync || false;
-    const browser = ['Ubuntu', 'Chrome', '20.0.04'] as WABrowserDescription;
     let markOnlineOnConnect = this.sessionConfig?.noweb?.markOnline;
     if (markOnlineOnConnect == undefined) {
       markOnlineOnConnect = true;
@@ -2886,6 +2919,12 @@ export function extractBody(message): string | null {
     const mediaContent = extractMediaContent(content);
     // @ts-ignore - AudioMessage doesn't have caption field
     body = mediaContent?.caption;
+  }
+  if (!body && content.protocolMessage?.editedMessage) {
+    body = extractBody(content.protocolMessage.editedMessage);
+  }
+  if (!body && content.associatedChildMessage?.message) {
+    body = extractBody(content.associatedChildMessage.message);
   }
   // Response for buttons
   if (!body) {

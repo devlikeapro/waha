@@ -20,4 +20,9 @@ export class WAHAEnvironment {
     example: '/usr/path/to/bin/google-chrome',
   })
   browser: string;
+
+  @ApiProperty({
+    example: 'linux/x86',
+  })
+  platform: string;
 }

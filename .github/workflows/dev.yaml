@@ -71,8 +71,60 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Build
+      - name: Build (attempt 1)
+        id: build1
         if: ${{ steps.recent.outputs.has_recent == 'true' }}
+        continue-on-error: true
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          platforms: ${{ matrix.platform }}
+          build-args: |
+            USE_BROWSER=${{ matrix.browser }}
+            WHATSAPP_DEFAULT_ENGINE=${{ matrix.engine }}
+          push: false
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Wait to retry build
+        if:
+          ${{ steps.recent.outputs.has_recent == 'true' && steps.build1.outcome
+          == 'failure' }}
+        run: |
+          sleep 10
+
+      - name: Build (attempt 2)
+        id: build2
+        if:
+          ${{ steps.recent.outputs.has_recent == 'true' && steps.build1.outcome
+          == 'failure' }}
+        continue-on-error: true
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          platforms: ${{ matrix.platform }}
+          build-args: |
+            USE_BROWSER=${{ matrix.browser }}
+            WHATSAPP_DEFAULT_ENGINE=${{ matrix.engine }}
+          push: false
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Wait to retry build
+        if:
+          ${{ steps.recent.outputs.has_recent == 'true' && steps.build2.outcome
+          == 'failure' }}
+        run: |
+          sleep 10
+
+      - name: Build (attempt 3)
+        if:
+          ${{ steps.recent.outputs.has_recent == 'true' && steps.build2.outcome
+          == 'failure' }}
         uses: docker/build-push-action@v4
         with:
           context: .

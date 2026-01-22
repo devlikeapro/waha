@@ -146,6 +146,17 @@ export class WAHASelf {
       .then((response) => response.data);
   }
 
+  async getGroupParticipants(
+    session: string,
+    groupId: string,
+    opts?: RequestOptions,
+  ) {
+    const url = `/api/${session}/groups/${groupId}/participants/v2`;
+    return await this.client
+      .get(url, { signal: opts?.signal })
+      .then((response) => response.data);
+  }
+
   async getChannel(
     session: string,
     channelId: string,
@@ -371,6 +382,10 @@ export class WAHASessionAPI {
     return this.api.getGroup(this.session, groupId, opts);
   }
 
+  getGroupParticipants(groupId: string, opts?: RequestOptions): Promise<any> {
+    return this.api.getGroupParticipants(this.session, groupId, opts);
+  }
+
   getChannel(channelId: string, opts?: RequestOptions): Promise<Channel> {
     return this.api.getChannel(this.session, channelId, opts);
   }
@@ -458,5 +473,9 @@ export class WAHASessionAPI {
 
   findLIDByPN(pn: string, opts?: RequestOptions) {
     return this.api.findLIDByPN(this.session, pn, opts);
+  }
+
+  getSessionInfo(opts?: RequestOptions) {
+    return this.api.get(this.session, opts);
   }
 }

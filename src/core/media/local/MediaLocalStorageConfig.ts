@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { WhatsappConfigService } from '@waha/config.service';
+import * as path from 'path';
 
 @Injectable()
 export class MediaLocalStorageConfig {
@@ -12,7 +13,14 @@ export class MediaLocalStorageConfig {
   }
 
   get filesFolder(): string {
-    return this.config.get('WHATSAPP_FILES_FOLDER', '/tmp/whatsapp-files');
+    const configured = this.config.get('WHATSAPP_FILES_FOLDER', '');
+    if (!configured) {
+      return '/tmp/whatsapp-files';
+    }
+    if (path.isAbsolute(configured)) {
+      return configured;
+    }
+    return path.resolve(process.cwd(), configured);
   }
 
   get filesLifetime(): number {

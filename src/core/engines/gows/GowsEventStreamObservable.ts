@@ -22,7 +22,7 @@ export class GowsEventStreamObservable extends Observable<EnginePayload> {
     },
   ) {
     super((subscriber) => {
-      logger.debug('Creating grpc stream...');
+      logger.debug('Creating grpc client and stream...');
       logger.setBindings({ id: rand() });
       const { client, stream } = factory();
       this._client = client;
@@ -39,6 +39,13 @@ export class GowsEventStreamObservable extends Observable<EnginePayload> {
           stream.cancel();
         } catch (err) {
           logger.warn({ err }, 'Failed to cancel gRPC stream');
+        }
+
+        logger.debug({ reason }, 'Closing gRPC client...');
+        try {
+          client.close();
+        } catch (err) {
+          logger.warn({ err }, 'Failed to close gRPC client');
         }
 
         await sleep(this.CLIENT_CLOSE_TIMEOUT);

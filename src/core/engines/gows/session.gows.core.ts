@@ -289,14 +289,12 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       grpc.credentials.createInsecure(),
     );
 
-    try {
-      await promisify(this.client.StartSession)(request);
-    } catch (err) {
+    promisify(this.client.StartSession)(request).catch((err) => {
       this.logger.error('Failed to start the client');
       this.logger.error(err, err.stack);
       this.status = WAHASessionStatus.FAILED;
       throw err;
-    }
+    });
   }
 
   protected getProxyUrl(config: ProxyConfig): string {
@@ -771,14 +769,14 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   async stop(): Promise<void> {
     this.cleanupPresenceTimeout();
-    if (this.client) {
-      const response = await promisify(this.client.StopSession)(this.session);
-      response.toObject();
-    }
     this.status = WAHASessionStatus.STOPPED;
     this.events?.stop();
     this.stopEvents();
     this.mediaManager.close();
+    if (this.client) {
+      await promisify(this.client.StopSession)(this.session);
+      this.client?.close();
+    }
   }
 
   public async requestCode(phoneNumber: string, method: string, params?: any) {

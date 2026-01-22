@@ -124,7 +124,7 @@ class WEBJSHelper implements IEngineHelper {
     return {
       timestamp: new Date(message.timestamp * 1000),
       from_me: message.fromMe,
-      chat_id: message.from,
+      chat_id: message.id.remote,
       message_id: message.id.id,
       participant: message.author || null,
     };

@@ -13,6 +13,7 @@ import { AppRepository } from '../../storage';
 import { TKey } from '@waha/apps/chatwoot/i18n/templates';
 import { SignalRace } from '@waha/utils/abortable';
 import { IsCommandsChat } from '@waha/apps/chatwoot/client/ids';
+import { ChatWootAppNotFoundError } from '@waha/apps/chatwoot/errors';
 
 /**
  * Base class for ChatWoot background task consumers
@@ -36,7 +37,11 @@ export abstract class ChatWootTaskConsumer extends AppConsumer {
     const knex = this.manager.store.getWAHADatabase();
     this.appRepository = new AppRepository(knex);
     const logger = new JobLoggerWrapper(job, this.logger);
-    const app = await this.appRepository.getById(appId);
+    const app = await this.appRepository.findEnabledAppById(appId);
+    if (!app) {
+      logger.warn(`Chatwoot app not found or disabled: ${appId}`);
+      throw new ChatWootAppNotFoundError(appId);
+    }
     return new DIContainer(app.pk, app.config, logger, knex);
   }
 
@@ -68,6 +73,10 @@ export abstract class ChatWootTaskConsumer extends AppConsumer {
       await this.ReportErrorRecovered(job);
       return result;
     } catch (err) {
+      if (err instanceof ChatWootAppNotFoundError) {
+        this.logger.warn(err.message);
+        throw err;
+      }
       this.ReportErrorForJob(job, err).catch((exc) =>
         this.logger.error(`Failed to report error for job ${job.id}: ${exc}`),
       );

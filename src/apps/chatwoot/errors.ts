@@ -15,3 +15,9 @@ export class UnknownJIDFormat extends Error {
     super(`WhatsApp Chat ID is not recognized: ${jid}`);
   }
 }
+
+export class ChatWootAppNotFoundError extends Error {
+  constructor(public appId: string) {
+    super(`Chatwoot app not found or disabled: ${appId}`);
+  }
+}
