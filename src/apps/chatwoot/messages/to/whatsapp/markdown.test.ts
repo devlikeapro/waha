@@ -51,4 +51,44 @@ describe('MarkdownToWhatsApp', () => {
       'Links: https://example.com/page_1 e https://example.com/page_2',
     );
   });
+
+  it('normalizes escaped newlines from ChatWoot', () => {
+    // Test case: ChatWoot sends \\\n (literal: backslash, backslash, backslash, n) instead of \n
+    // Using String.raw to represent literal characters: \ + \ + \ + n
+    const input = String.raw`djaskldlaksj \\\n \\\n \\\ndkasldjlaskj \\\n \\\ndaksldkajlsk`;
+    const expected = 'djaskldlaksj \n \n \ndkasldjlaskj \n \ndaksldkajlsk';
+    expect(MarkdownToWhatsApp(input)).toBe(expected);
+  });
+
+  it('normalizes multiple escaped newlines', () => {
+    // Test case with multiple escaped newlines
+    // \\\n = \ + \ + \ + n (3 backslashes), \\\\\n = \ + \ + \ + \ + n (4 backslashes)
+    const input = String.raw`text1 \\\n text2 \\\\\n text3`;
+    const expected = 'text1 \n text2 \n text3';
+    expect(MarkdownToWhatsApp(input)).toBe(expected);
+  });
+
+  it('normalizes even number of escaped backslashes', () => {
+    // Test case: 4 backslashes (even number) followed by n
+    // In String.raw: \\\\n = 4 backslashes + n
+    const input = String.raw`text \\\\n more text`;
+    const expected = 'text \n more text';
+    expect(MarkdownToWhatsApp(input)).toBe(expected);
+  });
+
+  it('normalizes odd number of escaped backslashes', () => {
+    // Test case: 5 backslashes (odd number) followed by n
+    // In String.raw: \\\\\n = 5 backslashes + n
+    const input = String.raw`text \\\\\n more text`;
+    const expected = 'text \n more text';
+    expect(MarkdownToWhatsApp(input)).toBe(expected);
+  });
+
+  it('does not normalize single backslash followed by n', () => {
+    // Test case: single backslash + n should NOT be normalized (legitimate newline)
+    // In String.raw: \n represents a single backslash + n
+    const input = String.raw`text \n more text`;
+    const expected = String.raw`text \n more text`; // Should remain unchanged
+    expect(MarkdownToWhatsApp(input)).toBe(expected);
+  });
 });
