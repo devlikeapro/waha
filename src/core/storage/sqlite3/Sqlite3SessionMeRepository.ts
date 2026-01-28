@@ -36,6 +36,22 @@ export class Sqlite3SessionMeRepository
     return data?.me;
   }
 
+  async getMeBySessions(
+    sessionNames: string[],
+  ): Promise<Map<string, MeInfo | null>> {
+    const result = new Map<string, MeInfo | null>();
+    const uniqueNames = Array.from(new Set(sessionNames));
+    if (uniqueNames.length === 0) {
+      return result;
+    }
+    const entities = await this.getEntitiesByIds(uniqueNames);
+    for (const sessionName of uniqueNames) {
+      const entity = entities.get(sessionName);
+      result.set(sessionName, entity?.me ?? null);
+    }
+    return result;
+  }
+
   removeMe(sessionName: string): Promise<void> {
     return this.deleteById(sessionName);
   }

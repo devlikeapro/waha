@@ -44,8 +44,10 @@ export class WebhookConductor {
     for (const event of events) {
       const obs$ = session.getEventObservable(event);
       obs$.subscribe((payload) => {
-        const data = populateSessionInfo(event, session)(payload);
-        sender.send(data);
+        setImmediate(() => {
+          const data = populateSessionInfo(event, session)(payload);
+          sender.send(data);
+        });
       });
       this.logger.debug(`Event '${event}' is enabled for url: ${url}`);
     }

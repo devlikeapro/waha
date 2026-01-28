@@ -74,15 +74,14 @@ export class SwaggerConfiguratorCore {
       .setExternalDoc(this.title, this.externalDocUrl)
       .setVersion(VERSION.version)
       .addTag('🖥️ Sessions', 'Control WhatsApp sessions (accounts)')
-      .addTag('🧩 Apps', 'Applications (built-in integrations)')
-      .addTag('🔑 Auth', 'Authentication')
+      .addTag('📱 Pairing', 'Pair a session with WhatsApp on your phone.')
       .addTag('🆔 Profile', 'Your profile information')
-      .addTag('🖼️ Screenshot', 'Get screenshot of WhatsApp and show QR code')
       .addTag('📤 Chatting', 'Chatting methods')
-      .addTag('📞 Calls', 'Call handling methods')
+      .addTag('✅ Presence', `Presence information`)
       .addTag('📢 Channels', 'Channels (newsletters) methods')
       .addTag('🟢 Status', 'Status (aka stories) methods')
       .addTag('💬 Chats', `Chats methods`)
+      .addTag('🔑 Api Keys', 'API Keys management')
       .addTag(
         '👤 Contacts',
         `Contacts methods.<br>
@@ -90,13 +89,14 @@ export class SwaggerConfiguratorCore {
                 'E.g: \`12312312310\` OR \`12312312310@c.us\`<br>`,
       )
       .addTag('👥 Groups', `Groups methods.<br>`)
-      .addTag('✅ Presence', `Presence information`)
+      .addTag('📞 Calls', 'Call handling methods')
       .addTag('📅 Events', `Event Message`)
       .addTag(
         '🏷️ Labels',
         'Labels - available only for WhatsApp Business accounts',
       )
       .addTag('🖼️ Media', 'Media methods')
+      .addTag('🧩 Apps', 'Applications (built-in integrations)')
       .addTag('🔍 Observability', 'Other methods')
       .addTag('🗄️ Storage', 'Storage methods')
       .addApiKey({

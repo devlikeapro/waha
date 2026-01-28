@@ -3,6 +3,7 @@ import {
   Controller,
   Param,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -19,10 +20,17 @@ import {
   EventMessageRequest,
 } from '../structures/events.dto';
 import { WAMessage } from '../structures/responses.dto';
+import { PoliciesGuard } from '@waha/core/auth/policies.guard';
+import { CheckPolicies } from '@waha/core/auth/policies.decorator';
+import { CanSession, FromParam } from '@waha/core/auth/policies';
+
+import { Action } from '@waha/core/auth/casl.types';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/events')
 @ApiTags('📅 Events')
+@UseGuards(PoliciesGuard)
+@CheckPolicies(CanSession(Action.Use, FromParam('session')))
 export class EventsController {
   constructor(private manager: SessionManager) {}
 

@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiSecurity, ApiTags } from '@nestjs/swagger';
@@ -39,10 +40,17 @@ import {
   parseChannelInviteLink,
   WhatsappSession,
 } from '../core/abc/session.abc';
+import { PoliciesGuard } from '@waha/core/auth/policies.guard';
+import { CheckPolicies } from '@waha/core/auth/policies.decorator';
+import { CanSession, FromParam } from '@waha/core/auth/policies';
+
+import { Action } from '@waha/core/auth/casl.types';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/channels')
 @ApiTags('📢 Channels')
+@UseGuards(PoliciesGuard)
+@CheckPolicies(CanSession(Action.Use, FromParam('session')))
 export class ChannelsController {
   constructor(
     private manager: SessionManager,

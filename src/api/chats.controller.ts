@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -40,11 +41,18 @@ import {
 } from '../structures/chats.dto';
 import { EditMessageRequest } from '../structures/chatting.dto';
 import { SortOrder } from '@waha/structures/pagination.dto';
+import { PoliciesGuard } from '@waha/core/auth/policies.guard';
+import { CheckPolicies } from '@waha/core/auth/policies.decorator';
+import { CanSession, FromParam } from '@waha/core/auth/policies';
+
+import { Action } from '@waha/core/auth/casl.types';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/chats')
 @ApiTags('💬 Chats')
 @UsePipes(new ValidationPipe({ transform: true }))
+@UseGuards(PoliciesGuard)
+@CheckPolicies(CanSession(Action.Use, FromParam('session')))
 class ChatsController {
   constructor(private manager: SessionManager) {}
 

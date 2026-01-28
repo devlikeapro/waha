@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import {
   SessionApiParam,
@@ -15,10 +15,17 @@ import {
   VideoStatus,
   VoiceStatus,
 } from '../structures/status.dto';
+import { PoliciesGuard } from '@waha/core/auth/policies.guard';
+import { CheckPolicies } from '@waha/core/auth/policies.decorator';
+import { CanSession, FromParam } from '@waha/core/auth/policies';
+
+import { Action } from '@waha/core/auth/casl.types';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/status')
 @ApiTags('🟢 Status')
+@UseGuards(PoliciesGuard)
+@CheckPolicies(CanSession(Action.Use, FromParam('session')))
 class StatusController {
   constructor(private manager: SessionManager) {}
 

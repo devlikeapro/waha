@@ -3,6 +3,7 @@ import {
   Controller,
   Post,
   UnprocessableEntityException,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
@@ -21,10 +22,17 @@ import {
 
 import { WhatsappSession } from '../core/abc/session.abc';
 import { BufferResponseInterceptor } from '../nestjs/BufferResponseInterceptor';
+import { PoliciesGuard } from '@waha/core/auth/policies.guard';
+import { CheckPolicies } from '@waha/core/auth/policies.decorator';
+import { CanSession, FromParam } from '@waha/core/auth/policies';
+
+import { Action } from '@waha/core/auth/casl.types';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/media')
 @ApiTags('🖼️ Media')
+@UseGuards(PoliciesGuard)
+@CheckPolicies(CanSession(Action.Use, FromParam('session')))
 class MediaController {
   constructor(private manager: SessionManager) {}
 

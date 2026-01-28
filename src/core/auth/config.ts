@@ -1,4 +1,5 @@
 import { parseBool } from '@waha/helpers';
+import * as crypto from 'crypto';
 
 export interface SValue {
   param: string;

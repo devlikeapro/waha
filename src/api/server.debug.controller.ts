@@ -9,6 +9,7 @@ import {
   NotFoundException,
   Query,
   StreamableFile,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
@@ -25,10 +26,17 @@ import {
   CpuProfileQuery,
 } from '@waha/structures/server.debug.dto';
 import { createReadStream } from 'fs';
+import { PoliciesGuard } from '@waha/core/auth/policies.guard';
+import { CheckPolicies } from '@waha/core/auth/policies.decorator';
+import { CanServer } from '@waha/core/auth/policies';
+
+import { Action } from '@waha/core/auth/casl.types';
 
 @ApiSecurity('api_key')
 @Controller('api/server/debug')
 @ApiTags('🔍 Observability')
+@UseGuards(PoliciesGuard)
+@CheckPolicies(CanServer(Action.Manage))
 export class ServerDebugController {
   private logger: Logger;
   private readonly enabled: boolean;

@@ -48,6 +48,7 @@ import { getProxyConfig } from './helpers.proxy';
 import { MediaManager } from './media/MediaManager';
 import { LocalSessionAuthRepository } from './storage/LocalSessionAuthRepository';
 import { LocalStoreCore } from './storage/LocalStoreCore';
+import { CoreApiKeyRepository } from './storage/CoreApiKeyRepository';
 
 export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
   constructor(name: string) {
@@ -137,6 +138,7 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
   }
 
   async onApplicationBootstrap() {
+    this.apiKeyRepository = new CoreApiKeyRepository();
     await this.engineBootstrap.bootstrap();
     this.startPredefinedSessions();
   }

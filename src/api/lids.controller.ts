@@ -4,6 +4,7 @@ import {
   Param,
   Query,
   UnprocessableEntityException,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -22,10 +23,17 @@ import { PaginationParams, SortOrder } from '@waha/structures/pagination.dto';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { isLidUser } from '@waha/core/utils/jids';
+import { PoliciesGuard } from '@waha/core/auth/policies.guard';
+import { CheckPolicies } from '@waha/core/auth/policies.decorator';
+import { CanSession, FromParam } from '@waha/core/auth/policies';
+
+import { Action } from '@waha/core/auth/casl.types';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/lids')
 @ApiTags('👤 Contacts')
+@UseGuards(PoliciesGuard)
+@CheckPolicies(CanSession(Action.Use, FromParam('session')))
 export class LidsController {
   constructor(private manager: SessionManager) {}
 

@@ -19,6 +19,7 @@ import { Locale } from '@waha/apps/chatwoot/i18n/locale';
 
 import { CacheForConfig } from '../cache/ConversationCache';
 import { IConversationCache } from '../cache/IConversationCache';
+import { AttributeKey } from '@waha/apps/chatwoot/const';
 
 export interface ContactInfo {
   ChatId(): string;
@@ -63,6 +64,8 @@ export class ContactConversationService {
       `Updating if required contact custom attributes for chat.id: ${chatId}, contact.id: ${cwContact.data.id}`,
     );
     const attributes = await contactInfo.Attributes();
+    // Keep the current chat id in sync to reply using the latest address.
+    attributes[AttributeKey.WA_CHAT_ID] = chatId;
     await this.contactService.upsertCustomAttributes(
       cwContact.data,
       attributes,

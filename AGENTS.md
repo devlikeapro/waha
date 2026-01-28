@@ -3,6 +3,11 @@
 This guide summarizes how to explore, modify, and validate the WhatsApp HTTP API
 (WAHA) codebase when assisting as an automation or coding agent.
 
+- When you asked to refactor or "apply new lib" instead of current one - do not
+  change the behavior, make a minimum amount of changes possible. If you see
+  some edge case during that process that haven't been covered - tell it,
+  suggest fix, but don't change the code.
+
 ## Product & Variants
 
 - WAHA ships in **Core** and **Plus** editions. Core lives under `src/core` and
@@ -70,6 +75,7 @@ This guide summarizes how to explore, modify, and validate the WhatsApp HTTP API
   `src/utils/logging.ts`. `console.log` is blocked by pre-commit.
 - Respect path aliases (`@waha/...`) defined in `tsconfig.json`; keep imports
   consistent (use absolute aliases, not relative `../../../`).
+- Prefer named function declarations over `const` arrow functions when possible.
 - Avoid naming unused variables with a leading underscore; if a parameter is
   required by a signature, explicitly `void` it instead.
 - For configs, prefer runtime configurability over constants. Environment keys

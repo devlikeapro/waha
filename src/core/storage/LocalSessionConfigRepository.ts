@@ -48,6 +48,26 @@ export class LocalSessionConfigRepository extends ISessionConfigRepository {
     return JSON.parse(content);
   }
 
+  async getConfigBySessions(
+    sessionNames: string[],
+  ): Promise<Map<string, SessionConfig | null>> {
+    const result = new Map<string, SessionConfig | null>();
+    const uniqueNames = Array.from(new Set(sessionNames));
+    if (uniqueNames.length === 0) {
+      return result;
+    }
+    const items = await Promise.all(
+      uniqueNames.map(async (sessionName) => ({
+        sessionName,
+        config: await this.getConfig(sessionName),
+      })),
+    );
+    for (const item of items) {
+      result.set(item.sessionName, item.config ?? null);
+    }
+    return result;
+  }
+
   async saveConfig(sessionName: string, config: SessionConfig) {
     // Create a folder if not exist
     const folder = this.store.getSessionDirectory(sessionName);

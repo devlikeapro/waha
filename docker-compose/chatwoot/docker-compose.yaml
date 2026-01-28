@@ -75,7 +75,6 @@ services:
       - POSTGRES_USER=postgres
       # Please provide your own password.
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_HOST_AUTH_METHOD=trust
 
   redis:
     image: redis:alpine

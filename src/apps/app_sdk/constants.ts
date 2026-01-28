@@ -25,13 +25,18 @@ function jobRemoveOptions() {
 
 export const JobRemoveOptions = jobRemoveOptions();
 
-export const ExponentialRetriesJobOptions: DefaultJobOptions = {
-  attempts: 3,
-  backoff: {
-    type: 'exponential',
-    delay: 1000,
-  },
-};
+function exponentialRetriesJobOptions(): DefaultJobOptions {
+  return {
+    attempts: parseInt(process.env.WAHA_APPS_JOBS_ATTEMPTS) || 3,
+    delay: parseInt(process.env.WAHA_APPS_JOBS_DELAY) || 0,
+    backoff: {
+      type: process.env.WAHA_APPS_JOBS_BACKOFF_TYPE || 'exponential',
+      delay: parseInt(process.env.WAHA_APPS_JOBS_BACKOFF_DELAY) || 1000,
+    },
+  };
+}
+
+export const ExponentialRetriesJobOptions = exponentialRetriesJobOptions();
 
 export const NoRetriesJobOptions: DefaultJobOptions = {
   attempts: 1,
