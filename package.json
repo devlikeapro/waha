@@ -16,23 +16,27 @@
     "start:prod-exit": "node dist/main",
     "lint": "oxlint --deny-warnings",
     "lint-fix": "oxlint --fix --deny-warnings",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test": "yarn test:unit",
+    "test:watch": "jest --selectProjects unit --watch",
+    "test:cov": "jest --selectProjects unit --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --selectProjects unit --runInBand",
+    "test:unit": "jest --selectProjects unit",
+    "test:e2e": "jest --selectProjects e2e",
+    "test:e8e": "yarn test:e2e",
+    "test:all": "yarn test:unit && yarn test:e8e",
     "gows:proto:fetch": "node scripts/gows-proto.js fetch",
     "gows:proto:build": "node scripts/gows-proto.js build",
     "gows:proto": "yarn gows:proto:fetch && yarn gows:proto:build"
   },
   "dependencies": {
-    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-2025-12-17",
+    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-2026-01-25",
     "@adiwajshing/keyed-db": "^0.2.4",
     "@aws-sdk/client-s3": "^3.633.0",
     "@aws-sdk/s3-request-presigner": "^3.633.0",
     "@bull-board/api": "^6.9.1",
     "@bull-board/express": "^6.9.1",
     "@bull-board/nestjs": "^6.9.1",
+    "@casl/ability": "^6.8.0",
     "@figuro/chatwoot-sdk": "^1.1.17",
     "@liaoliaots/nestjs-redis": "^9",
     "@nestjs/axios": "^3.0.2",
@@ -148,21 +152,47 @@
     "typescript": "5.9.2"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "moduleNameMapper": {
-      "^@waha/(.*)$": "<rootDir>/$1"
-    },
-    "testRegex": ".test.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "projects": [
+      {
+        "displayName": "unit",
+        "moduleFileExtensions": [
+          "js",
+          "json",
+          "ts"
+        ],
+        "rootDir": "src",
+        "moduleNameMapper": {
+          "^@waha/(.*)$": "<rootDir>/$1"
+        },
+        "testRegex": ".test.ts$",
+        "testPathIgnorePatterns": [
+          "/__tests__/e2e/"
+        ],
+        "transform": {
+          "^.+\\.(t|j)s$": "ts-jest"
+        },
+        "coverageDirectory": "../coverage",
+        "testEnvironment": "node"
+      },
+      {
+        "displayName": "e2e",
+        "moduleFileExtensions": [
+          "js",
+          "json",
+          "ts"
+        ],
+        "rootDir": "src",
+        "moduleNameMapper": {
+          "^@waha/(.*)$": "<rootDir>/$1"
+        },
+        "testRegex": "__tests__/e2e/.*\\.test\\.ts$",
+        "transform": {
+          "^.+\\.(t|j)s$": "ts-jest"
+        },
+        "coverageDirectory": "../coverage",
+        "testEnvironment": "node"
+      }
+    ]
   },
   "packageManager": "yarn@4.9.2"
 }

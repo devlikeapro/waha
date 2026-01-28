@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   UnprocessableEntityException,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -26,10 +27,17 @@ import {
 import * as lodash from 'lodash';
 
 import { SessionManager } from '../core/abc/manager.abc';
+import { PoliciesGuard } from '@waha/core/auth/policies.guard';
+import { CheckPolicies } from '@waha/core/auth/policies.decorator';
+import { CanSession, FromParam } from '@waha/core/auth/policies';
+
+import { Action } from '@waha/core/auth/casl.types';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/labels')
 @ApiTags('🏷️ Labels')
+@UseGuards(PoliciesGuard)
+@CheckPolicies(CanSession(Action.Use, FromParam('session')))
 export class LabelsController {
   constructor(private manager: SessionManager) {}
 

@@ -9,6 +9,7 @@ export class GowsSubprocess {
 
   private child: any;
   private ready: boolean = false;
+  private stdoutBuffer: string = '';
 
   constructor(
     private logger: Logger,
@@ -17,7 +18,7 @@ export class GowsSubprocess {
     readonly pprof: boolean = false,
   ) {}
 
-  start(onExit: (code: number) => void) {
+  start(onExit: (code: number | null, signal: NodeJS.Signals | null) => void) {
     this.logger.info('Starting GOWS subprocess...');
     this.logger.debug(`GOWS path '${this.path}', socket: '${this.socket}'...`);
 
@@ -33,43 +34,51 @@ export class GowsSubprocess {
       detached: true,
     });
     this.logger.debug(`GOWS started with PID: ${this.child.pid}`);
-    this.child.on('close', async (code, singal) => {
-      const msg = code
-        ? `GOWS subprocess closed with code ${code}`
-        : `GOWS subprocess closed by signal ${singal}`;
+    this.child.on('close', (code, signal) => {
+      const msg =
+        code !== null
+          ? `GOWS subprocess closed with code ${code}`
+          : `GOWS subprocess closed by signal ${signal}`;
       this.logger.debug(msg);
-      onExit(code);
+      onExit(code, signal);
     });
     this.child.on('error', (err) => {
       this.logger.error(`GOWS subprocess error: ${err}`);
     });
 
-    this.child.stderr.setEncoding('utf8');
-    this.child.stderr.on('data', (data) => {
-      this.logger.error(data);
+    this.child.stderr?.setEncoding('utf8');
+    this.child.stderr?.on('data', (data) => {
+      this.logger.error(data.toString().trim());
     });
 
-    this.child.stdout.setEncoding('utf8');
-    this.child.stdout.on('data', async (data) => {
-      // remove empty line at the end, split by \n
-      const lines = data.trim().split('\n');
-      lines.forEach((line) => this.log(line));
+    this.child.stdout?.setEncoding('utf8');
+    this.child.stdout?.on('data', (data) => {
+      this.handleStdout(data.toString());
     });
-    this.listenReady();
   }
 
-  listenReady() {
-    this.child.stdout.on('data', async (data) => {
-      if (this.ready) {
+  private handleStdout(chunk: string) {
+    this.stdoutBuffer += chunk;
+    const parts = this.stdoutBuffer.split('\n');
+    this.stdoutBuffer = parts.pop() ?? '';
+    parts.forEach((line) => {
+      const trimmed = line.trim();
+      if (!trimmed) {
         return;
       }
-      if (!data.includes(this.readyText)) {
-        return;
-      }
-      await sleep(this.readyDelayMs);
-      this.ready = true;
-      this.logger.info('GOWS is ready');
+      this.log(trimmed);
+      void this.checkReady(trimmed);
     });
+    void this.checkReady(this.stdoutBuffer);
+  }
+
+  private async checkReady(text: string) {
+    if (this.ready || !text.includes(this.readyText)) {
+      return;
+    }
+    await sleep(this.readyDelayMs);
+    this.ready = true;
+    this.logger.info('GOWS is ready');
   }
 
   async waitWhenReady(timeout: number) {
@@ -79,7 +88,7 @@ export class GowsSubprocess {
       timeout,
     );
     if (!started) {
-      const msg = 'GOWS did not start after 10 seconds';
+      const msg = `GOWS did not start after ${timeout} ms`;
       this.logger.error(msg);
       throw new Error(msg);
     }

@@ -25,4 +25,15 @@ export class WAHAEnvironment {
     example: 'linux/x86',
   })
   platform: string;
+
+  @ApiProperty({
+    example: {
+      id: 'worker-1',
+    },
+    nullable: true,
+    description: 'Worker metadata for the running instance.',
+  })
+  worker: {
+    id: string | null;
+  };
 }

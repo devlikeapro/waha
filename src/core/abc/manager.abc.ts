@@ -36,6 +36,7 @@ import {
 import { ISessionAuthRepository } from '../storage/ISessionAuthRepository';
 import { ISessionConfigRepository } from '../storage/ISessionConfigRepository';
 import { WhatsappSession } from './session.abc';
+import { IApiKeyRepository } from '@waha/core/storage/IApiKeyRepository';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const AsyncLock = require('async-lock');
@@ -48,6 +49,7 @@ export abstract class SessionManager
   public sessionConfigRepository: ISessionConfigRepository;
   protected sessionMeRepository: ISessionMeRepository;
   protected sessionWorkerRepository: ISessionWorkerRepository;
+  public apiKeyRepository: IApiKeyRepository;
   private lock: any;
 
   WAIT_SESSION_RUNNING_INTERVAL = 500;

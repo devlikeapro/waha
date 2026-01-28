@@ -7,6 +7,7 @@ import {
   Logger,
   Post,
   Query,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
@@ -22,10 +23,16 @@ import {
 import { sleep } from '@waha/utils/promiseTimeout';
 import { VERSION } from '@waha/version';
 import * as lodash from 'lodash';
+import { PoliciesGuard } from '@waha/core/auth/policies.guard';
+import { CheckPolicies } from '@waha/core/auth/policies.decorator';
+import { CanServer } from '@waha/core/auth/policies';
+
+import { Action } from '@waha/core/auth/casl.types';
 
 @ApiSecurity('api_key')
 @Controller('api/server')
 @ApiTags('🔍 Observability')
+@UseGuards(PoliciesGuard)
 export class ServerController {
   private logger: Logger;
 
@@ -35,12 +42,14 @@ export class ServerController {
 
   @Get('version')
   @ApiOperation({ summary: 'Get the version of the server' })
+  @CheckPolicies(CanServer(Action.Read))
   get(): WAHAEnvironment {
     return VERSION;
   }
 
   @Get('environment')
   @ApiOperation({ summary: 'Get the server environment' })
+  @CheckPolicies(CanServer(Action.Manage))
   environment(
     @Query(new WAHAValidationPipe()) query: EnvironmentQuery,
     // eslint-disable-next-line @typescript-eslint/ban-types
@@ -67,6 +76,7 @@ export class ServerController {
 
   @Get('status')
   @ApiOperation({ summary: 'Get the server status' })
+  @CheckPolicies(CanServer(Action.Read))
   async status(): Promise<ServerStatusResponse> {
     const now = Date.now();
     const uptime = Math.floor(process.uptime() * 1000);
@@ -87,6 +97,7 @@ export class ServerController {
       "If you're using docker, after calling this endpoint Docker will start a new container, " +
       'so you can use this endpoint to restart the server',
   })
+  @CheckPolicies(CanServer(Action.Manage))
   @UsePipes(new WAHAValidationPipe())
   async stop(@Body() request: StopRequest): Promise<StopResponse> {
     const timeout = 1_000;

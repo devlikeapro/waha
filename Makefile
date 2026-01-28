@@ -32,10 +32,10 @@ push:
 	docker push devlikeapro/waha
 
 for-swagger:
-	WHATSAPP_SWAGGER_CONFIG_ADVANCED=true WHATSAPP_SWAGGER_PASSWORD=666 nvm exec yarn start
+	export WHATSAPP_SWAGGER_CONFIG_ADVANCED=true && export WHATSAPP_SWAGGER_PASSWORD=666 && yarn start
 
 up-noweb:
-	yarn up @adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-2025-12-17
+	yarn up @adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-2026-01-25
 
 up-noweb-libsignal:
 	yarn up libsignal@github:devlikeapro/libsignal-node#fork-master

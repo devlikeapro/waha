@@ -5,6 +5,10 @@ export abstract class ISessionMeRepository {
 
   abstract getMe(sessionName: string): Promise<MeInfo | null>;
 
+  abstract getMeBySessions(
+    sessionNames: string[],
+  ): Promise<Map<string, MeInfo | null>>;
+
   abstract removeMe(sessionName: string): Promise<void>;
 
   abstract init(): Promise<void>;

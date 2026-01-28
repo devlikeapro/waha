@@ -52,3 +52,29 @@ export const SQLSessionWorkerMigrations: Migration[] = [
   // Worker can have multiple records
   'CREATE INDEX IF NOT EXISTS session_worker_worker_idx ON session_worker (worker)',
 ];
+
+/**
+ * Api Keys
+ */
+export const SQLApiKeySchema = new Schema(
+  'api_key',
+  [
+    new Field('id', 'TEXT'),
+    new Field('key', 'TEXT'),
+    new Field('isActive', 'INTEGER'),
+    new Field('session', 'TEXT'),
+    new Field('data', 'TEXT'),
+  ],
+  [
+    new Index('api_key_id_index', ['id']),
+    new Index('api_key_key_idx', ['key']),
+    new Index('api_key_session_idx', ['session']),
+  ],
+);
+
+export const SQLApiKeyMigrations: Migration[] = [
+  'CREATE TABLE IF NOT EXISTS api_key (id TEXT PRIMARY KEY, "key" TEXT, "isActive" INTEGER, session TEXT, data TEXT)',
+  'CREATE UNIQUE INDEX IF NOT EXISTS api_key_id_index ON api_key (id)',
+  'CREATE UNIQUE INDEX IF NOT EXISTS api_key_key_idx ON api_key ("key")',
+  'CREATE INDEX IF NOT EXISTS api_key_session_idx ON api_key (session)',
+];

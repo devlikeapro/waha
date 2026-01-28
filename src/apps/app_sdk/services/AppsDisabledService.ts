@@ -21,7 +21,7 @@ export class AppsDisabledService implements IAppsService {
     throw new AppsIsDisabledError();
   }
 
-  async get(manager: SessionManager, appId: string): Promise<App> {
+  async get(manager: SessionManager, appId: string): Promise<App | null> {
     throw new AppsIsDisabledError();
   }
 

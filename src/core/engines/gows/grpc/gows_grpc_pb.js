@@ -642,6 +642,17 @@ function deserialize_messages_StartSessionRequest(buffer_arg) {
   return gows_pb.StartSessionRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_messages_StreamEventsRequest(arg) {
+  if (!(arg instanceof gows_pb.StreamEventsRequest)) {
+    throw new Error('Expected argument of type messages.StreamEventsRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_messages_StreamEventsRequest(buffer_arg) {
+  return gows_pb.StreamEventsRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_messages_SubscribePresenceRequest(arg) {
   if (!(arg instanceof gows_pb.SubscribePresenceRequest)) {
     throw new Error('Expected argument of type messages.SubscribePresenceRequest');
@@ -695,10 +706,10 @@ var EventStreamService = exports.EventStreamService = {
     path: '/messages.EventStream/StreamEvents',
     requestStream: false,
     responseStream: true,
-    requestType: gows_pb.Session,
+    requestType: gows_pb.StreamEventsRequest,
     responseType: gows_pb.EventJson,
-    requestSerialize: serialize_messages_Session,
-    requestDeserialize: deserialize_messages_Session,
+    requestSerialize: serialize_messages_StreamEventsRequest,
+    requestDeserialize: deserialize_messages_StreamEventsRequest,
     responseSerialize: serialize_messages_EventJson,
     responseDeserialize: deserialize_messages_EventJson,
   },

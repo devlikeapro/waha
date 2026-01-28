@@ -1,34 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { IncomingMessage } from 'http';
-import * as url from 'url';
-
-import { IApiKeyAuth } from './auth';
+import { URL } from 'url';
+import { ApiKeyStrategy } from '@waha/core/auth/apiKey.strategy';
 
 @Injectable()
 export class WebSocketAuth {
-  constructor(private auth: IApiKeyAuth) {}
+  constructor(private strategy: ApiKeyStrategy) {}
 
-  validateRequest(request: IncomingMessage) {
-    if (this.auth.skipAuth()) {
-      return true;
-    }
-    const provided = this.getKeyFromQueryParams(request);
-    return this.auth.isValid(provided);
+  async validateRequest(request: IncomingMessage) {
+    const apikey = this.getKeyFromQueryParams('x-api-key', request);
+    return await this.strategy.user(apikey);
   }
 
-  private getKeyFromQueryParams(request: IncomingMessage) {
-    let query = url.parse(request.url, true).query;
-    // case-insensitive query params
-    query = Object.keys(query).reduce((acc, key) => {
-      acc[key.toLowerCase()] = query[key];
-      return acc;
-    }, {});
+  private getKeyFromQueryParams(name: string, request: IncomingMessage) {
+    // Case-insensitive
+    name = name.toLowerCase();
+    const query = new URL(request.url || '', 'http://localhost').searchParams;
+    const matches: string[] = [];
 
-    const provided = query['x-api-key'];
-    // Check if it's array - return first
-    if (Array.isArray(provided)) {
-      return provided[0];
+    for (const [key, value] of query.entries()) {
+      if (key.toLowerCase() === name) {
+        matches.push(value);
+      }
     }
-    return provided;
+
+    if (matches.length === 0) {
+      return undefined;
+    }
+    return matches[0];
   }
 }

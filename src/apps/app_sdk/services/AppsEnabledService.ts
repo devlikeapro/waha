@@ -104,12 +104,12 @@ export class AppsEnabledService implements IAppsService {
     return result;
   }
 
-  async get(manager: SessionManager, appId: string): Promise<App> {
+  async get(manager: SessionManager, appId: string): Promise<App | null> {
     const knex = manager.store.getWAHADatabase();
     const repo = new AppRepository(knex);
     const app = await repo.getById(appId);
     if (!app) {
-      throw new NotFoundException(`App '${appId}' not found`);
+      return null;
     }
     delete (app as any).pk;
     return app;

@@ -124,7 +124,11 @@ import {
   WAMessageReaction,
 } from '@waha/structures/responses.dto';
 import { CallData } from '@waha/structures/calls.dto';
-import { MeInfo, ProxyConfig } from '@waha/structures/sessions.dto';
+import {
+  MeInfo,
+  ProxyConfig,
+  SessionConfig,
+} from '@waha/structures/sessions.dto';
 import {
   BROADCAST_ID,
   DeleteStatusRequest,
@@ -174,8 +178,8 @@ import {
   isLabelUpsertEvent,
 } from './labels.gows';
 import {
-  GetEventStreamClient,
-  GetMessageServiceClient,
+  BuildEventStreamClient,
+  BuildMessageServiceClient,
 } from '@waha/core/engines/gows/clients';
 import esm from '@waha/vendor/esm';
 import { IsEditedMessage } from '@waha/core/utils/pwa';
@@ -187,6 +191,19 @@ import { TmpDir } from '@waha/utils/tmpdir';
 import * as path from 'path';
 import MessageServiceClient = messages.MessageServiceClient;
 import * as fsp from 'fs/promises';
+
+function getGowsStorageConfig(
+  sessionConfig?: SessionConfig,
+): messages.SessionStorageConfig {
+  const storeConfig = sessionConfig?.gows?.storage;
+  return new messages.SessionStorageConfig({
+    // Only explicit false disables; undefined/null defaults to enabled.
+    messages: storeConfig?.messages !== false,
+    groups: storeConfig?.groups !== false,
+    chats: storeConfig?.chats !== false,
+    labels: storeConfig?.labels !== false,
+  });
+}
 
 enum WhatsMeowEvent {
   CONNECTED = 'gows.ConnectedEventData',
@@ -216,6 +233,10 @@ enum WhatsMeowEvent {
   CALL_REJECT = 'events.CallReject',
   CALL_TERMINATE = 'events.CallTerminate',
   CALL_OFFER_NOTICE = 'events.CallOfferNotice',
+  // Other
+  APP_STATE = 'events.AppState',
+  HISTORY_SYNC = 'events.HistorySync',
+  CONTACT = 'events.Contact',
 }
 
 export interface GowsConfig {
@@ -267,6 +288,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
           address: auth.address(),
           dialect: auth.dialect(),
         }),
+        storage: getGowsStorageConfig(this.sessionConfig),
         log: new messages.SessionLogConfig({
           level: level ?? messages.LogLevel.INFO,
         }),
@@ -282,8 +304,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       }),
     });
 
-    this.client = GetMessageServiceClient(
-      this.name,
+    this.client = BuildMessageServiceClient(
       this.engineConfig.connection,
       grpc.credentials.createInsecure(),
     );
@@ -310,12 +331,23 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     this.stream$ = new GowsEventStreamObservable(
       this.loggerBuilder.child({ grpc: 'stream' }),
       () => {
-        const client = GetEventStreamClient(
-          this.name,
+        const client = BuildEventStreamClient(
           this.engineConfig.connection,
           grpc.credentials.createInsecure(),
         );
-        const stream = client.StreamEvents(this.session);
+        // Avoid having a lot of events after pairing the device
+        // https://github.com/devlikeapro/waha/issues/1826
+        // TODO: we need to make it more dynamic
+        const exclude = [
+          WhatsMeowEvent.APP_STATE,
+          WhatsMeowEvent.HISTORY_SYNC,
+          WhatsMeowEvent.CONTACT,
+        ];
+        const request = new messages.StreamEventsRequest({
+          session: this.session,
+          exclude: exclude,
+        });
+        const stream = client.StreamEvents(request);
         return { client, stream };
       },
     );

@@ -27,14 +27,14 @@ export function GetAllChatIDs(contact: any): Array<string> {
 }
 
 export function FindChatID(contact: any): string | null {
+  if (GetChatID(contact)) {
+    return GetChatID(contact);
+  }
   if (GetJID(contact)) {
     return GetJID(contact);
   }
   if (GetLID(contact)) {
     return GetLID(contact);
-  }
-  if (GetChatID(contact)) {
-    return GetChatID(contact);
   }
   return null;
 }

@@ -6,8 +6,37 @@ on:
   workflow_dispatch:
 
 jobs:
+  unit-tests:
+    if: github.repository == 'devlikeapro/waha-plus'
+    runs-on: ubuntu-22.04
+    name: Unit tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@4.9.2 --activate
+
+      - name: Install dependencies
+        run: |
+          unset GIT_CONFIG_PARAMETERS
+          yarn install --immutable
+
+      - name: Run unit tests
+        run: yarn test:unit
+
   docker-build:
     if: github.repository == 'devlikeapro/waha-plus'
+    needs: unit-tests
     runs-on: ${{ matrix.runner }}
     name:
       ${{ matrix.engine }} - ${{ matrix.browser }} - ${{ matrix.platform }} -
@@ -15,12 +44,23 @@ jobs:
     strategy:
       matrix:
         include:
+          # Chromium - x86
           - runner: 'buildjet-4vcpu-ubuntu-2204'
             tag: 'dev'
             platform: 'amd64'
             browser: 'chromium'
             engine: 'WEBJS'
             goss: 'goss-linux-amd64'
+
+          # Chrome - x86
+          - runner: 'buildjet-4vcpu-ubuntu-2204'
+            tag: 'dev-chrome'
+            platform: 'amd64'
+            browser: 'chrome'
+            engine: 'WEBJS'
+            goss: 'goss-linux-amd64'
+
+          # Chromium - ARM
           - runner: 'buildjet-4vcpu-ubuntu-2204-arm'
             tag: 'dev-arm'
             platform: 'linux/arm64'

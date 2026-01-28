@@ -52,9 +52,11 @@ export class GowsEventStreamObservable extends Observable<EnginePayload> {
       };
 
       stream.on('data', (raw) => {
-        const obj = raw.toObject();
-        obj.data = JSON.parse(obj.data);
-        subscriber?.next(obj);
+        setImmediate(() => {
+          const obj = raw.toObject();
+          obj.data = JSON.parse(obj.data);
+          subscriber?.next(obj);
+        });
       });
 
       stream.on('end', (...args) => {

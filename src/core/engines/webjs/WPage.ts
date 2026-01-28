@@ -99,6 +99,19 @@ export class WPage extends EventEmitter {
     }
   }
 
+  // removeExposedFunction
+  async removeExposedFunction(name: string) {
+    try {
+      return await this.page.removeExposedFunction(name);
+    } catch (err) {
+      this.emit(PAGE_CALL_ERROR_EVENT, {
+        method: 'removeExposedFunction',
+        error: err,
+      });
+      throw err;
+    }
+  }
+
   async reload(options?: any): Promise<any> {
     try {
       return await this.page.reload(options);

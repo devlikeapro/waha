@@ -879,6 +879,99 @@ export namespace messages {
             return EventJson.deserialize(bytes);
         }
     }
+    export class StreamEventsRequest extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            session?: Session;
+            exclude?: string[];
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("session" in data && data.session != undefined) {
+                    this.session = data.session;
+                }
+                if ("exclude" in data && data.exclude != undefined) {
+                    this.exclude = data.exclude;
+                }
+            }
+        }
+        get session() {
+            return pb_1.Message.getWrapperField(this, Session, 1) as Session;
+        }
+        set session(value: Session) {
+            pb_1.Message.setWrapperField(this, 1, value);
+        }
+        get has_session() {
+            return pb_1.Message.getField(this, 1) != null;
+        }
+        get exclude() {
+            return pb_1.Message.getFieldWithDefault(this, 2, []) as string[];
+        }
+        set exclude(value: string[]) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        static fromObject(data: {
+            session?: ReturnType<typeof Session.prototype.toObject>;
+            exclude?: string[];
+        }): StreamEventsRequest {
+            const message = new StreamEventsRequest({});
+            if (data.session != null) {
+                message.session = Session.fromObject(data.session);
+            }
+            if (data.exclude != null) {
+                message.exclude = data.exclude;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                session?: ReturnType<typeof Session.prototype.toObject>;
+                exclude?: string[];
+            } = {};
+            if (this.session != null) {
+                data.session = this.session.toObject();
+            }
+            if (this.exclude != null) {
+                data.exclude = this.exclude;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.has_session)
+                writer.writeMessage(1, this.session, () => this.session.serialize(writer));
+            if (this.exclude.length)
+                writer.writeRepeatedString(2, this.exclude);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): StreamEventsRequest {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new StreamEventsRequest();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        reader.readMessage(message.session, () => message.session = Session.deserialize(reader));
+                        break;
+                    case 2:
+                        pb_1.Message.addToRepeatedField(message, 2, reader.readString());
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): StreamEventsRequest {
+            return StreamEventsRequest.deserialize(bytes);
+        }
+    }
     export class PairCodeRequest extends pb_1.Message {
         #one_of_decls: number[][] = [];
         constructor(data?: any[] | {
@@ -1236,6 +1329,193 @@ export namespace messages {
             return SessionStoreConfig.deserialize(bytes);
         }
     }
+    export class SessionStorageConfig extends pb_1.Message {
+        #one_of_decls: number[][] = [[1], [2], [3], [4]];
+        constructor(data?: any[] | ({} & (({
+            messages?: boolean;
+        }) | ({
+            groups?: boolean;
+        }) | ({
+            chats?: boolean;
+        }) | ({
+            labels?: boolean;
+        })))) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("messages" in data && data.messages != undefined) {
+                    this.messages = data.messages;
+                }
+                if ("groups" in data && data.groups != undefined) {
+                    this.groups = data.groups;
+                }
+                if ("chats" in data && data.chats != undefined) {
+                    this.chats = data.chats;
+                }
+                if ("labels" in data && data.labels != undefined) {
+                    this.labels = data.labels;
+                }
+            }
+        }
+        get messages() {
+            return pb_1.Message.getFieldWithDefault(this, 1, false) as boolean;
+        }
+        set messages(value: boolean) {
+            pb_1.Message.setOneofField(this, 1, this.#one_of_decls[0], value);
+        }
+        get has_messages() {
+            return pb_1.Message.getField(this, 1) != null;
+        }
+        get groups() {
+            return pb_1.Message.getFieldWithDefault(this, 2, false) as boolean;
+        }
+        set groups(value: boolean) {
+            pb_1.Message.setOneofField(this, 2, this.#one_of_decls[1], value);
+        }
+        get has_groups() {
+            return pb_1.Message.getField(this, 2) != null;
+        }
+        get chats() {
+            return pb_1.Message.getFieldWithDefault(this, 3, false) as boolean;
+        }
+        set chats(value: boolean) {
+            pb_1.Message.setOneofField(this, 3, this.#one_of_decls[2], value);
+        }
+        get has_chats() {
+            return pb_1.Message.getField(this, 3) != null;
+        }
+        get labels() {
+            return pb_1.Message.getFieldWithDefault(this, 4, false) as boolean;
+        }
+        set labels(value: boolean) {
+            pb_1.Message.setOneofField(this, 4, this.#one_of_decls[3], value);
+        }
+        get has_labels() {
+            return pb_1.Message.getField(this, 4) != null;
+        }
+        get _messages() {
+            const cases: {
+                [index: number]: "none" | "messages";
+            } = {
+                0: "none",
+                1: "messages"
+            };
+            return cases[pb_1.Message.computeOneofCase(this, [1])];
+        }
+        get _groups() {
+            const cases: {
+                [index: number]: "none" | "groups";
+            } = {
+                0: "none",
+                2: "groups"
+            };
+            return cases[pb_1.Message.computeOneofCase(this, [2])];
+        }
+        get _chats() {
+            const cases: {
+                [index: number]: "none" | "chats";
+            } = {
+                0: "none",
+                3: "chats"
+            };
+            return cases[pb_1.Message.computeOneofCase(this, [3])];
+        }
+        get _labels() {
+            const cases: {
+                [index: number]: "none" | "labels";
+            } = {
+                0: "none",
+                4: "labels"
+            };
+            return cases[pb_1.Message.computeOneofCase(this, [4])];
+        }
+        static fromObject(data: {
+            messages?: boolean;
+            groups?: boolean;
+            chats?: boolean;
+            labels?: boolean;
+        }): SessionStorageConfig {
+            const message = new SessionStorageConfig({});
+            if (data.messages != null) {
+                message.messages = data.messages;
+            }
+            if (data.groups != null) {
+                message.groups = data.groups;
+            }
+            if (data.chats != null) {
+                message.chats = data.chats;
+            }
+            if (data.labels != null) {
+                message.labels = data.labels;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                messages?: boolean;
+                groups?: boolean;
+                chats?: boolean;
+                labels?: boolean;
+            } = {};
+            if (this.messages != null) {
+                data.messages = this.messages;
+            }
+            if (this.groups != null) {
+                data.groups = this.groups;
+            }
+            if (this.chats != null) {
+                data.chats = this.chats;
+            }
+            if (this.labels != null) {
+                data.labels = this.labels;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.has_messages)
+                writer.writeBool(1, this.messages);
+            if (this.has_groups)
+                writer.writeBool(2, this.groups);
+            if (this.has_chats)
+                writer.writeBool(3, this.chats);
+            if (this.has_labels)
+                writer.writeBool(4, this.labels);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): SessionStorageConfig {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new SessionStorageConfig();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        message.messages = reader.readBool();
+                        break;
+                    case 2:
+                        message.groups = reader.readBool();
+                        break;
+                    case 3:
+                        message.chats = reader.readBool();
+                        break;
+                    case 4:
+                        message.labels = reader.readBool();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): SessionStorageConfig {
+            return SessionStorageConfig.deserialize(bytes);
+        }
+    }
     export class SessionProxyConfig extends pb_1.Message {
         #one_of_decls: number[][] = [];
         constructor(data?: any[] | {
@@ -1440,13 +1720,15 @@ export namespace messages {
         }
     }
     export class SessionConfig extends pb_1.Message {
-        #one_of_decls: number[][] = [[4]];
+        #one_of_decls: number[][] = [[4], [5]];
         constructor(data?: any[] | ({
             store?: SessionStoreConfig;
             log?: SessionLogConfig;
             proxy?: SessionProxyConfig;
         } & (({
             ignore?: SessionIgnoreJidsConfig;
+        }) | ({
+            storage?: SessionStorageConfig;
         })))) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -1462,6 +1744,9 @@ export namespace messages {
                 }
                 if ("ignore" in data && data.ignore != undefined) {
                     this.ignore = data.ignore;
+                }
+                if ("storage" in data && data.storage != undefined) {
+                    this.storage = data.storage;
                 }
             }
         }
@@ -1501,6 +1786,15 @@ export namespace messages {
         get has_ignore() {
             return pb_1.Message.getField(this, 4) != null;
         }
+        get storage() {
+            return pb_1.Message.getWrapperField(this, SessionStorageConfig, 5) as SessionStorageConfig;
+        }
+        set storage(value: SessionStorageConfig) {
+            pb_1.Message.setOneofWrapperField(this, 5, this.#one_of_decls[1], value);
+        }
+        get has_storage() {
+            return pb_1.Message.getField(this, 5) != null;
+        }
         get _ignore() {
             const cases: {
                 [index: number]: "none" | "ignore";
@@ -1510,11 +1804,21 @@ export namespace messages {
             };
             return cases[pb_1.Message.computeOneofCase(this, [4])];
         }
+        get _storage() {
+            const cases: {
+                [index: number]: "none" | "storage";
+            } = {
+                0: "none",
+                5: "storage"
+            };
+            return cases[pb_1.Message.computeOneofCase(this, [5])];
+        }
         static fromObject(data: {
             store?: ReturnType<typeof SessionStoreConfig.prototype.toObject>;
             log?: ReturnType<typeof SessionLogConfig.prototype.toObject>;
             proxy?: ReturnType<typeof SessionProxyConfig.prototype.toObject>;
             ignore?: ReturnType<typeof SessionIgnoreJidsConfig.prototype.toObject>;
+            storage?: ReturnType<typeof SessionStorageConfig.prototype.toObject>;
         }): SessionConfig {
             const message = new SessionConfig({});
             if (data.store != null) {
@@ -1529,6 +1833,9 @@ export namespace messages {
             if (data.ignore != null) {
                 message.ignore = SessionIgnoreJidsConfig.fromObject(data.ignore);
             }
+            if (data.storage != null) {
+                message.storage = SessionStorageConfig.fromObject(data.storage);
+            }
             return message;
         }
         toObject() {
@@ -1537,6 +1844,7 @@ export namespace messages {
                 log?: ReturnType<typeof SessionLogConfig.prototype.toObject>;
                 proxy?: ReturnType<typeof SessionProxyConfig.prototype.toObject>;
                 ignore?: ReturnType<typeof SessionIgnoreJidsConfig.prototype.toObject>;
+                storage?: ReturnType<typeof SessionStorageConfig.prototype.toObject>;
             } = {};
             if (this.store != null) {
                 data.store = this.store.toObject();
@@ -1549,6 +1857,9 @@ export namespace messages {
             }
             if (this.ignore != null) {
                 data.ignore = this.ignore.toObject();
+            }
+            if (this.storage != null) {
+                data.storage = this.storage.toObject();
             }
             return data;
         }
@@ -1564,6 +1875,8 @@ export namespace messages {
                 writer.writeMessage(3, this.proxy, () => this.proxy.serialize(writer));
             if (this.has_ignore)
                 writer.writeMessage(4, this.ignore, () => this.ignore.serialize(writer));
+            if (this.has_storage)
+                writer.writeMessage(5, this.storage, () => this.storage.serialize(writer));
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -1584,6 +1897,9 @@ export namespace messages {
                         break;
                     case 4:
                         reader.readMessage(message.ignore, () => message.ignore = SessionIgnoreJidsConfig.deserialize(reader));
+                        break;
+                    case 5:
+                        reader.readMessage(message.storage, () => message.storage = SessionStorageConfig.deserialize(reader));
                         break;
                     default: reader.skipField();
                 }
@@ -10491,20 +10807,20 @@ export namespace messages {
                 path: "/messages.EventStream/StreamEvents",
                 requestStream: false,
                 responseStream: true,
-                requestSerialize: (message: Session) => Buffer.from(message.serialize()),
-                requestDeserialize: (bytes: Buffer) => Session.deserialize(new Uint8Array(bytes)),
+                requestSerialize: (message: StreamEventsRequest) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => StreamEventsRequest.deserialize(new Uint8Array(bytes)),
                 responseSerialize: (message: EventJson) => Buffer.from(message.serialize()),
                 responseDeserialize: (bytes: Buffer) => EventJson.deserialize(new Uint8Array(bytes))
             }
         };
         [method: string]: grpc_1.UntypedHandleCall;
-        abstract StreamEvents(call: grpc_1.ServerWritableStream<Session, EventJson>): void;
+        abstract StreamEvents(call: grpc_1.ServerWritableStream<StreamEventsRequest, EventJson>): void;
     }
     export class EventStreamClient extends grpc_1.makeGenericClientConstructor(UnimplementedEventStreamService.definition, "EventStream", {}) {
         constructor(address: string, credentials: grpc_1.ChannelCredentials, options?: Partial<grpc_1.ChannelOptions>) {
             super(address, credentials, options);
         }
-        StreamEvents: GrpcStreamServiceInterface<Session, EventJson> = (message: Session, metadata?: grpc_1.Metadata | grpc_1.CallOptions, options?: grpc_1.CallOptions): grpc_1.ClientReadableStream<EventJson> => {
+        StreamEvents: GrpcStreamServiceInterface<StreamEventsRequest, EventJson> = (message: StreamEventsRequest, metadata?: grpc_1.Metadata | grpc_1.CallOptions, options?: grpc_1.CallOptions): grpc_1.ClientReadableStream<EventJson> => {
             return super.StreamEvents(message, metadata, options);
         };
     }

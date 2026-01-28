@@ -5,9 +5,9 @@ __metadata:
   version: 8
   cacheKey: 10
 
-"@adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-2025-12-17":
+"@adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-2026-01-25":
   version: 7.0.0-rc.9
-  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=21289d1c97dd4b6b0c2585c0f77cecc486fb9f2f"
+  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=7a9463729776e6fb19ccfb9ce8312515db92b94a"
   dependencies:
     "@cacheable/node-cache": "npm:^1.4.0"
     "@hapi/boom": "npm:^9.1.3"
@@ -31,7 +31,7 @@ __metadata:
       optional: true
     link-preview-js:
       optional: true
-  checksum: 10/6d3cbdbbb490356b89d65310244a8120f650641efbfd43f6fea4c5296c17d75feaeb7d870ee2ba77015b97c94c7ffd1950d0e6466b5c0dbc5eae020e68cf85d5
+  checksum: 10/69fce0f910203bc1bf4c1c677110e2d887fb5d00e5ea4759da8506afa36606baf70dc19e5396b24997cb204c86b48cda5d88a1e7d333282f7499b52b356c3b00
   languageName: node
   linkType: hard
 
@@ -1239,6 +1239,15 @@ __metadata:
     hookified: "npm:^1.9.1"
     keyv: "npm:^5.3.3"
   checksum: 10/17217248b6ef31245005834b11a24d6481091f917690dddcfa612310f0cf5bdd1b089125fad8c87a61d122a0bf2020bf033613b46bbd38f56476a01b724ff0dc
+  languageName: node
+  linkType: hard
+
+"@casl/ability@npm:^6.8.0":
+  version: 6.8.0
+  resolution: "@casl/ability@npm:6.8.0"
+  dependencies:
+    "@ucast/mongo2js": "npm:^1.3.0"
+  checksum: 10/e5a6b9c4ea480f734cfa1c88bbd18d65eb74ab2d66ef082e50b40064583ff70fa101e70e06faf0403a824b9b96879bcf57cf7abfecf7a5a26d6d99e6f16bd056
   languageName: node
   linkType: hard
 
@@ -4015,6 +4024,42 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10/5ee966ea7bd6b2802f31ad4281c92c4c0b6dfa593c378a2582c58541fa113bec3d70eb0696b34ad95e8e6861a884cba6c3e351285816693ed176222f840a8c08
+  languageName: node
+  linkType: hard
+
+"@ucast/core@npm:^1.0.0, @ucast/core@npm:^1.4.1, @ucast/core@npm:^1.6.1":
+  version: 1.10.2
+  resolution: "@ucast/core@npm:1.10.2"
+  checksum: 10/35c91961b534df03518ade09bf920856355bfadf0a59a8606d91ac4e22a24c2bd470964b2c54764a31e8eacecd4a2768ba8426b6a96c2474c6df305ee9b3f9a1
+  languageName: node
+  linkType: hard
+
+"@ucast/js@npm:^3.0.0":
+  version: 3.0.4
+  resolution: "@ucast/js@npm:3.0.4"
+  dependencies:
+    "@ucast/core": "npm:^1.0.0"
+  checksum: 10/8a8a5ebe45b29e1885f00a05b293b47c54cbbe506080720c505425cd52bc3e311d16a49069ae8d0f797faa34d439ad066591a7abfebf56e89702c9ad7e57a96a
+  languageName: node
+  linkType: hard
+
+"@ucast/mongo2js@npm:^1.3.0":
+  version: 1.4.0
+  resolution: "@ucast/mongo2js@npm:1.4.0"
+  dependencies:
+    "@ucast/core": "npm:^1.6.1"
+    "@ucast/js": "npm:^3.0.0"
+    "@ucast/mongo": "npm:^2.4.0"
+  checksum: 10/85def36f3da27469dea621dff616ce19bd15011fad56dba04ba2ece0f08b1943592e68f7e43e4a63612297cac8d4dd980937f0f16cbaffe39be7c5670f9a8943
+  languageName: node
+  linkType: hard
+
+"@ucast/mongo@npm:^2.4.0":
+  version: 2.4.3
+  resolution: "@ucast/mongo@npm:2.4.3"
+  dependencies:
+    "@ucast/core": "npm:^1.4.1"
+  checksum: 10/5bcac2a06df97dda33deab3cfe1d57effd4ac49f27a846de29d6e583ca04f379f63d0def4737ec2c023dd9bbfded8ef2dfa285ed1575b8a320b1c2807c2d6200
   languageName: node
   linkType: hard
 
@@ -12548,13 +12593,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "waha@workspace:."
   dependencies:
-    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-2025-12-17"
+    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-2026-01-25"
     "@adiwajshing/keyed-db": "npm:^0.2.4"
     "@aws-sdk/client-s3": "npm:^3.633.0"
     "@aws-sdk/s3-request-presigner": "npm:^3.633.0"
     "@bull-board/api": "npm:^6.9.1"
     "@bull-board/express": "npm:^6.9.1"
     "@bull-board/nestjs": "npm:^6.9.1"
+    "@casl/ability": "npm:^6.8.0"
     "@figuro/chatwoot-sdk": "npm:^1.1.17"
     "@grpc/grpc-js": "npm:^1.14.1"
     "@grpc/proto-loader": "npm:^0.8.0"
@@ -12756,7 +12802,7 @@ __metadata:
 
 "whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-2025-12-17":
   version: 1.34.3
-  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=766bb3957a81338250ee830d34cfceec278e545e"
+  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=72ae41eda26b73f50232ef73f8daec5a17bf0265"
   dependencies:
     "@pedroslopez/moduleraid": "npm:^5.0.2"
     archiver: "npm:^5.3.1"
@@ -12774,7 +12820,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 10/cb54d6192bd5d24c5521d1d5599fc7da65e87c3dfc595cab708b7335e95842d31fd7c0d84a7c479202de55bda67c4dcaec802150568e5f35815b6b07fd669d57
+  checksum: 10/87fa2abf0ac92390ed523d3e750c7cf9974b334e25302b35ed9de32d031dc23b229102db8202d0d2ab7c5aeb9a27e73d9fe2321f4947706af16283338487fec6
   languageName: node
   linkType: hard
 

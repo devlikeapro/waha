@@ -2,16 +2,10 @@ import * as crypto from 'crypto';
 
 export abstract class IApiKeyAuth {
   abstract isValid(plain: string): boolean;
-
-  abstract skipAuth(): boolean;
 }
 
 export class NoAuth implements IApiKeyAuth {
   isValid(plain: string): boolean {
-    return true;
-  }
-
-  skipAuth(): boolean {
     return true;
   }
 }
@@ -21,10 +15,6 @@ export class PlainApiKeyAuth implements IApiKeyAuth {
 
   isValid(plain: string): boolean {
     return compare(plain, this.key);
-  }
-
-  skipAuth(): boolean {
-    return false;
   }
 }
 
@@ -40,10 +30,6 @@ export class HashAuth implements IApiKeyAuth {
     }
     const hash = crypto.createHash(this.algorithm).update(plain).digest('hex');
     return compare(hash, this.hash);
-  }
-
-  skipAuth(): boolean {
-    return false;
   }
 }
 
