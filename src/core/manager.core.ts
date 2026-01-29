@@ -107,6 +107,26 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
     this.startPredefinedSessions();
   }
 
+  protected startPredefinedSessions() {
+    const startSessions = this.config.startSessions;
+    const allSessions = new Set(startSessions);
+    // Add sessions from local storage
+    for (const [name] of this.sessionConfigs) {
+      allSessions.add(name);
+    }
+
+    allSessions.forEach((sessionName) => {
+      this.withLock(sessionName, async () => {
+        const log = this.log.logger.child({ session: sessionName });
+        log.info(`Restarting PREDEFINED session...`);
+        await this.start(sessionName).catch((error) => {
+          log.error(`Failed to start PREDEFINED session: ${error}`);
+          log.error(error.stack);
+        });
+      });
+    });
+  }
+
   private async clearStorage() {
     const storage = await this.mediaStorageFactory.build(
       'all',

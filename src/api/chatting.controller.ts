@@ -6,10 +6,12 @@ import {
   Put,
   Query,
   UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { WAHAFileInterceptor } from '@waha/nestjs/WAHAFileInterceptor';
 import { WAHAValidationPipe } from '@waha/nestjs/pipes/WAHAValidationPipe';
 import {
   GetChatMessagesFilter,
@@ -51,7 +53,12 @@ import {
 } from '@waha/core/utils/mentions.all';
 import { PoliciesGuard } from '@waha/core/auth/policies.guard';
 import { CheckPolicies } from '@waha/core/auth/policies.decorator';
-import { CanSession, FromBody, FromQuery } from '@waha/core/auth/policies';
+import {
+  CanSession,
+  FromBody,
+  FromBodyOrQuery,
+  FromQuery,
+} from '@waha/core/auth/policies';
 
 import { Action } from '@waha/core/auth/casl.types';
 
@@ -80,7 +87,8 @@ export class ChattingController {
     description:
       'Either from an URL or base64 data - look at the request schemas for details.',
   })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Use, FromBodyOrQuery('session')))
+  @UseInterceptors(WAHAFileInterceptor())
   async sendImage(@Body() request: MessageImageRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     if (mentionsAll(request)) {
@@ -96,7 +104,8 @@ export class ChattingController {
     description:
       'Either from an URL or base64 data - look at the request schemas for details.',
   })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Use, FromBodyOrQuery('session')))
+  @UseInterceptors(WAHAFileInterceptor())
   async sendFile(@Body() request: MessageFileRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     if (mentionsAll(request)) {
@@ -112,7 +121,8 @@ export class ChattingController {
     description:
       'Either from an URL or base64 data - look at the request schemas for details.',
   })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Use, FromBodyOrQuery('session')))
+  @UseInterceptors(WAHAFileInterceptor())
   async sendVoice(@Body() request: MessageVoiceRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.sendVoice(request);
@@ -124,7 +134,8 @@ export class ChattingController {
     description:
       'Either from an URL or base64 data - look at the request schemas for details.',
   })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Use, FromBodyOrQuery('session')))
+  @UseInterceptors(WAHAFileInterceptor())
   async sendVideo(@Body() request: MessageVideoRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     if (mentionsAll(request)) {

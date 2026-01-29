@@ -39,6 +39,10 @@ export function FromQuery(key = 'session'): GetSession {
   return (req) => req.query?.[key];
 }
 
+export function FromBodyOrQuery(key = 'session'): GetSession {
+  return (req) => req.body?.[key] || req.query?.[key];
+}
+
 export function CanServer(action: Action) {
   return (ability: AppAbility, context: ExecutionContext) => {
     return ability.can(action, 'server');
