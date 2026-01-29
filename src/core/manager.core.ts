@@ -361,6 +361,7 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
           status: WAHASessionStatus.STOPPED,
           config: this.sessionConfig,
           me: null,
+          assignedWorker: this.workerId,
           presence: null,
           timestamps: {
             activity: null,
@@ -383,6 +384,7 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
         status: session.status,
         config: session.sessionConfig,
         me: me,
+        assignedWorker: this.workerId,
         presence: session.presence,
         timestamps: {
           activity: session?.getLastActivityTimestamp(),
