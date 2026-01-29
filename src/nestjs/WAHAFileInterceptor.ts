@@ -43,28 +43,38 @@ export function WAHAFileInterceptor(
         return next.handle();
       }
 
+      // If files are already parsed (e.g. by Middleware), skip the interceptor
+      if (request.files) {
+        this.transform(request);
+        return next.handle();
+      }
+
       return (await this.fileFieldsInterceptor.intercept(context, {
         handle: () => {
-          const files = request.files;
-          let file;
-          if (files) {
-            if (files.file && files.file[0]) {
-              file = files.file[0];
-            } else if (files.files && files.files[0]) {
-              file = files.files[0];
-            }
-          }
-
-          if (file) {
-            request.body.file = {
-              mimetype: file.mimetype,
-              filename: file.originalname,
-              data: file.buffer.toString('base64'),
-            };
-          }
+          this.transform(request);
           return next.handle();
         },
       })) as Observable<any>;
+    }
+
+    private transform(request: any) {
+      const files = request.files;
+      let file;
+      if (files) {
+        if (files.file && files.file[0]) {
+          file = files.file[0];
+        } else if (files.files && files.files[0]) {
+          file = files.files[0];
+        }
+      }
+
+      if (file) {
+        request.body.file = {
+          mimetype: file.mimetype,
+          filename: file.originalname,
+          data: file.buffer.toString('base64'),
+        };
+      }
     }
   }
 

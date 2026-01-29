@@ -1,6 +1,11 @@
 import * as process from 'node:process';
 
-import { INestApplication, MiddlewareConsumer, Module } from '@nestjs/common';
+import {
+  INestApplication,
+  MiddlewareConsumer,
+  Module,
+  RequestMethod,
+} from '@nestjs/common';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -29,6 +34,7 @@ import { ChannelsInfoServiceCore } from '@waha/core/services/ChannelsInfoService
 import { parseBool } from '@waha/helpers';
 import { BufferJsonReplacerInterceptor } from '@waha/nestjs/BufferJsonReplacerInterceptor';
 import { HttpsExpress } from '@waha/nestjs/HttpsExpress';
+import { MultipartMiddleware } from '@waha/nestjs/MultipartMiddleware';
 import {
   getPinoHttpUseLevel,
   getPinoLogLevel,
@@ -259,5 +265,12 @@ export class AppModuleCore {
         .apply(BasicAuthFunction(username, password))
         .forRoutes('dashboard');
     }
+
+    consumer.apply(MultipartMiddleware).forRoutes(
+      { path: '/api/sendImage', method: RequestMethod.POST },
+      { path: '/api/sendFile', method: RequestMethod.POST },
+      { path: '/api/sendVoice', method: RequestMethod.POST },
+      { path: '/api/sendVideo', method: RequestMethod.POST },
+    );
   }
 }

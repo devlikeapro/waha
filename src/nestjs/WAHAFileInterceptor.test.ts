@@ -70,4 +70,18 @@ describe('WAHAFileInterceptor', () => {
     expect(req.body.file.filename).toBe('test.jpg');
     expect(req.body.file.data).toBe(Buffer.from('test2').toString('base64'));
   });
+
+  it('should use fileFieldsInterceptor if files are not present', async () => {
+    const req = context.switchToHttp().getRequest();
+    delete req.files; // Simulate no middleware
+
+    await interceptor.intercept(context, next);
+    expect(interceptor.fileFieldsInterceptor.intercept).toHaveBeenCalled();
+  });
+
+  it('should NOT use fileFieldsInterceptor if files are present', async () => {
+    // req.files is present from beforeEach
+    await interceptor.intercept(context, next);
+    expect(interceptor.fileFieldsInterceptor.intercept).not.toHaveBeenCalled();
+  });
 });
