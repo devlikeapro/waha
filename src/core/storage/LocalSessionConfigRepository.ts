@@ -1,103 +1,91 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const fs = require('fs-extra');
-
-import { fileExists } from '@waha/utils/files';
-
+import * as fs from 'fs/promises';
+import * as path from 'path';
 import { SessionConfig } from '../../structures/sessions.dto';
 import { ISessionConfigRepository } from './ISessionConfigRepository';
-import { LocalStore } from './LocalStore';
+import { LocalStoreCore } from './LocalStoreCore';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const writeFileAtomic = require('write-file-atomic');
+export class LocalSessionConfigRepository implements ISessionConfigRepository {
+  constructor(private store: LocalStoreCore) {}
 
-export class LocalSessionConfigRepository extends ISessionConfigRepository {
-  FILENAME = '.waha.session.config.json';
-  private store: LocalStore;
-
-  constructor(store: LocalStore) {
-    super();
-    this.store = store;
+  private getFilePath(sessionName: string): string {
+    return path.join(this.store.getSessionDirectory(sessionName), 'config.json');
   }
 
-  async exists(sessionName: string): Promise<boolean> {
+  async init(): Promise<void> {
+    await this.store.init();
+  }
+
+  async saveConfig(sessionName: string, config: SessionConfig): Promise<void> {
+    await this.store.init(sessionName);
     const filepath = this.getFilePath(sessionName);
-    const exists = await fileExists(filepath);
-    if (!exists) {
-      // check directory exist for empty config sessions
-      const folder = this.store.getSessionDirectory(sessionName);
-      return await fileExists(folder);
+    if (!config) {
+        // If config is null/undefined, maybe delete it?
+        // Or write empty object? upsert logic says config?
+        // Usually upsert means "save this".
+        // But if config is undefined, we might just skipping?
+        // Let's assume we save it if provided.
+        return;
     }
-    return true;
+    await fs.writeFile(filepath, JSON.stringify(config, null, 2));
   }
 
   async getConfig(sessionName: string): Promise<SessionConfig | null> {
     const filepath = this.getFilePath(sessionName);
-    // Check file exists
-    if (!(await fileExists(filepath))) {
-      return null;
-    }
-
-    // Try to load config
-    let content;
     try {
-      content = await fs.readFile(filepath, 'utf-8');
-    } catch (error) {
+      const data = await fs.readFile(filepath, 'utf-8');
+      return JSON.parse(data);
+    } catch (e) {
       return null;
     }
+  }
 
-    return JSON.parse(content);
+  async deleteConfig(sessionName: string): Promise<void> {
+    const filepath = this.getFilePath(sessionName);
+    try {
+      await fs.unlink(filepath);
+    } catch (e) {
+      // Ignore
+    }
+  }
+
+  async exists(sessionName: string): Promise<boolean> {
+    // We check if config file exists
+    const filepath = this.getFilePath(sessionName);
+    try {
+        await fs.access(filepath);
+        return true;
+    } catch {
+        return false;
+    }
+  }
+
+  async getAllConfigs(): Promise<string[]> {
+    const engineDir = this.store.getEngineDirectory();
+    try {
+      const files = await fs.readdir(engineDir, { withFileTypes: true });
+      const sessions = [];
+      for (const file of files) {
+        if (file.isDirectory()) {
+          const hasConfig = await this.exists(file.name);
+          if (hasConfig) {
+            sessions.push(file.name);
+          }
+        }
+      }
+      return sessions;
+    } catch (e) {
+      return [];
+    }
   }
 
   async getConfigBySessions(
     sessionNames: string[],
   ): Promise<Map<string, SessionConfig | null>> {
-    const result = new Map<string, SessionConfig | null>();
-    const uniqueNames = Array.from(new Set(sessionNames));
-    if (uniqueNames.length === 0) {
-      return result;
+    const map = new Map<string, SessionConfig | null>();
+    for (const name of sessionNames) {
+      const config = await this.getConfig(name);
+      map.set(name, config);
     }
-    const items = await Promise.all(
-      uniqueNames.map(async (sessionName) => ({
-        sessionName,
-        config: await this.getConfig(sessionName),
-      })),
-    );
-    for (const item of items) {
-      result.set(item.sessionName, item.config ?? null);
-    }
-    return result;
-  }
-
-  async saveConfig(sessionName: string, config: SessionConfig) {
-    // Create a folder if not exist
-    const folder = this.store.getSessionDirectory(sessionName);
-    await fs.mkdir(folder, { recursive: true });
-    // Save config
-    const filepath = this.getFilePath(sessionName);
-    const content = JSON.stringify(config || {});
-    await writeFileAtomic(filepath, content);
-  }
-
-  private getFilePath(sessionName): string {
-    return this.store.getFilePath(sessionName, this.FILENAME);
-  }
-
-  async deleteConfig(sessionName: string): Promise<void> {
-    const sessionDirectory = this.store.getSessionDirectory(sessionName);
-    await fs.remove(sessionDirectory);
-  }
-
-  async getAllConfigs(): Promise<string[]> {
-    await this.store.init();
-    const content = await fs.readdir(this.store.getEngineDirectory(), {
-      withFileTypes: true,
-    });
-    return content
-      .filter((dirent) => dirent.isDirectory())
-      .map((dirent) => dirent.name);
-  }
-
-  async init() {
-    return;
+    return map;
   }
 }

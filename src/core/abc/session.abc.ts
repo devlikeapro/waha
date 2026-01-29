@@ -1126,15 +1126,15 @@ export abstract class WhatsappSession {
   }
 
   public sendImageStatus(status: ImageStatus) {
-    throw new AvailableInPlusVersion();
+    throw new NotImplementedByEngineError();
   }
 
   public sendVoiceStatus(status: VoiceStatus) {
-    throw new AvailableInPlusVersion();
+    throw new NotImplementedByEngineError();
   }
 
   public sendVideoStatus(status: VideoStatus) {
-    throw new AvailableInPlusVersion();
+    throw new NotImplementedByEngineError();
   }
 
   public deleteStatus(request: DeleteStatusRequest) {
