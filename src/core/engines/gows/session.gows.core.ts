@@ -239,6 +239,12 @@ enum WhatsMeowEvent {
   CONTACT = 'events.Contact',
 }
 
+const DEFAULT_GOWS_EXCLUDE_EVENTS = [
+  WhatsMeowEvent.APP_STATE,
+  WhatsMeowEvent.HISTORY_SYNC,
+  WhatsMeowEvent.CONTACT,
+];
+
 export interface GowsConfig {
   connection: string;
 }
@@ -337,12 +343,9 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         );
         // Avoid having a lot of events after pairing the device
         // https://github.com/devlikeapro/waha/issues/1826
-        // TODO: we need to make it more dynamic
-        const exclude = [
-          WhatsMeowEvent.APP_STATE,
-          WhatsMeowEvent.HISTORY_SYNC,
-          WhatsMeowEvent.CONTACT,
-        ];
+        const exclude =
+          this.sessionConfig?.gows?.excludeEvents ??
+          DEFAULT_GOWS_EXCLUDE_EVENTS;
         const request = new messages.StreamEventsRequest({
           session: this.session,
           exclude: exclude,

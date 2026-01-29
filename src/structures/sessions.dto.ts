@@ -156,6 +156,18 @@ export class GowsStorageConfig {
 }
 
 export class GowsConfig {
+  @ApiProperty({
+    description:
+      'List of GOWS event types to exclude from the WebSocket stream.\n' +
+      'By default, AppState, HistorySync, and Contact events are excluded to avoid flooding after pairing.\n' +
+      'Set to an empty array to receive all events.',
+    required: false,
+    example: ['events.AppState', 'events.HistorySync', 'events.Contact'],
+  })
+  @IsString({ each: true })
+  @IsOptional()
+  excludeEvents?: string[];
+
   @ValidateNested()
   @Type(() => GowsStorageConfig)
   @IsOptional()
