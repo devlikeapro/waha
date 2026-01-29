@@ -892,11 +892,11 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   protected setProfilePicture(file: BinaryFile | RemoteFile): Promise<boolean> {
-    throw new AvailableInPlusVersion();
+    throw new NotImplementedByEngineError();
   }
 
   protected deleteProfilePicture(): Promise<boolean> {
-    throw new AvailableInPlusVersion();
+    throw new NotImplementedByEngineError();
   }
 
   /**
@@ -991,11 +991,11 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   sendPollVote(request: MessagePollVoteRequest) {
-    throw new AvailableInPlusVersion('Poll voting');
+    throw new NotImplementedByEngineError();
   }
 
   sendList(request: SendListRequest): Promise<any> {
-    throw new AvailableInPlusVersion();
+    throw new NotImplementedByEngineError();
   }
 
   @Activity()
@@ -1113,21 +1113,21 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   sendImage(request: MessageImageRequest) {
-    throw new AvailableInPlusVersion();
+    throw new NotImplementedByEngineError();
   }
 
   sendFile(request: MessageFileRequest) {
-    throw new AvailableInPlusVersion();
+    throw new NotImplementedByEngineError();
   }
 
   sendVoice(request: MessageVoiceRequest) {
-    throw new AvailableInPlusVersion();
+    throw new NotImplementedByEngineError();
   }
 
   sendLinkCustomPreview(
     request: MessageLinkCustomPreviewRequest,
   ): Promise<any> {
-    throw new AvailableInPlusVersion();
+    throw new NotImplementedByEngineError();
   }
 
   @Activity()
@@ -1595,20 +1595,20 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   public searchChannelsByView(
     query: ChannelSearchByView,
   ): Promise<ChannelListResult> {
-    throw new AvailableInPlusVersion();
+    throw new NotImplementedByEngineError();
   }
 
   public searchChannelsByText(
     query: ChannelSearchByText,
   ): Promise<ChannelListResult> {
-    throw new AvailableInPlusVersion();
+    throw new NotImplementedByEngineError();
   }
 
   public async previewChannelMessages(
     inviteCode: string,
     query: PreviewChannelMessages,
   ): Promise<ChannelMessage[]> {
-    throw new AvailableInPlusVersion();
+    throw new NotImplementedByEngineError();
   }
 
   protected toChannel(newsletter: messages.Newsletter): Channel {
