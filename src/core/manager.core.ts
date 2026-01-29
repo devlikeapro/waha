@@ -258,6 +258,13 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
       if (!silent) {
         throw err;
       }
+      if ((session.status as WAHASessionStatus) !== WAHASessionStatus.STOPPED) {
+        this.log.warn(
+          { session: name },
+          `Forcing session status to STOPPED after failed stop.`,
+        );
+        session.status = WAHASessionStatus.STOPPED;
+      }
     }
     this.log.info({ session: name }, `Session has been stopped.`);
     await sleep(this.SESSION_STOP_TIMEOUT);
