@@ -210,7 +210,7 @@ WORKDIR /app
 COPY package.json ./
 COPY --from=build /git/node_modules ./node_modules
 COPY --from=build /git/dist ./dist
-COPY --from=dashboard /dashboard ./dist/dashboard
+COPY src/dashboard ./dist/dashboard
 COPY --from=gows /go/gows/bin/gows /app/gows
 COPY .env.example ./.env.example
 COPY scripts/init-waha.js ./scripts/init-waha.js

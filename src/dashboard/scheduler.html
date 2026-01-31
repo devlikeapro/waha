@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAHA Scheduler & Media</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body { background-color: #f8f9fa; }
+        .sidebar { height: 100vh; background: white; border-right: 1px solid #dee2e6; }
+        .main-content { height: 100vh; overflow-y: auto; }
+        .card { border: none; shadow-sm: 0 .125rem .25rem rgba(0,0,0,.075); margin-bottom: 1rem; }
+        .nav-link.active { background-color: #e9ecef; color: #0d6efd; font-weight: 500; }
+        .nav-link { color: #495057; }
+        .status-badge { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .status-working { background-color: #198754; }
+        .status-failed { background-color: #dc3545; }
+        .status-stopped { background-color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div id="app" class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar p-3 d-none d-md-block">
+                <div class="d-flex align-items-center mb-4 text-decoration-none">
+                    <a href="/dashboard/" class="d-flex align-items-center text-decoration-none text-dark">
+                        <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+                    </a>
+                </div>
+                <hr>
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">SESSION</label>
+                    <select class="form-select form-select-sm" v-model="selectedSession" @change="fetchSessionInfo">
+                        <option v-for="s in sessions" :value="s.name">
+                            {{ s.name }}
+                        </option>
+                    </select>
+                    <div class="mt-2 small" v-if="currentSession">
+                        <span class="status-badge" :class="'status-' + currentSession.status.toLowerCase()"></span>
+                        {{ currentSession.status }}
+                    </div>
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" :class="{ active: view === 'send' }" href="#" @click.prevent="view = 'send'">
+                            <i class="bi bi-send me-2"></i> Send Message
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="{ active: view === 'schedule' }" href="#" @click.prevent="view = 'schedule'">
+                            <i class="bi bi-calendar-event me-2"></i> Schedule
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="{ active: view === 'jobs' }" href="#" @click.prevent="fetchJobs(); view = 'jobs'">
+                            <i class="bi bi-list-task me-2"></i> Scheduled Jobs
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content p-4">
+                <!-- Toast/Alert Area -->
+                <div v-if="alert.message" class="alert alert-dismissible fade show" :class="'alert-' + alert.type" role="alert">
+                    {{ alert.message }}
+                    <button type="button" class="btn-close" @click="alert.message = ''"></button>
+                </div>
+
+                <!-- Send Message View -->
+                <div v-if="view === 'send'">
+                    <h2 class="mb-4">Send Message</h2>
+                    <div class="card p-4">
+                        <form @submit.prevent="sendMessage">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Phone Number (Chat ID)</label>
+                                    <input type="text" class="form-control" v-model="form.chatId" placeholder="12125551234@c.us" required>
+                                    <div class="form-text">International format without +, append @c.us</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Message Type</label>
+                                    <select class="form-select" v-model="form.type">
+                                        <option value="text">Text</option>
+                                        <option value="image">Image</option>
+                                        <option value="file">File</option>
+                                        <option value="voice">Voice</option>
+                                        <option value="video">Video</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3" v-if="['text', 'image', 'file', 'video'].includes(form.type)">
+                                <label class="form-label">{{ form.type === 'text' ? 'Message' : 'Caption' }}</label>
+                                <textarea class="form-control" v-model="form.text" rows="3"></textarea>
+                            </div>
+
+                            <div class="mb-3" v-if="form.type !== 'text'">
+                                <label class="form-label">File URL</label>
+                                <input type="url" class="form-control" v-model="form.fileUrl" placeholder="https://example.com/file.jpg">
+                                <div class="form-text">Direct URL to the media file</div>
+                            </div>
+                            
+                            <div class="mb-3" v-if="form.type !== 'text'">
+                                <label class="form-label">Filename (Optional)</label>
+                                <input type="text" class="form-control" v-model="form.filename" placeholder="image.jpg">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" :disabled="loading">
+                                <span v-if="loading" class="spinner-border spinner-border-sm me-1"></span>
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div v-if="lastResponse" class="card mt-4 bg-light">
+                        <div class="card-body">
+                            <h6>Last Response:</h6>
+                            <pre class="mb-0 small">{{ JSON.stringify(lastResponse, null, 2) }}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule View -->
+                <div v-if="view === 'schedule'">
+                    <h2 class="mb-4">Schedule Message</h2>
+                    <div class="card p-4">
+                        <form @submit.prevent="scheduleMessage">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Job ID (Optional)</label>
+                                    <input type="text" class="form-control" v-model="scheduleForm.id" placeholder="Auto-generated if empty">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Execute At</label>
+                                    <input type="datetime-local" class="form-control" v-model="scheduleForm.executeAt" required>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+                            <h5 class="mb-3">Message Details</h5>
+
+                            <!-- Reusing similar structure to Send -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Phone Number</label>
+                                    <input type="text" class="form-control" v-model="form.chatId" placeholder="12125551234@c.us" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Type</label>
+                                    <select class="form-select" v-model="form.type">
+                                        <option value="text">Text</option>
+                                        <option value="image">Image</option>
+                                        <option value="file">File</option>
+                                        <option value="voice">Voice</option>
+                                        <option value="video">Video</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3" v-if="['text', 'image', 'file', 'video'].includes(form.type)">
+                                <label class="form-label">{{ form.type === 'text' ? 'Message' : 'Caption' }}</label>
+                                <textarea class="form-control" v-model="form.text" rows="3"></textarea>
+                            </div>
+
+                            <div class="mb-3" v-if="form.type !== 'text'">
+                                <label class="form-label">File URL</label>
+                                <input type="url" class="form-control" v-model="form.fileUrl" required>
+                            </div>
+                            
+                            <div class="mb-3" v-if="form.type !== 'text'">
+                                <label class="form-label">Filename</label>
+                                <input type="text" class="form-control" v-model="form.filename">
+                            </div>
+
+                            <button type="submit" class="btn btn-success" :disabled="loading">
+                                <span v-if="loading" class="spinner-border spinner-border-sm me-1"></span>
+                                Schedule Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Scheduled Jobs View -->
+                <div v-if="view === 'jobs'">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Scheduled Jobs</h2>
+                        <button class="btn btn-outline-secondary btn-sm" @click="fetchJobs">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                        </button>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Next Execution</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="job in jobs" :key="job.id">
+                                        <td><code>{{ job.id }}</code></td>
+                                        <td>{{ formatTime(job.nextExecution) }}</td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-outline-danger" @click="cancelJob(job.id)">
+                                                <i class="bi bi-trash"></i> Cancel
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="jobs.length === 0">
+                                        <td colspan="3" class="text-center py-4 text-muted">No scheduled jobs found.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    view: 'send',
+                    loading: false,
+                    sessions: [],
+                    selectedSession: '',
+                    alert: { message: '', type: 'info' },
+                    
+                    // Shared Form Data
+                    form: {
+                        chatId: '',
+                        type: 'text',
+                        text: '',
+                        fileUrl: '',
+                        filename: ''
+                    },
+                    
+                    // Schedule specific
+                    scheduleForm: {
+                        id: '',
+                        executeAt: ''
+                    },
+
+                    jobs: [],
+                    lastResponse: null
+                }
+            },
+            computed: {
+                currentSession() {
+                    return this.sessions.find(s => s.name === this.selectedSession);
+                }
+            },
+            mounted() {
+                this.fetchSessions();
+            },
+            methods: {
+                showAlert(message, type = 'success') {
+                    this.alert = { message, type };
+                    setTimeout(() => this.alert.message = '', 5000);
+                },
+                formatTime(isoString) {
+                    if (!isoString) return '-';
+                    if (isoString === 'finished') return 'Finished';
+                    return new Date(isoString).toLocaleString();
+                },
+                async fetchSessions() {
+                    try {
+                        const res = await axios.get('/api/sessions?all=true');
+                        this.sessions = res.data;
+                        if (this.sessions.length > 0 && !this.selectedSession) {
+                            this.selectedSession = this.sessions[0].name;
+                        }
+                    } catch (e) {
+                        this.showAlert('Failed to fetch sessions', 'danger');
+                    }
+                },
+                fetchSessionInfo() {
+                    // Logic to refresh session status if needed
+                },
+                getPayload() {
+                    const payload = {
+                        session: this.selectedSession,
+                        chatId: this.form.chatId,
+                    };
+
+                    if (this.form.type === 'text') {
+                        payload.text = this.form.text;
+                    } else {
+                        payload.file = { url: this.form.fileUrl, filename: this.form.filename };
+                        payload.caption = this.form.text;
+                    }
+                    return payload;
+                },
+                async sendMessage() {
+                    this.loading = true;
+                    this.lastResponse = null;
+                    try {
+                        const payload = this.getPayload();
+                        let endpoint = '/api/sendText';
+                        if (this.form.type === 'image') endpoint = '/api/sendImage';
+                        if (this.form.type === 'file') endpoint = '/api/sendFile';
+                        if (this.form.type === 'voice') endpoint = '/api/sendVoice';
+                        if (this.form.type === 'video') endpoint = '/api/sendVideo';
+
+                        const res = await axios.post(endpoint, payload);
+                        this.lastResponse = res.data;
+                        this.showAlert('Message sent successfully!');
+                    } catch (e) {
+                        this.showAlert(e.response?.data?.message || e.message, 'danger');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                async scheduleMessage() {
+                    this.loading = true;
+                    this.lastResponse = null;
+                    try {
+                        const payload = this.getPayload();
+                        const id = this.scheduleForm.id || 'job-' + Date.now();
+                        const req = {
+                            id: id,
+                            executeAt: new Date(this.scheduleForm.executeAt).toISOString(),
+                            type: this.form.type,
+                            payload: payload
+                        };
+
+                        const res = await axios.post('/api/scheduler/schedule', req);
+                        this.lastResponse = res.data;
+                        this.showAlert('Message scheduled successfully!');
+                        this.scheduleForm.id = '';
+                        this.scheduleForm.executeAt = '';
+                    } catch (e) {
+                        this.showAlert(e.response?.data?.message || e.message, 'danger');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                async fetchJobs() {
+                    try {
+                        const res = await axios.get('/api/scheduler/jobs');
+                        this.jobs = res.data;
+                    } catch (e) {
+                        this.showAlert('Failed to fetch jobs', 'danger');
+                    }
+                },
+                async cancelJob(id) {
+                    if(!confirm('Are you sure you want to cancel this job?')) return;
+                    try {
+                        await axios.delete('/api/scheduler/jobs/' + id);
+                        this.fetchJobs();
+                        this.showAlert('Job cancelled');
+                    } catch (e) {
+                        this.showAlert('Failed to cancel job', 'danger');
+                    }
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
