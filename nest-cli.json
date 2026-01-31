@@ -5,7 +5,6 @@
     "plugins": ["@nestjs/swagger"],
     "assets": [
       "dashboard/**",
-      "test-client/**",
       "core/engines/webjs/*",
       "plus/engines/webjs/*",
       "apps/chatwoot/i18n/locales/*.yaml",

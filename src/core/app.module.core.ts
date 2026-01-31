@@ -126,10 +126,6 @@ export const IMPORTS_CORE = [
           serveRoot: dashboardConfig.dashboardUri,
         });
       }
-      serveStatic.push({
-        rootPath: join(__dirname, '..', 'test-client'),
-        serveRoot: '/test-client',
-      });
       return serveStatic;
     },
   }),
