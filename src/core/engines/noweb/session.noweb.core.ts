@@ -114,6 +114,7 @@ import {
   MessageReplyRequest,
   MessageStarRequest,
   MessageTextRequest,
+  MessageVideoRequest,
   MessageVoiceRequest,
   SendSeenRequest,
   WANumberExistResult,
@@ -133,7 +134,14 @@ import {
   WAHASessionStatus,
   WAMessageAck,
 } from '@waha/structures/enums.dto';
-import { BinaryFile, RemoteFile } from '@waha/structures/files.dto';
+import {
+  BinaryFile,
+  RemoteFile,
+  VideoBinaryFile,
+  VideoRemoteFile,
+  VoiceBinaryFile,
+  VoiceRemoteFile,
+} from '@waha/structures/files.dto';
 import {
   CreateGroupRequest,
   GroupParticipant,
@@ -1012,16 +1020,77 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return await this.sock.sendMessage(request.chatId, message, options);
   }
 
-  sendImage(request: MessageImageRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendImage(request: MessageImageRequest) {
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    const media = await this.uploadMedia(request.file);
+    const options = await this.getMessageOptions(request);
+    const message = {
+      image: media,
+      caption: request.caption,
+      mentions: request.mentions?.map(toJID),
+    };
+    return await this.sock.sendMessage(chatId, message, options);
   }
 
-  sendFile(request: MessageFileRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendFile(request: MessageFileRequest) {
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    const media = await this.uploadMedia(request.file);
+    const options = await this.getMessageOptions(request);
+    const message = {
+      document: media,
+      mimetype: request.file.mimetype,
+      fileName: request.file.filename,
+      caption: request.caption,
+      mentions: request.mentions?.map(toJID),
+    };
+    return await this.sock.sendMessage(chatId, message, options);
   }
 
-  sendVoice(request: MessageVoiceRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendVoice(request: MessageVoiceRequest) {
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    let media = await this.uploadMedia(request.file);
+    if (request.convert) {
+      if ('url' in media) {
+        const buffer = await this.fetch(media.url);
+        media = await this.mediaConverter.voice(buffer);
+      } else {
+        media = await this.mediaConverter.voice(media);
+      }
+    }
+
+    const options = await this.getMessageOptions(request);
+    const message = {
+      audio: media,
+      mimetype: 'audio/ogg; codecs=opus',
+      ptt: true,
+    };
+    return await this.sock.sendMessage(chatId, message, options);
+  }
+
+  @Activity()
+  async sendVideo(request: MessageVideoRequest) {
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    let media = await this.uploadMedia(request.file);
+    if (request.convert) {
+      if ('url' in media) {
+        const buffer = await this.fetch(media.url);
+        media = await this.mediaConverter.video(buffer);
+      } else {
+        media = await this.mediaConverter.video(media);
+      }
+    }
+
+    const options = await this.getMessageOptions(request);
+    const message = {
+      video: media,
+      caption: request.caption,
+      ptv: request.asNote,
+      mentions: request.mentions?.map(toJID),
+    };
+    return await this.sock.sendMessage(chatId, message, options);
   }
 
   sendLinkCustomPreview(
@@ -1031,13 +1100,21 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   protected async uploadMedia(
-    file: RemoteFile | BinaryFile,
-    type,
+    file:
+      | RemoteFile
+      | BinaryFile
+      | VoiceRemoteFile
+      | VoiceBinaryFile
+      | VideoRemoteFile
+      | VideoBinaryFile,
+    type: any = null,
   ): Promise<any> {
-    if (file && ('url' in file || 'data' in file)) {
-      throw new AvailableInPlusVersion('Sending media (image, video, pdf)');
+    if ('url' in file) {
+      return { url: file.url };
+    } else if ('data' in file) {
+      return Buffer.from(file.data, 'base64');
     }
-    return;
+    throw new UnprocessableEntityException('File must have either url or data');
   }
 
   @Activity()

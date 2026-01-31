@@ -78,6 +78,7 @@ import {
   MessageReplyRequest,
   MessageStarRequest,
   MessageTextRequest,
+  MessageVideoRequest,
   MessageVoiceRequest,
   SendSeenRequest,
   WANumberExistResult,
@@ -97,7 +98,14 @@ import {
   WAHASessionStatus,
   WAMessageAck,
 } from '@waha/structures/enums.dto';
-import { BinaryFile, RemoteFile } from '@waha/structures/files.dto';
+import {
+  BinaryFile,
+  RemoteFile,
+  VideoBinaryFile,
+  VideoRemoteFile,
+  VoiceBinaryFile,
+  VoiceRemoteFile,
+} from '@waha/structures/files.dto';
 import {
   CreateGroupRequest,
   GroupParticipant,
@@ -804,16 +812,80 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     );
   }
 
-  sendImage(request: MessageImageRequest) {
-    throw new AvailableInPlusVersion();
+  protected async getMedia(
+    file:
+      | RemoteFile
+      | BinaryFile
+      | VoiceRemoteFile
+      | VoiceBinaryFile
+      | VideoRemoteFile
+      | VideoBinaryFile,
+  ) {
+    if ('url' in file) {
+      return await MessageMedia.fromUrl(file.url, { filename: file.filename });
+    }
+    return new MessageMedia(file.mimetype, file.data, file.filename);
   }
 
-  sendFile(request: MessageFileRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendImage(request: MessageImageRequest) {
+    const media = await this.getMedia(request.file);
+    const options = this.getMessageOptions(request);
+    return this.whatsapp.sendMessage(this.ensureSuffix(request.chatId), media, {
+      caption: request.caption,
+      ...options,
+    });
   }
 
-  sendVoice(request: MessageVoiceRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendFile(request: MessageFileRequest) {
+    const media = await this.getMedia(request.file);
+    const options = this.getMessageOptions(request);
+    return this.whatsapp.sendMessage(this.ensureSuffix(request.chatId), media, {
+      caption: request.caption,
+      ...options,
+    });
+  }
+
+  @Activity()
+  async sendVoice(request: MessageVoiceRequest) {
+    let media = await this.getMedia(request.file);
+    if (request.convert) {
+      const buffer = Buffer.from(media.data, 'base64');
+      const converted = await this.mediaConverter.voice(buffer);
+      media = new MessageMedia(
+        'audio/ogg; codecs=opus',
+        converted.toString('base64'),
+        request.file.filename,
+      );
+    }
+
+    const options = this.getMessageOptions(request);
+    return this.whatsapp.sendMessage(this.ensureSuffix(request.chatId), media, {
+      sendAudioAsVoice: true,
+      ...options,
+    });
+  }
+
+  @Activity()
+  async sendVideo(request: MessageVideoRequest) {
+    let media = await this.getMedia(request.file);
+    if (request.convert) {
+      const buffer = Buffer.from(media.data, 'base64');
+      const converted = await this.mediaConverter.video(buffer);
+      media = new MessageMedia(
+        'video/mp4',
+        converted.toString('base64'),
+        request.file.filename,
+      );
+    }
+
+    const options = this.getMessageOptions(request);
+    return this.whatsapp.sendMessage(this.ensureSuffix(request.chatId), media, {
+      caption: request.caption,
+      sendVideoAsGif: request.asNote,
+      ...options,
+    });
   }
 
   sendButtonsReply(request: MessageButtonReply) {
