@@ -68,9 +68,14 @@ import { SessionManagerCore } from './manager.core';
 import { CaslAbilityFactory } from '@waha/core/auth/casl.ability';
 import { PoliciesGuard } from '@waha/core/auth/policies.guard';
 import { ApiKeyService } from '@waha/core/auth/ApiKeyService';
+import { ScheduleModule } from '@nestjs/schedule';
+import { SchedulerController } from './scheduler/scheduler.controller';
+import { SchedulerService } from './scheduler/scheduler.service';
+import { SchedulerRepository } from './scheduler/scheduler.repository';
 
 export const IMPORTS_CORE = [
   ...AppsModuleExports.imports,
+  ScheduleModule.forRoot(),
   LoggerModule.forRoot({
     renameContext: 'name',
     pinoHttp: {
@@ -114,15 +119,18 @@ export const IMPORTS_CORE = [
     extraProviders: [DashboardConfigServiceCore],
     inject: [DashboardConfigServiceCore],
     useFactory: (dashboardConfig: DashboardConfigServiceCore) => {
-      if (!dashboardConfig.enabled) {
-        return [];
-      }
-      return [
-        {
+      const serveStatic = [];
+      if (dashboardConfig.enabled) {
+        serveStatic.push({
           rootPath: join(__dirname, '..', 'dashboard'),
           serveRoot: dashboardConfig.dashboardUri,
-        },
-      ];
+        });
+      }
+      serveStatic.push({
+        rootPath: join(__dirname, '..', 'test-client'),
+        serveRoot: '/test-client',
+      });
+      return serveStatic;
     },
   }),
   PassportModule,
@@ -166,6 +174,7 @@ export const CONTROLLERS = [
   ServerDebugController,
   VersionController,
   MediaController,
+  SchedulerController,
   ...AppsModuleExports.controllers,
 ];
 export const PROVIDERS_BASE: Provider[] = [
@@ -204,6 +213,8 @@ const PROVIDERS = [
     useClass: WAHAHealthCheckServiceCore,
   },
   ChannelsInfoServiceCore,
+  SchedulerService,
+  SchedulerRepository,
   ...PROVIDERS_BASE,
 ];
 
