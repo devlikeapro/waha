@@ -3,7 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ScheduleMessageRequest } from './scheduler.dto';
 import { SchedulerService } from './scheduler.service';
 
-@ApiTags('Scheduler')
+@ApiTags('📤 Chatting')
 @Controller('api/scheduler')
 export class SchedulerController {
   constructor(private service: SchedulerService) {}
