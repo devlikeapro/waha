@@ -236,10 +236,24 @@
 
         createApp({
             data() {
+                let key = localStorage.getItem('waha_api_key') || '';
+                if (!key) {
+                    try {
+                        const servers = JSON.parse(localStorage.getItem('servers'));
+                        if (Array.isArray(servers) && servers.length > 0 && servers[0].connection && servers[0].connection.key) {
+                            key = servers[0].connection.key;
+                            // Optionally save it to our own key to persist specific overrides
+                            // localStorage.setItem('waha_api_key', key); 
+                        }
+                    } catch (e) {
+                        console.log('Could not load key from dashboard servers config');
+                    }
+                }
+
                 return {
                     view: 'send',
                     loading: false,
-                    apiKey: localStorage.getItem('waha_api_key') || '',
+                    apiKey: key,
                     sessions: [],
                     selectedSession: '',
                     alert: { message: '', type: 'info' },
