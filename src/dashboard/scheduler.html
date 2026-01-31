@@ -33,6 +33,10 @@
                 </div>
                 <hr>
                 <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">API KEY</label>
+                    <input type="password" class="form-control form-control-sm" v-model="apiKey" placeholder="Enter API Key" @input="saveApiKey">
+                </div>
+                <div class="mb-3">
                     <label class="form-label text-muted small fw-bold">SESSION</label>
                     <select class="form-select form-select-sm" v-model="selectedSession" @change="fetchSessionInfo">
                         <option v-for="s in sessions" :value="s.name">
@@ -235,6 +239,7 @@
                 return {
                     view: 'send',
                     loading: false,
+                    apiKey: localStorage.getItem('waha_api_key') || '',
                     sessions: [],
                     selectedSession: '',
                     alert: { message: '', type: 'info' },
@@ -264,9 +269,22 @@
                 }
             },
             mounted() {
+                // Axios Interceptor for API Key
+                axios.interceptors.request.use(config => {
+                    if (this.apiKey) {
+                        config.headers['X-Api-Key'] = this.apiKey;
+                    }
+                    return config;
+                });
+
                 this.fetchSessions();
             },
             methods: {
+                saveApiKey() {
+                    localStorage.setItem('waha_api_key', this.apiKey);
+                    // Re-fetch sessions when key changes
+                    this.fetchSessions();
+                },
                 showAlert(message, type = 'success') {
                     this.alert = { message, type };
                     setTimeout(() => this.alert.message = '', 5000);
