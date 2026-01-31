@@ -66,24 +66,28 @@ export class SchedulerService implements OnModuleInit {
       this.logger.log(`Executing scheduled job ${jobName}`);
       try {
         const session = await this.sessionManager.getWorkingSession(request.payload.session);
+        let result;
         switch (request.type) {
             case MessageType.TEXT:
-                await session.sendText(request.payload);
+                result = await session.sendText(request.payload);
                 break;
             case MessageType.IMAGE:
-                await session.sendImage(request.payload);
+                result = await session.sendImage(request.payload);
                 break;
             case MessageType.FILE:
-                await session.sendFile(request.payload);
+                result = await session.sendFile(request.payload);
                 break;
             case MessageType.VOICE:
-                await session.sendVoice(request.payload);
+                result = await session.sendVoice(request.payload);
                 break;
             case MessageType.VIDEO:
-                await session.sendVideo(request.payload);
+                result = await session.sendVideo(request.payload);
                 break;
             default:
                 this.logger.error(`Unknown message type: ${request.type}`);
+        }
+        if (result) {
+            this.logger.log(`Job ${jobName} executed successfully. Result: ${JSON.stringify(result)}`);
         }
       } catch (e) {
         this.logger.error(`Failed to execute job ${jobName}`, e);
