@@ -170,6 +170,10 @@
                     <i class="pi pi-calendar-plus"></i>
                     <span>Schedule Message</span>
                 </div>
+                <div class="nav-item" :class="{ active: view === 'campaign' }" @click="view = 'campaign'">
+                    <i class="pi pi-users"></i>
+                    <span>Bulk Campaign</span>
+                </div>
                 <div class="nav-item" :class="{ active: view === 'jobs' }" @click="fetchJobs(); view = 'jobs'">
                     <i class="pi pi-list"></i>
                     <span>Scheduled Jobs</span>
@@ -289,6 +293,94 @@
                     </div>
                 </div>
 
+                <!-- Campaign View -->
+                <div v-if="view === 'campaign'" class="fadein animation-duration-300">
+                    <h2 class="mb-4">Bulk Campaign</h2>
+                    
+                    <div class="grid">
+                        <div class="col-12 lg:col-8">
+                            <p-card class="mb-4">
+                                <template #title>1. Upload CSV</template>
+                                <template #content>
+                                    <div class="file-upload-box mb-3" @click="$refs.csvInput.click()">
+                                        <input type="file" ref="csvInput" accept=".csv" @change="handleCsvUpload" style="display: none">
+                                        <div v-if="!campaign.csvData">
+                                            <i class="pi pi-file-excel text-4xl text-500 mb-2"></i>
+                                            <p class="m-0">Upload CSV (Phone, Name, etc.)</p>
+                                            <small class="text-secondary">First column must be Phone Number</small>
+                                        </div>
+                                        <div v-else class="flex align-items-center justify-content-center gap-2">
+                                            <i class="pi pi-check-circle text-green-500 text-xl"></i>
+                                            <span class="font-bold">{{ campaign.filename }}</span>
+                                            <span class="text-500">({{ campaign.csvData.length }} rows)</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div v-if="campaign.csvData && campaign.headers.length > 0">
+                                        <p class="mb-2 font-bold">Detected Columns:</p>
+                                        <div class="flex gap-2 flex-wrap">
+                                            <span v-for="header in campaign.headers" :key="header" class="surface-200 p-2 border-round font-mono text-sm cursor-pointer hover:surface-300" @click="insertVariable(header)">
+                                                {{ '{' + header + '}' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </p-card>
+
+                            <p-card class="mb-4">
+                                <template #title>2. Message Template</template>
+                                <template #content>
+                                    <div class="field">
+                                        <label for="campTemplate" class="font-bold block mb-2">Message</label>
+                                        <p-textarea id="campTemplate" v-model="campaign.template" rows="5" class="w-full" placeholder="Hello {Name}, how are you?"></p-textarea>
+                                        <small class="text-secondary">Click columns above to insert variables.</small>
+                                    </div>
+                                </template>
+                            </p-card>
+
+                            <p-card class="mb-4">
+                                <template #title>3. Schedule & Delays</template>
+                                <template #content>
+                                    <div class="formgrid grid">
+                                        <div class="field col-12 md:col-6">
+                                            <label class="font-bold block mb-2">Start Time</label>
+                                            <p-calendar v-model="campaign.startTime" :show-time="true" :show-seconds="true" class="w-full"></p-calendar>
+                                        </div>
+                                        <div class="field col-12 md:col-6">
+                                            <label class="font-bold block mb-2">Delay Range (Seconds)</label>
+                                            <div class="flex align-items-center gap-2">
+                                                <p-inputtext v-model.number="campaign.minDelay" class="w-full" placeholder="Min"></p-inputtext>
+                                                <span>to</span>
+                                                <p-inputtext v-model.number="campaign.maxDelay" class="w-full" placeholder="Max"></p-inputtext>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </p-card>
+
+                            <div class="flex justify-content-end">
+                                <p-button label="Start Campaign" icon="pi pi-rocket" class="p-button-lg p-button-success" :loading="loading" @click="startCampaign" :disabled="!campaign.csvData || !campaign.template"></p-button>
+                            </div>
+                        </div>
+
+                        <!-- Preview Side -->
+                        <div class="col-12 lg:col-4">
+                            <p-panel header="Preview" class="h-full">
+                                <div v-if="campaign.csvData && campaign.csvData.length > 0">
+                                    <div class="mb-3">
+                                        <span class="font-bold block mb-1">To: {{ campaign.csvData[0][campaign.headers[0]] }}</span>
+                                        <div class="surface-ground p-3 border-round" style="white-space: pre-wrap;">{{ previewMessage }}</div>
+                                    </div>
+                                    <small class="text-secondary">Previewing 1st row</small>
+                                </div>
+                                <div v-else class="text-center p-4 text-500">
+                                    Upload CSV to see preview
+                                </div>
+                            </p-panel>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Scheduled Jobs View -->
                 <div v-if="view === 'jobs'" class="fadein animation-duration-300">
                     <div class="flex justify-content-between align-items-center mb-4">
@@ -404,6 +496,16 @@
 
                 const jobs = ref([]);
                 const history = ref([]);
+
+                const campaign = ref({
+                    filename: '',
+                    csvData: null, // Array of objects
+                    headers: [],
+                    template: '',
+                    startTime: new Date(),
+                    minDelay: 10,
+                    maxDelay: 60
+                });
 
                 // Constants
                 const messageTypes = [
@@ -646,6 +748,108 @@
                     });
                 };
 
+                // Campaign Logic
+                const handleCsvUpload = (event) => {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    
+                    campaign.value.filename = file.name;
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const text = e.target.result;
+                        const rows = text.split('\n').map(r => r.trim()).filter(r => r);
+                        if (rows.length < 2) {
+                            showToast('error', 'Error', 'CSV must have headers and at least one row');
+                            return;
+                        }
+                        
+                        const headers = rows[0].split(',').map(h => h.trim());
+                        campaign.value.headers = headers;
+                        
+                        const data = [];
+                        for (let i = 1; i < rows.length; i++) {
+                            const values = rows[i].split(',');
+                            const rowObj = {};
+                            headers.forEach((h, index) => {
+                                rowObj[h] = values[index] ? values[index].trim() : '';
+                            });
+                            data.push(rowObj);
+                        }
+                        campaign.value.csvData = data;
+                    };
+                    reader.readAsText(file);
+                };
+
+                const insertVariable = (header) => {
+                    campaign.value.template += `{${header}}`;
+                };
+
+                const previewMessage = computed(() => {
+                    if (!campaign.value.csvData || !campaign.value.template) return '';
+                    let msg = campaign.value.template;
+                    const row = campaign.value.csvData[0];
+                    for (const header of campaign.value.headers) {
+                        msg = msg.replace(new RegExp(`{${header}}`, 'g'), row[header]);
+                    }
+                    return msg;
+                });
+
+                const startCampaign = async () => {
+                    if (!campaign.value.csvData || !campaign.value.template) return;
+                    
+                    confirm.require({
+                        message: `This will schedule ${campaign.value.csvData.length} messages. Continue?`,
+                        header: 'Start Campaign',
+                        icon: 'pi pi-info-circle',
+                        accept: async () => {
+                            loading.value = true;
+                            let scheduledCount = 0;
+                            let nextTime = new Date(campaign.value.startTime).getTime();
+                            
+                            try {
+                                for (const row of campaign.value.csvData) {
+                                    // Replace variables
+                                    let text = campaign.value.template;
+                                    for (const header of campaign.value.headers) {
+                                        text = text.replace(new RegExp(`{${header}}`, 'g'), row[header]);
+                                    }
+                                    
+                                    // First column is phone
+                                    const phone = row[campaign.value.headers[0]];
+                                    if (!phone) continue;
+
+                                    const payload = {
+                                        session: selectedSession.value,
+                                        chatId: phone.includes('@') ? phone : `${phone}@c.us`,
+                                        text: text
+                                    };
+
+                                    const req = {
+                                        id: `camp-${Date.now()}-${scheduledCount}`,
+                                        executeAt: new Date(nextTime).toISOString(),
+                                        type: 'text', // Currently supporting text campaigns
+                                        payload: payload
+                                    };
+
+                                    await axios.post('/api/scheduler/schedule', req);
+                                    scheduledCount++;
+                                    
+                                    // Add random delay
+                                    const delay = Math.floor(Math.random() * (campaign.value.maxDelay - campaign.value.minDelay + 1) + campaign.value.minDelay) * 1000;
+                                    nextTime += delay;
+                                }
+                                showToast('success', 'Success', `Successfully scheduled ${scheduledCount} messages`);
+                                view.value = 'jobs';
+                                fetchJobs();
+                            } catch (e) {
+                                showToast('error', 'Error', 'Failed during campaign scheduling');
+                            } finally {
+                                loading.value = false;
+                            }
+                        }
+                    });
+                };
+
                 onMounted(() => {
                     setupAxios();
                     fetchSessions();
@@ -654,8 +858,9 @@
                 return {
                     view, loading, isDragging, sessions, selectedSession, currentSession, apiKey,
                     form, scheduleForm, jobs, history, lastResponse,
-                    messageTypes, mediaSourceOptions,
+                    messageTypes, mediaSourceOptions, campaign, previewMessage,
                     saveApiKey, handleFileUpload, handleDrop, detectTypeFromUrl, sendMessage, scheduleMessage, fetchJobs, fetchHistory, cancelJob,
+                    handleCsvUpload, insertVariable, startCampaign,
                     formatFileSize, formatTime
                 };
             }
