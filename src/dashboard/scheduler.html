@@ -123,6 +123,10 @@
         .file-upload-box:hover {
             border-color: var(--primary-color);
         }
+        .file-upload-box.drag-active {
+            border-color: var(--primary-color);
+            background-color: var(--surface-hover);
+        }
     </style>
 </head>
 <body>
@@ -237,11 +241,16 @@
 
                                         <div v-if="form.mediaSource === 'upload'" class="field mb-0">
                                             <label for="fileUpload" class="font-bold block mb-2">Upload File</label>
-                                            <div class="file-upload-box" @click="$refs.fileInput.click()">
+                                            <div class="file-upload-box" 
+                                                 :class="{ 'drag-active': isDragging }"
+                                                 @click="$refs.fileInput.click()"
+                                                 @dragover.prevent="isDragging = true"
+                                                 @dragleave.prevent="isDragging = false"
+                                                 @drop.prevent="handleDrop">
                                                 <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none">
                                                 <div v-if="!form.fileData">
                                                     <i class="pi pi-cloud-upload text-4xl text-500 mb-2"></i>
-                                                    <p class="m-0">Click to select a file</p>
+                                                    <p class="m-0">Click or Drag & Drop file here</p>
                                                 </div>
                                                 <div v-else class="flex align-items-center justify-content-center gap-2">
                                                     <i class="pi pi-file text-primary text-xl"></i>
@@ -319,6 +328,7 @@
                 // State
                 const view = ref('send');
                 const loading = ref(false);
+                const isDragging = ref(false);
                 const sessions = ref([]);
                 const selectedSession = ref('');
                 const lastResponse = ref(null);
@@ -420,6 +430,16 @@
 
                 const handleFileUpload = (event) => {
                     const file = event.target.files[0];
+                    processFile(file);
+                };
+
+                const handleDrop = (event) => {
+                    isDragging.value = false;
+                    const file = event.dataTransfer.files[0];
+                    processFile(file);
+                };
+
+                const processFile = (file) => {
                     if (!file) return;
 
                     const reader = new FileReader();
@@ -552,10 +572,10 @@
                 });
 
                 return {
-                    view, loading, sessions, selectedSession, currentSession, apiKey,
+                    view, loading, isDragging, sessions, selectedSession, currentSession, apiKey,
                     form, scheduleForm, jobs, lastResponse,
                     messageTypes, mediaSourceOptions,
-                    saveApiKey, handleFileUpload, sendMessage, scheduleMessage, fetchJobs, cancelJob,
+                    saveApiKey, handleFileUpload, handleDrop, sendMessage, scheduleMessage, fetchJobs, cancelJob,
                     formatFileSize, formatTime
                 };
             }
