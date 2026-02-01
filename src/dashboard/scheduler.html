@@ -36,27 +36,27 @@
     <link rel="stylesheet" href="/dashboard/themes/lara-dark-green/theme.css">
 
     <style>
-        /* Force background for overlays - Critical Fix */
+        /* Force background for overlays - Nuclear Fix */
         .p-dropdown-panel, .p-datepicker, .p-dialog, .p-overlay, .p-menu, .p-tieredmenu {
-            background-color: #1e1e1e !important; /* Fallback dark */
-            background-color: var(--surface-overlay) !important;
-            color: var(--text-color) !important;
-            border: 1px solid var(--surface-border) !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
+            background-color: #1f2937 !important; /* Tailwind gray-800 */
+            color: rgba(255, 255, 255, 0.87) !important;
+            border: 1px solid #374151 !important; /* Tailwind gray-700 */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+        }
+        
+        .p-dropdown-items-wrapper, .p-dropdown-items {
+            background-color: #1f2937 !important;
         }
         
         .p-dropdown-item {
-            color: var(--text-color) !important;
+            color: rgba(255, 255, 255, 0.87) !important;
             padding: 0.75rem 1rem !important;
+            background-color: transparent !important;
         }
         
         .p-dropdown-item:hover, .p-dropdown-item.p-highlight {
-            background-color: var(--surface-hover) !important;
-            color: var(--text-color) !important;
-        }
-
-        .p-dropdown-items-wrapper {
-            background-color: inherit !important;
+            background-color: #374151 !important; /* Tailwind gray-700 */
+            color: #ffffff !important;
         }
 
         /* Fix overlapping text in session dropdown */
@@ -174,7 +174,7 @@
                 
                 <div class="px-2 mb-3">
                     <label class="text-xs text-500 font-bold mb-2 block">SESSION</label>
-                    <p-dropdown v-model="selectedSession" :options="sessions" option-label="name" option-value="name" placeholder="Select Session" class="w-full" @change="onSessionChange">
+                    <p-dropdown v-model="selectedSession" :options="sessions" option-label="name" option-value="name" placeholder="Select Session" class="w-full" @change="onSessionChange" append-to="self">
                         <template #option="slotProps">
                             <div class="session-option">
                                 <div class="session-name" :title="slotProps.option.name">{{ slotProps.option.name }}</div>
@@ -306,7 +306,7 @@
                                     <div class="formgrid grid">
                                         <div class="field col-12 md:col-6">
                                             <label for="type" class="font-bold block mb-2">Message Type</label>
-                                            <p-dropdown id="type" v-model="form.type" :options="messageTypes" option-label="label" option-value="value" class="w-full"></p-dropdown>
+                                            <p-dropdown id="type" v-model="form.type" :options="messageTypes" option-label="label" option-value="value" class="w-full" append-to="self"></p-dropdown>
                                             <small class="text-secondary">Auto-detected based on attachment</small>
                                         </div>
                                         <div class="field col-12 md:col-6" v-if="form.attachmentType !== 'none'">
