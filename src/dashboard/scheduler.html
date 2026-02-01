@@ -3,474 +3,569 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WAHA Scheduler & Media</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <title>WAHA Scheduler</title>
+    
+    <!-- Scripts -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <!-- PrimeVue Core & Components (UMD) -->
+    <script src="https://unpkg.com/primevue@3.40.1/core/core.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.40.1/button/button.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.40.1/inputtext/inputtext.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.40.1/textarea/textarea.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.40.1/dropdown/dropdown.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.40.1/calendar/calendar.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.40.1/toast/toast.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.40.1/toastservice/toastservice.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.40.1/selectbutton/selectbutton.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.40.1/datatable/datatable.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.40.1/column/column.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.40.1/card/card.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.40.1/panel/panel.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.40.1/confirmdialog/confirmdialog.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.40.1/confirmationservice/confirmationservice.min.js"></script>
+
+    <!-- Styles -->
+    <!-- Use the LOCAL theme from the dashboard to match perfectly -->
+    <link rel="stylesheet" href="/dashboard/themes/lara-dark-green/theme.css">
+    
+    <link href="https://unpkg.com/primevue@3.40.1/resources/primevue.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/primeicons/primeicons.css" rel="stylesheet">
+    <link href="https://unpkg.com/primeflex@3.3.1/primeflex.min.css" rel="stylesheet">
+
     <style>
-        body { background-color: #f8f9fa; }
-        .sidebar { height: 100vh; background: white; border-right: 1px solid #dee2e6; }
-        .main-content { height: 100vh; overflow-y: auto; }
-        .card { border: none; shadow-sm: 0 .125rem .25rem rgba(0,0,0,.075); margin-bottom: 1rem; }
-        .nav-link.active { background-color: #e9ecef; color: #0d6efd; font-weight: 500; }
-        .nav-link { color: #495057; }
-        .status-badge { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
-        .status-working { background-color: #198754; }
-        .status-failed { background-color: #dc3545; }
-        .status-stopped { background-color: #6c757d; }
+        body {
+            margin: 0;
+            background-color: var(--surface-ground);
+            color: var(--text-color);
+            font-family: var(--font-family);
+        }
+        .layout-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+        .layout-sidebar {
+            width: 250px;
+            background-color: var(--surface-overlay);
+            border-right: 1px solid var(--surface-border);
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            position: fixed;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 999;
+        }
+        .layout-main {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+            background-color: var(--surface-ground);
+        }
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+        }
+        .nav-item:hover {
+            background-color: var(--surface-hover);
+        }
+        .nav-item.active {
+            background-color: var(--primary-color);
+            color: var(--primary-color-text);
+        }
+        .nav-item i {
+            margin-right: 0.75rem;
+        }
+        .status-badge {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+        .status-working { background-color: var(--green-500); }
+        .status-failed { background-color: var(--red-500); }
+        .status-stopped { background-color: var(--gray-500); }
+        
+        /* PrimeVue overrides/helpers */
+        .p-field { margin-bottom: 1.5rem; }
+        .p-field > label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        .w-full { width: 100%; }
+        .file-upload-box {
+            border: 2px dashed var(--surface-border);
+            border-radius: 6px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .file-upload-box:hover {
+            border-color: var(--primary-color);
+        }
     </style>
 </head>
 <body>
-    <div id="app" class="container-fluid">
-        <div class="row">
+    <div id="app">
+        <div class="layout-wrapper">
             <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 sidebar p-3 d-none d-md-block">
-                <div class="d-flex align-items-center mb-4 text-decoration-none">
-                    <a href="/dashboard/" class="d-flex align-items-center text-decoration-none text-dark">
-                        <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
-                    </a>
+            <div class="layout-sidebar shadow-2">
+                <div class="mb-4 mt-2 px-2 flex align-items-center">
+                    <img src="/dashboard/layout/images/logo-white.svg" alt="WAHA" style="height: 24px;" class="mr-2">
+                    <span class="font-bold text-xl">Scheduler</span>
                 </div>
-                <hr>
-                <div class="mb-3">
-                    <label class="form-label text-muted small fw-bold">API KEY</label>
-                    <input type="password" class="form-control form-control-sm" v-model="apiKey" placeholder="Enter API Key" @input="saveApiKey">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label text-muted small fw-bold">SESSION</label>
-                    <select class="form-select form-select-sm" v-model="selectedSession" @change="fetchSessionInfo">
-                        <option v-for="s in sessions" :value="s.name">
-                            {{ s.name }}
-                        </option>
-                    </select>
-                    <div class="mt-2 small" v-if="currentSession">
-                        <span class="status-badge" :class="'status-' + currentSession.status.toLowerCase()"></span>
+                
+                <a href="/dashboard/" class="nav-item">
+                    <i class="pi pi-arrow-left"></i>
+                    <span>Back to Dashboard</span>
+                </a>
+                
+                <div class="p-divider p-component p-divider-horizontal p-divider-solid p-divider-left" role="separator"></div>
+                
+                <div class="px-2 mb-3">
+                    <label class="text-xs text-500 font-bold mb-2 block">SESSION</label>
+                    <p-dropdown v-model="selectedSession" :options="sessions" option-label="name" option-value="name" placeholder="Select Session" class="w-full" @change="onSessionChange"></p-dropdown>
+                    <div class="mt-2 text-sm" v-if="currentSession">
+                        <span class="status-badge" :class="'status-' + (currentSession.status || '').toLowerCase()"></span>
                         {{ currentSession.status }}
                     </div>
                 </div>
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" :class="{ active: view === 'send' }" href="#" @click.prevent="view = 'send'">
-                            <i class="bi bi-send me-2"></i> Send Message
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" :class="{ active: view === 'schedule' }" href="#" @click.prevent="view = 'schedule'">
-                            <i class="bi bi-calendar-event me-2"></i> Schedule
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" :class="{ active: view === 'jobs' }" href="#" @click.prevent="fetchJobs(); view = 'jobs'">
-                            <i class="bi bi-list-task me-2"></i> Scheduled Jobs
-                        </a>
-                    </li>
-                </ul>
+
+                <div class="px-2 mb-3">
+                    <label class="text-xs text-500 font-bold mb-2 block">API KEY</label>
+                    <p-inputtext type="password" v-model="apiKey" class="w-full p-inputtext-sm" placeholder="Enter API Key" @input="saveApiKey"></p-inputtext>
+                </div>
+
+                <div class="p-divider p-component p-divider-horizontal p-divider-solid p-divider-left" role="separator"></div>
+
+                <div class="nav-item" :class="{ active: view === 'send' }" @click="view = 'send'">
+                    <i class="pi pi-send"></i>
+                    <span>Direct Send</span>
+                </div>
+                <div class="nav-item" :class="{ active: view === 'schedule' }" @click="view = 'schedule'">
+                    <i class="pi pi-calendar-plus"></i>
+                    <span>Schedule Message</span>
+                </div>
+                <div class="nav-item" :class="{ active: view === 'jobs' }" @click="fetchJobs(); view = 'jobs'">
+                    <i class="pi pi-list"></i>
+                    <span>Scheduled Jobs</span>
+                </div>
             </div>
 
             <!-- Main Content -->
-            <div class="col-md-9 col-lg-10 main-content p-4">
-                <!-- Toast/Alert Area -->
-                <div v-if="alert.message" class="alert alert-dismissible fade show" :class="'alert-' + alert.type" role="alert">
-                    {{ alert.message }}
-                    <button type="button" class="btn-close" @click="alert.message = ''"></button>
-                </div>
+            <div class="layout-main">
+                <p-toast></p-toast>
+                <p-confirmdialog></p-confirmdialog>
 
-                <!-- Send Message View -->
-                <div v-if="view === 'send'">
-                    <h2 class="mb-4">Send Message</h2>
-                    <div class="card p-4">
-                        <form @submit.prevent="sendMessage">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">Phone Number (Chat ID)</label>
-                                    <input type="text" class="form-control" v-model="form.chatId" placeholder="12125551234@c.us" required>
-                                    <div class="form-text">International format without +, append @c.us</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Message Type</label>
-                                    <select class="form-select" v-model="form.type">
-                                        <option value="text">Text</option>
-                                        <option value="image">Image</option>
-                                        <option value="file">File</option>
-                                        <option value="voice">Voice</option>
-                                        <option value="video">Video</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="mb-3" v-if="['text', 'image', 'file', 'video'].includes(form.type)">
-                                <label class="form-label">{{ form.type === 'text' ? 'Message' : 'Caption' }}</label>
-                                <textarea class="form-control" v-model="form.text" rows="3"></textarea>
-                            </div>
-
-                            <div class="mb-3" v-if="form.type !== 'text'">
-                                <label class="form-label">Media Source</label>
-                                <div class="btn-group w-100" role="group">
-                                    <input type="radio" class="btn-check" name="mediaSource" id="sourceUrl" value="url" v-model="form.mediaSource">
-                                    <label class="btn btn-outline-primary" for="sourceUrl">Link (URL)</label>
-                                    <input type="radio" class="btn-check" name="mediaSource" id="sourceUpload" value="upload" v-model="form.mediaSource">
-                                    <label class="btn btn-outline-primary" for="sourceUpload">Upload File</label>
-                                </div>
-                            </div>
-
-                            <div class="mb-3" v-if="form.type !== 'text' && form.mediaSource === 'url'">
-                                <label class="form-label">File URL</label>
-                                <input type="url" class="form-control" v-model="form.fileUrl" placeholder="https://example.com/file.jpg">
-                                <div class="form-text">Direct URL to the media file</div>
-                            </div>
-
-                            <div class="mb-3" v-if="form.type !== 'text' && form.mediaSource === 'upload'">
-                                <label class="form-label">Select File</label>
-                                <input type="file" class="form-control" @change="handleFileUpload">
-                                <div class="form-text" v-if="form.fileData">Selected: {{ form.fileData.filename }} ({{ Math.round(form.fileData.data.length * 0.75 / 1024) }} KB)</div>
-                            </div>
-                            
-                            <div class="mb-3" v-if="form.type !== 'text'">
-                                <label class="form-label">Filename (Optional override)</label>
-                                <input type="text" class="form-control" v-model="form.filename" placeholder="image.jpg">
-                            </div>
-
-                            <button type="submit" class="btn btn-primary" :disabled="loading">
-                                <span v-if="loading" class="spinner-border spinner-border-sm me-1"></span>
-                                Send Message
-                            </button>
-                        </form>
+                <!-- Send / Schedule Form -->
+                <div v-if="view === 'send' || view === 'schedule'" class="fadein animation-duration-300">
+                    <div class="flex justify-content-between align-items-center mb-4">
+                        <h2 class="m-0">{{ view === 'send' ? 'Direct Send' : 'Schedule Message' }}</h2>
                     </div>
-                    
-                    <div v-if="lastResponse" class="card mt-4 bg-light">
-                        <div class="card-body">
-                            <h6>Last Response:</h6>
-                            <pre class="mb-0 small">{{ JSON.stringify(lastResponse, null, 2) }}</pre>
+
+                    <div class="grid">
+                        <div class="col-12 lg:col-8">
+                            <p-card>
+                                <template #content>
+                                    <!-- Schedule Specific Fields -->
+                                    <div v-if="view === 'schedule'" class="formgrid grid mb-4">
+                                        <div class="field col-12 md:col-6">
+                                            <label for="schedId">Job ID (Optional)</label>
+                                            <p-inputtext id="schedId" v-model="scheduleForm.id" class="w-full" placeholder="Auto-generated if empty"></p-inputtext>
+                                        </div>
+                                        <div class="field col-12 md:col-6">
+                                            <label for="executeAt">Execute At</label>
+                                            <p-calendar id="executeAt" v-model="scheduleForm.executeAt" :show-time="true" :show-seconds="true" class="w-full" placeholder="Select date & time"></p-calendar>
+                                        </div>
+                                    </div>
+                                    <div v-if="view === 'schedule'" class="p-divider p-component p-divider-horizontal p-divider-solid p-divider-left mb-4" role="separator"></div>
+
+                                    <!-- Common Fields -->
+                                    <div class="formgrid grid">
+                                        <div class="field col-12 md:col-6">
+                                            <label for="chatId">Phone Number (Chat ID)</label>
+                                            <p-inputtext id="chatId" v-model="form.chatId" class="w-full" placeholder="12125551234@c.us"></p-inputtext>
+                                            <small class="text-secondary">International format without +, append @c.us</small>
+                                        </div>
+                                        <div class="field col-12 md:col-6">
+                                            <label for="type">Message Type</label>
+                                            <p-dropdown id="type" v-model="form.type" :options="messageTypes" option-label="label" option-value="value" class="w-full"></p-dropdown>
+                                        </div>
+                                    </div>
+
+                                    <div class="field" v-if="['text', 'image', 'file', 'video'].includes(form.type)">
+                                        <label for="text">{{ form.type === 'text' ? 'Message' : 'Caption' }}</label>
+                                        <p-textarea id="text" v-model="form.text" rows="3" class="w-full" :auto-resize="true"></p-textarea>
+                                    </div>
+
+                                    <!-- Media Handling -->
+                                    <div v-if="form.type !== 'text'" class="surface-ground p-3 border-round mb-3">
+                                        <div class="field">
+                                            <label class="mb-2">Media Source</label>
+                                            <p-selectbutton v-model="form.mediaSource" :options="mediaSourceOptions" option-label="name" option-value="value"></p-selectbutton>
+                                        </div>
+
+                                        <div v-if="form.mediaSource === 'url'" class="field mb-0">
+                                            <label for="fileUrl">File URL</label>
+                                            <div class="p-inputgroup">
+                                                <span class="p-inputgroup-addon">
+                                                    <i class="pi pi-link"></i>
+                                                </span>
+                                                <p-inputtext id="fileUrl" v-model="form.fileUrl" placeholder="https://example.com/file.jpg"></p-inputtext>
+                                            </div>
+                                        </div>
+
+                                        <div v-if="form.mediaSource === 'upload'" class="field mb-0">
+                                            <label for="fileUpload">Upload File</label>
+                                            <div class="file-upload-box" @click="$refs.fileInput.click()">
+                                                <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none">
+                                                <div v-if="!form.fileData">
+                                                    <i class="pi pi-cloud-upload text-4xl text-500 mb-2"></i>
+                                                    <p class="m-0">Click to select a file</p>
+                                                </div>
+                                                <div v-else class="flex align-items-center justify-content-center gap-2">
+                                                    <i class="pi pi-file text-primary text-xl"></i>
+                                                    <span class="font-bold">{{ form.fileData.filename }}</span>
+                                                    <span class="text-500">({{ formatFileSize(form.fileData.data.length * 0.75) }})</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="field" v-if="form.type !== 'text'">
+                                        <label for="filename">Filename (Optional)</label>
+                                        <p-inputtext id="filename" v-model="form.filename" class="w-full" placeholder="custom-name.jpg"></p-inputtext>
+                                    </div>
+
+                                    <div class="flex justify-content-end mt-4">
+                                        <p-button :label="view === 'send' ? 'Send Message' : 'Schedule Message'" 
+                                                  :icon="view === 'send' ? 'pi pi-send' : 'pi pi-calendar-plus'" 
+                                                  :loading="loading" 
+                                                  @click="view === 'send' ? sendMessage() : scheduleMessage()"></p-button>
+                                    </div>
+                                </template>
+                            </p-card>
+
+                            <div v-if="lastResponse" class="mt-4">
+                                <p-panel header="Last Response" :toggleable="true">
+                                    <pre class="m-0" style="white-space: pre-wrap; word-break: break-all;">{{ JSON.stringify(lastResponse, null, 2) }}</pre>
+                                </p-panel>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Schedule View -->
-                <div v-if="view === 'schedule'">
-                    <h2 class="mb-4">Schedule Message</h2>
-                    <div class="card p-4">
-                        <form @submit.prevent="scheduleMessage">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">Job ID (Optional)</label>
-                                    <input type="text" class="form-control" v-model="scheduleForm.id" placeholder="Auto-generated if empty">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Execute At</label>
-                                    <input type="datetime-local" class="form-control" v-model="scheduleForm.executeAt" required>
-                                </div>
-                            </div>
-
-                            <hr class="my-4">
-                            <h5 class="mb-3">Message Details</h5>
-
-                            <!-- Reusing similar structure to Send -->
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">Phone Number</label>
-                                    <input type="text" class="form-control" v-model="form.chatId" placeholder="12125551234@c.us" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Type</label>
-                                    <select class="form-select" v-model="form.type">
-                                        <option value="text">Text</option>
-                                        <option value="image">Image</option>
-                                        <option value="file">File</option>
-                                        <option value="voice">Voice</option>
-                                        <option value="video">Video</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="mb-3" v-if="['text', 'image', 'file', 'video'].includes(form.type)">
-                                <label class="form-label">{{ form.type === 'text' ? 'Message' : 'Caption' }}</label>
-                                <textarea class="form-control" v-model="form.text" rows="3"></textarea>
-                            </div>
-
-                            <div class="mb-3" v-if="form.type !== 'text'">
-                                <label class="form-label">Media Source</label>
-                                <div class="btn-group w-100" role="group">
-                                    <input type="radio" class="btn-check" name="mediaSourceSchedule" id="schedSourceUrl" value="url" v-model="form.mediaSource">
-                                    <label class="btn btn-outline-success" for="schedSourceUrl">Link (URL)</label>
-                                    <input type="radio" class="btn-check" name="mediaSourceSchedule" id="schedSourceUpload" value="upload" v-model="form.mediaSource">
-                                    <label class="btn btn-outline-success" for="schedSourceUpload">Upload File</label>
-                                </div>
-                            </div>
-
-                            <div class="mb-3" v-if="form.type !== 'text' && form.mediaSource === 'url'">
-                                <label class="form-label">File URL</label>
-                                <input type="url" class="form-control" v-model="form.fileUrl" required>
-                            </div>
-
-                            <div class="mb-3" v-if="form.type !== 'text' && form.mediaSource === 'upload'">
-                                <label class="form-label">Select File</label>
-                                <input type="file" class="form-control" @change="handleFileUpload">
-                                <div class="form-text" v-if="form.fileData">Selected: {{ form.fileData.filename }}</div>
-                            </div>
-                            
-                            <div class="mb-3" v-if="form.type !== 'text'">
-                                <label class="form-label">Filename</label>
-                                <input type="text" class="form-control" v-model="form.filename">
-                            </div>
-
-                            <button type="submit" class="btn btn-success" :disabled="loading">
-                                <span v-if="loading" class="spinner-border spinner-border-sm me-1"></span>
-                                Schedule Message
-                            </button>
-                        </form>
                     </div>
                 </div>
 
                 <!-- Scheduled Jobs View -->
-                <div v-if="view === 'jobs'">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>Scheduled Jobs</h2>
-                        <button class="btn btn-outline-secondary btn-sm" @click="fetchJobs">
-                            <i class="bi bi-arrow-clockwise"></i> Refresh
-                        </button>
+                <div v-if="view === 'jobs'" class="fadein animation-duration-300">
+                    <div class="flex justify-content-between align-items-center mb-4">
+                        <h2 class="m-0">Scheduled Jobs</h2>
+                        <p-button icon="pi pi-refresh" label="Refresh" outlined @click="fetchJobs"></p-button>
                     </div>
-                    
-                    <div class="card">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0 align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Next Execution</th>
-                                        <th class="text-end">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="job in jobs" :key="job.id">
-                                        <td><code>{{ job.id }}</code></td>
-                                        <td>{{ formatTime(job.nextExecution) }}</td>
-                                        <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-danger" @click="cancelJob(job.id)">
-                                                <i class="bi bi-trash"></i> Cancel
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr v-if="jobs.length === 0">
-                                        <td colspan="3" class="text-center py-4 text-muted">No scheduled jobs found.</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
 
+                    <p-card>
+                        <template #content>
+                            <p-datatable :value="jobs" responsive-layout="scroll" :loading="loading" striped-rows>
+                                <template #empty>No scheduled jobs found.</template>
+                                <p-column field="id" header="Job ID"></p-column>
+                                <p-column field="nextExecution" header="Next Execution">
+                                    <template #body="slotProps">
+                                        {{ formatTime(slotProps.data.nextExecution) }}
+                                    </template>
+                                </p-column>
+                                <p-column header="Actions" style="width: 100px">
+                                    <template #body="slotProps">
+                                        <p-button icon="pi pi-trash" class="p-button-danger p-button-sm p-button-text" @click="cancelJob(slotProps.data.id)" label="Cancel"></p-button>
+                                    </template>
+                                </p-column>
+                            </p-datatable>
+                        </template>
+                    </p-card>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        const { createApp } = Vue;
+        const { createApp, ref, computed, onMounted } = Vue;
+        const { useToast } = primevue.usetoast;
+        const { useConfirm } = primevue.useconfirm;
 
-        createApp({
-            data() {
+        const app = createApp({
+            setup() {
+                const toast = useToast();
+                const confirm = useConfirm();
+
+                // State
+                const view = ref('send');
+                const loading = ref(false);
+                const sessions = ref([]);
+                const selectedSession = ref('');
+                const lastResponse = ref(null);
+                
+                // API Key Logic
                 let key = localStorage.getItem('waha_api_key') || '';
                 if (!key) {
                     try {
                         const servers = JSON.parse(localStorage.getItem('servers'));
                         if (Array.isArray(servers) && servers.length > 0 && servers[0].connection && servers[0].connection.key) {
                             key = servers[0].connection.key;
-                            // Optionally save it to our own key to persist specific overrides
-                            // localStorage.setItem('waha_api_key', key); 
                         }
                     } catch (e) {
                         console.log('Could not load key from dashboard servers config');
                     }
                 }
+                const apiKey = ref(key);
 
-                return {
-                    view: 'send',
-                    loading: false,
-                    apiKey: key,
-                    sessions: [],
-                    selectedSession: '',
-                    alert: { message: '', type: 'info' },
-                    
-                    // Shared Form Data
-                    form: {
-                        chatId: '',
-                        type: 'text',
-                        text: '',
-                        fileUrl: '',
-                        filename: '',
-                        mediaSource: 'url', // 'url' or 'upload'
-                        fileData: null, // { mimetype, data, filename }
-                    },
-                    
-                    // Schedule specific
-                    scheduleForm: {
-                        id: '',
-                        executeAt: ''
-                    },
-
-                    jobs: [],
-                    lastResponse: null
-                }
-            },
-            computed: {
-                currentSession() {
-                    return this.sessions.find(s => s.name === this.selectedSession);
-                }
-            },
-            mounted() {
-                // Axios Interceptor for API Key
-                axios.interceptors.request.use(config => {
-                    if (this.apiKey) {
-                        config.headers['X-Api-Key'] = this.apiKey;
-                    }
-                    return config;
+                // Forms
+                const form = ref({
+                    chatId: '',
+                    type: 'text',
+                    text: '',
+                    fileUrl: '',
+                    filename: '',
+                    mediaSource: 'url',
+                    fileData: null
                 });
 
-                this.fetchSessions();
-            },
-            methods: {
-                saveApiKey() {
-                    localStorage.setItem('waha_api_key', this.apiKey);
-                    // Re-fetch sessions when key changes
-                    this.fetchSessions();
-                },
-                showAlert(message, type = 'success') {
-                    this.alert = { message, type };
-                    setTimeout(() => this.alert.message = '', 5000);
-                },
-                formatTime(isoString) {
+                const scheduleForm = ref({
+                    id: '',
+                    executeAt: null
+                });
+
+                const jobs = ref([]);
+
+                // Constants
+                const messageTypes = [
+                    { label: 'Text', value: 'text' },
+                    { label: 'Image', value: 'image' },
+                    { label: 'File', value: 'file' },
+                    { label: 'Voice', value: 'voice' },
+                    { label: 'Video', value: 'video' }
+                ];
+
+                const mediaSourceOptions = [
+                    { name: 'Link (URL)', value: 'url' },
+                    { name: 'Upload File', value: 'upload' }
+                ];
+
+                // Computed
+                const currentSession = computed(() => sessions.value.find(s => s.name === selectedSession.value));
+
+                // Methods
+                const saveApiKey = () => {
+                    localStorage.setItem('waha_api_key', apiKey.value);
+                    setupAxios();
+                    fetchSessions();
+                };
+
+                const setupAxios = () => {
+                    axios.interceptors.request.use(config => {
+                        if (apiKey.value) {
+                            config.headers['X-Api-Key'] = apiKey.value;
+                        }
+                        return config;
+                    });
+                };
+
+                const showToast = (severity, summary, detail) => {
+                    toast.add({ severity, summary, detail, life: 3000 });
+                };
+
+                const fetchSessions = async () => {
+                    try {
+                        const res = await axios.get('/api/sessions?all=true');
+                        sessions.value = res.data;
+                        if (sessions.value.length > 0 && !selectedSession.value) {
+                            selectedSession.value = sessions.value[0].name;
+                        }
+                    } catch (e) {
+                        showToast('error', 'Error', 'Failed to fetch sessions');
+                    }
+                };
+
+                const formatFileSize = (bytes) => {
+                    if (bytes === 0) return '0 Bytes';
+                    const k = 1024;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                };
+
+                const formatTime = (isoString) => {
                     if (!isoString) return '-';
                     if (isoString === 'finished') return 'Finished';
                     return new Date(isoString).toLocaleString();
-                },
-                async fetchSessions() {
-                    try {
-                        const res = await axios.get('/api/sessions?all=true');
-                        this.sessions = res.data;
-                        if (this.sessions.length > 0 && !this.selectedSession) {
-                            this.selectedSession = this.sessions[0].name;
-                        }
-                    } catch (e) {
-                        this.showAlert('Failed to fetch sessions', 'danger');
-                    }
-                },
-                fetchSessionInfo() {
-                    // Logic to refresh session status if needed
-                },
-                handleFileUpload(event) {
+                };
+
+                const handleFileUpload = (event) => {
                     const file = event.target.files[0];
                     if (!file) return;
 
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         const result = e.target.result;
-                        // result is like "data:image/jpeg;base64,/9j/4AAQ..."
                         const parts = result.split(',');
                         const mime = parts[0].match(/:(.*?);/)[1];
                         const data = parts[1];
                         
-                        this.form.fileData = {
+                        form.value.fileData = {
                             mimetype: mime,
                             data: data,
                             filename: file.name
                         };
-                        // Auto-fill filename if empty
-                        if (!this.form.filename) {
-                            this.form.filename = file.name;
+                        if (!form.value.filename) {
+                            form.value.filename = file.name;
                         }
                     };
                     reader.readAsDataURL(file);
-                },
-                getPayload() {
+                };
+
+                const getPayload = () => {
                     const payload = {
-                        session: this.selectedSession,
-                        chatId: this.form.chatId,
+                        session: selectedSession.value,
+                        chatId: form.value.chatId,
                     };
 
-                    if (this.form.type === 'text') {
-                        payload.text = this.form.text;
+                    if (form.value.type === 'text') {
+                        payload.text = form.value.text;
                     } else {
-                        // Image, File, Voice, Video
-                        if (this.form.mediaSource === 'upload' && this.form.fileData) {
+                        if (form.value.mediaSource === 'upload' && form.value.fileData) {
                             payload.file = {
-                                mimetype: this.form.fileData.mimetype,
-                                data: this.form.fileData.data,
-                                filename: this.form.filename || this.form.fileData.filename
+                                mimetype: form.value.fileData.mimetype,
+                                data: form.value.fileData.data,
+                                filename: form.value.filename || form.value.fileData.filename
                             };
                         } else {
-                            // URL fallback
                             payload.file = { 
-                                url: this.form.fileUrl, 
-                                filename: this.form.filename 
+                                url: form.value.fileUrl, 
+                                filename: form.value.filename 
                             };
                         }
-                        payload.caption = this.form.text;
+                        payload.caption = form.value.text;
                     }
                     return payload;
-                },
-                async sendMessage() {
-                    this.loading = true;
-                    this.lastResponse = null;
+                };
+
+                const sendMessage = async () => {
+                    loading.value = true;
+                    lastResponse.value = null;
                     try {
-                        const payload = this.getPayload();
+                        const payload = getPayload();
                         let endpoint = '/api/sendText';
-                        if (this.form.type === 'image') endpoint = '/api/sendImage';
-                        if (this.form.type === 'file') endpoint = '/api/sendFile';
-                        if (this.form.type === 'voice') endpoint = '/api/sendVoice';
-                        if (this.form.type === 'video') endpoint = '/api/sendVideo';
+                        if (form.value.type === 'image') endpoint = '/api/sendImage';
+                        if (form.value.type === 'file') endpoint = '/api/sendFile';
+                        if (form.value.type === 'voice') endpoint = '/api/sendVoice';
+                        if (form.value.type === 'video') endpoint = '/api/sendVideo';
 
                         const res = await axios.post(endpoint, payload);
-                        this.lastResponse = res.data;
-                        this.showAlert('Message sent successfully!');
+                        lastResponse.value = res.data;
+                        showToast('success', 'Success', 'Message sent successfully!');
                     } catch (e) {
-                        this.showAlert(e.response?.data?.message || e.message, 'danger');
+                        showToast('error', 'Error', e.response?.data?.message || e.message);
                     } finally {
-                        this.loading = false;
+                        loading.value = false;
                     }
-                },
-                async scheduleMessage() {
-                    this.loading = true;
-                    this.lastResponse = null;
+                };
+
+                const scheduleMessage = async () => {
+                    if (!scheduleForm.value.executeAt) {
+                        showToast('warn', 'Validation', 'Please select execution time');
+                        return;
+                    }
+                    loading.value = true;
+                    lastResponse.value = null;
                     try {
-                        const payload = this.getPayload();
-                        const id = this.scheduleForm.id || 'job-' + Date.now();
+                        const payload = getPayload();
+                        const id = scheduleForm.value.id || 'job-' + Date.now();
                         const req = {
                             id: id,
-                            executeAt: new Date(this.scheduleForm.executeAt).toISOString(),
-                            type: this.form.type,
+                            executeAt: scheduleForm.value.executeAt.toISOString(),
+                            type: form.value.type,
                             payload: payload
                         };
 
                         const res = await axios.post('/api/scheduler/schedule', req);
-                        this.lastResponse = res.data;
-                        this.showAlert('Message scheduled successfully!');
-                        this.scheduleForm.id = '';
-                        this.scheduleForm.executeAt = '';
+                        lastResponse.value = res.data;
+                        showToast('success', 'Success', 'Message scheduled successfully!');
+                        scheduleForm.value.id = '';
+                        scheduleForm.value.executeAt = null;
                     } catch (e) {
-                        this.showAlert(e.response?.data?.message || e.message, 'danger');
+                        showToast('error', 'Error', e.response?.data?.message || e.message);
                     } finally {
-                        this.loading = false;
+                        loading.value = false;
                     }
-                },
-                async fetchJobs() {
+                };
+
+                const fetchJobs = async () => {
+                    loading.value = true;
                     try {
                         const res = await axios.get('/api/scheduler/jobs');
-                        this.jobs = res.data;
+                        jobs.value = res.data;
                     } catch (e) {
-                        this.showAlert('Failed to fetch jobs', 'danger');
+                        showToast('error', 'Error', 'Failed to fetch jobs');
+                    } finally {
+                        loading.value = false;
                     }
-                },
-                async cancelJob(id) {
-                    if(!confirm('Are you sure you want to cancel this job?')) return;
-                    try {
-                        await axios.delete('/api/scheduler/jobs/' + id);
-                        this.fetchJobs();
-                        this.showAlert('Job cancelled');
-                    } catch (e) {
-                        this.showAlert('Failed to cancel job', 'danger');
-                    }
-                }
+                };
+
+                const cancelJob = (id) => {
+                    confirm.require({
+                        message: 'Are you sure you want to cancel this job?',
+                        header: 'Confirmation',
+                        icon: 'pi pi-exclamation-triangle',
+                        accept: async () => {
+                            try {
+                                await axios.delete('/api/scheduler/jobs/' + id);
+                                fetchJobs();
+                                showToast('success', 'Success', 'Job cancelled');
+                            } catch (e) {
+                                showToast('error', 'Error', 'Failed to cancel job');
+                            }
+                        }
+                    });
+                };
+
+                onMounted(() => {
+                    setupAxios();
+                    fetchSessions();
+                });
+
+                return {
+                    view, loading, sessions, selectedSession, currentSession, apiKey,
+                    form, scheduleForm, jobs, lastResponse,
+                    messageTypes, mediaSourceOptions,
+                    saveApiKey, handleFileUpload, sendMessage, scheduleMessage, fetchJobs, cancelJob,
+                    formatFileSize, formatTime
+                };
             }
-        }).mount('#app');
+        });
+
+        app.use(primevue.config.default);
+        app.use(primevue.toastservice);
+        app.use(primevue.confirmationservice);
+
+        app.component('p-button', primevue.button);
+        app.component('p-inputtext', primevue.inputtext);
+        app.component('p-textarea', primevue.textarea);
+        app.component('p-dropdown', primevue.dropdown);
+        app.component('p-calendar', primevue.calendar);
+        app.component('p-toast', primevue.toast);
+        app.component('p-selectbutton', primevue.selectbutton);
+        app.component('p-datatable', primevue.datatable);
+        app.component('p-column', primevue.column);
+        app.component('p-card', primevue.card);
+        app.component('p-panel', primevue.panel);
+        app.component('p-confirmdialog', primevue.confirmdialog);
+
+        app.mount('#app');
     </script>
 </body>
 </html>
