@@ -27,14 +27,27 @@
     <script src="https://unpkg.com/primevue@3.40.1/confirmationservice/confirmationservice.min.js"></script>
 
     <!-- Styles -->
-    <!-- Use the LOCAL theme from the dashboard to match perfectly -->
-    <link rel="stylesheet" href="/dashboard/themes/lara-dark-green/theme.css">
-    
     <link href="https://unpkg.com/primevue@3.40.1/resources/primevue.min.css" rel="stylesheet">
     <link href="https://unpkg.com/primeicons/primeicons.css" rel="stylesheet">
     <link href="https://unpkg.com/primeflex@3.3.1/primeflex.min.css" rel="stylesheet">
+    
+    <!-- Use the LOCAL theme from the dashboard to match perfectly -->
+    <!-- Load LAST to override defaults -->
+    <link rel="stylesheet" href="/dashboard/themes/lara-dark-green/theme.css">
 
     <style>
+        /* Fix for missing backgrounds on overlays when mixing CDN PrimeVue with Nuxt Theme */
+        .p-dropdown-panel, .p-datepicker, .p-dialog, .p-overlay {
+            background-color: var(--surface-overlay) !important;
+            color: var(--text-color) !important;
+        }
+        .p-dropdown-item {
+            color: var(--text-color) !important;
+        }
+        .p-dropdown-item:hover {
+            background-color: var(--surface-hover) !important;
+        }
+        
         body {
             margin: 0;
             background-color: var(--surface-ground);
