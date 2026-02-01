@@ -104,13 +104,29 @@
                             </div>
 
                             <div class="mb-3" v-if="form.type !== 'text'">
+                                <label class="form-label">Media Source</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="mediaSource" id="sourceUrl" value="url" v-model="form.mediaSource">
+                                    <label class="btn btn-outline-primary" for="sourceUrl">Link (URL)</label>
+                                    <input type="radio" class="btn-check" name="mediaSource" id="sourceUpload" value="upload" v-model="form.mediaSource">
+                                    <label class="btn btn-outline-primary" for="sourceUpload">Upload File</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3" v-if="form.type !== 'text' && form.mediaSource === 'url'">
                                 <label class="form-label">File URL</label>
                                 <input type="url" class="form-control" v-model="form.fileUrl" placeholder="https://example.com/file.jpg">
                                 <div class="form-text">Direct URL to the media file</div>
                             </div>
+
+                            <div class="mb-3" v-if="form.type !== 'text' && form.mediaSource === 'upload'">
+                                <label class="form-label">Select File</label>
+                                <input type="file" class="form-control" @change="handleFileUpload">
+                                <div class="form-text" v-if="form.fileData">Selected: {{ form.fileData.filename }} ({{ Math.round(form.fileData.data.length * 0.75 / 1024) }} KB)</div>
+                            </div>
                             
                             <div class="mb-3" v-if="form.type !== 'text'">
-                                <label class="form-label">Filename (Optional)</label>
+                                <label class="form-label">Filename (Optional override)</label>
                                 <input type="text" class="form-control" v-model="form.filename" placeholder="image.jpg">
                             </div>
 
@@ -172,8 +188,24 @@
                             </div>
 
                             <div class="mb-3" v-if="form.type !== 'text'">
+                                <label class="form-label">Media Source</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="mediaSourceSchedule" id="schedSourceUrl" value="url" v-model="form.mediaSource">
+                                    <label class="btn btn-outline-success" for="schedSourceUrl">Link (URL)</label>
+                                    <input type="radio" class="btn-check" name="mediaSourceSchedule" id="schedSourceUpload" value="upload" v-model="form.mediaSource">
+                                    <label class="btn btn-outline-success" for="schedSourceUpload">Upload File</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3" v-if="form.type !== 'text' && form.mediaSource === 'url'">
                                 <label class="form-label">File URL</label>
                                 <input type="url" class="form-control" v-model="form.fileUrl" required>
+                            </div>
+
+                            <div class="mb-3" v-if="form.type !== 'text' && form.mediaSource === 'upload'">
+                                <label class="form-label">Select File</label>
+                                <input type="file" class="form-control" @change="handleFileUpload">
+                                <div class="form-text" v-if="form.fileData">Selected: {{ form.fileData.filename }}</div>
                             </div>
                             
                             <div class="mb-3" v-if="form.type !== 'text'">
@@ -264,7 +296,9 @@
                         type: 'text',
                         text: '',
                         fileUrl: '',
-                        filename: ''
+                        filename: '',
+                        mediaSource: 'url', // 'url' or 'upload'
+                        fileData: null, // { mimetype, data, filename }
                     },
                     
                     // Schedule specific
@@ -322,6 +356,30 @@
                 fetchSessionInfo() {
                     // Logic to refresh session status if needed
                 },
+                handleFileUpload(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const result = e.target.result;
+                        // result is like "data:image/jpeg;base64,/9j/4AAQ..."
+                        const parts = result.split(',');
+                        const mime = parts[0].match(/:(.*?);/)[1];
+                        const data = parts[1];
+                        
+                        this.form.fileData = {
+                            mimetype: mime,
+                            data: data,
+                            filename: file.name
+                        };
+                        // Auto-fill filename if empty
+                        if (!this.form.filename) {
+                            this.form.filename = file.name;
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                },
                 getPayload() {
                     const payload = {
                         session: this.selectedSession,
@@ -331,7 +389,20 @@
                     if (this.form.type === 'text') {
                         payload.text = this.form.text;
                     } else {
-                        payload.file = { url: this.form.fileUrl, filename: this.form.filename };
+                        // Image, File, Voice, Video
+                        if (this.form.mediaSource === 'upload' && this.form.fileData) {
+                            payload.file = {
+                                mimetype: this.form.fileData.mimetype,
+                                data: this.form.fileData.data,
+                                filename: this.form.filename || this.form.fileData.filename
+                            };
+                        } else {
+                            // URL fallback
+                            payload.file = { 
+                                url: this.form.fileUrl, 
+                                filename: this.form.filename 
+                            };
+                        }
                         payload.caption = this.form.text;
                     }
                     return payload;
