@@ -6,8 +6,7 @@
 
 **WAHA** - **W**hats**A**pp **H**TTP **A**PI (REST API) that you can install on your own server and run in less than 5 minutes!
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/devlikeapro/waha)](https://hub.docker.com/r/devlikeapro/waha)
-
+- Image: `ghcr.io/weitheng/waha:core-latest`
 - Documentation: [https://waha.devlike.pro/](https://waha.devlike.pro/)
 - Dashboard Example: [https://waha.devlike.pro/dashboard](https://waha.devlike.pro/dashboard)
 - Swagger Example: [https://waha.devlike.pro/swagger](https://waha.devlike.pro/swagger)
@@ -50,24 +49,15 @@ Assuming you have installed [Docker](https://docs.docker.com/get-docker/), let's
 
 
 ```bash
-docker pull devlikeapro/waha
+docker pull ghcr.io/weitheng/waha:core-latest
 ```
-
-
-```bash
-docker login -u devlikeapro -p {KEY}
-docker pull devlikeapro/waha-plus
-docker logout
-```
-
-Read more about how to get `PASSWORD` for [**➕ WAHA Plus**](https://waha.devlike.pro/docs/how-to/waha-plus/)
 
 ### 2. Run WhatsApp HTTP API
 
 Run WhatsApp HTTP API:
 
 ```bash
-docker run -it --rm -p 3000:3000/tcp --name waha devlikeapro/waha
+docker run -it --rm -p 3000:3000/tcp --name waha ghcr.io/weitheng/waha:core-latest
 
 # It prints logs and the last line must be
 # WhatsApp HTTP API is running on: http://[::1]:3000
@@ -76,6 +66,21 @@ docker run -it --rm -p 3000:3000/tcp --name waha devlikeapro/waha
 Open the link in your browser [http://localhost:3000/](http://localhost:3000/) and you'll see API documentation
 (Swagger).
 
+## Features
+
+### Scheduler & Campaigns (NEW!) 📅
+WAHA now includes a powerful **Scheduler Dashboard** accessible at `http://localhost:3000/dashboard`.
+
+**Features:**
+- **Visual Scheduler:** Schedule Text, Image, Video, Voice, and File messages for the future.
+- **Bulk Campaigns:** Upload a CSV file to send personalized messages (e.g., "Hello {Name}") to hundreds of contacts with random delays to avoid spam detection.
+- **Audit Log:** View history of all executed jobs (Completed/Failed) with detailed results.
+- **Drag & Drop:** Easily upload media files by dragging them into the UI.
+
+To access:
+1. Open [http://localhost:3000/dashboard](http://localhost:3000/dashboard)
+2. Click on the **"📅 Scheduler"** button in the bottom right.
+3. Enter your `WAHA_API_KEY` if configured.
 
 ### 3. Start a new session
 
