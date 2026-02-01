@@ -174,6 +174,10 @@
                     <i class="pi pi-list"></i>
                     <span>Scheduled Jobs</span>
                 </div>
+                <div class="nav-item" :class="{ active: view === 'history' }" @click="fetchHistory(); view = 'history'">
+                    <i class="pi pi-history"></i>
+                    <span>History</span>
+                </div>
             </div>
 
             <!-- Main Content -->
@@ -311,6 +315,41 @@
                         </template>
                     </p-card>
                 </div>
+
+                <!-- History View -->
+                <div v-if="view === 'history'" class="fadein animation-duration-300">
+                    <div class="flex justify-content-between align-items-center mb-4">
+                        <h2 class="m-0">Job History</h2>
+                        <p-button icon="pi pi-refresh" label="Refresh" outlined @click="fetchHistory"></p-button>
+                    </div>
+
+                    <p-card>
+                        <template #content>
+                            <p-datatable :value="history" responsive-layout="scroll" :loading="loading" striped-rows :paginator="true" :rows="10">
+                                <template #empty>No history found.</template>
+                                <p-column field="jobId" header="Job ID"></p-column>
+                                <p-column field="status" header="Status">
+                                    <template #body="slotProps">
+                                        <span class="status-badge" :class="'status-' + (slotProps.data.status === 'completed' ? 'working' : 'failed')"></span>
+                                        {{ slotProps.data.status }}
+                                    </template>
+                                </p-column>
+                                <p-column field="executedAt" header="Executed At">
+                                    <template #body="slotProps">
+                                        {{ formatTime(new Date(slotProps.data.executedAt).toISOString()) }}
+                                    </template>
+                                </p-column>
+                                <p-column header="Result">
+                                    <template #body="slotProps">
+                                        <div style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" :title="JSON.stringify(slotProps.data.result)">
+                                            {{ typeof slotProps.data.result === 'object' ? JSON.stringify(slotProps.data.result) : slotProps.data.result }}
+                                        </div>
+                                    </template>
+                                </p-column>
+                            </p-datatable>
+                        </template>
+                    </p-card>
+                </div>
             </div>
         </div>
     </div>
@@ -364,6 +403,7 @@
                 });
 
                 const jobs = ref([]);
+                const history = ref([]);
 
                 // Constants
                 const messageTypes = [
@@ -577,6 +617,18 @@
                     }
                 };
 
+                const fetchHistory = async () => {
+                    loading.value = true;
+                    try {
+                        const res = await axios.get('/api/scheduler/history');
+                        history.value = res.data;
+                    } catch (e) {
+                        showToast('error', 'Error', 'Failed to fetch history');
+                    } finally {
+                        loading.value = false;
+                    }
+                };
+
                 const cancelJob = (id) => {
                     confirm.require({
                         message: 'Are you sure you want to cancel this job?',
@@ -601,9 +653,9 @@
 
                 return {
                     view, loading, isDragging, sessions, selectedSession, currentSession, apiKey,
-                    form, scheduleForm, jobs, lastResponse,
+                    form, scheduleForm, jobs, history, lastResponse,
                     messageTypes, mediaSourceOptions,
-                    saveApiKey, handleFileUpload, handleDrop, detectTypeFromUrl, sendMessage, scheduleMessage, fetchJobs, cancelJob,
+                    saveApiKey, handleFileUpload, handleDrop, detectTypeFromUrl, sendMessage, scheduleMessage, fetchJobs, fetchHistory, cancelJob,
                     formatFileSize, formatTime
                 };
             }

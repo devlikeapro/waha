@@ -20,6 +20,12 @@ export class SchedulerController {
     return this.service.listJobs();
   }
 
+  @Get('/history')
+  @ApiOperation({ summary: 'Get execution history of scheduled jobs' })
+  getHistory() {
+    return this.service.getHistory();
+  }
+
   @Delete('/jobs/:id')
   @ApiOperation({ summary: 'Cancel a scheduled job' })
   cancelJob(@Param('id') id: string) {

@@ -88,9 +88,11 @@ export class SchedulerService implements OnModuleInit {
         }
         if (result) {
             this.logger.log(`Job ${jobName} executed successfully. Result: ${JSON.stringify(result)}`);
+            await this.repository.saveHistory(jobName, 'completed', result);
         }
       } catch (e) {
         this.logger.error(`Failed to execute job ${jobName}`, e);
+        await this.repository.saveHistory(jobName, 'failed', e.message || String(e));
       } finally {
           try {
             this.schedulerRegistry.deleteCronJob(jobName);
@@ -121,6 +123,10 @@ export class SchedulerService implements OnModuleInit {
         result.push({ id: key, nextExecution: next });
     });
     return result;
+  }
+
+  getHistory() {
+      return this.repository.getHistory();
   }
   
   async cancelJob(id: string) {

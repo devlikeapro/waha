@@ -6,6 +6,7 @@ import { ScheduleMessageRequest } from './scheduler.dto';
 @Injectable()
 export class SchedulerRepository {
     private tableName = 'scheduled_jobs';
+    private historyTableName = 'job_history';
     private knex: Knex;
 
     constructor(private sessionManager: SessionManager) {}
@@ -23,14 +24,23 @@ export class SchedulerRepository {
              throw new Error('Could not access WAHA Database from SessionManager.store');
         }
 
-        const exists = await this.knex.schema.hasTable(this.tableName);
-        if (!exists) {
+        if (!(await this.knex.schema.hasTable(this.tableName))) {
             await this.knex.schema.createTable(this.tableName, (table) => {
                 table.string('id').primary();
                 table.string('executeAt').notNullable();
                 table.string('type').notNullable();
                 table.json('payload').notNullable();
                 table.bigInteger('createdAt').defaultTo(Date.now());
+            });
+        }
+
+        if (!(await this.knex.schema.hasTable(this.historyTableName))) {
+            await this.knex.schema.createTable(this.historyTableName, (table) => {
+                table.increments('id').primary();
+                table.string('jobId').notNullable();
+                table.string('status').notNullable(); // 'completed' | 'failed'
+                table.bigInteger('executedAt').notNullable();
+                table.text('result').nullable(); // JSON string or error message
             });
         }
     }
@@ -46,6 +56,31 @@ export class SchedulerRepository {
             })
             .onConflict('id')
             .merge(); // Upsert
+    }
+
+    async saveHistory(jobId: string, status: string, result: any) {
+        await this.knex(this.historyTableName).insert({
+            jobId: jobId,
+            status: status,
+            executedAt: Date.now(),
+            result: typeof result === 'string' ? result : JSON.stringify(result)
+        });
+    }
+
+    async getHistory(limit = 100): Promise<any[]> {
+        const rows = await this.knex(this.historyTableName)
+            .select('*')
+            .orderBy('executedAt', 'desc')
+            .limit(limit);
+            
+        return rows.map(row => ({
+            ...row,
+            result: this.tryParse(row.result)
+        }));
+    }
+
+    private tryParse(val: string) {
+        try { return JSON.parse(val); } catch { return val; }
     }
 
     async delete(id: string) {
