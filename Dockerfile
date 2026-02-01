@@ -8,7 +8,7 @@ FROM node:${NODE_IMAGE_TAG} AS build
 ENV PUPPETEER_SKIP_DOWNLOAD=True
 
 # git + build toolchain for git deps
-RUN apt-get update && apt-get install -y git python3 build-essential cargo rustc pkg-config protobuf-compiler libssl-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y git python3 build-essential cargo rustc pkg-config protobuf-compiler libssl-dev cmake && rm -rf /var/lib/apt/lists/*
 
 # npm packages
 WORKDIR /git
