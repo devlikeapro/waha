@@ -36,16 +36,42 @@
     <link rel="stylesheet" href="/dashboard/themes/lara-dark-green/theme.css">
 
     <style>
-        /* Fix for missing backgrounds on overlays when mixing CDN PrimeVue with Nuxt Theme */
-        .p-dropdown-panel, .p-datepicker, .p-dialog, .p-overlay {
+        /* Force background for overlays - Critical Fix */
+        .p-dropdown-panel, .p-datepicker, .p-dialog, .p-overlay, .p-menu, .p-tieredmenu {
+            background-color: #1e1e1e !important; /* Fallback dark */
             background-color: var(--surface-overlay) !important;
             color: var(--text-color) !important;
+            border: 1px solid var(--surface-border) !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
         }
+        
         .p-dropdown-item {
             color: var(--text-color) !important;
+            padding: 0.75rem 1rem !important;
         }
-        .p-dropdown-item:hover {
+        
+        .p-dropdown-item:hover, .p-dropdown-item.p-highlight {
             background-color: var(--surface-hover) !important;
+            color: var(--text-color) !important;
+        }
+
+        .p-dropdown-items-wrapper {
+            background-color: inherit !important;
+        }
+
+        /* Fix overlapping text in session dropdown */
+        .session-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            gap: 1rem;
+        }
+        .session-name {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         body {
@@ -150,10 +176,18 @@
                     <label class="text-xs text-500 font-bold mb-2 block">SESSION</label>
                     <p-dropdown v-model="selectedSession" :options="sessions" option-label="name" option-value="name" placeholder="Select Session" class="w-full" @change="onSessionChange">
                         <template #option="slotProps">
-                            <div class="flex align-items-center justify-content-between w-full">
-                                <div>{{ slotProps.option.name }}</div>
+                            <div class="session-option">
+                                <div class="session-name" :title="slotProps.option.name">{{ slotProps.option.name }}</div>
                                 <div :class="'status-badge status-' + (slotProps.option.status || '').toLowerCase()"></div>
                             </div>
+                        </template>
+                        <template #value="slotProps">
+                            <div v-if="slotProps.value" class="session-option">
+                                <div class="session-name">{{ slotProps.value }}</div>
+                            </div>
+                            <span v-else>
+                                {{ slotProps.placeholder }}
+                            </span>
                         </template>
                     </p-dropdown>
                     <div class="mt-2 text-sm" v-if="currentSession">
@@ -533,6 +567,10 @@
                 const currentSession = computed(() => sessions.value.find(s => s.name === selectedSession.value));
 
                 // Methods
+                const onSessionChange = () => {
+                    // Logic when session changes (e.g. refresh status)
+                };
+
                 const onAttachmentChange = () => {
                     if (form.value.attachmentType === 'none') {
                         form.value.type = 'text';
