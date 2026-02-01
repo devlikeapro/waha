@@ -235,7 +235,7 @@
                                                 <span class="p-inputgroup-addon">
                                                     <i class="pi pi-link"></i>
                                                 </span>
-                                                <p-inputtext id="fileUrl" v-model="form.fileUrl" placeholder="https://example.com/file.jpg"></p-inputtext>
+                                                <p-inputtext id="fileUrl" v-model="form.fileUrl" placeholder="https://example.com/file.jpg" @blur="detectTypeFromUrl"></p-inputtext>
                                             </div>
                                         </div>
 
@@ -433,6 +433,22 @@
                     processFile(file);
                 };
 
+                const detectTypeFromUrl = () => {
+                    const url = form.value.fileUrl;
+                    if (!url) return;
+                    
+                    const ext = url.split('.').pop().toLowerCase();
+                    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+                        form.value.type = 'image';
+                    } else if (['mp4', 'avi', 'mov', 'mkv'].includes(ext)) {
+                        form.value.type = 'video';
+                    } else if (['mp3', 'ogg', 'wav'].includes(ext)) {
+                        form.value.type = 'voice';
+                    } else if (['pdf', 'doc', 'docx', 'xls', 'xlsx', 'zip'].includes(ext)) {
+                        form.value.type = 'file';
+                    }
+                };
+
                 const handleDrop = (event) => {
                     isDragging.value = false;
                     const file = event.dataTransfer.files[0];
@@ -454,6 +470,18 @@
                             data: data,
                             filename: file.name
                         };
+                        
+                        // Auto-detect type
+                        if (mime.startsWith('image/')) {
+                            form.value.type = 'image';
+                        } else if (mime.startsWith('video/')) {
+                            form.value.type = 'video';
+                        } else if (mime.startsWith('audio/')) {
+                            form.value.type = 'voice';
+                        } else {
+                            form.value.type = 'file';
+                        }
+
                         if (!form.value.filename) {
                             form.value.filename = file.name;
                         }
@@ -575,7 +603,7 @@
                     view, loading, isDragging, sessions, selectedSession, currentSession, apiKey,
                     form, scheduleForm, jobs, lastResponse,
                     messageTypes, mediaSourceOptions,
-                    saveApiKey, handleFileUpload, handleDrop, sendMessage, scheduleMessage, fetchJobs, cancelJob,
+                    saveApiKey, handleFileUpload, handleDrop, detectTypeFromUrl, sendMessage, scheduleMessage, fetchJobs, cancelJob,
                     formatFileSize, formatTime
                 };
             }
