@@ -111,7 +111,6 @@
         
         /* PrimeVue overrides/helpers */
         .p-field { margin-bottom: 1.5rem; }
-        .p-field > label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
         .w-full { width: 100%; }
         .file-upload-box {
             border: 2px dashed var(--surface-border);
@@ -191,11 +190,11 @@
                                     <!-- Schedule Specific Fields -->
                                     <div v-if="view === 'schedule'" class="formgrid grid mb-4">
                                         <div class="field col-12 md:col-6">
-                                            <label for="schedId">Job ID (Optional)</label>
+                                            <label for="schedId" class="font-bold block mb-2">Job ID (Optional)</label>
                                             <p-inputtext id="schedId" v-model="scheduleForm.id" class="w-full" placeholder="Auto-generated if empty"></p-inputtext>
                                         </div>
                                         <div class="field col-12 md:col-6">
-                                            <label for="executeAt">Execute At</label>
+                                            <label for="executeAt" class="font-bold block mb-2">Execute At</label>
                                             <p-calendar id="executeAt" v-model="scheduleForm.executeAt" :show-time="true" :show-seconds="true" class="w-full" placeholder="Select date & time"></p-calendar>
                                         </div>
                                     </div>
@@ -204,30 +203,30 @@
                                     <!-- Common Fields -->
                                     <div class="formgrid grid">
                                         <div class="field col-12 md:col-6">
-                                            <label for="chatId">Phone Number (Chat ID)</label>
+                                            <label for="chatId" class="font-bold block mb-2">Phone Number (Chat ID)</label>
                                             <p-inputtext id="chatId" v-model="form.chatId" class="w-full" placeholder="12125551234@c.us"></p-inputtext>
-                                            <small class="text-secondary">International format without +, append @c.us</small>
+                                            <small class="text-secondary block mt-1">International format without +, append @c.us</small>
                                         </div>
                                         <div class="field col-12 md:col-6">
-                                            <label for="type">Message Type</label>
+                                            <label for="type" class="font-bold block mb-2">Message Type</label>
                                             <p-dropdown id="type" v-model="form.type" :options="messageTypes" option-label="label" option-value="value" class="w-full"></p-dropdown>
                                         </div>
                                     </div>
 
                                     <div class="field" v-if="['text', 'image', 'file', 'video'].includes(form.type)">
-                                        <label for="text">{{ form.type === 'text' ? 'Message' : 'Caption' }}</label>
+                                        <label for="text" class="font-bold block mb-2">{{ form.type === 'text' ? 'Message' : 'Caption' }}</label>
                                         <p-textarea id="text" v-model="form.text" rows="3" class="w-full" :auto-resize="true"></p-textarea>
                                     </div>
 
                                     <!-- Media Handling -->
                                     <div v-if="form.type !== 'text'" class="surface-ground p-3 border-round mb-3">
                                         <div class="field">
-                                            <label class="mb-2">Media Source</label>
+                                            <label class="font-bold block mb-2">Media Source</label>
                                             <p-selectbutton v-model="form.mediaSource" :options="mediaSourceOptions" option-label="name" option-value="value"></p-selectbutton>
                                         </div>
 
                                         <div v-if="form.mediaSource === 'url'" class="field mb-0">
-                                            <label for="fileUrl">File URL</label>
+                                            <label for="fileUrl" class="font-bold block mb-2">File URL</label>
                                             <div class="p-inputgroup">
                                                 <span class="p-inputgroup-addon">
                                                     <i class="pi pi-link"></i>
@@ -237,7 +236,7 @@
                                         </div>
 
                                         <div v-if="form.mediaSource === 'upload'" class="field mb-0">
-                                            <label for="fileUpload">Upload File</label>
+                                            <label for="fileUpload" class="font-bold block mb-2">Upload File</label>
                                             <div class="file-upload-box" @click="$refs.fileInput.click()">
                                                 <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none">
                                                 <div v-if="!form.fileData">
@@ -254,14 +253,15 @@
                                     </div>
 
                                     <div class="field" v-if="form.type !== 'text'">
-                                        <label for="filename">Filename (Optional)</label>
+                                        <label for="filename" class="font-bold block mb-2">Filename (Optional)</label>
                                         <p-inputtext id="filename" v-model="form.filename" class="w-full" placeholder="custom-name.jpg"></p-inputtext>
                                     </div>
 
-                                    <div class="flex justify-content-end mt-4">
+                                    <div class="mt-5">
                                         <p-button :label="view === 'send' ? 'Send Message' : 'Schedule Message'" 
                                                   :icon="view === 'send' ? 'pi pi-send' : 'pi pi-calendar-plus'" 
                                                   :loading="loading" 
+                                                  class="w-full p-button-lg"
                                                   @click="view === 'send' ? sendMessage() : scheduleMessage()"></p-button>
                                     </div>
                                 </template>
