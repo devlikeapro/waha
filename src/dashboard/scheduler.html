@@ -148,10 +148,16 @@
                 
                 <div class="px-2 mb-3">
                     <label class="text-xs text-500 font-bold mb-2 block">SESSION</label>
-                    <p-dropdown v-model="selectedSession" :options="sessions" option-label="name" option-value="name" placeholder="Select Session" class="w-full" @change="onSessionChange"></p-dropdown>
+                    <p-dropdown v-model="selectedSession" :options="sessions" option-label="name" option-value="name" placeholder="Select Session" class="w-full" @change="onSessionChange">
+                        <template #option="slotProps">
+                            <div class="flex align-items-center justify-content-between w-full">
+                                <div>{{ slotProps.option.name }}</div>
+                                <div :class="'status-badge status-' + (slotProps.option.status || '').toLowerCase()"></div>
+                            </div>
+                        </template>
+                    </p-dropdown>
                     <div class="mt-2 text-sm" v-if="currentSession">
-                        <span class="status-badge" :class="'status-' + (currentSession.status || '').toLowerCase()"></span>
-                        {{ currentSession.status }}
+                        <span class="font-bold">Status:</span> {{ currentSession.status }}
                     </div>
                 </div>
 
@@ -213,42 +219,31 @@
                                     <div v-if="view === 'schedule'" class="p-divider p-component p-divider-horizontal p-divider-solid p-divider-left mb-4" role="separator"></div>
 
                                     <!-- Common Fields -->
-                                    <div class="formgrid grid">
-                                        <div class="field col-12 md:col-6">
-                                            <label for="chatId" class="font-bold block mb-2">Phone Number (Chat ID)</label>
-                                            <p-inputtext id="chatId" v-model="form.chatId" class="w-full" placeholder="12125551234@c.us"></p-inputtext>
-                                            <small class="text-secondary block mt-1">International format without +, append @c.us</small>
-                                        </div>
-                                        <div class="field col-12 md:col-6">
-                                            <label for="type" class="font-bold block mb-2">Message Type</label>
-                                            <p-dropdown id="type" v-model="form.type" :options="messageTypes" option-label="label" option-value="value" class="w-full"></p-dropdown>
-                                        </div>
+                                    <div class="field">
+                                        <label for="chatId" class="font-bold block mb-2">Phone Number (Chat ID)</label>
+                                        <p-inputtext id="chatId" v-model="form.chatId" class="w-full" placeholder="12125551234@c.us"></p-inputtext>
+                                        <small class="text-secondary block mt-1">International format without +, append @c.us</small>
                                     </div>
 
-                                    <div class="field" v-if="['text', 'image', 'file', 'video'].includes(form.type)">
-                                        <label for="text" class="font-bold block mb-2">{{ form.type === 'text' ? 'Message' : 'Caption' }}</label>
-                                        <p-textarea id="text" v-model="form.text" rows="3" class="w-full" :auto-resize="true"></p-textarea>
-                                    </div>
-
-                                    <!-- Media Handling -->
-                                    <div v-if="form.type !== 'text'" class="surface-ground p-3 border-round mb-3">
+                                    <!-- Attachment Section -->
+                                    <div class="surface-ground p-3 border-round mb-3">
                                         <div class="field">
-                                            <label class="font-bold block mb-2">Media Source</label>
-                                            <p-selectbutton v-model="form.mediaSource" :options="mediaSourceOptions" option-label="name" option-value="value"></p-selectbutton>
+                                            <label class="font-bold block mb-2">Attachment</label>
+                                            <p-selectbutton v-model="form.attachmentType" :options="attachmentOptions" option-label="name" option-value="value" @change="onAttachmentChange"></p-selectbutton>
                                         </div>
 
-                                        <div v-if="form.mediaSource === 'url'" class="field mb-0">
+                                        <!-- URL Input -->
+                                        <div v-if="form.attachmentType === 'url'" class="field mb-0 fadein animation-duration-300">
                                             <label for="fileUrl" class="font-bold block mb-2">File URL</label>
                                             <div class="p-inputgroup">
-                                                <span class="p-inputgroup-addon">
-                                                    <i class="pi pi-link"></i>
-                                                </span>
+                                                <span class="p-inputgroup-addon"><i class="pi pi-link"></i></span>
                                                 <p-inputtext id="fileUrl" v-model="form.fileUrl" placeholder="https://example.com/file.jpg" @blur="detectTypeFromUrl"></p-inputtext>
                                             </div>
                                         </div>
 
-                                        <div v-if="form.mediaSource === 'upload'" class="field mb-0">
-                                            <label for="fileUpload" class="font-bold block mb-2">Upload File</label>
+                                        <!-- File Upload -->
+                                        <div v-if="form.attachmentType === 'upload'" class="field mb-0 fadein animation-duration-300">
+                                            <label class="font-bold block mb-2">Upload File</label>
                                             <div class="file-upload-box" 
                                                  :class="{ 'drag-active': isDragging }"
                                                  @click="$refs.fileInput.click()"
@@ -269,9 +264,21 @@
                                         </div>
                                     </div>
 
-                                    <div class="field" v-if="form.type !== 'text'">
-                                        <label for="filename" class="font-bold block mb-2">Filename (Optional)</label>
-                                        <p-inputtext id="filename" v-model="form.filename" class="w-full" placeholder="custom-name.jpg"></p-inputtext>
+                                    <div class="field">
+                                        <label for="text" class="font-bold block mb-2">{{ form.type === 'text' ? 'Message' : 'Caption' }}</label>
+                                        <p-textarea id="text" v-model="form.text" rows="3" class="w-full" :auto-resize="true"></p-textarea>
+                                    </div>
+
+                                    <div class="formgrid grid">
+                                        <div class="field col-12 md:col-6">
+                                            <label for="type" class="font-bold block mb-2">Message Type</label>
+                                            <p-dropdown id="type" v-model="form.type" :options="messageTypes" option-label="label" option-value="value" class="w-full"></p-dropdown>
+                                            <small class="text-secondary">Auto-detected based on attachment</small>
+                                        </div>
+                                        <div class="field col-12 md:col-6" v-if="form.attachmentType !== 'none'">
+                                            <label for="filename" class="font-bold block mb-2">Filename (Optional)</label>
+                                            <p-inputtext id="filename" v-model="form.filename" class="w-full" placeholder="custom-name.jpg"></p-inputtext>
+                                        </div>
                                     </div>
 
                                     <div class="mt-5">
@@ -485,7 +492,7 @@
                     text: '',
                     fileUrl: '',
                     filename: '',
-                    mediaSource: 'url',
+                    attachmentType: 'none', // 'none', 'url', 'upload'
                     fileData: null
                 });
 
@@ -516,7 +523,8 @@
                     { label: 'Video', value: 'video' }
                 ];
 
-                const mediaSourceOptions = [
+                const attachmentOptions = [
+                    { name: 'None', value: 'none' },
                     { name: 'Link (URL)', value: 'url' },
                     { name: 'Upload File', value: 'upload' }
                 ];
@@ -525,6 +533,18 @@
                 const currentSession = computed(() => sessions.value.find(s => s.name === selectedSession.value));
 
                 // Methods
+                const onAttachmentChange = () => {
+                    if (form.value.attachmentType === 'none') {
+                        form.value.type = 'text';
+                        form.value.fileUrl = '';
+                        form.value.fileData = null;
+                        form.value.filename = '';
+                    } else if (form.value.attachmentType === 'url') {
+                        // Keep current type or default to image if text?
+                        // Better to detect later
+                    }
+                };
+
                 const saveApiKey = () => {
                     localStorage.setItem('waha_api_key', apiKey.value);
                     setupAxios();
@@ -640,7 +660,7 @@
                     if (form.value.type === 'text') {
                         payload.text = form.value.text;
                     } else {
-                        if (form.value.mediaSource === 'upload' && form.value.fileData) {
+                        if (form.value.attachmentType === 'upload' && form.value.fileData) {
                             payload.file = {
                                 mimetype: form.value.fileData.mimetype,
                                 data: form.value.fileData.data,
@@ -858,9 +878,9 @@
                 return {
                     view, loading, isDragging, sessions, selectedSession, currentSession, apiKey,
                     form, scheduleForm, jobs, history, lastResponse,
-                    messageTypes, mediaSourceOptions, campaign, previewMessage,
+                    messageTypes, attachmentOptions, campaign, previewMessage,
                     saveApiKey, handleFileUpload, handleDrop, detectTypeFromUrl, sendMessage, scheduleMessage, fetchJobs, fetchHistory, cancelJob,
-                    handleCsvUpload, insertVariable, startCampaign,
+                    handleCsvUpload, insertVariable, startCampaign, onAttachmentChange,
                     formatFileSize, formatTime
                 };
             }
