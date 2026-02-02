@@ -175,6 +175,7 @@ import { WAJSPresenceChatStateType, WebJSPresence } from './types';
 import {
   isJidGroup,
   isJidStatusBroadcast,
+  isPnUser,
   normalizeJid,
   toCusFormat,
 } from '@waha/core/utils/jids';
@@ -845,7 +846,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   async sendSeen(request: SendSeenRequest) {
-    const chat: Chat = await this.whatsapp.getChatById(
+    const chat: Chat = await this.getChatByIdResolved(
       this.ensureSuffix(request.chatId),
     );
     await chat.sendSeen();
@@ -853,7 +854,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   async startTyping(request: ChatRequest): Promise<void> {
-    const chat: Chat = await this.whatsapp.getChatById(
+    const chat: Chat = await this.getChatByIdResolved(
       this.ensureSuffix(request.chatId),
     );
     await chat.sendStateTyping();
@@ -861,7 +862,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   async stopTyping(request: ChatRequest) {
-    const chat: Chat = await this.whatsapp.getChatById(
+    const chat: Chat = await this.getChatByIdResolved(
       this.ensureSuffix(request.chatId),
     );
     await chat.clearState();
@@ -897,6 +898,34 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   /**
    * Chats methods
    */
+  private async resolveChatId(chatId: string): Promise<string> {
+    if (!chatId) {
+      return chatId;
+    }
+    const ensuredId = this.ensureSuffix(chatId);
+    if (!isPnUser(ensuredId)) {
+      return ensuredId;
+    }
+    const phoneNumber = toCusFormat(ensuredId);
+    try {
+      const lid = await this.whatsapp.findLIDByPhoneNumber(phoneNumber);
+      if (lid) {
+        return lid;
+      }
+    } catch (error) {
+      this.logger.debug(
+        { error, chatId: ensuredId },
+        'Failed to resolve LID for chat id',
+      );
+    }
+    return ensuredId;
+  }
+
+  private async getChatByIdResolved(chatId: string): Promise<Chat> {
+    const resolvedId = await this.resolveChatId(chatId);
+    return this.whatsapp.getChatById(resolvedId);
+  }
+
   getChats(pagination: PaginationParams, filter: OverviewFilter | null = null) {
     switch (pagination.sortBy) {
       case ChatSortField.ID:
@@ -957,21 +986,32 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     }
 
     const downloadMedia = query.downloadMedia;
-    // Test there's chat with id
-    await this.whatsapp.getChatById(this.ensureSuffix(chatId));
-    const pagination: PaginationParams = query;
-    const messages = await this.whatsapp.getMessages(
-      this.ensureSuffix(chatId),
-      filter,
-      pagination,
-    );
-    const promises = [];
-    for (const msg of messages) {
-      promises.push(this.processIncomingMessage(msg, downloadMedia));
+    const targetId = await this.resolveChatId(chatId);
+
+    try {
+      // Test there's chat with id
+      await this.whatsapp.getChatById(targetId);
+      const pagination: PaginationParams = query;
+      const messages = await this.whatsapp.getMessages(
+        targetId,
+        filter,
+        pagination,
+      );
+      const promises = [];
+      for (const msg of messages) {
+        promises.push(this.processIncomingMessage(msg, downloadMedia));
+      }
+      let result = await Promise.all(promises);
+      result = result.filter(Boolean);
+      return result;
+    } catch (error) {
+      // Defensive handling for the specific LID error
+      if (error.message && error.message.includes('No LID for user')) {
+        this.logger.debug(`LID not found for ${chatId}. Returning empty array.`);
+        return [];
+      }
+      throw error;
     }
-    let result = await Promise.all(promises);
-    result = result.filter(Boolean);
-    return result;
   }
 
   @Activity()
@@ -979,7 +1019,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     chatId: string,
     request: ReadChatMessagesQuery,
   ): Promise<ReadChatMessagesResponse> {
-    const chat: Chat = await this.whatsapp.getChatById(
+    const chat: Chat = await this.getChatByIdResolved(
       this.ensureSuffix(chatId),
     );
     await chat.sendSeen();
@@ -1030,13 +1070,13 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   async deleteChat(chatId) {
-    const chat = await this.whatsapp.getChatById(this.ensureSuffix(chatId));
+    const chat = await this.getChatByIdResolved(this.ensureSuffix(chatId));
     return chat.delete();
   }
 
   @Activity()
   async clearMessages(chatId) {
-    const chat = await this.whatsapp.getChatById(chatId);
+    const chat = await this.getChatByIdResolved(chatId);
     return chat.clearMessages();
   }
 
@@ -1228,7 +1268,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   public async getInfoAdminsOnly(id): Promise<SettingsSecurityChangeInfo> {
-    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const groupChat = (await this.getChatByIdResolved(id)) as GroupChat;
     return {
       // Undocumented property, can be changed in the future
       // @ts-ignore
@@ -1238,12 +1278,12 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   public async setInfoAdminsOnly(id, value) {
-    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const groupChat = (await this.getChatByIdResolved(id)) as GroupChat;
     return groupChat.setInfoAdminsOnly(value);
   }
 
   public async getMessagesAdminsOnly(id): Promise<SettingsSecurityChangeInfo> {
-    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const groupChat = (await this.getChatByIdResolved(id)) as GroupChat;
     // @ts-ignore
     return {
       // Undocumented property, can be changed in the future
@@ -1254,7 +1294,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   public async setMessagesAdminsOnly(id, value) {
-    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const groupChat = (await this.getChatByIdResolved(id)) as GroupChat;
     return groupChat.setMessagesAdminsOnly(value);
   }
 
@@ -1287,59 +1327,59 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   public getGroup(id) {
-    return this.whatsapp.getChatById(id);
+    return this.getChatByIdResolved(id);
   }
 
   public async getGroupParticipants(id: string): Promise<GroupParticipant[]> {
-    const group = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const group = (await this.getChatByIdResolved(id)) as GroupChat;
     return getParticipants(group.participants);
   }
 
   @Activity()
   public async deleteGroup(id) {
-    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const groupChat = (await this.getChatByIdResolved(id)) as GroupChat;
     return groupChat.delete();
   }
 
   @Activity()
   public async leaveGroup(id) {
-    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const groupChat = (await this.getChatByIdResolved(id)) as GroupChat;
     return groupChat.leave();
   }
 
   @Activity()
   public async setDescription(id, description) {
-    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const groupChat = (await this.getChatByIdResolved(id)) as GroupChat;
     return groupChat.setDescription(description);
   }
 
   @Activity()
   public async setSubject(id, subject) {
-    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const groupChat = (await this.getChatByIdResolved(id)) as GroupChat;
     return groupChat.setSubject(subject);
   }
 
   @Activity()
   public async getInviteCode(id): Promise<string> {
-    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const groupChat = (await this.getChatByIdResolved(id)) as GroupChat;
     return groupChat.getInviteCode();
   }
 
   @Activity()
   public async revokeInviteCode(id): Promise<string> {
-    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const groupChat = (await this.getChatByIdResolved(id)) as GroupChat;
     await groupChat.revokeInvite();
     return groupChat.getInviteCode();
   }
 
   public async getParticipants(id) {
-    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const groupChat = (await this.getChatByIdResolved(id)) as GroupChat;
     return groupChat.participants;
   }
 
   @Activity()
   public async addParticipants(id, request: ParticipantsRequest) {
-    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const groupChat = (await this.getChatByIdResolved(id)) as GroupChat;
     const participantIds = request.participants.map(
       (participant) => participant.id,
     );
@@ -1348,7 +1388,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   public async removeParticipants(id, request: ParticipantsRequest) {
-    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const groupChat = (await this.getChatByIdResolved(id)) as GroupChat;
     const participantIds = request.participants.map(
       (participant) => participant.id,
     );
@@ -1357,7 +1397,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   public async promoteParticipantsToAdmin(id, request: ParticipantsRequest) {
-    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const groupChat = (await this.getChatByIdResolved(id)) as GroupChat;
     const participantIds = request.participants.map(
       (participant) => participant.id,
     );
@@ -1366,7 +1406,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   public async demoteParticipantsToUser(id, request: ParticipantsRequest) {
-    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const groupChat = (await this.getChatByIdResolved(id)) as GroupChat;
     const participantIds = request.participants.map(
       (participant) => participant.id,
     );
@@ -1516,17 +1556,17 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         break;
       case WAHAPresenceStatus.TYPING:
         await this.maintainPresenceOnline();
-        chat = await this.whatsapp.getChatById(chatId);
+        chat = await this.getChatByIdResolved(chatId);
         await chat.sendStateTyping();
         break;
       case WAHAPresenceStatus.RECORDING:
         await this.maintainPresenceOnline();
-        chat = await this.whatsapp.getChatById(chatId);
+        chat = await this.getChatByIdResolved(chatId);
         await chat.sendStateRecording();
         break;
       case WAHAPresenceStatus.PAUSED:
         await this.maintainPresenceOnline();
-        chat = await this.whatsapp.getChatById(chatId);
+        chat = await this.getChatByIdResolved(chatId);
         await chat.clearState();
         break;
       default:
