@@ -32,74 +32,50 @@
     <link href="https://unpkg.com/primeflex@3.3.1/primeflex.min.css" rel="stylesheet">
     
     <!-- Use the LOCAL theme from the dashboard to match perfectly -->
-    <!-- Load LAST to override defaults -->
     <link rel="stylesheet" href="/dashboard/themes/lara-dark-green/theme.css">
 
-    <style>
+    <style id="dropdown-fix">
         /* 
-         * CRITICAL: Dropdown overlay fix
-         * PrimeVue appends dropdown panel to body, so we need global styles
+         * CRITICAL: Dropdown overlay fix - loaded AFTER theme
+         * Using highest specificity possible
          */
-        body .p-dropdown-panel,
-        html .p-dropdown-panel,
-        .p-dropdown-panel.p-component {
+        html body .p-dropdown-panel.p-component,
+        html body div.p-dropdown-panel {
             background: #1f2937 !important;
-            background-color: #1f2937 !important;
-            border: 1px solid #374151 !important;
+            border: 1px solid #424b57 !important;
             border-radius: 6px !important;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
-            z-index: 10000 !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
         }
         
-        body .p-dropdown-items-wrapper,
-        .p-dropdown-panel .p-dropdown-items-wrapper {
+        html body .p-dropdown-panel .p-dropdown-items-wrapper,
+        html body .p-dropdown-panel .p-dropdown-items,
+        html body .p-dropdown-panel ul {
             background: #1f2937 !important;
-            background-color: #1f2937 !important;
         }
         
-        body .p-dropdown-items,
-        .p-dropdown-panel .p-dropdown-items {
+        html body .p-dropdown-panel .p-dropdown-item,
+        html body .p-dropdown-panel li {
             background: #1f2937 !important;
-            background-color: #1f2937 !important;
-            padding: 0.5rem 0 !important;
-            margin: 0 !important;
-        }
-        
-        body .p-dropdown-item,
-        .p-dropdown-panel .p-dropdown-item {
-            background: #1f2937 !important;
-            background-color: #1f2937 !important;
             color: rgba(255, 255, 255, 0.87) !important;
-            padding: 0.75rem 1rem !important;
-            margin: 0 !important;
         }
         
-        body .p-dropdown-item:hover,
-        body .p-dropdown-item.p-highlight,
-        .p-dropdown-panel .p-dropdown-item:hover,
-        .p-dropdown-panel .p-dropdown-item.p-highlight {
+        html body .p-dropdown-panel .p-dropdown-item:hover,
+        html body .p-dropdown-panel .p-dropdown-item.p-highlight,
+        html body .p-dropdown-panel li:hover {
             background: #374151 !important;
-            background-color: #374151 !important;
-            color: #ffffff !important;
         }
         
-        /* Calendar/Datepicker panel fix */
-        body .p-datepicker,
-        body .p-datepicker-panel,
-        .p-datepicker.p-component {
+        /* Datepicker fix */
+        html body .p-datepicker.p-component,
+        html body div.p-datepicker {
             background: #1f2937 !important;
-            background-color: #1f2937 !important;
-            border: 1px solid #374151 !important;
-            border-radius: 6px !important;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
-            z-index: 10000 !important;
+            border: 1px solid #424b57 !important;
         }
         
-        body .p-datepicker .p-datepicker-header,
-        body .p-datepicker table,
-        body .p-datepicker .p-timepicker {
+        html body .p-datepicker .p-datepicker-header,
+        html body .p-datepicker table,
+        html body .p-datepicker .p-timepicker {
             background: #1f2937 !important;
-            background-color: #1f2937 !important;
         }
 
         /* Fix overlapping text in session dropdown */
@@ -959,6 +935,37 @@
                 onMounted(() => {
                     setupAxios();
                     fetchSessions();
+                    
+                    // Fix dropdown panels dynamically when they appear
+                    const observer = new MutationObserver((mutations) => {
+                        mutations.forEach((mutation) => {
+                            mutation.addedNodes.forEach((node) => {
+                                if (node.nodeType === 1) {
+                                    // Fix dropdown panels
+                                    if (node.classList && node.classList.contains('p-dropdown-panel')) {
+                                        node.style.background = '#1f2937';
+                                        node.style.backgroundColor = '#1f2937';
+                                        node.style.border = '1px solid #424b57';
+                                        node.style.borderRadius = '6px';
+                                        node.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.6)';
+                                        
+                                        const items = node.querySelectorAll('.p-dropdown-item, .p-dropdown-items, .p-dropdown-items-wrapper, ul, li');
+                                        items.forEach(item => {
+                                            item.style.background = '#1f2937';
+                                            item.style.backgroundColor = '#1f2937';
+                                        });
+                                    }
+                                    // Fix datepicker panels
+                                    if (node.classList && node.classList.contains('p-datepicker')) {
+                                        node.style.background = '#1f2937';
+                                        node.style.backgroundColor = '#1f2937';
+                                        node.style.border = '1px solid #424b57';
+                                    }
+                                }
+                            });
+                        });
+                    });
+                    observer.observe(document.body, { childList: true, subtree: true });
                 });
 
                 return {
