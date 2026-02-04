@@ -61,7 +61,13 @@
             padding: 0.5rem;
         }
         
-        /* PrimeVue input overrides for dark theme */
+        /* PrimeVue input overrides for dark theme - universal */
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        input[type="email"],
+        input,
+        textarea,
         .p-inputtext, 
         .p-textarea, 
         .p-calendar .p-inputtext,
@@ -70,17 +76,27 @@
         .p-inputgroup .p-inputtext,
         .p-card .p-inputtext,
         .p-card input,
-        .p-card textarea {
+        .p-card textarea,
+        .p-inputtext-sm {
             background-color: #1f2937 !important;
             background: #1f2937 !important;
             color: rgba(255, 255, 255, 0.87) !important;
-            border-color: #424b57 !important;
+            border: 1px solid #424b57 !important;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
         }
-        .p-inputtext:focus, .p-textarea:focus, .p-calendar .p-inputtext:focus {
+        input:focus,
+        textarea:focus,
+        .p-inputtext:focus, 
+        .p-textarea:focus, 
+        .p-calendar .p-inputtext:focus {
             border-color: #4ade80 !important;
             box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.2) !important;
+            outline: none;
         }
-        .p-inputtext::placeholder, input::placeholder, textarea::placeholder {
+        input::placeholder, 
+        textarea::placeholder,
+        .p-inputtext::placeholder {
             color: #6b7280 !important;
         }
         
