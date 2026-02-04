@@ -62,8 +62,17 @@
         }
         
         /* PrimeVue input overrides for dark theme */
-        .p-inputtext, .p-textarea, .p-calendar .p-inputtext {
+        .p-inputtext, 
+        .p-textarea, 
+        .p-calendar .p-inputtext,
+        input.p-inputtext,
+        textarea.p-inputtext,
+        .p-inputgroup .p-inputtext,
+        .p-card .p-inputtext,
+        .p-card input,
+        .p-card textarea {
             background-color: #1f2937 !important;
+            background: #1f2937 !important;
             color: rgba(255, 255, 255, 0.87) !important;
             border-color: #424b57 !important;
         }
@@ -71,8 +80,15 @@
             border-color: #4ade80 !important;
             box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.2) !important;
         }
-        .p-inputtext::placeholder {
+        .p-inputtext::placeholder, input::placeholder, textarea::placeholder {
             color: #6b7280 !important;
+        }
+        
+        /* Input group addon */
+        .p-inputgroup-addon {
+            background-color: #374151 !important;
+            border-color: #424b57 !important;
+            color: rgba(255, 255, 255, 0.87) !important;
         }
         
         /* Calendar/Datepicker dark theme */
@@ -224,14 +240,22 @@
             text-align: center;
             cursor: pointer;
             transition: border-color 0.2s;
+            position: relative;
+            background-color: #111827;
         }
         .file-upload-box:hover {
             border-color: #4ade80;
         }
         .file-upload-box.drag-active {
             border-color: #4ade80;
-            background-color: #374151;
+            background-color: #1f2937;
         }
+        
+        /* Text colors */
+        .text-500 { color: #6b7280 !important; }
+        .text-secondary { color: #9ca3af !important; }
+        .text-primary { color: #4ade80 !important; }
+        .text-green-500 { color: #4ade80 !important; }
     </style>
 </head>
 <body>
@@ -349,11 +373,10 @@
                                             <label class="font-bold block mb-2">Upload File</label>
                                             <div class="file-upload-box" 
                                                  :class="{ 'drag-active': isDragging }"
-                                                 @click="$refs.fileInput.click()"
+                                                 @click="triggerFileInput"
                                                  @dragover.prevent="isDragging = true"
                                                  @dragleave.prevent="isDragging = false"
                                                  @drop.prevent="handleDrop">
-                                                <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none">
                                                 <div v-if="!form.fileData">
                                                     <i class="pi pi-cloud-upload text-4xl text-500 mb-2"></i>
                                                     <p class="m-0">Click or Drag & Drop file here</p>
@@ -365,6 +388,8 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <!-- Hidden file input (always in DOM) -->
+                                        <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none">
                                     </div>
 
                                     <div class="field">
@@ -414,8 +439,7 @@
                             <p-card class="mb-4">
                                 <template #title>1. Upload CSV</template>
                                 <template #content>
-                                    <div class="file-upload-box mb-3" @click="$refs.csvInput.click()">
-                                        <input type="file" ref="csvInput" accept=".csv" @change="handleCsvUpload" style="display: none">
+                                    <div class="file-upload-box mb-3" @click="triggerCsvInput">
                                         <div v-if="!campaign.csvData">
                                             <i class="pi pi-file-excel text-4xl text-500 mb-2"></i>
                                             <p class="m-0">Upload CSV (Phone, Name, etc.)</p>
@@ -427,6 +451,7 @@
                                             <span class="text-500">({{ campaign.csvData.length }} rows)</span>
                                         </div>
                                     </div>
+                                    <input type="file" ref="csvInput" accept=".csv" @change="handleCsvUpload" style="display: none">
                                     
                                     <div v-if="campaign.csvData && campaign.headers.length > 0">
                                         <p class="mb-2 font-bold">Detected Columns:</p>
@@ -575,6 +600,8 @@
                 const sessions = ref([]);
                 const selectedSession = ref('');
                 const lastResponse = ref(null);
+                const fileInput = ref(null);
+                const csvInput = ref(null);
                 
                 // API Key Logic
                 let key = localStorage.getItem('waha_api_key') || '';
@@ -702,6 +729,18 @@
                 const handleFileUpload = (event) => {
                     const file = event.target.files[0];
                     processFile(file);
+                };
+
+                const triggerFileInput = () => {
+                    if (fileInput.value) {
+                        fileInput.value.click();
+                    }
+                };
+
+                const triggerCsvInput = () => {
+                    if (csvInput.value) {
+                        csvInput.value.click();
+                    }
                 };
 
                 const detectTypeFromUrl = () => {
@@ -988,6 +1027,7 @@
                     view, loading, isDragging, sessions, selectedSession, currentSession, apiKey,
                     form, scheduleForm, jobs, history, lastResponse,
                     messageTypes, attachmentOptions, campaign, previewMessage,
+                    fileInput, csvInput, triggerFileInput, triggerCsvInput,
                     saveApiKey, handleFileUpload, handleDrop, detectTypeFromUrl, sendMessage, scheduleMessage, fetchJobs, fetchHistory, cancelJob,
                     handleCsvUpload, insertVariable, startCampaign, onAttachmentChange,
                     formatFileSize, formatTime
