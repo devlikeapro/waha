@@ -183,7 +183,9 @@
         }
         
         /* Primary button styling */
-        .p-button.p-button-lg {
+        .main-action-btn .p-button,
+        .main-action-btn.p-button,
+        button.main-action-btn {
             padding: 1rem 2rem !important;
             font-size: 1.1rem !important;
             font-weight: 600 !important;
@@ -193,15 +195,16 @@
             color: #052e16 !important;
             box-shadow: 0 4px 14px 0 rgba(74, 222, 128, 0.4) !important;
             transition: all 0.2s ease !important;
+            width: 100% !important;
         }
-        .p-button.p-button-lg:hover {
+        .main-action-btn .p-button:hover,
+        .main-action-btn.p-button:hover {
             transform: translateY(-2px) !important;
             box-shadow: 0 6px 20px 0 rgba(74, 222, 128, 0.5) !important;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
         }
-        .p-button.p-button-lg:active {
-            transform: translateY(0) !important;
-        }
-        .p-button.p-button-lg .p-button-icon {
+        .main-action-btn .p-button .p-button-icon,
+        .main-action-btn.p-button .p-button-icon {
             font-size: 1.1rem !important;
         }
         
@@ -506,7 +509,7 @@
                                         <p-button :label="view === 'send' ? 'Send Message' : 'Schedule Message'" 
                                                   :icon="view === 'send' ? 'pi pi-send' : 'pi pi-calendar-plus'" 
                                                   :loading="loading" 
-                                                  class="w-full p-button-lg"
+                                                  class="w-full main-action-btn"
                                                   @click="view === 'send' ? sendMessage() : scheduleMessage()"></p-button>
                                     </div>
                                 </template>
