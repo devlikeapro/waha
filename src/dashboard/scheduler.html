@@ -61,6 +61,99 @@
             padding: 0.5rem;
         }
         
+        /* PrimeVue input overrides for dark theme */
+        .p-inputtext, .p-textarea, .p-calendar .p-inputtext {
+            background-color: #1f2937 !important;
+            color: rgba(255, 255, 255, 0.87) !important;
+            border-color: #424b57 !important;
+        }
+        .p-inputtext:focus, .p-textarea:focus, .p-calendar .p-inputtext:focus {
+            border-color: #4ade80 !important;
+            box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.2) !important;
+        }
+        .p-inputtext::placeholder {
+            color: #6b7280 !important;
+        }
+        
+        /* Calendar/Datepicker dark theme */
+        .p-datepicker {
+            background: #1f2937 !important;
+            border: 1px solid #424b57 !important;
+            border-radius: 6px !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+            z-index: 10000 !important;
+        }
+        .p-datepicker .p-datepicker-header {
+            background: #1f2937 !important;
+            border-bottom: 1px solid #424b57 !important;
+            color: rgba(255, 255, 255, 0.87) !important;
+        }
+        .p-datepicker .p-datepicker-header .p-datepicker-title button,
+        .p-datepicker .p-datepicker-header button {
+            color: rgba(255, 255, 255, 0.87) !important;
+        }
+        .p-datepicker table {
+            background: #1f2937 !important;
+        }
+        .p-datepicker table th,
+        .p-datepicker table td {
+            color: rgba(255, 255, 255, 0.87) !important;
+        }
+        .p-datepicker table td > span {
+            color: rgba(255, 255, 255, 0.87) !important;
+        }
+        .p-datepicker table td > span:hover {
+            background: #374151 !important;
+        }
+        .p-datepicker table td > span.p-highlight {
+            background: #4ade80 !important;
+            color: #052e16 !important;
+        }
+        .p-datepicker .p-timepicker {
+            background: #1f2937 !important;
+            border-top: 1px solid #424b57 !important;
+            color: rgba(255, 255, 255, 0.87) !important;
+        }
+        .p-datepicker .p-timepicker span {
+            color: rgba(255, 255, 255, 0.87) !important;
+        }
+        .p-datepicker .p-timepicker button {
+            color: rgba(255, 255, 255, 0.87) !important;
+        }
+        
+        /* Card dark theme */
+        .p-card {
+            background: #1f2937 !important;
+            border: 1px solid #374151 !important;
+            color: rgba(255, 255, 255, 0.87) !important;
+        }
+        .p-card .p-card-title {
+            color: rgba(255, 255, 255, 0.87) !important;
+        }
+        
+        /* Panel dark theme */
+        .p-panel {
+            background: #1f2937 !important;
+            border: 1px solid #374151 !important;
+        }
+        .p-panel .p-panel-header {
+            background: #1f2937 !important;
+            border-bottom: 1px solid #374151 !important;
+            color: rgba(255, 255, 255, 0.87) !important;
+        }
+        .p-panel .p-panel-content {
+            background: #1f2937 !important;
+            color: rgba(255, 255, 255, 0.87) !important;
+        }
+        
+        /* Surface ground for nested sections */
+        .surface-ground {
+            background-color: #111827 !important;
+        }
+        .surface-200 {
+            background-color: #374151 !important;
+        }
+        
         body {
             margin: 0;
             background-color: #111827;
