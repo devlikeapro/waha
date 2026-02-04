@@ -36,45 +36,39 @@
 
     <style id="dropdown-fix">
         /* 
-         * CRITICAL: Dropdown overlay fix - loaded AFTER theme
-         * Using highest specificity possible
+         * Dropdown panel fix using panel-class prop
          */
-        html body .p-dropdown-panel.p-component,
-        html body div.p-dropdown-panel {
+        .dropdown-panel-dark.p-dropdown-panel {
             background: #1f2937 !important;
             border: 1px solid #424b57 !important;
             border-radius: 6px !important;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
         }
         
-        html body .p-dropdown-panel .p-dropdown-items-wrapper,
-        html body .p-dropdown-panel .p-dropdown-items,
-        html body .p-dropdown-panel ul {
+        .dropdown-panel-dark .p-dropdown-items-wrapper,
+        .dropdown-panel-dark .p-dropdown-items {
             background: #1f2937 !important;
         }
         
-        html body .p-dropdown-panel .p-dropdown-item,
-        html body .p-dropdown-panel li {
+        .dropdown-panel-dark .p-dropdown-item {
             background: #1f2937 !important;
             color: rgba(255, 255, 255, 0.87) !important;
         }
         
-        html body .p-dropdown-panel .p-dropdown-item:hover,
-        html body .p-dropdown-panel .p-dropdown-item.p-highlight,
-        html body .p-dropdown-panel li:hover {
+        .dropdown-panel-dark .p-dropdown-item:hover,
+        .dropdown-panel-dark .p-dropdown-item.p-highlight {
             background: #374151 !important;
         }
         
         /* Datepicker fix */
-        html body .p-datepicker.p-component,
-        html body div.p-datepicker {
+        .p-datepicker.p-component {
             background: #1f2937 !important;
             border: 1px solid #424b57 !important;
         }
         
-        html body .p-datepicker .p-datepicker-header,
-        html body .p-datepicker table,
-        html body .p-datepicker .p-timepicker {
+        .p-datepicker .p-datepicker-header,
+        .p-datepicker table,
+        .p-datepicker .p-timepicker {
             background: #1f2937 !important;
         }
 
@@ -198,7 +192,7 @@
                 
                 <div class="px-2 mb-3">
                     <label class="text-xs text-500 font-bold mb-2 block">SESSION</label>
-                    <p-dropdown v-model="selectedSession" :options="sessions" option-label="name" option-value="name" placeholder="Select Session" class="w-full" @change="onSessionChange">
+                    <p-dropdown v-model="selectedSession" :options="sessions" option-label="name" option-value="name" placeholder="Select Session" class="w-full" @change="onSessionChange" panel-class="dropdown-panel-dark">
                         <template #option="slotProps">
                             <div class="session-option">
                                 <div class="session-name" :title="slotProps.option.name">{{ slotProps.option.name }}</div>
@@ -330,7 +324,7 @@
                                     <div class="formgrid grid">
                                         <div class="field col-12 md:col-6">
                                             <label for="type" class="font-bold block mb-2">Message Type</label>
-                                            <p-dropdown id="type" v-model="form.type" :options="messageTypes" option-label="label" option-value="value" class="w-full"></p-dropdown>
+                                            <p-dropdown id="type" v-model="form.type" :options="messageTypes" option-label="label" option-value="value" class="w-full" panel-class="dropdown-panel-dark"></p-dropdown>
                                             <small class="text-secondary">Auto-detected based on attachment</small>
                                         </div>
                                         <div class="field col-12 md:col-6" v-if="form.attachmentType !== 'none'">
@@ -935,37 +929,6 @@
                 onMounted(() => {
                     setupAxios();
                     fetchSessions();
-                    
-                    // Fix dropdown panels dynamically when they appear
-                    const observer = new MutationObserver((mutations) => {
-                        mutations.forEach((mutation) => {
-                            mutation.addedNodes.forEach((node) => {
-                                if (node.nodeType === 1) {
-                                    // Fix dropdown panels
-                                    if (node.classList && node.classList.contains('p-dropdown-panel')) {
-                                        node.style.background = '#1f2937';
-                                        node.style.backgroundColor = '#1f2937';
-                                        node.style.border = '1px solid #424b57';
-                                        node.style.borderRadius = '6px';
-                                        node.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.6)';
-                                        
-                                        const items = node.querySelectorAll('.p-dropdown-item, .p-dropdown-items, .p-dropdown-items-wrapper, ul, li');
-                                        items.forEach(item => {
-                                            item.style.background = '#1f2937';
-                                            item.style.backgroundColor = '#1f2937';
-                                        });
-                                    }
-                                    // Fix datepicker panels
-                                    if (node.classList && node.classList.contains('p-datepicker')) {
-                                        node.style.background = '#1f2937';
-                                        node.style.backgroundColor = '#1f2937';
-                                        node.style.border = '1px solid #424b57';
-                                    }
-                                }
-                            });
-                        });
-                    });
-                    observer.observe(document.body, { childList: true, subtree: true });
                 });
 
                 return {
