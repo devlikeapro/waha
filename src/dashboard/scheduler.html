@@ -14,7 +14,6 @@
     <script src="https://unpkg.com/primevue@3.40.1/button/button.min.js"></script>
     <script src="https://unpkg.com/primevue@3.40.1/inputtext/inputtext.min.js"></script>
     <script src="https://unpkg.com/primevue@3.40.1/textarea/textarea.min.js"></script>
-    <script src="https://unpkg.com/primevue@3.40.1/dropdown/dropdown.min.js"></script>
     <script src="https://unpkg.com/primevue@3.40.1/calendar/calendar.min.js"></script>
     <script src="https://unpkg.com/primevue@3.40.1/toast/toast.min.js"></script>
     <script src="https://unpkg.com/primevue@3.40.1/toastservice/toastservice.min.js"></script>
@@ -34,64 +33,39 @@
     <!-- Use CDN theme for reliability -->
     <link href="https://unpkg.com/primevue@3.40.1/resources/themes/lara-dark-green/theme.css" rel="stylesheet">
 
-    <style id="dropdown-fix">
-        /* 
-         * Dropdown panel fix using panel-class prop
-         */
-        .dropdown-panel-dark.p-dropdown-panel {
-            background: #1f2937 !important;
-            border: 1px solid #424b57 !important;
-            border-radius: 6px !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
-        }
-        
-        .dropdown-panel-dark .p-dropdown-items-wrapper,
-        .dropdown-panel-dark .p-dropdown-items {
-            background: #1f2937 !important;
-        }
-        
-        .dropdown-panel-dark .p-dropdown-item {
-            background: #1f2937 !important;
-            color: rgba(255, 255, 255, 0.87) !important;
-        }
-        
-        .dropdown-panel-dark .p-dropdown-item:hover,
-        .dropdown-panel-dark .p-dropdown-item.p-highlight {
-            background: #374151 !important;
-        }
-        
-        /* Datepicker fix */
-        .p-datepicker.p-component {
-            background: #1f2937 !important;
-            border: 1px solid #424b57 !important;
-        }
-        
-        .p-datepicker .p-datepicker-header,
-        .p-datepicker table,
-        .p-datepicker .p-timepicker {
-            background: #1f2937 !important;
-        }
-
-        /* Fix overlapping text in session dropdown */
-        .session-option {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+    <style>
+        /* Native select styling */
+        .native-select {
             width: 100%;
-            gap: 1rem;
+            padding: 0.75rem 1rem;
+            background-color: #1f2937;
+            color: rgba(255, 255, 255, 0.87);
+            border: 1px solid #424b57;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
         }
-        .session-name {
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .native-select:focus {
+            outline: none;
+            border-color: #4ade80;
+            box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.2);
+        }
+        .native-select option {
+            background-color: #1f2937;
+            color: rgba(255, 255, 255, 0.87);
+            padding: 0.5rem;
         }
         
         body {
             margin: 0;
-            background-color: var(--surface-ground);
-            color: var(--text-color);
-            font-family: var(--font-family);
+            background-color: #111827;
+            color: rgba(255, 255, 255, 0.87);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
         .layout-wrapper {
             display: flex;
@@ -99,8 +73,8 @@
         }
         .layout-sidebar {
             width: 250px;
-            background-color: var(--surface-overlay);
-            border-right: 1px solid var(--surface-border);
+            background-color: #1f2937;
+            border-right: 1px solid #374151;
             display: flex;
             flex-direction: column;
             padding: 1rem;
@@ -114,25 +88,25 @@
             flex: 1;
             margin-left: 250px;
             padding: 2rem;
-            background-color: var(--surface-ground);
+            background-color: #111827;
         }
         .nav-item {
             padding: 0.75rem 1rem;
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.2s;
-            color: var(--text-color);
+            color: rgba(255, 255, 255, 0.87);
             display: flex;
             align-items: center;
             text-decoration: none;
             margin-bottom: 0.5rem;
         }
         .nav-item:hover {
-            background-color: var(--surface-hover);
+            background-color: #374151;
         }
         .nav-item.active {
-            background-color: var(--primary-color);
-            color: var(--primary-color-text);
+            background-color: #4ade80;
+            color: #052e16;
         }
         .nav-item i {
             margin-right: 0.75rem;
@@ -142,17 +116,16 @@
             height: 8px;
             border-radius: 50%;
             display: inline-block;
-            margin-right: 0.5rem;
+            margin-left: 0.5rem;
         }
-        .status-working { background-color: var(--green-500); }
-        .status-failed { background-color: var(--red-500); }
-        .status-stopped { background-color: var(--gray-500); }
+        .status-working { background-color: #4ade80; }
+        .status-failed { background-color: #f87171; }
+        .status-stopped { background-color: #6b7280; }
         
-        /* PrimeVue overrides/helpers */
         .p-field { margin-bottom: 1.5rem; }
         .w-full { width: 100%; }
         .file-upload-box {
-            border: 2px dashed var(--surface-border);
+            border: 2px dashed #374151;
             border-radius: 6px;
             padding: 2rem;
             text-align: center;
@@ -160,16 +133,11 @@
             transition: border-color 0.2s;
         }
         .file-upload-box:hover {
-            border-color: var(--primary-color);
+            border-color: #4ade80;
         }
         .file-upload-box.drag-active {
-            border-color: var(--primary-color);
-            background-color: var(--surface-hover);
-        }
-        
-        /* Ensure dropdown container has proper stacking context */
-        .p-dropdown {
-            position: relative;
+            border-color: #4ade80;
+            background-color: #374151;
         }
     </style>
 </head>
@@ -192,22 +160,12 @@
                 
                 <div class="px-2 mb-3">
                     <label class="text-xs text-500 font-bold mb-2 block">SESSION</label>
-                    <p-dropdown v-model="selectedSession" :options="sessions" option-label="name" option-value="name" placeholder="Select Session" class="w-full" @change="onSessionChange" panel-class="dropdown-panel-dark">
-                        <template #option="slotProps">
-                            <div class="session-option">
-                                <div class="session-name" :title="slotProps.option.name">{{ slotProps.option.name }}</div>
-                                <div :class="'status-badge status-' + (slotProps.option.status || '').toLowerCase()"></div>
-                            </div>
-                        </template>
-                        <template #value="slotProps">
-                            <div v-if="slotProps.value" class="session-option">
-                                <div class="session-name">{{ slotProps.value }}</div>
-                            </div>
-                            <span v-else>
-                                {{ slotProps.placeholder }}
-                            </span>
-                        </template>
-                    </p-dropdown>
+                    <select v-model="selectedSession" class="native-select" @change="onSessionChange">
+                        <option value="" disabled>Select Session</option>
+                        <option v-for="s in sessions" :key="s.name" :value="s.name">
+                            {{ s.name }} ({{ s.status }})
+                        </option>
+                    </select>
                     <div class="mt-2 text-sm" v-if="currentSession">
                         <span class="font-bold">Status:</span> {{ currentSession.status }}
                     </div>
@@ -324,7 +282,9 @@
                                     <div class="formgrid grid">
                                         <div class="field col-12 md:col-6">
                                             <label for="type" class="font-bold block mb-2">Message Type</label>
-                                            <p-dropdown id="type" v-model="form.type" :options="messageTypes" option-label="label" option-value="value" class="w-full" panel-class="dropdown-panel-dark"></p-dropdown>
+                                            <select id="type" v-model="form.type" class="native-select">
+                                                <option v-for="t in messageTypes" :key="t.value" :value="t.value">{{ t.label }}</option>
+                                            </select>
                                             <small class="text-secondary">Auto-detected based on attachment</small>
                                         </div>
                                         <div class="field col-12 md:col-6" v-if="form.attachmentType !== 'none'">
@@ -949,7 +909,6 @@
         app.component('p-button', primevue.button);
         app.component('p-inputtext', primevue.inputtext);
         app.component('p-textarea', primevue.textarea);
-        app.component('p-dropdown', primevue.dropdown);
         app.component('p-calendar', primevue.calendar);
         app.component('p-toast', primevue.toast);
         app.component('p-selectbutton', primevue.selectbutton);
