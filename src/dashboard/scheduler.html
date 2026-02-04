@@ -942,7 +942,7 @@
                         chatId: form.value.chatId,
                     };
 
-                    if (form.value.type === 'text') {
+                    if (form.value.type === 'text' || form.value.attachmentType === 'none') {
                         payload.text = form.value.text;
                     } else {
                         if (form.value.attachmentType === 'upload' && form.value.fileData) {
@@ -951,11 +951,16 @@
                                 data: form.value.fileData.data,
                                 filename: form.value.filename || form.value.fileData.filename
                             };
-                        } else {
+                        } else if (form.value.attachmentType === 'url' && form.value.fileUrl) {
                             payload.file = { 
                                 url: form.value.fileUrl, 
                                 filename: form.value.filename 
                             };
+                        } else {
+                            // Fallback to text if no valid attachment
+                            payload.text = form.value.text;
+                            form.value.type = 'text';
+                            return payload;
                         }
                         payload.caption = form.value.text;
                     }
