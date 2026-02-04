@@ -37,26 +37,74 @@
 
     <style>
         /* Force background for overlays - Nuclear Fix */
-        .p-dropdown-panel, .p-datepicker, .p-dialog, .p-overlay, .p-menu, .p-tieredmenu {
-            background-color: #1f2937 !important; /* Tailwind gray-800 */
+        .p-dropdown-panel, 
+        .p-datepicker, 
+        .p-datepicker-panel,
+        .p-dialog, 
+        .p-overlay, 
+        .p-menu, 
+        .p-tieredmenu,
+        .p-component-overlay {
+            background-color: #1f2937 !important;
             color: rgba(255, 255, 255, 0.87) !important;
-            border: 1px solid #374151 !important; /* Tailwind gray-700 */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+            border: 1px solid #374151 !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+            z-index: 9999 !important;
         }
         
-        .p-dropdown-items-wrapper, .p-dropdown-items {
+        /* Dropdown specific fixes */
+        .p-dropdown-panel {
+            position: absolute !important;
+            min-width: 100% !important;
+        }
+        
+        .p-dropdown-items-wrapper {
             background-color: #1f2937 !important;
+            max-height: 300px !important;
+            overflow-y: auto !important;
+        }
+        
+        .p-dropdown-items {
+            background-color: #1f2937 !important;
+            padding: 0.5rem 0 !important;
+            margin: 0 !important;
+            list-style: none !important;
         }
         
         .p-dropdown-item {
             color: rgba(255, 255, 255, 0.87) !important;
             padding: 0.75rem 1rem !important;
-            background-color: transparent !important;
+            background-color: #1f2937 !important;
+            cursor: pointer !important;
+            display: block !important;
         }
         
-        .p-dropdown-item:hover, .p-dropdown-item.p-highlight {
-            background-color: #374151 !important; /* Tailwind gray-700 */
+        .p-dropdown-item:hover,
+        .p-dropdown-item.p-highlight {
+            background-color: #374151 !important;
             color: #ffffff !important;
+        }
+        
+        /* Calendar/Datepicker fixes */
+        .p-datepicker {
+            padding: 0.5rem !important;
+        }
+        
+        .p-datepicker table {
+            background-color: #1f2937 !important;
+        }
+        
+        .p-datepicker .p-datepicker-header {
+            background-color: #1f2937 !important;
+            border-bottom: 1px solid #374151 !important;
+        }
+        
+        .p-datepicker td > span {
+            color: rgba(255, 255, 255, 0.87) !important;
+        }
+        
+        .p-datepicker td > span:hover {
+            background-color: #374151 !important;
         }
 
         /* Fix overlapping text in session dropdown */
@@ -153,6 +201,11 @@
             border-color: var(--primary-color);
             background-color: var(--surface-hover);
         }
+        
+        /* Ensure dropdown container has proper stacking context */
+        .p-dropdown {
+            position: relative;
+        }
     </style>
 </head>
 <body>
@@ -174,7 +227,7 @@
                 
                 <div class="px-2 mb-3">
                     <label class="text-xs text-500 font-bold mb-2 block">SESSION</label>
-                    <p-dropdown v-model="selectedSession" :options="sessions" option-label="name" option-value="name" placeholder="Select Session" class="w-full" @change="onSessionChange" append-to="self">
+                    <p-dropdown v-model="selectedSession" :options="sessions" option-label="name" option-value="name" placeholder="Select Session" class="w-full" @change="onSessionChange">
                         <template #option="slotProps">
                             <div class="session-option">
                                 <div class="session-name" :title="slotProps.option.name">{{ slotProps.option.name }}</div>
@@ -306,7 +359,7 @@
                                     <div class="formgrid grid">
                                         <div class="field col-12 md:col-6">
                                             <label for="type" class="font-bold block mb-2">Message Type</label>
-                                            <p-dropdown id="type" v-model="form.type" :options="messageTypes" option-label="label" option-value="value" class="w-full" append-to="self"></p-dropdown>
+                                            <p-dropdown id="type" v-model="form.type" :options="messageTypes" option-label="label" option-value="value" class="w-full"></p-dropdown>
                                             <small class="text-secondary">Auto-detected based on attachment</small>
                                         </div>
                                         <div class="field col-12 md:col-6" v-if="form.attachmentType !== 'none'">
