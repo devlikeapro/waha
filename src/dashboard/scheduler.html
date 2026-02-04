@@ -214,6 +214,49 @@
             box-sizing: border-box !important;
         }
         
+        /* Toast/Message styling */
+        .p-toast {
+            z-index: 10000 !important;
+        }
+        .p-toast .p-toast-message {
+            background: #1f2937 !important;
+            border: 1px solid #374151 !important;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+        }
+        .p-toast .p-toast-message-content {
+            padding: 1rem 1.25rem !important;
+            gap: 1rem !important;
+        }
+        .p-toast .p-toast-message-text {
+            margin: 0 0.75rem !important;
+        }
+        .p-toast .p-toast-summary {
+            font-weight: 600 !important;
+            color: rgba(255, 255, 255, 0.95) !important;
+        }
+        .p-toast .p-toast-detail {
+            color: rgba(255, 255, 255, 0.7) !important;
+            margin-top: 0.25rem !important;
+        }
+        .p-toast .p-toast-icon-close {
+            color: rgba(255, 255, 255, 0.6) !important;
+            width: 1.5rem !important;
+            height: 1.5rem !important;
+        }
+        .p-toast .p-toast-message-error {
+            border-left: 4px solid #ef4444 !important;
+        }
+        .p-toast .p-toast-message-success {
+            border-left: 4px solid #4ade80 !important;
+        }
+        .p-toast .p-toast-message-warn {
+            border-left: 4px solid #f59e0b !important;
+        }
+        .p-toast .p-toast-message-info {
+            border-left: 4px solid #3b82f6 !important;
+        }
+        
         /* Card dark theme - modern borderless */
         .p-card {
             background: #1f2937 !important;
@@ -590,7 +633,7 @@
                             </p-card>
 
                             <div class="flex justify-content-end">
-                                <p-button label="Start Campaign" icon="pi pi-rocket" class="p-button-lg p-button-success" :loading="loading" @click="startCampaign" :disabled="!campaign.csvData || !campaign.template"></p-button>
+                                <p-button label="Start Campaign" icon="pi pi-rocket" class="main-action-btn" :loading="loading" @click="startCampaign" :disabled="!campaign.csvData || !campaign.template"></p-button>
                             </div>
                         </div>
 
