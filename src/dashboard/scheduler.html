@@ -182,20 +182,28 @@
             color: #052e16 !important;
         }
         
-        /* Card dark theme */
+        /* Card dark theme - modern borderless */
         .p-card {
             background: #1f2937 !important;
-            border: 1px solid #374151 !important;
+            border: none !important;
+            border-radius: 12px !important;
             color: rgba(255, 255, 255, 0.87) !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
         }
         .p-card .p-card-title {
             color: rgba(255, 255, 255, 0.87) !important;
         }
+        .p-card .p-card-content {
+            padding-top: 0.5rem !important;
+        }
         
-        /* Panel dark theme */
+        /* Panel dark theme - modern borderless */
         .p-panel {
             background: #1f2937 !important;
-            border: 1px solid #374151 !important;
+            border: none !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+            overflow: hidden;
         }
         .p-panel .p-panel-header {
             background: #1f2937 !important;
@@ -226,9 +234,9 @@
             min-height: 100vh;
         }
         .layout-sidebar {
-            width: 250px;
-            min-width: 250px;
-            max-width: 250px;
+            width: 280px;
+            min-width: 280px;
+            max-width: 280px;
             background-color: #1f2937;
             border-right: 1px solid #374151;
             display: flex;
@@ -245,7 +253,7 @@
         }
         .layout-main {
             flex: 1;
-            margin-left: 260px;
+            margin-left: 290px;
             padding: 2rem;
             background-color: #111827;
             min-width: 0;
