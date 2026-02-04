@@ -137,6 +137,35 @@
             color: rgba(255, 255, 255, 0.87) !important;
         }
         
+        /* SelectButton dark theme */
+        .p-selectbutton {
+            display: flex !important;
+            gap: 0 !important;
+        }
+        .p-selectbutton .p-button {
+            background: #374151 !important;
+            border: 1px solid #424b57 !important;
+            color: rgba(255, 255, 255, 0.87) !important;
+            padding: 0.5rem 1rem !important;
+        }
+        .p-selectbutton .p-button:first-child {
+            border-radius: 6px 0 0 6px !important;
+        }
+        .p-selectbutton .p-button:last-child {
+            border-radius: 0 6px 6px 0 !important;
+        }
+        .p-selectbutton .p-button:not(:first-child):not(:last-child) {
+            border-radius: 0 !important;
+        }
+        .p-selectbutton .p-button:hover {
+            background: #4b5563 !important;
+        }
+        .p-selectbutton .p-button.p-highlight {
+            background: #4ade80 !important;
+            border-color: #4ade80 !important;
+            color: #052e16 !important;
+        }
+        
         /* Card dark theme */
         .p-card {
             background: #1f2937 !important;
