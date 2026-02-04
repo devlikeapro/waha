@@ -234,9 +234,11 @@ enum WhatsMeowEvent {
   CALL_TERMINATE = 'events.CallTerminate',
   CALL_OFFER_NOTICE = 'events.CallOfferNotice',
   // Other
-  APP_STATE = 'events.AppState',
-  HISTORY_SYNC = 'events.HistorySync',
-  CONTACT = 'events.Contact',
+  AppState = 'events.AppState',
+  AppStateSyncComplete = 'AppStateSyncComplete',
+  AppStateSyncError = 'AppStateSyncError',
+  HistorySync = 'events.HistorySync',
+  Contact = 'events.Contact',
 }
 
 export interface GowsConfig {
@@ -339,9 +341,11 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         // https://github.com/devlikeapro/waha/issues/1826
         // TODO: we need to make it more dynamic
         const exclude = [
-          WhatsMeowEvent.APP_STATE,
-          WhatsMeowEvent.HISTORY_SYNC,
-          WhatsMeowEvent.CONTACT,
+          WhatsMeowEvent.AppState,
+          WhatsMeowEvent.AppStateSyncComplete,
+          WhatsMeowEvent.AppStateSyncError,
+          WhatsMeowEvent.HistorySync,
+          WhatsMeowEvent.Contact,
         ];
         const request = new messages.StreamEventsRequest({
           session: this.session,

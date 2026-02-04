@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { WAHAPresenceStatus } from './enums.dto';
 
@@ -28,9 +28,10 @@ export class WAHAChatPresences {
 export class WAHASessionPresence {
   presence: WAHAPresenceStatus;
 
-  @ApiProperty({
-    description: 'Chat ID - either group id or contact id',
+  @ApiPropertyOptional({
+    description:
+      'Chat ID - either group id or contact id. Required for chat-related presence statuses; omit for ONLINE/OFFLINE.',
     example: '11111111111@c.us',
   })
-  chatId: string;
+  chatId?: string;
 }

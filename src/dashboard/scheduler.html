@@ -36,75 +36,70 @@
     <link rel="stylesheet" href="/dashboard/themes/lara-dark-green/theme.css">
 
     <style>
-        /* Force background for overlays - Nuclear Fix */
-        .p-dropdown-panel, 
-        .p-datepicker, 
-        .p-datepicker-panel,
-        .p-dialog, 
-        .p-overlay, 
-        .p-menu, 
-        .p-tieredmenu,
-        .p-component-overlay {
+        /* 
+         * CRITICAL: Dropdown overlay fix
+         * PrimeVue appends dropdown panel to body, so we need global styles
+         */
+        body .p-dropdown-panel,
+        html .p-dropdown-panel,
+        .p-dropdown-panel.p-component {
+            background: #1f2937 !important;
             background-color: #1f2937 !important;
-            color: rgba(255, 255, 255, 0.87) !important;
             border: 1px solid #374151 !important;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
-            z-index: 9999 !important;
+            border-radius: 6px !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+            z-index: 10000 !important;
         }
         
-        /* Dropdown specific fixes */
-        .p-dropdown-panel {
-            position: absolute !important;
-            min-width: 100% !important;
-        }
-        
-        .p-dropdown-items-wrapper {
+        body .p-dropdown-items-wrapper,
+        .p-dropdown-panel .p-dropdown-items-wrapper {
+            background: #1f2937 !important;
             background-color: #1f2937 !important;
-            max-height: 300px !important;
-            overflow-y: auto !important;
         }
         
-        .p-dropdown-items {
+        body .p-dropdown-items,
+        .p-dropdown-panel .p-dropdown-items {
+            background: #1f2937 !important;
             background-color: #1f2937 !important;
             padding: 0.5rem 0 !important;
             margin: 0 !important;
-            list-style: none !important;
         }
         
-        .p-dropdown-item {
+        body .p-dropdown-item,
+        .p-dropdown-panel .p-dropdown-item {
+            background: #1f2937 !important;
+            background-color: #1f2937 !important;
             color: rgba(255, 255, 255, 0.87) !important;
             padding: 0.75rem 1rem !important;
-            background-color: #1f2937 !important;
-            cursor: pointer !important;
-            display: block !important;
+            margin: 0 !important;
         }
         
-        .p-dropdown-item:hover,
-        .p-dropdown-item.p-highlight {
+        body .p-dropdown-item:hover,
+        body .p-dropdown-item.p-highlight,
+        .p-dropdown-panel .p-dropdown-item:hover,
+        .p-dropdown-panel .p-dropdown-item.p-highlight {
+            background: #374151 !important;
             background-color: #374151 !important;
             color: #ffffff !important;
         }
         
-        /* Calendar/Datepicker fixes */
-        .p-datepicker {
-            padding: 0.5rem !important;
-        }
-        
-        .p-datepicker table {
+        /* Calendar/Datepicker panel fix */
+        body .p-datepicker,
+        body .p-datepicker-panel,
+        .p-datepicker.p-component {
+            background: #1f2937 !important;
             background-color: #1f2937 !important;
+            border: 1px solid #374151 !important;
+            border-radius: 6px !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+            z-index: 10000 !important;
         }
         
-        .p-datepicker .p-datepicker-header {
+        body .p-datepicker .p-datepicker-header,
+        body .p-datepicker table,
+        body .p-datepicker .p-timepicker {
+            background: #1f2937 !important;
             background-color: #1f2937 !important;
-            border-bottom: 1px solid #374151 !important;
-        }
-        
-        .p-datepicker td > span {
-            color: rgba(255, 255, 255, 0.87) !important;
-        }
-        
-        .p-datepicker td > span:hover {
-            background-color: #374151 !important;
         }
 
         /* Fix overlapping text in session dropdown */

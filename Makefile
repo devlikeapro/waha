@@ -41,7 +41,7 @@ up-noweb-libsignal:
 	yarn up libsignal@github:devlikeapro/libsignal-node#fork-master
 
 up-webjs:
-	yarn up whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-2025-12-17
+	yarn up whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-2026-02-01
 
 start-proxy:
 	docker run --rm -d --name squid-container -e TZ=UTC -p 3128:3128 ubuntu/squid:5.2-22.04_beta

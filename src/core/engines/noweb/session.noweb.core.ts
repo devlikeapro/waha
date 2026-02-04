@@ -363,10 +363,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     }
     return {
       agent: agents?.socket,
-      // Baileys types still expect a Node https.Agent here,
-      // but 'undici' fetch requires a Dispatcher.
-      // Cast keeps the compiler satisfied while we pass the ProxyAgent at runtime.
-      fetchAgent: agents?.fetch as unknown as Agent,
+      // Baileys media upload uses Node https.request in Node runtime.
+      fetchAgent: agents?.fetch as Agent,
       auth: state,
       printQRInTerminal: false,
       browser: browser,

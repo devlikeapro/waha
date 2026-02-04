@@ -1,6 +1,5 @@
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { URL } from 'url';
-import { ProxyAgent } from 'undici';
 
 import { WhatsappConfigService } from '../config.service';
 import { ProxyConfig } from '../structures/sessions.dto';
@@ -72,7 +71,9 @@ export function createAgentProxy(proxyConfig: ProxyConfig): Agents | undefined {
   );
 
   const socketAgent = new HttpsProxyAgent(url);
-  const fetchAgent = new ProxyAgent({ uri: url });
+  // Baileys media upload uses Node.js https.request in Node runtime,
+  // so fetchAgent must be a Node https.Agent (ProxyAgent from undici won't work).
+  const fetchAgent = new HttpsProxyAgent(url);
 
   return { socket: socketAgent, fetch: fetchAgent };
 }
