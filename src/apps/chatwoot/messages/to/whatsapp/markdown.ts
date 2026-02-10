@@ -4,6 +4,8 @@ export function MarkdownToWhatsApp(text: string): string {
   }
   return (
     text
+      // Remove trailing backslash before newlines (ChatWoot v4.10.1+ escaping)
+      .replace(/\\\n/g, '\n')
       // Triple-backtick blocks → WhatsApp monospace blocks (same syntax)
       .replace(/```([\s\S]*?)```/g, '```$1```')
       // Italic **first**, but only single‐star or single‐underscore
