@@ -93,6 +93,7 @@ export class WebsocketGatewayCore
 
     if (!ability.can(Action.Use, new SessionName(session))) {
       socket.close(WebSocketCloseCode.POLICY_VIOLATION, 'Forbidden');
+      return;
     }
 
     this.logger.debug(`New client connected: ${request.url} - ${socket.id}`);

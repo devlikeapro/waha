@@ -1,6 +1,5 @@
 import {
   Injectable,
-  InternalServerErrorException,
   NestMiddleware,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -16,7 +15,7 @@ export class ApiKeyAuthMiddleware implements NestMiddleware {
         const exception =
           err instanceof UnauthorizedException
             ? err
-            : new InternalServerErrorException();
+            : new UnauthorizedException();
         res.status(exception.getStatus()).json(exception.getResponse());
         return;
       }
