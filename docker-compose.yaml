@@ -4,7 +4,8 @@ services:
     restart: always
     # https://waha.devlike.pro/docs/how-to/engines/#docker-images
     # https://portal.devlike.pro/docker-image
-    image: devlikeapro/waha-plus
+    # image: devlikeapro/waha-plus
+    build: .
     # WAHA Core
     # image: devlikeapro/waha:latest
 

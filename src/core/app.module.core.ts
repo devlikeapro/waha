@@ -65,6 +65,7 @@ import { EngineConfigService } from './config/EngineConfigService';
 import { SwaggerConfigServiceCore } from './config/SwaggerConfigServiceCore';
 import { WAHAHealthCheckServiceCore } from './health/WAHAHealthCheckServiceCore';
 import { SessionManagerCore } from './manager.core';
+import { SessionManagerMultiple } from './manager.multiple';
 import { CaslAbilityFactory } from '@waha/core/auth/casl.ability';
 import { PoliciesGuard } from '@waha/core/auth/policies.guard';
 import { ApiKeyService } from '@waha/core/auth/ApiKeyService';
@@ -197,7 +198,7 @@ export const PROVIDERS_BASE: Provider[] = [
 const PROVIDERS = [
   {
     provide: SessionManager,
-    useClass: SessionManagerCore,
+    useClass: SessionManagerMultiple,
   },
   {
     provide: WAHAHealthCheckService,
