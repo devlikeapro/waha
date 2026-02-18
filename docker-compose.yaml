@@ -30,9 +30,13 @@ services:
       # Save media files
       # https://waha.devlike.pro/docs/how-to/storages/#save-media-files-between-the-container-restarts
       - './media:/app/.media'
-
+    networks:
+      - database
     env_file:
       - .env
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 # NOTE: Only if you're using PostgreSQL to save sessions
 # https://waha.devlike.pro/docs/how-to/storages/#media---postgresql
@@ -103,3 +107,7 @@ volumes:
   mongodb_data: {}
   minio_data: {}
   pg_data: {}
+
+networks:
+  database:
+    external: true

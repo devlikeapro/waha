@@ -10,15 +10,17 @@ export class PostgresStore extends DataStore {
 
     async init(sessionName?: string): Promise<void> {
         if (!this.knex) {
+            const connection = process.env.WHATSAPP_SESSIONS_POSTGRESQL_URL || {
+                host: process.env.WAHA_POSTGRES_HOST || 'localhost',
+                port: parseInt(process.env.WAHA_POSTGRES_PORT || '5432'),
+                user: process.env.WAHA_POSTGRES_USER || 'postgres',
+                password: process.env.WAHA_POSTGRES_PASSWORD || 'postgres',
+                database: process.env.WAHA_POSTGRES_DB || 'waha',
+            };
+
             this.knex = Knex({
                 client: 'pg',
-                connection: {
-                    host: process.env.WAHA_POSTGRES_HOST || 'localhost',
-                    port: parseInt(process.env.WAHA_POSTGRES_PORT || '5432'),
-                    user: process.env.WAHA_POSTGRES_USER || 'postgres',
-                    password: process.env.WAHA_POSTGRES_PASSWORD || 'postgres',
-                    database: process.env.WAHA_POSTGRES_DB || 'waha',
-                },
+                connection: connection,
                 pool: {
                     min: 2,
                     max: 10,
@@ -26,7 +28,12 @@ export class PostgresStore extends DataStore {
             });
         }
         // Test connection
-        await this.knex.raw('SELECT 1');
+        try {
+            await this.knex.raw('SELECT 1');
+        } catch (error) {
+            console.error('Failed to connect to Postgres:', error);
+            throw error;
+        }
     }
 
     async close(): Promise<any> {

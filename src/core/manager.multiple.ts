@@ -95,7 +95,7 @@ export class SessionManagerMultiple extends SessionManager implements OnModuleIn
                 }),
         );
 
-        const storageEngine = process.env.WAHA_STORAGE_ENGINE || 'sqlite3';
+        const storageEngine = process.env.WAHA_STORAGE_ENGINE || (process.env.WHATSAPP_SESSIONS_POSTGRESQL_URL ? 'postgres' : 'sqlite3');
         if (storageEngine === 'postgres') {
             const postgresStore = new PostgresStoreCore();
             this.store = postgresStore;

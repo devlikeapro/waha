@@ -18,7 +18,9 @@ export class PostgresStorage extends INowebStorage {
     }
 
     async init() {
+        console.info('Initializing PostgresStorage and running migrations...');
         await this.migrate();
+        console.info('PostgresStorage migrations completed.');
     }
 
     private async migrate() {
@@ -34,11 +36,10 @@ export class PostgresStorage extends INowebStorage {
             try {
                 await knex.raw(sql);
             } catch (e: any) {
-                // Ignore 'relation "x" already exists' errrors
+                // Ignore 'relation "x" already exists' errors
                 // Postgres "42P07" code is duplicate_table
                 if (!e.message.includes('already exists')) {
-                    // Log warning but don't crash, potentially existing schema
-                    // console.warn(`Migration error: ${e.message}`);
+                    console.warn(`Migration error: ${e.message}`);
                 }
             }
         }
