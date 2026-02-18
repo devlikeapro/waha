@@ -54,6 +54,9 @@ import { LocalSessionAuthRepository } from './storage/LocalSessionAuthRepository
 import { LocalStoreCore } from './storage/LocalStoreCore';
 import { CoreApiKeyRepository } from './storage/CoreApiKeyRepository';
 
+import { PostgresStoreCore } from './storage/PostgresStoreCore';
+import { PostgresSessionAuthRepository } from './storage/postgres/PostgresSessionAuthRepository';
+
 @Injectable()
 export class SessionManagerMultiple extends SessionManager implements OnModuleInit {
     SESSION_STOP_TIMEOUT = 3000;
@@ -92,8 +95,17 @@ export class SessionManagerMultiple extends SessionManager implements OnModuleIn
                 }),
         );
 
-        this.store = new LocalStoreCore(engineName.toLowerCase());
-        this.sessionAuthRepository = new LocalSessionAuthRepository(this.store);
+        const storageEngine = process.env.WAHA_STORAGE_ENGINE || 'sqlite3';
+        if (storageEngine === 'postgres') {
+            const postgresStore = new PostgresStoreCore();
+            this.store = postgresStore;
+            this.sessionAuthRepository = new PostgresSessionAuthRepository(postgresStore);
+        } else {
+            const localStore = new LocalStoreCore(engineName.toLowerCase());
+            this.store = localStore;
+            this.sessionAuthRepository = new LocalSessionAuthRepository(localStore);
+        }
+
         this.clearStorage().catch((error) => {
             this.log.error({ error }, 'Error while clearing storage');
         });

@@ -1,0 +1,169 @@
+yarn run v1.22.19
+$ rimraf dist
+$ nest build
+[96mnode_modules/@adiwajshing/baileys/src/Utils/generics.ts[0m:[93m100[0m:[93m84[0m - [91merror[0m[90m TS2322: [0mType 'number | Long' is not assignable to type 'number'.
+  Type 'Long' is not assignable to type 'number'.
+
+[7m100[0m  typeof t === 'object' && t ? ('toNumber' in t ? t.toNumber() : (t as Long).low) : t || 0
+[7m   [0m [91m                                                                                   ~~~~~~[0m
+[96mnode_modules/@adiwajshing/baileys/src/Utils/generics.ts[0m:[93m242[0m:[93m4[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 2, '(input: string | URL | Request, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+
+[7m242[0m    dispatcher: options.dispatcher,
+[7m   [0m [91m   ~~~~~~~~~~[0m
+
+[96mnode_modules/@adiwajshing/baileys/src/Utils/generics.ts[0m:[93m242[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'dispatcher' does not exist on type 'RequestInit'.
+
+[7m242[0m    dispatcher: options.dispatcher,
+[7m   [0m [91m                       ~~~~~~~~~~[0m
+[96mnode_modules/@adiwajshing/baileys/src/Utils/messages-media.ts[0m:[93m368[0m:[93m3[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 2, '(input: string | URL | Request, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+
+[7m368[0m   dispatcher: options.dispatcher,
+[7m   [0m [91m  ~~~~~~~~~~[0m
+
+[96mnode_modules/@adiwajshing/baileys/src/Utils/messages-media.ts[0m:[93m368[0m:[93m23[0m - [91merror[0m[90m TS2339: [0mProperty 'dispatcher' does not exist on type 'RequestInit & { isStream?: true; }'.
+
+[7m368[0m   dispatcher: options.dispatcher,
+[7m   [0m [91m                      ~~~~~~~~~~[0m
+[96mnode_modules/@adiwajshing/baileys/src/Utils/messages-media.ts[0m:[93m592[0m:[93m18[0m - [91merror[0m[90m TS2724: [0m'"crypto"' has no exported member named 'Decipheriv'. Did you mean 'Decipher'?
+
+[7m592[0m  let aes: Crypto.Decipheriv
+[7m   [0m [91m                 ~~~~~~~~~~[0m
+[96mnode_modules/@adiwajshing/baileys/src/Utils/messages-media.ts[0m:[93m777[0m:[93m3[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 2, '(input: string | URL | Request, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+
+[7m777[0m   dispatcher: agent,
+[7m   [0m [91m  ~~~~~~~~~~[0m
+
+[96mnode_modules/@adiwajshing/baileys/src/Utils/messages.ts[0m:[93m484[0m:[93m55[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 2, '(input: string | URL | Request, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+
+[7m484[0m     const resp = await fetch(pfpUrl, { method: 'GET', dispatcher: options?.options?.dispatcher })
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+
+[96mnode_modules/@adiwajshing/baileys/src/Utils/messages.ts[0m:[93m484[0m:[93m85[0m - [91merror[0m[90m TS2339: [0mProperty 'dispatcher' does not exist on type 'RequestInit'.
+
+[7m484[0m     const resp = await fetch(pfpUrl, { method: 'GET', dispatcher: options?.options?.dispatcher })
+[7m   [0m [91m                                                                                    ~~~~~~~~~~[0m
+[96mnode_modules/@adiwajshing/baileys/src/WABinary/generic-utils.ts[0m:[93m116[0m:[93m3[0m - [91merror[0m[90m TS2322: [0mType 'string | Uint8Array<ArrayBufferLike> | BinaryNode | BinaryNode[]' is not assignable to type 'string'.
+  Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'string'.
+
+[7m116[0m   return node!
+[7m   [0m [91m  ~~~~~~[0m
+[96msrc/apps/app_sdk/JobLoggerWrapper.ts[0m:[93m55[0m:[93m59[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 3, '(obj: "Error logging message to job", msg?: never): void', gave the following error.
+    Argument of type 'any' is not assignable to parameter of type 'never'.
+  Overload 2 of 3, '(obj: "Error logging message to job", msg?: never, ...args: unknown[]): void', gave the following error.
+    Argument of type 'any' is not assignable to parameter of type 'never'.
+
+[7m55[0m         this.logger.error('Error logging message to job', err);
+[7m  [0m [91m                                                          ~~~[0m
+
+[96msrc/core/abc/session.abc.ts[0m:[93m618[0m:[93m60[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 3, '(obj: "Failed to set presence ONLINE", msg?: never): void', gave the following error.
+    Argument of type 'any' is not assignable to parameter of type 'never'.
+  Overload 2 of 3, '(obj: "Failed to set presence ONLINE", msg?: never, ...args: unknown[]): void', gave the following error.
+    Argument of type 'any' is not assignable to parameter of type 'never'.
+
+[7m618[0m         this.logger.debug('Failed to set presence ONLINE', error);
+[7m   [0m [91m                                                           ~~~~~[0m
+
+[96msrc/core/abc/session.abc.ts[0m:[93m640[0m:[93m61[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 3, '(obj: "Failed to set presence OFFLINE", msg?: never): void', gave the following error.
+    Argument of type 'any' is not assignable to parameter of type 'never'.
+  Overload 2 of 3, '(obj: "Failed to set presence OFFLINE", msg?: never, ...args: unknown[]): void', gave the following error.
+    Argument of type 'any' is not assignable to parameter of type 'never'.
+
+[7m640[0m         this.logger.debug('Failed to set presence OFFLINE', error);
+[7m   [0m [91m                                                            ~~~~~[0m
+
+[96msrc/core/engines/gows/GowsEventStreamObservable.ts[0m:[93m63[0m:[93m38[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 3, '(obj: "Stream ended", msg?: never): void', gave the following error.
+    Argument of type '[]' is not assignable to parameter of type 'never'.
+  Overload 2 of 3, '(obj: "Stream ended", msg?: never, ...args: unknown[]): void', gave the following error.
+    Argument of type '[]' is not assignable to parameter of type 'never'.
+
+[7m63[0m         logger.debug('Stream ended', args);
+[7m  [0m [91m                                     ~~~~[0m
+
+[96msrc/core/media/local/MediaLocalStorage.ts[0m:[93m66[0m:[93m59[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 3, '(obj: "Deleted files and directories:\n", msg?: never): void', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'never'.
+  Overload 2 of 3, '(obj: "Deleted files and directories:\n", msg?: never, ...args: unknown[]): void', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'never'.
+
+[7m66[0m         this.log.info('Deleted files and directories:\n', paths.join('\n'));
+[7m  [0m [91m                                                          ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/main.ts[0m:[93m31[0m:[93m39[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 3, '(obj: "Uncaught Exception:", msg?: never): void', gave the following error.
+    Argument of type 'Error' is not assignable to parameter of type 'never'.
+  Overload 2 of 3, '(obj: "Uncaught Exception:", msg?: never, ...args: unknown[]): void', gave the following error.
+    Argument of type 'Error' is not assignable to parameter of type 'never'.
+
+[7m31[0m   logger.error('Uncaught Exception:', err);
+[7m  [0m [91m                                      ~~~[0m
+
+[96msrc/main.ts[0m:[93m37[0m:[93m43[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 3, '(obj: "Unhandled Rejection at:", msg?: never): void', gave the following error.
+    Argument of type 'Promise<unknown>' is not assignable to parameter of type 'never'.
+  Overload 2 of 3, '(obj: "Unhandled Rejection at:", msg?: never, ...args: unknown[]): void', gave the following error.
+    Argument of type 'Promise<unknown>' is not assignable to parameter of type 'never'.
+
+[7m37[0m   logger.error('Unhandled Rejection at:', promise);
+[7m  [0m [91m                                          ~~~~~~~[0m
+
+[96msrc/main.ts[0m:[93m41[0m:[93m49[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 3, '(obj: "Unhandled rejection reason:", msg?: never): void', gave the following error.
+    Argument of type 'unknown' is not assignable to parameter of type 'never'.
+  Overload 2 of 3, '(obj: "Unhandled rejection reason:", msg?: never, ...args: unknown[]): void', gave the following error.
+    Argument of type 'unknown' is not assignable to parameter of type 'never'.
+
+[7m41[0m     logger.error('Unhandled rejection reason:', reason);
+[7m  [0m [91m                                                ~~~~~~[0m
+
+[96msrc/nestjs/HttpsExpress.ts[0m:[93m29[0m:[93m41[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 3, '(obj: "HTTPS Key Path:", msg?: never): void', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'never'.
+  Overload 2 of 3, '(obj: "HTTPS Key Path:", msg?: never, ...args: unknown[]): void', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'never'.
+
+[7m29[0m     this.logger.info('HTTPS Key Path:', this.keyPath);
+[7m  [0m [91m                                        ~~~~~~~~~~~~[0m
+
+[96msrc/nestjs/HttpsExpress.ts[0m:[93m32[0m:[93m42[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 3, '(obj: "HTTPS Cert Path:", msg?: never): void', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'never'.
+  Overload 2 of 3, '(obj: "HTTPS Cert Path:", msg?: never, ...args: unknown[]): void', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'never'.
+
+[7m32[0m     this.logger.info('HTTPS Cert Path:', this.certPath);
+[7m  [0m [91m                                         ~~~~~~~~~~~~~[0m
+
+[96msrc/nestjs/HttpsExpress.ts[0m:[93m35[0m:[93m40[0m - [91merror[0m[90m TS2769: [0mNo overload matches this call.
+  Overload 1 of 3, '(obj: "HTTPS CA Path:", msg?: never): void', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'never'.
+  Overload 2 of 3, '(obj: "HTTPS CA Path:", msg?: never, ...args: unknown[]): void', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'never'.
+
+[7m35[0m     this.logger.info('HTTPS CA Path:', this.caPath);
+[7m  [0m [91m                                       ~~~~~~~~~~~[0m
+
+
+Found 21 error(s).
+
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
