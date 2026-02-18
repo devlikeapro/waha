@@ -15,7 +15,7 @@ jobs:
       matrix:
         include:
           # Chromium - x86
-          - runner: 'buildjet-4vcpu-ubuntu-2204'
+          - runner: 'ubuntu-latest'
             tag: 'latest'
             platform: 'amd64'
             browser: 'chromium'
@@ -23,7 +23,7 @@ jobs:
             goss: 'goss-linux-amd64'
 
           # Chromium - ARM
-          - runner: 'buildjet-4vcpu-ubuntu-2204-arm'
+          - runner: 'ubuntu-24.04-arm'
             tag: 'arm'
             platform: 'linux/arm64'
             browser: 'chromium'
@@ -31,7 +31,7 @@ jobs:
             goss: 'goss-linux-arm'
 
           # Chrome - x86
-          - runner: 'buildjet-4vcpu-ubuntu-2204'
+          - runner: 'ubuntu-latest'
             tag: 'chrome'
             platform: 'amd64'
             browser: 'chrome'
@@ -39,14 +39,14 @@ jobs:
             goss: 'goss-linux-amd64'
 
           # Chrome - ARM (Chrome is not available for ARM)
-          #- runner: "buildjet-4vcpu-ubuntu-2204-arm"
+          #- runner: "ubuntu-24.04-arm"
           #  tag: "chrome-arm"
           #  platform: "linux/arm64"
           #  browser: "chrome"
           #  goss: 'goss-linux-arm'
 
           # NOWEB - x86
-          - runner: 'buildjet-4vcpu-ubuntu-2204'
+          - runner: 'ubuntu-latest'
             tag: 'noweb'
             platform: 'amd64'
             browser: 'none'
@@ -54,7 +54,7 @@ jobs:
             goss: 'goss-linux-amd64'
 
           # NOWEB - ARM
-          - runner: 'buildjet-4vcpu-ubuntu-2204-arm'
+          - runner: 'ubuntu-24.04-arm'
             tag: 'noweb-arm'
             platform: 'linux/arm64'
             browser: 'none'
@@ -62,7 +62,7 @@ jobs:
             goss: 'goss-linux-arm'
 
           # GOWS - x86
-          - runner: 'buildjet-4vcpu-ubuntu-2204'
+          - runner: 'ubuntu-latest'
             tag: 'gows'
             platform: 'amd64'
             browser: 'none'
@@ -70,7 +70,7 @@ jobs:
             goss: 'goss-linux-amd64'
 
           # No browser - ARM
-          - runner: 'buildjet-4vcpu-ubuntu-2204-arm'
+          - runner: 'ubuntu-24.04-arm'
             tag: 'gows-arm'
             platform: 'linux/arm64'
             browser: 'none'

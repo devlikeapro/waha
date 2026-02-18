@@ -76,17 +76,31 @@ const updatedContent = exampleContent
 
 fs.writeFileSync(targetPath, updatedContent, { encoding: 'utf8' });
 
+const generatedEnvValues = [
+  `WAHA_API_KEY=${apiKey}`,
+  `WAHA_API_KEY_PLAIN=${apiKey}`,
+  'WAHA_DASHBOARD_USERNAME=admin',
+  `WAHA_DASHBOARD_PASSWORD=${adminPassword}`,
+  'WHATSAPP_SWAGGER_USERNAME=admin',
+  `WHATSAPP_SWAGGER_PASSWORD=${adminPassword}`,
+];
+
 const lines = [
   'Credentials generated.',
   '',
-  'Dashboard and Swagger:',
+  'Generated env values:',
+  ...generatedEnvValues.map((line) => `  - ${line}`),
+  '',
+  'Use these credentials to login in Dashboard or Swagger:',
   '  - Username: admin',
   `  - Password: ${adminPassword}`,
   '',
-  'API key: ',
+  'Use this API key in the x-api-key header:',
   `  - ${apiKey}`,
   '',
-  'Use it in the Dashboard connection flow: https://waha.devlike.pro/docs/how-to/dashboard/#api-key',
+  'Read more:',
+  '  - https://waha.devlike.pro/docs/how-to/dashboard/#api-key',
+  '  - https://waha.devlike.pro/docs/how-to/security/',
 ];
 
 console.log(lines.join('\n'));

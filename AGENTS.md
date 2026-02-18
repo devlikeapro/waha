@@ -132,7 +132,9 @@ You can find related source code in the following paths:
 
 - WEBJS: `../whatsapp-web.js`
 - NOWEB: `../WhiskeySockets-Baileys`
-- GOWS: `../gows` + `../whatsmeow`
+  - whatsapp-rust-bridge - `../whatsapp-rust-bridge`
+- GOWS: `../gows`
+  - whatsmeow - `../whatsmeow`
 - ChatWoot: `../chatwoot`
 
 Following this playbook keeps contributions aligned with WAHA’s structure,

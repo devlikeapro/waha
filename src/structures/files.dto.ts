@@ -22,7 +22,8 @@ export class RemoteFile {
   @ApiProperty({
     example:
       process.env.WHATSAPP_SWAGGER_JPG_EXAMPLE_URL ||
-      'https://github.com/devlikeapro/waha/raw/core/examples/waha.jpg',
+      'https://picsum.photos/1024',
+    // 'https://github.com/devlikeapro/waha/raw/core/examples/waha.jpg',
   })
   url: string;
 }
@@ -130,7 +131,8 @@ export class FileURL {
   @ApiProperty({
     example:
       process.env.WHATSAPP_SWAGGER_JPG_EXAMPLE_URL ||
-      'https://github.com/devlikeapro/waha/raw/core/examples/waha.jpg',
+      'https://picsum.photos/1024',
+    // 'https://github.com/devlikeapro/waha/raw/core/examples/waha.jpg',
   })
   url?: string;
 }

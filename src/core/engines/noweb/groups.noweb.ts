@@ -64,8 +64,17 @@ export function ToGroupParticipant(
 interface GroupParticipantUpdate {
   id: string;
   author: string;
-  participants: string[];
+  participants: Array<string | NOWEBGroupParticipant>;
   action: ParticipantAction;
+}
+
+function getParticipantId(
+  participant: string | NOWEBGroupParticipant,
+): string | undefined {
+  if (typeof participant === 'string') {
+    return participant;
+  }
+  return participant?.id;
 }
 
 export function ToGroupV2Participants(
@@ -92,7 +101,8 @@ export function ToGroupV2Participants(
       break;
   }
 
-  const participants: GroupParticipant[] = update.participants.map((id) => {
+  const participants: GroupParticipant[] = update.participants.map((item) => {
+    const id = getParticipantId(item);
     return {
       id: toCusFormat(id),
       role: role,
@@ -131,7 +141,11 @@ export function ToGroupV2LeaveEvent(
     return null;
   }
   const meId = esm.b.jidNormalizedUser(me.id);
-  if (!update.participants.includes(meId)) {
+  const includesMe = update.participants.some((participant) => {
+    const id = getParticipantId(participant);
+    return id === meId;
+  });
+  if (!includesMe) {
     return null;
   }
 

@@ -5,9 +5,9 @@ __metadata:
   version: 8
   cacheKey: 10
 
-"@adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-2026-01-25":
+"@adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-2026-02-11":
   version: 7.0.0-rc.9
-  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=7a9463729776e6fb19ccfb9ce8312515db92b94a"
+  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=b00582cdfd9cef50a7f1a0e2faa28dbf7baef407"
   dependencies:
     "@cacheable/node-cache": "npm:^1.4.0"
     "@hapi/boom": "npm:^9.1.3"
@@ -18,6 +18,7 @@ __metadata:
     p-queue: "npm:^9.0.0"
     pino: "npm:^9.6"
     protobufjs: "npm:^7.2.4"
+    whatsapp-rust-bridge: "npm:0.5.2"
     ws: "npm:^8.13.0"
   peerDependencies:
     audio-decode: ^2.1.3
@@ -31,7 +32,7 @@ __metadata:
       optional: true
     link-preview-js:
       optional: true
-  checksum: 10/69fce0f910203bc1bf4c1c677110e2d887fb5d00e5ea4759da8506afa36606baf70dc19e5396b24997cb204c86b48cda5d88a1e7d333282f7499b52b356c3b00
+  checksum: 10/7229ea82f4849f3397201ae16ab202f57f9788d61ce80b37cc42b77e01808ad53c470443e4fef44297681c5c6211829095210aeff5fb717fd8c083d9d6c4e22f
   languageName: node
   linkType: hard
 
@@ -12593,7 +12594,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "waha@workspace:."
   dependencies:
-    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-2026-01-25"
+    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-2026-02-11"
     "@adiwajshing/keyed-db": "npm:^0.2.4"
     "@aws-sdk/client-s3": "npm:^3.633.0"
     "@aws-sdk/s3-request-presigner": "npm:^3.633.0"
@@ -12800,9 +12801,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"whatsapp-rust-bridge@github:devlikeapro/whatsapp-rust-bridge.git#fork-master-2026-02-04":
+  version: 0.5.2
+  resolution: "whatsapp-rust-bridge@https://github.com/devlikeapro/whatsapp-rust-bridge.git#commit=9fb931fbb991f5ff01142f72de41c21b39ed3a8f"
+  checksum: 10/b96e5efaf70f975eb3e51513c65c1f73f45f88946196c8f4c7c5c940a3975b2fb3b696bddc5378798e80e242f21fe7cdf4141a81dd405b85ef44272a28d6e76f
+  languageName: node
+  linkType: hard
+
 "whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-2026-02-01":
   version: 1.34.6
-  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=506f680bd91933ae08c1000faa3e03c490f78e56"
+  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=3602e0801d8ba3bd2549068e79536282b3028a0e"
   dependencies:
     "@pedroslopez/moduleraid": "npm:^5.0.2"
     archiver: "npm:^5.3.1"
@@ -12820,7 +12828,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 10/23b03a08a1d53aa0c58462f9348fef2ba9bae3affc3769d3f1f51f3716aaae73521aa673d19f96ec573b0678b721cbd29bdbf22c3ad80b5f1a898a9459bfec1a
+  checksum: 10/a7a177079c271c27675ca49e76d31f283c5472bcc478cc5e78c4d2ad5a6ed120346fd9a176791d28cc69f42c540d3430eb3809e9d1641f2dc1183e0d82d8df81
   languageName: node
   linkType: hard
 

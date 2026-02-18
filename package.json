@@ -29,7 +29,7 @@
     "gows:proto": "yarn gows:proto:fetch && yarn gows:proto:build"
   },
   "dependencies": {
-    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-2026-01-25",
+    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-2026-02-11",
     "@adiwajshing/keyed-db": "^0.2.4",
     "@aws-sdk/client-s3": "^3.633.0",
     "@aws-sdk/s3-request-presigner": "^3.633.0",
@@ -124,7 +124,8 @@
     "ws": "^8.18.0",
     "puppeteer": "^24.31.0",
     "whatwg-url": "13.0.0",
-    "axios": "^1.9.0"
+    "axios": "^1.9.0",
+    "whatsapp-rust-bridge": "github:devlikeapro/whatsapp-rust-bridge.git#fork-master-2026-02-04"
   },
   "devDependencies": {
     "@grpc/grpc-js": "^1.14.1",

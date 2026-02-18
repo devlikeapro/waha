@@ -11,7 +11,12 @@ export function extractMediaContent(
     content?.videoMessage ||
     content?.audioMessage ||
     content?.ptvMessage ||
-    content?.stickerMessage;
+    content?.stickerMessage ||
+    content?.templateMessage?.hydratedTemplate?.imageMessage ||
+    content?.templateMessage?.hydratedTemplate?.videoMessage ||
+    content?.templateMessage?.interactiveMessageTemplate?.header
+      ?.imageMessage ||
+    content?.templateMessage?.interactiveMessageTemplate?.header?.videoMessage;
   if (mediaContent) {
     return mediaContent;
   }
