@@ -147,7 +147,18 @@ curl -d "{\"chatId\": \"${PHONE}@c.us\", \"text\": \"Hello from WhatsApp HTTP AP
 ## Start the project
 1. Clone the repository
 2. Make sure you're using node>=22 (check [.nvmrc](/.nvmrc) to get the version)
-3. Run the following commands:
+3. Install the **whatsapp-rust-bridge prerequisites**:
+ ```bash
+# Bun runtime used by whatsapp-rust-bridge prepare scripts
+curl -fsSL https://bun.sh/install | bash -s -- bun-v1.3.9
+
+# Rust nightly toolchain used for whatsapp-rust-bridge
+curl -fsSL https://sh.rustup.rs | bash -s -- -y --default-toolchain nightly-2026-01-30
+rustup target add wasm32-unknown-unknown
+cargo install wasm-pack --vers 0.14.0 --locked
+```
+
+4. Run the following commands:
 ```bash
 # Install dependencies
 yarn install

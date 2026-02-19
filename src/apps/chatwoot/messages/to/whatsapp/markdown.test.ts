@@ -18,7 +18,9 @@ describe('MarkdownToWhatsApp', () => {
   // ChatWoot v4.10.1+ escapes newlines with trailing backslash
   it('strips trailing backslash before newlines', () => {
     const input = 'Hi \\\ntext message \\\nwith line \\\nbreak';
-    expect(MarkdownToWhatsApp(input)).toBe('Hi \ntext message \nwith line \nbreak');
+    expect(MarkdownToWhatsApp(input)).toBe(
+      'Hi \ntext message \nwith line \nbreak',
+    );
   });
 
   // Tests for URL protection

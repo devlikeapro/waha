@@ -954,24 +954,63 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   @Activity()
-  public editMessage(
+  public async editMessage(
     chatId: string,
     messageId: string,
     request: EditMessageRequest,
   ) {
     const jid = toJID(this.ensureSuffix(chatId));
     const key = parseMessageIdSerialized(messageId);
-    const message = {
+    const stored = await this.store
+      ?.loadMessage(key.remoteJid, key.id)
+      .catch(() => null);
+    const content = extractMessageContent(stored?.message);
+    let editedMessage = undefined;
+    if (content?.imageMessage) {
+      editedMessage = {
+        imageMessage: {
+          caption: request.text,
+        },
+      };
+    } else if (content?.videoMessage) {
+      editedMessage = {
+        videoMessage: {
+          caption: request.text,
+        },
+      };
+    } else if (content?.documentMessage) {
+      editedMessage = {
+        documentMessage: {
+          caption: request.text,
+        },
+      };
+    } else if (content?.documentWithCaptionMessage?.message?.documentMessage) {
+      editedMessage = {
+        documentWithCaptionMessage: {
+          message: {
+            documentMessage: {
+              caption: request.text,
+            },
+          },
+        },
+      };
+    }
+    let message: any = {
       text: request.text,
       mentions: request.mentions?.map(toJID),
       edit: key,
+      editedMessage: editedMessage,
       linkPreview: this.getLinkPreview(request),
       linkPreviewHighQuality: request.linkPreviewHighQuality,
     };
     const options = {
       messageId: this.generateMessageID(),
     };
-    return this.sock.sendMessage(jid, message, options);
+    if (isJidNewsletter(jid)) {
+      // Newsletter edits reuse the original message ID
+      options.messageId = key.id;
+    }
+    return await this.sock.sendMessage(jid, message, options);
   }
 
   @Activity()

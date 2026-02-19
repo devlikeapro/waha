@@ -2996,6 +2996,73 @@ export namespace messages {
             return AudioInfo.deserialize(bytes);
         }
     }
+    export class VideoInfo extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            duration?: number;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("duration" in data && data.duration != undefined) {
+                    this.duration = data.duration;
+                }
+            }
+        }
+        get duration() {
+            return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
+        }
+        set duration(value: number) {
+            pb_1.Message.setField(this, 1, value);
+        }
+        static fromObject(data: {
+            duration?: number;
+        }): VideoInfo {
+            const message = new VideoInfo({});
+            if (data.duration != null) {
+                message.duration = data.duration;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                duration?: number;
+            } = {};
+            if (this.duration != null) {
+                data.duration = this.duration;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.duration != 0)
+                writer.writeFloat(1, this.duration);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): VideoInfo {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new VideoInfo();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        message.duration = reader.readFloat();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): VideoInfo {
+            return VideoInfo.deserialize(bytes);
+        }
+    }
     export class Media extends pb_1.Message {
         #one_of_decls: number[][] = [];
         constructor(data?: any[] | {
@@ -3005,6 +3072,7 @@ export namespace messages {
             audio?: AudioInfo;
             filename?: string;
             contentPath?: string;
+            video?: VideoInfo;
         }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -3026,6 +3094,9 @@ export namespace messages {
                 }
                 if ("contentPath" in data && data.contentPath != undefined) {
                     this.contentPath = data.contentPath;
+                }
+                if ("video" in data && data.video != undefined) {
+                    this.video = data.video;
                 }
             }
         }
@@ -3068,6 +3139,15 @@ export namespace messages {
         set contentPath(value: string) {
             pb_1.Message.setField(this, 6, value);
         }
+        get video() {
+            return pb_1.Message.getWrapperField(this, VideoInfo, 7) as VideoInfo;
+        }
+        set video(value: VideoInfo) {
+            pb_1.Message.setWrapperField(this, 7, value);
+        }
+        get has_video() {
+            return pb_1.Message.getField(this, 7) != null;
+        }
         static fromObject(data: {
             content?: Uint8Array;
             type?: MediaType;
@@ -3075,6 +3155,7 @@ export namespace messages {
             audio?: ReturnType<typeof AudioInfo.prototype.toObject>;
             filename?: string;
             contentPath?: string;
+            video?: ReturnType<typeof VideoInfo.prototype.toObject>;
         }): Media {
             const message = new Media({});
             if (data.content != null) {
@@ -3095,6 +3176,9 @@ export namespace messages {
             if (data.contentPath != null) {
                 message.contentPath = data.contentPath;
             }
+            if (data.video != null) {
+                message.video = VideoInfo.fromObject(data.video);
+            }
             return message;
         }
         toObject() {
@@ -3105,6 +3189,7 @@ export namespace messages {
                 audio?: ReturnType<typeof AudioInfo.prototype.toObject>;
                 filename?: string;
                 contentPath?: string;
+                video?: ReturnType<typeof VideoInfo.prototype.toObject>;
             } = {};
             if (this.content != null) {
                 data.content = this.content;
@@ -3124,6 +3209,9 @@ export namespace messages {
             if (this.contentPath != null) {
                 data.contentPath = this.contentPath;
             }
+            if (this.video != null) {
+                data.video = this.video.toObject();
+            }
             return data;
         }
         serialize(): Uint8Array;
@@ -3142,6 +3230,8 @@ export namespace messages {
                 writer.writeString(5, this.filename);
             if (this.contentPath.length)
                 writer.writeString(6, this.contentPath);
+            if (this.has_video)
+                writer.writeMessage(7, this.video, () => this.video.serialize(writer));
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -3168,6 +3258,9 @@ export namespace messages {
                         break;
                     case 6:
                         message.contentPath = reader.readString();
+                        break;
+                    case 7:
+                        reader.readMessage(message.video, () => message.video = VideoInfo.deserialize(reader));
                         break;
                     default: reader.skipField();
                 }
