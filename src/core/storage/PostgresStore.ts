@@ -39,9 +39,19 @@ const MIGRATIONS: string[] = [
     `CREATE INDEX IF NOT EXISTS api_key_session_idx ON api_key (session)`,
 
     // Auth (used by PostgresSessionAuthRepository)
+    // Drop table if it doesn't have the key column (old schema)
+    `DO $$ 
+    BEGIN 
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'waha_auth') 
+      AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'waha_auth' AND column_name = 'key') THEN 
+        DROP TABLE waha_auth; 
+      END IF; 
+    END $$`,
     `CREATE TABLE IF NOT EXISTS waha_auth (
-    session_id TEXT PRIMARY KEY,
-    data TEXT
+    session_id TEXT,
+    key TEXT,
+    value JSONB,
+    PRIMARY KEY (session_id, key)
   )`,
 ];
 

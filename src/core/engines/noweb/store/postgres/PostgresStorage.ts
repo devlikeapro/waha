@@ -44,22 +44,7 @@ export class PostgresStorage extends INowebStorage {
             }
         }
 
-        // Add Auth table for Postgres
-        const authTable = `
-      CREATE TABLE IF NOT EXISTS waha_auth (
-        session_id TEXT,
-        key TEXT,
-        value JSONB,
-        PRIMARY KEY (session_id, key)
-      )
-    `;
-        try {
-            await knex.raw(authTable);
-        } catch (e: any) {
-            if (!e.message.includes('already exists')) {
-                console.warn(`Migration error (waha_auth): ${e.message}`);
-            }
-        }
+
     }
 
     async close() {
