@@ -1,3 +1,4 @@
+declare const process: any;
 import {
   Inject,
   Injectable,
@@ -49,13 +50,15 @@ import { MediaManager } from './media/MediaManager';
 import { LocalSessionAuthRepository } from './storage/LocalSessionAuthRepository';
 import { LocalStoreCore } from './storage/LocalStoreCore';
 import { CoreApiKeyRepository } from './storage/CoreApiKeyRepository';
+import { PostgresStoreCore } from './storage/PostgresStoreCore';
+import { PostgresSessionAuthRepository } from './storage/postgres/PostgresSessionAuthRepository';
 
 export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
   constructor(name: string) {
     const encoded = Buffer.from(name, 'utf-8').toString('base64');
     super(
       `WAHA Core support only 'default' session. You tried to access '${name}' session (base64: ${encoded}). ` +
-        `If you want to run more then one WhatsApp account - please get WAHA PLUS version. Check this out: ${DOCS_URL}`,
+      `If you want to run more then one WhatsApp account - please get WAHA PLUS version. Check this out: ${DOCS_URL}`,
     );
   }
 }
@@ -104,8 +107,17 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
         }),
     );
 
-    this.store = new LocalStoreCore(engineName.toLowerCase());
-    this.sessionAuthRepository = new LocalSessionAuthRepository(this.store);
+    const storageEngine = process.env.WAHA_STORAGE_ENGINE || (process.env.WHATSAPP_SESSIONS_POSTGRESQL_URL ? 'postgres' : 'sqlite3');
+    if (storageEngine === 'postgres') {
+      const postgresStore = new PostgresStoreCore();
+      this.store = postgresStore;
+      this.sessionAuthRepository = new PostgresSessionAuthRepository(postgresStore);
+    } else {
+      const localStore = new LocalStoreCore(engineName.toLowerCase());
+      this.store = localStore;
+      this.sessionAuthRepository = new LocalSessionAuthRepository(localStore);
+    }
+
     this.clearStorage().catch((error) => {
       this.log.error({ error }, 'Error while clearing storage');
     });
@@ -347,7 +359,7 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
     if (!session) {
       throw new NotFoundException(
         `We didn't find a session with name '${name}'.\n` +
-          `Please start it first by using POST /api/sessions/${name}/start request`,
+        `Please start it first by using POST /api/sessions/${name}/start request`,
       );
     }
     return session as WhatsappSession;
