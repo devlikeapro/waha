@@ -1,6 +1,7 @@
-import type {
+import {
     AuthenticationCreds,
     AuthenticationState,
+    BufferJSON,
 } from '@adiwajshing/baileys';
 import esm from '@waha/vendor/esm';
 import { Knex } from 'knex';
@@ -23,7 +24,8 @@ export const usePostgresAuthState = async (
                 .first();
             if (row) {
                 // Knex with pg driver auto-parses JSON/JSONB columns
-                return row.value;
+                // But we need to revive Buffers from { type: 'Buffer', data: [...] }
+                return JSON.parse(JSON.stringify(row.value), BufferJSON.reviver);
             }
             return null;
         } catch (error) {
