@@ -16,30 +16,59 @@ export const usePostgresAuthState = async (
 }> => {
     const table = 'waha_auth';
 
+    /**
+     * Custom JSON reviver that handles Buffers stored in two different formats:
+     *  - New format (correct): { type: 'Buffer', data: '<base64 string>' }
+     *  - Old/broken format:    { type: 'Buffer', data: [0, 1, 2, ...] }
+     * The old format was produced before BufferJSON.replacer was used on write.
+     */
+    const bufferReviver = (_key: string, value: any) => {
+        if (
+            typeof value === 'object' &&
+            value !== null &&
+            value.type === 'Buffer' &&
+            value.data != null
+        ) {
+            if (typeof value.data === 'string') {
+                // New format: base64-encoded string
+                return Buffer.from(value.data, 'base64');
+            }
+            if (Array.isArray(value.data)) {
+                // Old (broken) format: raw byte array
+                return Buffer.from(value.data);
+            }
+        }
+        return value;
+    };
+
     const readData = async (key: string) => {
         try {
             const row = await knex(table)
                 .select('value')
                 .where({ session_id: sessionName, key })
                 .first();
-            if (row) {
-                // Knex with pg driver auto-parses JSON/JSONB columns
-                // But we need to revive Buffers from { type: 'Buffer', data: [...] }
-                return JSON.parse(JSON.stringify(row.value), BufferJSON.reviver);
-            }
-            return null;
-        } catch (error) {
+            if (!row) return null;
+            // row.value is auto-parsed by the pg driver from JSONB.
+            // Re-stringify so we get a plain JSON string, then parse with our
+            // custom reviver that handles both Buffer encoding formats.
+            return JSON.parse(JSON.stringify(row.value), bufferReviver);
+        } catch {
             return null;
         }
     };
 
+
     const writeData = async (data: any, key: string) => {
-        // Upsert
+        // Serialize with BufferJSON.replacer so Buffers are encoded as
+        // { type: 'Buffer', data: '<base64>' } strings rather than raw byte arrays.
+        // Storing as a JSON string cast to ::jsonb keeps Postgres happy while
+        // preserving the base64 encoding that BufferJSON.reviver expects.
+        const json = JSON.stringify(data, BufferJSON.replacer);
         await knex(table)
             .insert({
                 session_id: sessionName,
-                key: key,
-                value: data,
+                key,
+                value: knex.raw('?::jsonb', [json]),
             })
             .onConflict(['session_id', 'key'])
             .merge();
@@ -58,7 +87,7 @@ export const usePostgresAuthState = async (
             creds,
             keys: {
                 get: async (type, ids) => {
-                    const data = {};
+                    const data: Record<string, any> = {};
                     await Promise.all(
                         ids.map(async (id) => {
                             let value = await readData(`${type}-${id}`);
@@ -83,11 +112,9 @@ export const usePostgresAuthState = async (
                 },
             },
         },
-        saveCreds: () => {
-            return writeData(creds, 'creds');
-        },
+        saveCreds: () => writeData(creds, 'creds'),
         close: async () => {
-            // Nothing to close here, connection is managed externally
+            // Connection is managed externally
         },
     };
 };
