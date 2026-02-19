@@ -1,0 +1,46 @@
+# docker-compose.dev.yml
+# Usage: docker compose -f docker-compose.yaml -f docker-compose.dev.yml up -d --build
+#
+# This file extends docker-compose.yaml with a local PostgreSQL service
+# for development / self-hosted deployments.
+
+services:
+  postgres:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: waha
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    command:
+      - postgres
+      - "-c"
+      - "max_connections=200"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d waha"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
+    networks:
+      - database
+
+  waha:
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pg_data: {}
+
+networks:
+  database:
+    external: true
