@@ -138,7 +138,10 @@ const IMPORTS_MEDIA = [
         .default('LOCAL'),
     }),
   }),
-  MediaLocalStorageModule,
+  // Dynamically load S3 module if configured, otherwise use Local Storage.
+  process.env.WAHA_MEDIA_STORAGE === 'S3'
+    ? require('./media/s3/media.s3.storage.module').MediaS3StorageModule
+    : MediaLocalStorageModule,
 ];
 
 const IMPORTS = [...IMPORTS_CORE, ...IMPORTS_MEDIA];
