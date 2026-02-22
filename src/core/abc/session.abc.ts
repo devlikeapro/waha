@@ -615,7 +615,7 @@ export abstract class WhatsappSession {
         await this.setPresence(WAHAPresenceStatus.ONLINE);
         this.logger.debug('Set presence to ONLINE due to activity');
       } catch (error) {
-        this.logger.debug('Failed to set presence ONLINE', error);
+        this.logger.debug({ err: error }, 'Failed to set presence ONLINE');
         return;
       }
     }
@@ -637,7 +637,7 @@ export abstract class WhatsappSession {
         );
       } catch (error) {
         this.presence = WAHAPresenceStatus.OFFLINE;
-        this.logger.debug('Failed to set presence OFFLINE', error);
+        this.logger.debug({ err: error }, 'Failed to set presence OFFLINE');
       }
       this.cleanupPresenceTimeout();
     }, this.presenceAutoOnlineConfig.duration);

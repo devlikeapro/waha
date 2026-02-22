@@ -11,10 +11,13 @@
     "outDir": "./dist",
     "baseUrl": "./src",
     "paths": {
-      "@waha/*": ["*"]
+      "@waha/*": [
+        "*"
+      ]
     },
     "incremental": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noEmitOnError": false
   }
 }
