@@ -22,7 +22,12 @@ import {
 import { SessionManager } from '@waha/core/abc/manager.abc';
 import { CheckPolicies } from '@waha/core/auth/policies.decorator';
 import { PoliciesGuard } from '@waha/core/auth/policies.guard';
-import { CanSession, FromBody, FromQuery } from '@waha/core/auth/policies';
+import {
+  CanServer,
+  CanSession,
+  FromBody,
+  FromQuery,
+} from '@waha/core/auth/policies';
 import { Action, session as SessionName } from '@waha/core/auth/casl.types';
 import { WAHAValidationPipe } from '@waha/nestjs/pipes/WAHAValidationPipe';
 
@@ -65,6 +70,7 @@ export class AppsController {
 
   @Get('/:id')
   @ApiOperation({ summary: 'Get app by ID' })
+  @CheckPolicies(CanServer(Action.Read))
   @UsePipes(new WAHAValidationPipe())
   async get(@Param('id') id: string, @Req() req: any): Promise<App> {
     const app = await this.appsService.get(this.manager, id);
@@ -79,6 +85,7 @@ export class AppsController {
 
   @Put('/:id')
   @ApiOperation({ summary: 'Update an existing app' })
+  @CheckPolicies(CanServer(Action.Read))
   @UsePipes(new WAHAValidationPipe())
   async update(
     @Param('id') id: string,
@@ -114,6 +121,7 @@ export class AppsController {
 
   @Delete('/:id')
   @ApiOperation({ summary: 'Delete an app' })
+  @CheckPolicies(CanServer(Action.Read))
   @UsePipes(new WAHAValidationPipe())
   async delete(@Param('id') id: string, @Req() req: any): Promise<void> {
     const existing = await this.appsService.get(this.manager, id);
