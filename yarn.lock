@@ -6579,17 +6579,9 @@ libphonenumber-js@^1.10.14, libphonenumber-js@^1.10.36:
   resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.12.37.tgz#a60e3f14ce79f5df4c9a16bede3608d3eab37a5f"
   integrity sha512-rDU6bkpuMs8YRt/UpkuYEAsYSoNuDEbrE41I3KNvmXREGH6DGBJ8Wbak4by29wNOQ27zk4g4HL82zf0OGhwRuw==
 
-"libsignal@git+https://github.com/whiskeysockets/libsignal-node":
+"libsignal@git+https://github.com/whiskeysockets/libsignal-node", "libsignal@https://codeload.github.com/WhiskeySockets/libsignal-node/tar.gz/1c30d7d7e76a3b0aa120b04dc6a26f5a12dccf67":
   version "2.0.1"
-  resolved "git+https://github.com/whiskeysockets/libsignal-node#1c30d7d7e76a3b0aa120b04dc6a26f5a12dccf67"
-  dependencies:
-    curve25519-js "^0.0.4"
-    protobufjs "6.8.8"
-
-"libsignal@github:WhiskeySockets/libsignal-node#master":
-  version "2.0.1"
-  uid "1c30d7d7e76a3b0aa120b04dc6a26f5a12dccf67"
-  resolved "https://codeload.github.com/WhiskeySockets/libsignal-node/tar.gz/1c30d7d7e76a3b0aa120b04dc6a26f5a12dccf67"
+  resolved "https://codeload.github.com/WhiskeySockets/libsignal-node/tar.gz/1c30d7d7e76a3b0aa120b04dc6a26f5a12dccf67#4aed0efb959d9120535a1b375dd9802326823b44"
   dependencies:
     curve25519-js "^0.0.4"
     protobufjs "6.8.8"
