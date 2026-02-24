@@ -52,6 +52,8 @@ import { LocalStoreCore } from './storage/LocalStoreCore';
 import { CoreApiKeyRepository } from './storage/CoreApiKeyRepository';
 import { PostgresStoreCore } from './storage/PostgresStoreCore';
 import { PostgresSessionAuthRepository } from './storage/postgres/PostgresSessionAuthRepository';
+import { PostgresSessionConfigRepository } from './storage/postgres/PostgresSessionConfigRepository';
+import { LocalSessionConfigRepository } from './storage/LocalSessionConfigRepository';
 
 export class OnlyDefaultSessionIsAllowed extends UnprocessableEntityException {
   constructor(name: string) {
@@ -112,10 +114,12 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
       const postgresStore = new PostgresStoreCore();
       this.store = postgresStore;
       this.sessionAuthRepository = new PostgresSessionAuthRepository(postgresStore);
+      this.sessionConfigRepository = new PostgresSessionConfigRepository(postgresStore);
     } else {
       const localStore = new LocalStoreCore(engineName.toLowerCase());
       this.store = localStore;
       this.sessionAuthRepository = new LocalSessionAuthRepository(localStore);
+      this.sessionConfigRepository = new LocalSessionConfigRepository(localStore);
     }
 
     this.clearStorage().catch((error) => {
@@ -178,7 +182,8 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
 
   async upsert(name: string, config?: SessionConfig): Promise<void> {
     this.onlyDefault(name);
-    this.sessionConfig = config;
+    this.sessionConfig = config || {};
+    await this.sessionConfigRepository.saveConfig(name, this.sessionConfig);
   }
 
   async start(name: string): Promise<SessionDTO> {
@@ -189,6 +194,12 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
       );
     }
     this.log.info({ session: name }, `Starting session...`);
+
+    // Load config from repository if not available
+    if (!this.sessionConfig) {
+      this.sessionConfig = (await this.sessionConfigRepository.getConfig(name)) || {};
+    }
+
     const logger = this.log.logger.child({ session: name });
     logger.level = getPinoLogLevel(this.sessionConfig?.debug);
     const loggerBuilder: LoggerBuilder = logger;
@@ -322,6 +333,7 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
     this.session = DefaultSessionStatus.REMOVED;
     this.updateSession();
     this.sessionConfig = undefined;
+    await this.sessionConfigRepository.deleteConfig(name);
   }
 
   /**
@@ -448,6 +460,7 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
 
   async init() {
     await this.store.init();
+    await this.sessionConfigRepository.init();
     const knex = this.store.getWAHADatabase();
     await this.appsService.migrate(knex);
   }
