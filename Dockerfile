@@ -28,19 +28,13 @@ RUN set -eux; \
     /root/.cargo/bin/rustc --version; \
     /root/.cargo/bin/wasm-pack --version
 
-# npm packages
+# App
 WORKDIR /git
-COPY package.json .
-COPY yarn.lock .
+ADD . /git
 ENV YARN_CHECKSUM_BEHAVIOR=update
 
 RUN npm install -g corepack && corepack enable
 RUN yarn set version 4.9.2
-RUN yarn install
-
-# App
-WORKDIR /git
-ADD . /git
 RUN yarn install
 RUN yarn build && find ./dist -name "*.d.ts" -delete
 
