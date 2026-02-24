@@ -1,0 +1,37 @@
+node_modules/@adiwajshing/baileys/src/Utils/chat-utils.ts(2,36): error TS2307: Cannot find module 'whatsapp-rust-bridge' or its corresponding type declarations.
+node_modules/@adiwajshing/baileys/src/Utils/crypto.ts(5,27): error TS2307: Cannot find module 'whatsapp-rust-bridge' or its corresponding type declarations.
+node_modules/@adiwajshing/baileys/src/Utils/generics.ts(100,84): error TS2322: Type 'number | Long' is not assignable to type 'number'.
+  Type 'Long' is not assignable to type 'number'.
+node_modules/@adiwajshing/baileys/src/Utils/generics.ts(242,4): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | URL | Request, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+node_modules/@adiwajshing/baileys/src/Utils/generics.ts(242,24): error TS2339: Property 'dispatcher' does not exist on type 'RequestInit'.
+node_modules/@adiwajshing/baileys/src/Utils/lt-hash.ts(1,37): error TS2307: Cannot find module 'whatsapp-rust-bridge' or its corresponding type declarations.
+node_modules/@adiwajshing/baileys/src/Utils/messages-media.ts(373,3): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | URL | Request, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+node_modules/@adiwajshing/baileys/src/Utils/messages-media.ts(373,23): error TS2339: Property 'dispatcher' does not exist on type 'RequestInit & { isStream?: true; }'.
+node_modules/@adiwajshing/baileys/src/Utils/messages-media.ts(597,18): error TS2724: '"crypto"' has no exported member named 'Decipheriv'. Did you mean 'Decipher'?
+node_modules/@adiwajshing/baileys/src/Utils/messages-media.ts(782,3): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | URL | Request, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+node_modules/@adiwajshing/baileys/src/Utils/messages.ts(484,55): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | URL | Request, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'dispatcher' does not exist in type 'RequestInit'.
+node_modules/@adiwajshing/baileys/src/Utils/messages.ts(484,85): error TS2339: Property 'dispatcher' does not exist on type 'RequestInit'.
+node_modules/@adiwajshing/baileys/src/WABinary/generic-utils.ts(116,3): error TS2322: Type 'string | Uint8Array<ArrayBufferLike> | BinaryNode | BinaryNode[]' is not assignable to type 'string'.
+  Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'string'.
+src/apps/chatwoot/messages/to/chatwoot/EventMessage.ts(24,41): error TS2345: Argument of type 'number | Long' is not assignable to parameter of type 'string | number | Long'.
+  Type 'Long' is not assignable to type 'string | number | Long'.
+    Type 'Long' is missing the following properties from type 'Long': ge, isSafeInteger, eqz, le, and 12 more.
+src/apps/chatwoot/messages/to/chatwoot/EventMessage.ts(25,39): error TS2345: Argument of type 'number | Long' is not assignable to parameter of type 'string | number | Long'.
+  Type 'Long' is not assignable to type 'string | number | Long'.
+    Type 'Long' is missing the following properties from type 'Long': ge, isSafeInteger, eqz, le, and 12 more.

@@ -26,7 +26,8 @@
     "test:all": "yarn test:unit && yarn test:e8e",
     "gows:proto:fetch": "node scripts/gows-proto.js fetch",
     "gows:proto:build": "node scripts/gows-proto.js build",
-    "gows:proto": "yarn gows:proto:fetch && yarn gows:proto:build"
+    "gows:proto": "yarn gows:proto:fetch && yarn gows:proto:build",
+    "postinstall": "npx patch-package"
   },
   "dependencies": {
     "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-2026-02-11",

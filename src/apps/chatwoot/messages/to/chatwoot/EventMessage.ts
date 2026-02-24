@@ -8,7 +8,7 @@ import type { proto } from '@adiwajshing/baileys';
 import { WAMessage } from '@waha/structures/responses.dto';
 
 export class EventMessage implements MessageToChatWootConverter {
-  constructor(private readonly l: Locale) {}
+  constructor(private readonly l: Locale) { }
 
   convert(
     payload: WAMessage,
@@ -21,8 +21,8 @@ export class EventMessage implements MessageToChatWootConverter {
 
     const formattedEventMessage = {
       ...eventMessage,
-      startTime: this.l.FormatTimestamp(eventMessage.startTime),
-      endTime: this.l.FormatTimestamp(eventMessage.endTime),
+      startTime: this.l.FormatTimestamp(eventMessage.startTime as any),
+      endTime: this.l.FormatTimestamp(eventMessage.endTime as any),
     };
 
     const content = this.l.key(TKey.WA_TO_CW_MESSAGE_EVENT).r({
