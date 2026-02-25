@@ -36,7 +36,13 @@ ENV YARN_CHECKSUM_BEHAVIOR=update
 RUN npm install -g corepack && corepack enable
 RUN yarn set version 4.9.2
 RUN yarn install
-RUN yarn build && find ./dist -name "*.d.ts" -delete
+RUN yarn build && find ./dist -name "*.d.ts" -delete \
+    && if [ ! -f ./dist/main.js ] && [ -f ./dist/src/main.js ]; then \
+         echo "Fixing nested dist/src structure..." && \
+         cp -a ./dist/src/* ./dist/ && \
+         rm -rf ./dist/src; \
+       fi \
+    && test -f ./dist/main.js || (echo "ERROR: dist/main.js not found after build!" && find ./dist -name "main.js" && exit 1)
 
 #
 # Dashboard
