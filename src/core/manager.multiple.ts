@@ -1,7 +1,4 @@
-// @ts-ignore
-import * as fs from 'fs';
-// @ts-ignore
-import * as path from 'path';
+
 declare const process: any;
 import {
     Inject,
@@ -56,6 +53,8 @@ import { CoreApiKeyRepository } from './storage/CoreApiKeyRepository';
 
 import { PostgresStoreCore } from './storage/PostgresStoreCore';
 import { PostgresSessionAuthRepository } from './storage/postgres/PostgresSessionAuthRepository';
+import { PostgresSessionConfigRepository } from './storage/postgres/PostgresSessionConfigRepository';
+import { LocalSessionConfigRepository } from './storage/LocalSessionConfigRepository';
 
 @Injectable()
 export class SessionManagerMultiple extends SessionManager implements OnModuleInit {
@@ -100,10 +99,12 @@ export class SessionManagerMultiple extends SessionManager implements OnModuleIn
             const postgresStore = new PostgresStoreCore();
             this.store = postgresStore;
             this.sessionAuthRepository = new PostgresSessionAuthRepository(postgresStore);
+            this.sessionConfigRepository = new PostgresSessionConfigRepository(postgresStore);
         } else {
             const localStore = new LocalStoreCore(engineName.toLowerCase());
             this.store = localStore;
             this.sessionAuthRepository = new LocalSessionAuthRepository(localStore);
+            this.sessionConfigRepository = new LocalSessionConfigRepository(localStore);
         }
 
         this.clearStorage().catch((error) => {
@@ -134,50 +135,39 @@ export class SessionManagerMultiple extends SessionManager implements OnModuleIn
     async onApplicationBootstrap() {
         this.apiKeyRepository = new CoreApiKeyRepository();
         await this.engineBootstrap.bootstrap();
-        await this.scanSessions();
+        await this.loadPersistedSessions();
         this.startPredefinedSessions();
+        this.startAllPersistedSessions();
     }
 
-    private async scanSessions() {
-        const engine = this.engineConfigService.getDefaultEngineName();
-        this.log.info(`Scanning sessions for engine '${engine}'...`);
-        const base = process.env.WAHA_LOCAL_STORE_BASE_DIR || './.sessions';
-
-        if (engine === WAHAEngine.WEBJS) {
-            const dir = path.join(base, 'webjs', 'default');
-            try {
-                const files = await fs.promises.readdir(dir, { withFileTypes: true });
-                for (const file of files) {
-                    if (file.isDirectory() && file.name.startsWith('session-')) {
-                        const sessionName = file.name.replace('session-', '');
-                        if (!this.sessions.has(sessionName) && !this.sessionConfigs.has(sessionName)) {
-                            this.log.info(`Found session '${sessionName}'`);
-                            this.sessionConfigs.set(sessionName, {});
-                        }
-                    }
+    private async loadPersistedSessions() {
+        this.log.info('Loading persisted sessions from config repository...');
+        try {
+            const sessionNames = await this.sessionConfigRepository.getAllConfigs();
+            for (const name of sessionNames) {
+                if (!this.sessionConfigs.has(name)) {
+                    const config = await this.sessionConfigRepository.getConfig(name);
+                    this.log.info(`Loaded persisted session '${name}'`);
+                    this.sessionConfigs.set(name, config || {});
                 }
-            } catch (e) {
-                this.log.warn(`Failed to scan sessions in ${dir}: ${e.message}`);
             }
-        } else if (engine === WAHAEngine.NOWEB) {
-            const dir = path.join(base, 'noweb');
-            try {
-                const files = await fs.promises.readdir(dir, { withFileTypes: true });
-                for (const file of files) {
-                    if (file.isDirectory()) {
-                        const sessionName = file.name;
-                        // Ignore internal files/folders if any
-                        if (sessionName.startsWith('.')) continue;
+        } catch (e) {
+            this.log.warn(`Failed to load persisted sessions: ${e.message}`);
+        }
+    }
 
-                        if (!this.sessions.has(sessionName) && !this.sessionConfigs.has(sessionName)) {
-                            this.log.info(`Found session '${sessionName}'`);
-                            this.sessionConfigs.set(sessionName, {});
-                        }
-                    }
-                }
-            } catch (e) {
-                this.log.warn(`Failed to scan sessions in ${dir}: ${e.message}`);
-            }
+    private startAllPersistedSessions() {
+        const predefined = this.config.startSessions;
+        for (const name of this.sessionConfigs.keys()) {
+            // Skip sessions already being started by startPredefinedSessions
+            if (predefined.includes(name)) continue;
+            this.withLock(name, async () => {
+                const log = this.log.logger.child({ session: name });
+                log.info(`Auto-restarting persisted session...`);
+                await this.start(name).catch((error) => {
+                    log.error(`Failed to auto-start session '${name}': ${error}`);
+                });
+            });
         }
     }
 
@@ -202,6 +192,7 @@ export class SessionManagerMultiple extends SessionManager implements OnModuleIn
 
     async upsert(name: string, config?: SessionConfig): Promise<void> {
         this.sessionConfigs.set(name, config);
+        await this.sessionConfigRepository.saveConfig(name, config || {});
     }
 
     async start(name: string): Promise<SessionDTO> {
@@ -211,7 +202,12 @@ export class SessionManagerMultiple extends SessionManager implements OnModuleIn
             );
         }
         this.log.info({ session: name }, `Starting session...`);
-        const sessionConfigData = this.sessionConfigs.get(name);
+        let sessionConfigData = this.sessionConfigs.get(name);
+        // Load config from repository if not in memory (e.g. after restart)
+        if (!sessionConfigData) {
+            sessionConfigData = (await this.sessionConfigRepository.getConfig(name)) || {};
+            this.sessionConfigs.set(name, sessionConfigData);
+        }
         const logger = this.log.logger.child({ session: name });
         logger.level = getPinoLogLevel(sessionConfigData?.debug);
         const loggerBuilder: LoggerBuilder = logger;
@@ -336,6 +332,7 @@ export class SessionManagerMultiple extends SessionManager implements OnModuleIn
             await this.stop(name, true);
         }
         this.sessionConfigs.delete(name);
+        await this.sessionConfigRepository.deleteConfig(name);
     }
 
     /**
@@ -500,6 +497,7 @@ export class SessionManagerMultiple extends SessionManager implements OnModuleIn
 
     async init() {
         await this.store.init();
+        await this.sessionConfigRepository.init();
         const knex = this.store.getWAHADatabase();
         await this.appsService.migrate(knex);
     }
