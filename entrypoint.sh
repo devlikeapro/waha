@@ -39,6 +39,10 @@ if [ -n "$key" ]; then
   # Check if key is already hashed
   if echo "$key" | grep -q "^sha512:"; then
     # If already hashed, use it as is
+    # Convert to Unix format (LF)
+
+    #!/bin/sh
+
     export WAHA_API_KEY="$key"
   else
     # Hash the key using sha512sum
