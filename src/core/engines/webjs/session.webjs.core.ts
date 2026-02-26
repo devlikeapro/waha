@@ -1,4 +1,5 @@
 import { UnprocessableEntityException } from '@nestjs/common';
+import axios from 'axios';
 import {
   getChannelInviteLink,
   WhatsappSession,
@@ -78,6 +79,7 @@ import {
   MessageReplyRequest,
   MessageStarRequest,
   MessageTextRequest,
+  MessageVideoRequest,
   MessageVoiceRequest,
   SendSeenRequest,
   WANumberExistResult,
@@ -804,20 +806,57 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     );
   }
 
-  sendImage(request: MessageImageRequest) {
-    throw new AvailableInPlusVersion();
+  async sendImage(request: MessageImageRequest) {
+    const media = await this.toMessageMedia(request.file);
+    const options = this.getMessageOptions(request);
+    options.caption = request.caption;
+    return this.whatsapp.sendMessage(
+      this.ensureSuffix(request.chatId),
+      media,
+      options,
+    );
   }
 
-  sendFile(request: MessageFileRequest) {
-    throw new AvailableInPlusVersion();
+  async sendFile(request: MessageFileRequest) {
+    const media = await this.toMessageMedia(request.file);
+    const options = this.getMessageOptions(request);
+    options.caption = request.caption;
+    return this.whatsapp.sendMessage(
+      this.ensureSuffix(request.chatId),
+      media,
+      options,
+    );
   }
 
-  sendVoice(request: MessageVoiceRequest) {
-    throw new AvailableInPlusVersion();
+  async sendVideo(request: MessageVideoRequest) {
+    const media = await this.toMessageMedia(request.file);
+    const options = this.getMessageOptions(request);
+    options.caption = request.caption;
+    return this.whatsapp.sendMessage(
+      this.ensureSuffix(request.chatId),
+      media,
+      options,
+    );
   }
 
-  sendButtonsReply(request: MessageButtonReply) {
-    throw new AvailableInPlusVersion();
+  async sendVoice(request: MessageVoiceRequest) {
+    const media = await this.toMessageMedia(request.file);
+    const options = this.getMessageOptions(request);
+    options.sendAudioAsVoice = true;
+    return this.whatsapp.sendMessage(
+      this.ensureSuffix(request.chatId),
+      media,
+      options,
+    );
+  }
+
+  async sendButtonsReply(request: MessageButtonReply) {
+    const options = this.getMessageOptions(request);
+    return this.whatsapp.sendMessage(
+      this.ensureSuffix(request.chatId),
+      request.selectedDisplayText,
+      options,
+    );
   }
 
   @Activity()
@@ -2142,11 +2181,31 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       linkPreview: request.linkPreview,
     };
   }
+
+  protected async toMessageMedia(
+    file: BinaryFile | RemoteFile,
+  ): Promise<MessageMedia> {
+    if (file instanceof BinaryFile || 'data' in file) {
+      const binaryFile = file as BinaryFile;
+      return new MessageMedia(
+        binaryFile.mimetype,
+        binaryFile.data,
+        binaryFile.filename,
+      );
+    }
+
+    const remoteFile = file as RemoteFile;
+    const response = await axios.get(remoteFile.url, {
+      responseType: 'arraybuffer',
+    });
+    const buffer = Buffer.from(response.data, 'binary');
+    const data = buffer.toString('base64');
+    return new MessageMedia(remoteFile.mimetype, data, remoteFile.filename);
+  }
 }
 
 export class WEBJSEngineMediaProcessor
-  implements IMediaEngineProcessor<Message>
-{
+  implements IMediaEngineProcessor<Message> {
   hasMedia(message: Message): boolean {
     if (!message.hasMedia) {
       return false;

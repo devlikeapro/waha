@@ -212,7 +212,7 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
     this.updateSession(name);
 
     // configure webhooks
-    const webhooks = this.getWebhooks();
+    const webhooks = this.getWebhooks(name);
     webhook.configure(session, webhooks);
 
     // Apps

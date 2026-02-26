@@ -241,6 +241,8 @@ ENV WAHA_GOWS_SOCKET=/tmp/gows.sock
 
 COPY entrypoint.sh /entrypoint.sh
 
+RUN chmod +x /entrypoint.sh
+
 # Chokidar options to monitor file changes
 ENV CHOKIDAR_USEPOLLING=1
 ENV CHOKIDAR_INTERVAL=5000
