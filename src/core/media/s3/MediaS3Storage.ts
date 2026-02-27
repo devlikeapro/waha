@@ -4,9 +4,7 @@ import {
     HeadObjectCommand,
     DeleteObjectsCommand,
     ListObjectsV2Command,
-    GetObjectCommand,
 } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import {
     getMetadata,
     IMediaStorage,
@@ -68,8 +66,7 @@ export class MediaS3Storage implements IMediaStorage {
                     Key: key,
                     Body: buffer,
                     Metadata: getMetadata(data),
-                    // Optionally add ContentType if we could infer it.
-                    // In WAHA, mime_type isn't always pushed down here directly but available in other contexts.
+                    ACL: 'public-read',
                 }),
             );
             this.log.info(`File uploaded to S3: ${key}`);
@@ -89,10 +86,12 @@ export class MediaS3Storage implements IMediaStorage {
             // Local URL acting as proxy
             url = `${this.baseUrl}/api/s3/${bucket}/${key}`;
         } else {
-            // Direct presigned URL
-            const command = new GetObjectCommand({ Bucket: bucket, Key: key });
-            // Generates a pre-signed URL valid for 7 days (maximum allowed) or default 15 mins (configure as needed).
-            url = await getSignedUrl(this.s3, command, { expiresIn: 3600 * 24 * 7 });
+            // Direct public URL - files are uploaded with ACL public-read, no expiry.
+            // Requires the bucket to allow public ACLs (disable "Block Public Access" if using AWS S3).
+            const endpoint = this.config.endpoint
+                ? this.config.endpoint.replace(/\/$/, '')
+                : `https://s3.${this.config.region}.amazonaws.com`;
+            url = `${endpoint}/${bucket}/${key}`;
         }
 
         return {
