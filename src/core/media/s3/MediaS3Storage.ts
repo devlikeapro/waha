@@ -87,11 +87,14 @@ export class MediaS3Storage implements IMediaStorage {
             url = `${this.baseUrl}/api/s3/${bucket}/${key}`;
         } else {
             // Direct public URL - files are uploaded with ACL public-read, no expiry.
-            // Requires the bucket to allow public ACLs (disable "Block Public Access" if using AWS S3).
-            const endpoint = this.config.endpoint
-                ? this.config.endpoint.replace(/\/$/, '')
-                : `https://s3.${this.config.region}.amazonaws.com`;
-            url = `${endpoint}/${bucket}/${key}`;
+            // WAHA_S3_PUBLIC_URL: optional custom public domain (e.g. Cloudflare R2 custom domain).
+            //   If set, this is used as the base URL for public file access.
+            //   The S3 endpoint (WAHA_S3_ENDPOINT) is still used by the SDK for upload/API operations.
+            // Falls back to the S3 endpoint, then the default AWS S3 URL.
+            const publicBase = this.config.publicUrl
+                ?? this.config.endpoint
+                ?? `https://s3.${this.config.region}.amazonaws.com`;
+            url = `${publicBase.replace(/\/$/, '')}/${key}`;
         }
 
         return {

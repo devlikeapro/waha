@@ -32,4 +32,13 @@ export class MediaS3StorageConfig {
     get proxyFiles(): boolean {
         return this.config.get('WAHA_S3_PROXY_FILES', 'false').toLowerCase() === 'true';
     }
+
+    /**
+     * Optional public base URL for accessing uploaded files (e.g. Cloudflare R2 custom domain).
+     * If set, this URL is used to construct public file URLs instead of the S3 endpoint.
+     * Example: https://files.getcdn.my.id
+     */
+    get publicUrl(): string | undefined {
+        return this.config.get('WAHA_S3_PUBLIC_URL', undefined) || undefined;
+    }
 }
