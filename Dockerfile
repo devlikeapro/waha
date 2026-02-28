@@ -254,5 +254,6 @@ ENV GODEBUG netdns=cgo
 # Run command, etc
 EXPOSE 3000
 # Use tini as init system to handle zombie processes properly
+USER node
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["/entrypoint.sh"]
