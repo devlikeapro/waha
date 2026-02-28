@@ -2350,7 +2350,23 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   protected async fetchChatSummary(chat, merge: boolean): Promise<ChatSummary> {
     const id = toCusFormat(chat.id);
-    const name = chat.name;
+    let name = chat.name;
+    if (!name) {
+      try {
+        const jid = toJID(chat.id);
+        const request = new messages.EntityByIdRequest({
+          session: this.session,
+          id: jid,
+        });
+        const response = await promisify(this.client.GetContactById)(request);
+        const contactData = parseJson(response);
+        if (contactData) {
+          name = contactData.Name || contactData.PushName;
+        }
+      } catch (e) {
+        // Ignore contact lookup errors
+      }
+    }
     const picture = await this.getContactProfilePicture(chat.id, false);
     const lastMessageQuery: GetChatMessagesQuery = {
       limit: 1,
