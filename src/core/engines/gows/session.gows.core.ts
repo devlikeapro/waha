@@ -45,6 +45,7 @@ import { parseMessageIdSerialized } from '@waha/core/utils/ids';
 import {
   isJidBroadcast,
   isJidGroup,
+  isLidUser,
   toCusFormat,
   toJID,
 } from '@waha/core/utils/jids';
@@ -1865,7 +1866,8 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   protected async fetchChatSummary(chat): Promise<ChatSummary> {
-    const id = toCusFormat(chat.id);
+    const originalId = chat.id;
+    let id = toCusFormat(chat.id);
     let name = chat.name;
     if (!name) {
       try {
@@ -1881,6 +1883,17 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         }
       } catch (e) {
         // Ignore contact lookup errors
+      }
+    }
+    // Resolve LID to phone number if possible
+    if (isLidUser(originalId)) {
+      try {
+        const resolved = await this.findPNByLid(originalId);
+        if (resolved.pn) {
+          id = resolved.pn;
+        }
+      } catch (e) {
+        // Keep LID format if resolution fails
       }
     }
     const picture = await this.getContactProfilePicture(chat.id, false);
