@@ -1,4 +1,5 @@
 import { Browsers, WABrowserDescription } from '@adiwajshing/baileys';
+import esm from '@waha/vendor/esm';
 import makeWASocket, {
   Chat,
   Contact,
@@ -2803,7 +2804,11 @@ export class NOWEBEngineMediaProcessor implements IMediaEngineProcessor<any> {
 
   getMimetype(message: any): string {
     const content = extractMediaContent(message.message);
-    return content.mimetype;
+    let mimetype = content?.mimetype;
+    if (!mimetype && esm.b.extractMessageContent(message.message)?.stickerMessage) {
+      mimetype = 'image/webp';
+    }
+    return mimetype;
   }
 
   async getMediaBuffer(message: any): Promise<Buffer | null> {

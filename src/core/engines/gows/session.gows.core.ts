@@ -2516,7 +2516,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 }
 
 export class GOWSEngineMediaProcessor implements IMediaEngineProcessor<any> {
-  constructor(public session: WhatsappSessionGoWSCore) {}
+  constructor(public session: WhatsappSessionGoWSCore) { }
 
   hasMedia(message: any): boolean {
     return Boolean(extractMediaContent(message.Message));
@@ -2532,7 +2532,11 @@ export class GOWSEngineMediaProcessor implements IMediaEngineProcessor<any> {
 
   getMimetype(message: any): string {
     const content = extractMediaContent(message.Message);
-    return content.mimetype;
+    let mimetype = content?.mimetype;
+    if (!mimetype && esm.b.extractMessageContent(message.Message)?.stickerMessage) {
+      mimetype = 'image/webp';
+    }
+    return mimetype;
   }
 
   async getMediaBuffer(message: any): Promise<Buffer | null> {

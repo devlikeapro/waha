@@ -59,6 +59,13 @@ export class MediaS3Storage implements IMediaStorage {
 
     public async save(buffer: Buffer, data: MediaData): Promise<boolean> {
         const key = this.getKey(data);
+        const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+
+        if (buffer.length > MAX_SIZE_BYTES) {
+            this.log.warn(`File size (${buffer.length} bytes) exceeds 10MB limit: ${key}`);
+            throw new Error(`File size exceeds 10MB limit`);
+        }
+
         try {
             await this.s3.send(
                 new PutObjectCommand({

@@ -2165,7 +2165,12 @@ export class WEBJSEngineMediaProcessor
 
   getMimetype(message: Message): string {
     // @ts-ignore
-    return message.rawData.mimetype;
+    let mimetype = message.rawData?.mimetype;
+    // @ts-ignore
+    if (!mimetype && message.type === 'sticker') {
+      mimetype = 'image/webp';
+    }
+    return mimetype;
   }
 
   async getMediaBuffer(message: Message): Promise<Buffer | null> {
