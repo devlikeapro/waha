@@ -1866,14 +1866,30 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   protected async fetchChatSummary(chat): Promise<ChatSummary> {
     const id = toCusFormat(chat.id);
-    const name = chat.name;
+    let name = chat.name;
+    if (!name) {
+      try {
+        const jid = toJID(chat.id);
+        const request = new messages.EntityByIdRequest({
+          session: this.session,
+          id: jid,
+        });
+        const response = await promisify(this.client.GetContactById)(request);
+        const contactData = parseJson(response);
+        if (contactData) {
+          name = contactData.Name || contactData.PushName;
+        }
+      } catch (e) {
+        // Ignore contact lookup errors
+      }
+    }
     const picture = await this.getContactProfilePicture(chat.id, false);
-    const messages = await this.getChatMessages(
+    const chatMessages = await this.getChatMessages(
       chat.id,
       { limit: 1, offset: 0, downloadMedia: false },
       {},
     );
-    const message = messages.length > 0 ? messages[0] : null;
+    const message = chatMessages.length > 0 ? chatMessages[0] : null;
     return {
       id: id,
       name: name || null,
