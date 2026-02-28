@@ -45,6 +45,7 @@ import { parseMessageIdSerialized } from '@waha/core/utils/ids';
 import {
   isJidBroadcast,
   isJidGroup,
+  isLidUser,
   toCusFormat,
   toJID,
 } from '@waha/core/utils/jids';
@@ -1865,15 +1866,43 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   protected async fetchChatSummary(chat): Promise<ChatSummary> {
-    const id = toCusFormat(chat.id);
-    const name = chat.name;
+    const originalId = chat.id;
+    let id = toCusFormat(chat.id);
+    let name = chat.name;
+    if (!name) {
+      try {
+        const jid = toJID(chat.id);
+        const request = new messages.EntityByIdRequest({
+          session: this.session,
+          id: jid,
+        });
+        const response = await promisify(this.client.GetContactById)(request);
+        const contactData = parseJson(response);
+        if (contactData) {
+          name = contactData.Name || contactData.PushName;
+        }
+      } catch (e) {
+        // Ignore contact lookup errors
+      }
+    }
+    // Resolve LID to phone number if possible
+    if (isLidUser(originalId)) {
+      try {
+        const resolved = await this.findPNByLid(originalId);
+        if (resolved.pn) {
+          id = resolved.pn;
+        }
+      } catch (e) {
+        // Keep LID format if resolution fails
+      }
+    }
     const picture = await this.getContactProfilePicture(chat.id, false);
-    const messages = await this.getChatMessages(
+    const chatMessages = await this.getChatMessages(
       chat.id,
       { limit: 1, offset: 0, downloadMedia: false },
       {},
     );
-    const message = messages.length > 0 ? messages[0] : null;
+    const message = chatMessages.length > 0 ? chatMessages[0] : null;
     return {
       id: id,
       name: name || null,
