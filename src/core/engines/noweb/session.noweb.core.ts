@@ -115,6 +115,7 @@ import {
   MessageReplyRequest,
   MessageStarRequest,
   MessageTextRequest,
+  MessageVideoRequest,
   MessageVoiceRequest,
   SendSeenRequest,
   WANumberExistResult,
@@ -1050,16 +1051,62 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return await this.sock.sendMessage(request.chatId, message, options);
   }
 
-  sendImage(request: MessageImageRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendImage(request: MessageImageRequest) {
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    const media = extractMediaContent(request.file);
+    const message = {
+      image: media,
+      caption: request.caption,
+      mentions: request.mentions?.map(toJID),
+    };
+    const options = await this.getMessageOptions(request);
+    const result = await this.sock.sendMessage(chatId, message, options);
+    return this.toWAMessage(result);
   }
 
-  sendFile(request: MessageFileRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendFile(request: MessageFileRequest) {
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    const media = extractMediaContent(request.file);
+    const message = {
+      document: media,
+      caption: request.caption,
+      fileName: 'name' in request.file ? (request.file.name as string) : 'file',
+      mimetype: 'mimetype' in request.file ? (request.file.mimetype as string) : 'application/octet-stream',
+      mentions: request.mentions?.map(toJID),
+    };
+    const options = await this.getMessageOptions(request);
+    const result = await this.sock.sendMessage(chatId, message, options);
+    return this.toWAMessage(result);
   }
 
-  sendVoice(request: MessageVoiceRequest) {
-    throw new AvailableInPlusVersion();
+  @Activity()
+  async sendVoice(request: MessageVoiceRequest) {
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    const media = extractMediaContent(request.file);
+    const message = {
+      audio: media,
+      ptt: true,
+    };
+    const options = await this.getMessageOptions(request);
+    const result = await this.sock.sendMessage(chatId, message, options);
+    return this.toWAMessage(result);
+  }
+
+  @Activity()
+  async sendVideo(request: MessageVideoRequest) {
+    const chatId = toJID(this.ensureSuffix(request.chatId));
+    const media = extractMediaContent(request.file);
+    const message = {
+      video: media,
+      caption: request.caption,
+      ptv: request.asNote,
+      mentions: request.mentions?.map(toJID),
+    };
+    const options = await this.getMessageOptions(request);
+    const result = await this.sock.sendMessage(chatId, message, options);
+    return this.toWAMessage(result);
   }
 
   sendLinkCustomPreview(
@@ -1072,10 +1119,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     file: RemoteFile | BinaryFile,
     type,
   ): Promise<any> {
-    if (file && ('url' in file || 'data' in file)) {
-      throw new AvailableInPlusVersion('Sending media (image, video, pdf)');
+    if (!file) {
+      return undefined;
     }
-    return;
+    return extractMediaContent(file);
   }
 
   @Activity()
