@@ -1061,8 +1061,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       mentions: request.mentions?.map(toJID),
     };
     const options = await this.getMessageOptions(request);
-    const result = await this.sock.sendMessage(chatId, message, options);
-    return this.toWAMessage(result);
+    return this.sock.sendMessage(chatId, message, options);
   }
 
   @Activity()
@@ -1077,8 +1076,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       mentions: request.mentions?.map(toJID),
     };
     const options = await this.getMessageOptions(request);
-    const result = await this.sock.sendMessage(chatId, message, options);
-    return this.toWAMessage(result);
+    return this.sock.sendMessage(chatId, message, options);
   }
 
   @Activity()
@@ -1090,8 +1088,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       ptt: true,
     };
     const options = await this.getMessageOptions(request);
-    const result = await this.sock.sendMessage(chatId, message, options);
-    return this.toWAMessage(result);
+    return this.sock.sendMessage(chatId, message, options);
   }
 
   @Activity()
@@ -1105,8 +1102,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       mentions: request.mentions?.map(toJID),
     };
     const options = await this.getMessageOptions(request);
-    const result = await this.sock.sendMessage(chatId, message, options);
-    return this.toWAMessage(result);
+    return this.sock.sendMessage(chatId, message, options);
   }
 
   /**
