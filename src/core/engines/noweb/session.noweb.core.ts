@@ -1054,7 +1054,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   @Activity()
   async sendImage(request: MessageImageRequest) {
     const chatId = toJID(this.ensureSuffix(request.chatId));
-    const media = extractMediaContent(request.file);
+    const media = this.fileToWAMedia(request.file);
     const message = {
       image: media,
       caption: request.caption,
@@ -1068,11 +1068,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   @Activity()
   async sendFile(request: MessageFileRequest) {
     const chatId = toJID(this.ensureSuffix(request.chatId));
-    const media = extractMediaContent(request.file);
+    const media = this.fileToWAMedia(request.file);
     const message = {
       document: media,
       caption: request.caption,
-      fileName: 'name' in request.file ? (request.file.name as string) : 'file',
+      fileName: 'filename' in request.file ? (request.file.filename as string) : 'file',
       mimetype: 'mimetype' in request.file ? (request.file.mimetype as string) : 'application/octet-stream',
       mentions: request.mentions?.map(toJID),
     };
@@ -1084,7 +1084,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   @Activity()
   async sendVoice(request: MessageVoiceRequest) {
     const chatId = toJID(this.ensureSuffix(request.chatId));
-    const media = extractMediaContent(request.file);
+    const media = this.fileToWAMedia(request.file);
     const message = {
       audio: media,
       ptt: true,
@@ -1097,7 +1097,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   @Activity()
   async sendVideo(request: MessageVideoRequest) {
     const chatId = toJID(this.ensureSuffix(request.chatId));
-    const media = extractMediaContent(request.file);
+    const media = this.fileToWAMedia(request.file);
     const message = {
       video: media,
       caption: request.caption,
@@ -1107,6 +1107,24 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     const options = await this.getMessageOptions(request);
     const result = await this.sock.sendMessage(chatId, message, options);
     return this.toWAMessage(result);
+  }
+
+  /**
+   * Convert a WAHA file DTO (RemoteFile or BinaryFile) to a Baileys WAMediaUpload.
+   * - RemoteFile: { url } → pass { url } directly
+   * - BinaryFile: { data } (base64) → decode to Buffer
+   */
+  protected fileToWAMedia(file: RemoteFile | BinaryFile): any {
+    if (!file) {
+      return undefined;
+    }
+    if ('url' in file && file.url) {
+      return { url: file.url };
+    }
+    if ('data' in file && file.data) {
+      return Buffer.from(file.data, 'base64');
+    }
+    return undefined;
   }
 
   sendLinkCustomPreview(
@@ -1122,7 +1140,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     if (!file) {
       return undefined;
     }
-    return extractMediaContent(file);
+    return this.fileToWAMedia(file);
   }
 
   @Activity()
