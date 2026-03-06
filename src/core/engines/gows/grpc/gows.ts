@@ -9221,6 +9221,7 @@ export namespace messages {
             filters?: MessageFilters;
             pagination?: Pagination;
             sortBy?: SortBy;
+            merge?: OptionalBool;
         }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -9236,6 +9237,9 @@ export namespace messages {
                 }
                 if ("sortBy" in data && data.sortBy != undefined) {
                     this.sortBy = data.sortBy;
+                }
+                if ("merge" in data && data.merge != undefined) {
+                    this.merge = data.merge;
                 }
             }
         }
@@ -9275,11 +9279,21 @@ export namespace messages {
         get has_sortBy() {
             return pb_1.Message.getField(this, 4) != null;
         }
+        get merge() {
+            return pb_1.Message.getWrapperField(this, OptionalBool, 5) as OptionalBool;
+        }
+        set merge(value: OptionalBool) {
+            pb_1.Message.setWrapperField(this, 5, value);
+        }
+        get has_merge() {
+            return pb_1.Message.getField(this, 5) != null;
+        }
         static fromObject(data: {
             session?: ReturnType<typeof Session.prototype.toObject>;
             filters?: ReturnType<typeof MessageFilters.prototype.toObject>;
             pagination?: ReturnType<typeof Pagination.prototype.toObject>;
             sortBy?: ReturnType<typeof SortBy.prototype.toObject>;
+            merge?: ReturnType<typeof OptionalBool.prototype.toObject>;
         }): GetMessagesRequest {
             const message = new GetMessagesRequest({});
             if (data.session != null) {
@@ -9294,6 +9308,9 @@ export namespace messages {
             if (data.sortBy != null) {
                 message.sortBy = SortBy.fromObject(data.sortBy);
             }
+            if (data.merge != null) {
+                message.merge = OptionalBool.fromObject(data.merge);
+            }
             return message;
         }
         toObject() {
@@ -9302,6 +9319,7 @@ export namespace messages {
                 filters?: ReturnType<typeof MessageFilters.prototype.toObject>;
                 pagination?: ReturnType<typeof Pagination.prototype.toObject>;
                 sortBy?: ReturnType<typeof SortBy.prototype.toObject>;
+                merge?: ReturnType<typeof OptionalBool.prototype.toObject>;
             } = {};
             if (this.session != null) {
                 data.session = this.session.toObject();
@@ -9314,6 +9332,9 @@ export namespace messages {
             }
             if (this.sortBy != null) {
                 data.sortBy = this.sortBy.toObject();
+            }
+            if (this.merge != null) {
+                data.merge = this.merge.toObject();
             }
             return data;
         }
@@ -9329,6 +9350,8 @@ export namespace messages {
                 writer.writeMessage(3, this.pagination, () => this.pagination.serialize(writer));
             if (this.has_sortBy)
                 writer.writeMessage(4, this.sortBy, () => this.sortBy.serialize(writer));
+            if (this.has_merge)
+                writer.writeMessage(5, this.merge, () => this.merge.serialize(writer));
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -9349,6 +9372,9 @@ export namespace messages {
                         break;
                     case 4:
                         reader.readMessage(message.sortBy, () => message.sortBy = SortBy.deserialize(reader));
+                        break;
+                    case 5:
+                        reader.readMessage(message.merge, () => message.merge = OptionalBool.deserialize(reader));
                         break;
                     default: reader.skipField();
                 }
@@ -9697,6 +9723,7 @@ export namespace messages {
             sortBy?: SortBy;
             pagination?: Pagination;
             filter?: ChatFilter;
+            merge?: OptionalBool;
         }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -9712,6 +9739,9 @@ export namespace messages {
                 }
                 if ("filter" in data && data.filter != undefined) {
                     this.filter = data.filter;
+                }
+                if ("merge" in data && data.merge != undefined) {
+                    this.merge = data.merge;
                 }
             }
         }
@@ -9751,11 +9781,21 @@ export namespace messages {
         get has_filter() {
             return pb_1.Message.getField(this, 4) != null;
         }
+        get merge() {
+            return pb_1.Message.getWrapperField(this, OptionalBool, 5) as OptionalBool;
+        }
+        set merge(value: OptionalBool) {
+            pb_1.Message.setWrapperField(this, 5, value);
+        }
+        get has_merge() {
+            return pb_1.Message.getField(this, 5) != null;
+        }
         static fromObject(data: {
             session?: ReturnType<typeof Session.prototype.toObject>;
             sortBy?: ReturnType<typeof SortBy.prototype.toObject>;
             pagination?: ReturnType<typeof Pagination.prototype.toObject>;
             filter?: ReturnType<typeof ChatFilter.prototype.toObject>;
+            merge?: ReturnType<typeof OptionalBool.prototype.toObject>;
         }): GetChatsRequest {
             const message = new GetChatsRequest({});
             if (data.session != null) {
@@ -9770,6 +9810,9 @@ export namespace messages {
             if (data.filter != null) {
                 message.filter = ChatFilter.fromObject(data.filter);
             }
+            if (data.merge != null) {
+                message.merge = OptionalBool.fromObject(data.merge);
+            }
             return message;
         }
         toObject() {
@@ -9778,6 +9821,7 @@ export namespace messages {
                 sortBy?: ReturnType<typeof SortBy.prototype.toObject>;
                 pagination?: ReturnType<typeof Pagination.prototype.toObject>;
                 filter?: ReturnType<typeof ChatFilter.prototype.toObject>;
+                merge?: ReturnType<typeof OptionalBool.prototype.toObject>;
             } = {};
             if (this.session != null) {
                 data.session = this.session.toObject();
@@ -9790,6 +9834,9 @@ export namespace messages {
             }
             if (this.filter != null) {
                 data.filter = this.filter.toObject();
+            }
+            if (this.merge != null) {
+                data.merge = this.merge.toObject();
             }
             return data;
         }
@@ -9805,6 +9852,8 @@ export namespace messages {
                 writer.writeMessage(3, this.pagination, () => this.pagination.serialize(writer));
             if (this.has_filter)
                 writer.writeMessage(4, this.filter, () => this.filter.serialize(writer));
+            if (this.has_merge)
+                writer.writeMessage(5, this.merge, () => this.merge.serialize(writer));
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -9825,6 +9874,9 @@ export namespace messages {
                         break;
                     case 4:
                         reader.readMessage(message.filter, () => message.filter = ChatFilter.deserialize(reader));
+                        break;
+                    case 5:
+                        reader.readMessage(message.merge, () => message.merge = OptionalBool.deserialize(reader));
                         break;
                     default: reader.skipField();
                 }

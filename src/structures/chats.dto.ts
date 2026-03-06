@@ -120,6 +120,17 @@ export class GetChatMessagesQuery extends PaginationParams {
   @IsBoolean()
   @IsOptional()
   downloadMedia: boolean = true;
+
+  @ApiProperty({
+    example: true,
+    required: false,
+    description:
+      'Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact',
+  })
+  @Transform(BooleanString)
+  @IsBoolean()
+  @IsOptional()
+  merge?: boolean = true;
 }
 
 export class ReadChatMessagesQuery {
@@ -161,6 +172,17 @@ export class GetChatMessageQuery {
   @IsBoolean()
   @IsOptional()
   downloadMedia: boolean = true;
+
+  @ApiProperty({
+    example: true,
+    required: false,
+    description:
+      'Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact',
+  })
+  @Transform(BooleanString)
+  @IsBoolean()
+  @IsOptional()
+  merge?: boolean = true;
 }
 
 export enum ChatSortField {
@@ -177,6 +199,19 @@ export class ChatsPaginationParams extends PaginationParams {
   @IsOptional()
   @IsEnum(ChatSortField)
   sortBy?: string;
+}
+
+export class GetChatsParams extends ChatsPaginationParams {
+  @ApiProperty({
+    example: true,
+    required: false,
+    description:
+      'Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact',
+  })
+  @Transform(BooleanString)
+  @IsBoolean()
+  @IsOptional()
+  merge?: boolean = true;
 }
 
 export enum PinDuration {
@@ -203,6 +238,19 @@ export class OverviewPaginationParams extends LimitOffsetParams {
   limit?: number = 20;
 }
 
+export class GetChatsOverviewParams extends OverviewPaginationParams {
+  @ApiProperty({
+    example: true,
+    required: false,
+    description:
+      'Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact',
+  })
+  @Transform(BooleanString)
+  @IsBoolean()
+  @IsOptional()
+  merge?: boolean = true;
+}
+
 export class OverviewFilter {
   @IsOptional()
   @IsArray()
@@ -218,8 +266,8 @@ export class OverviewFilter {
 
 export class OverviewBodyRequest {
   @ValidateNested()
-  @Type(() => OverviewPaginationParams)
-  pagination: OverviewPaginationParams;
+  @Type(() => GetChatsOverviewParams)
+  pagination: GetChatsOverviewParams;
 
   @ValidateNested()
   @Type(() => OverviewFilter)

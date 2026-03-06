@@ -210,8 +210,12 @@ export class SqlKVRepository<Entity> {
   /**
    * SQL helpers
    */
+  public getKnex(): Knex {
+    return this.knex;
+  }
+
   public select() {
-    return this.knex.select().from(this.table);
+    return this.knex.select(`${this.table}.*`).from(this.table);
   }
 
   protected delete() {
@@ -219,7 +223,11 @@ export class SqlKVRepository<Entity> {
   }
 
   public pagination(query: any, pagination?: PaginationParams) {
-    const paginator = new this.Paginator(pagination, this.jsonQuery);
+    const paginator = new this.Paginator(
+      pagination,
+      this.jsonQuery,
+      this.table,
+    );
     return paginator.apply(query);
   }
 
@@ -234,7 +242,7 @@ export class SqlKVRepository<Entity> {
     return JSON.stringify(data);
   }
 
-  protected parse(row: any) {
+  public parse(row: any) {
     return JSON.parse(row.data);
   }
 

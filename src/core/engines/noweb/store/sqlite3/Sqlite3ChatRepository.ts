@@ -30,7 +30,13 @@ export class Sqlite3ChatRepository
     pagination: PaginationParams,
     broadcast: boolean,
     filter?: OverviewFilter,
+    merge?: boolean,
   ): Promise<Chat[]> {
-    return this.methods.getAllWithMessages(pagination, broadcast, filter);
+    return this.methods.getAllWithMessages(
+      pagination,
+      broadcast,
+      filter,
+      merge,
+    );
   }
 }

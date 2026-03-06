@@ -347,7 +347,7 @@ export abstract class MessageBaseHandler<
       chat_id: toCusFormat(key.remoteJid),
       message_id: key.id,
       from_me: key.fromMe,
-      participant: null,
+      participant: isJidGroup(key.remoteJid) ? key.participant : null,
     };
     await this.mappingService.map(chatwoot, whatsapp, 1);
     return;

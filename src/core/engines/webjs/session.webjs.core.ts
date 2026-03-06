@@ -187,6 +187,9 @@ import {
   WAHA_CLIENT_BROWSER_NAME,
   WAHA_CLIENT_DEVICE_NAME,
 } from '@waha/core/env';
+import { removeSingletonFiles } from '@waha/core/utils/chrome';
+import { killProcessesByPatterns } from '@waha/core/utils/processes';
+import { IsChrome } from '@waha/version';
 
 export interface WebJSConfig {
   webVersion?: string;
@@ -271,6 +274,11 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         strict: true,
       },
     };
+  }
+
+  protected getUserDataDir(): string {
+    const base = process.env.WAHA_LOCAL_STORE_BASE_DIR || './.sessions';
+    return `${base}/webjs/default/session-${this.name}`;
   }
 
   protected async buildClient() {
@@ -360,6 +368,16 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
           PAGE_CALL_ERROR_EVENT,
           (event: CallErrorEvent) => {
             if (event.error instanceof ProtocolError) {
+              if (this.shouldIgnoreProtocolError(event.error)) {
+                this.logger.warn(
+                  `ProtocolError when calling page method: ${String(
+                    event.method,
+                  )}, ignoring...`,
+                );
+                this.logger.warn(event.error);
+                return;
+              }
+
               this.logger.error(
                 `ProtocolError when calling page method: ${String(
                   event.method,
@@ -395,6 +413,13 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   async start() {
+    await killProcessesByPatterns(
+      [IsChrome ? 'chrome' : 'chromium', `--a-waha-session=${this.name}`],
+      'SIGKILL',
+      this.logger,
+    );
+    await removeSingletonFiles(this.getUserDataDir());
+
     this.status = WAHASessionStatus.STARTING;
     await this.init().catch((err) => {
       this.logger.error('Failed to start the client');
@@ -418,6 +443,16 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     // We'll restart the client if it's in the process of unpairing
     this.status = WAHASessionStatus.FAILED;
     this.restartClient();
+  }
+
+  /**
+   * Certain Puppeteer ProtocolErrors (e.g. Network.getResponseBody) are harmless.
+   * Ignore them so we do not thrash the session state machine.
+   * https://github.com/devlikeapro/waha/issues/1918
+   */
+  private shouldIgnoreProtocolError(error: ProtocolError): boolean {
+    const message = error?.message ?? String(error ?? '');
+    return message.includes('Network.getResponseBody');
   }
 
   async unpair() {
@@ -676,6 +711,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     return screenshot as Buffer;
   }
 
+  @Activity()
   async checkNumberStatus(
     request: CheckNumberStatusQuery,
   ): Promise<WANumberExistResult> {
@@ -719,6 +755,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   /**
    * Other methods
    */
+  @Activity()
   async rejectCall(from: string, id: string): Promise<void> {
     const peerJid = normalizeJid(this.ensureSuffix(from));
     const call = new CallInstance(this.whatsapp, null);

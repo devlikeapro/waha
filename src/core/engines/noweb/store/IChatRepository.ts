@@ -11,6 +11,7 @@ export interface IChatRepository {
     pagination: PaginationParams,
     broadcast: boolean,
     filter?: OverviewFilter,
+    merge?: boolean,
   ): Promise<Chat[]>;
 
   getById(id: string): Promise<Chat | null>;

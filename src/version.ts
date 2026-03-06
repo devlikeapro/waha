@@ -34,7 +34,8 @@ export function getWorker() {
 }
 
 function getBrowser() {
-  return getEngineName() === WAHAEngine.WEBJS
+  return getEngineName() === WAHAEngine.WEBJS ||
+    getEngineName() === WAHAEngine.WPP
     ? getBrowserExecutablePath()
     : null;
 }
@@ -44,7 +45,7 @@ function getPlatform() {
 }
 
 export const VERSION: WAHAEnvironment = {
-  version: '2026.2.2',
+  version: '2026.3.2',
   engine: getEngineName(),
   tier: getWAHAVersion(),
   browser: getBrowser(),

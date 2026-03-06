@@ -1,5 +1,6 @@
 import type { WAMessageKey } from '@adiwajshing/baileys';
 import { toJID } from '@waha/core/utils/jids';
+import { MessageId } from '@wppconnect-team/wppconnect';
 
 /**
  * Parse message id from WAHA to engine
@@ -37,4 +38,32 @@ export function SerializeMessageKey(key: WAMessageKey) {
   const { fromMe, id, remoteJid, participant } = key;
   const participantStr = participant ? `_${participant}` : '';
   return `${fromMe ? 'true' : 'false'}_${remoteJid}_${id}${participantStr}`;
+}
+
+export function SerializeMsgKey(key: string | MessageId) {
+  if (typeof key == 'string') {
+    return key;
+  }
+  if (key._serialized) {
+    return key._serialized;
+  }
+  const k: WAMessageKey = {
+    id: key.id,
+    fromMe: key.fromMe,
+    remoteJid: key.remote?._serialized || (key.remote as any),
+    participant: (key as any).participant,
+  };
+  return SerializeMessageKey(k);
+}
+
+export function Deserialized(
+  value: string | { _serialized: string } | any,
+): string | null {
+  if (typeof value == 'string') {
+    return value;
+  }
+  if (value?._serialized) {
+    return value._serialized;
+  }
+  return null;
 }

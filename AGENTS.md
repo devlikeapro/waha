@@ -78,6 +78,11 @@ This guide summarizes how to explore, modify, and validate the WhatsApp HTTP API
 - Prefer named function declarations over `const` arrow functions when possible.
 - Avoid naming unused variables with a leading underscore; if a parameter is
   required by a signature, explicitly `void` it instead.
+- Do not write verbose ternaries like
+  `condition !== undefined ? condition : default`; use idiomatic helpers such as
+  `??` (nullish coalescing) or existing boolean parsers so flags stay readable.
+- Do not place `await` or other async calls inside ternary expressions (`?:`);
+  use explicit `if/else` blocks instead.
 - For configs, prefer runtime configurability over constants. Environment keys
   follow `WAHA_*` for global values and `WAHA_SESSION_CONFIG_*` /
   `session.config.*` for per-session overrides. If both env and config are
@@ -106,10 +111,10 @@ This guide summarizes how to explore, modify, and validate the WhatsApp HTTP API
 2. Lean on existing services/managers; extend the appropriate session manager
    rather than branching logic inline.
 3. After edits run:
-   - `pre-commit run --all-files`
+   - Do **not** run `pre-commit run --all-files` unless the user explicitly
+     asks.
    - `yarn build`
-   - `yarn test` Use Node 22. Address lint or formatting issues before
-     proceeding.
+   - `yarn test --watchman=false`
 4. Do **not** start the application yourself; ask the user to run it if runtime
    validation is required.
 5. Capture any assumptions or open questions for the user, especially when
@@ -126,16 +131,80 @@ This guide summarizes how to explore, modify, and validate the WhatsApp HTTP API
 - Keep docs and code ASCII unless a file already uses other characters. When
   updating documentation, mirror the concise, actionable tone used here.
 
+## Yes No
+
+Always define key for objects (and in return too)
+
+```js
+// NO
+const variable = 123;
+const b = { variable };
+
+// YES
+const variable = 123;
+const b = { variable: variable };
+```
+
+Use the three-line comment style for section headers inside files:
+
+```ts
+// NO
+// ─── Section name ─────────────────────────────────────────────────────────────
+
+// YES
+//
+// Section name
+//
+```
+
 ## Related Sources Code
 
-You can find related source code in the following paths:
+You can find and read related source code in the following paths:
 
 - WEBJS: `../whatsapp-web.js`
 - NOWEB: `../WhiskeySockets-Baileys`
   - whatsapp-rust-bridge - `../whatsapp-rust-bridge`
 - GOWS: `../gows`
   - whatsmeow - `../whatsmeow`
+- WPP: `../wa-js`, `../wppconnect`, `../wppconnect-server`
 - ChatWoot: `../chatwoot`
 
 Following this playbook keeps contributions aligned with WAHA’s structure,
 automation hooks, and release process.
+
+## How to run API
+
+You can run the project outside of sandbox using the below command, then run
+queries against `default` session (if not asked to do something different) using
+`curl` and `X-Api-Key: 666` header.
+
+```bash
+export DEBUG=1
+export WAHA_API_KEY=666
+export WAHA_DASHBOARD_PASSWORD=666
+export WAHA_DASHBOARD_USERNAME=admin
+export WWHATSAPP_SWAGGER_USERNAME=admin
+export WHATSAPP_SWAGGER_PASSWORD=666
+export WHATSAPP_DEFAULT_ENGINE={WEBJS|WPP|NOWEB|GOWS}
+export WAHA_DEBUG_MODE=True
+export WAHA_HTTP_STRICT_MODE=1
+export WAHA_MEDIA_STORAGE=LOCAL
+export WHATSAPP_FILES_FOLDER=./.media
+
+npm run start
+```
+
+- Ask user before running the server.
+- Before executing some queries make sure the session is in `WORKING` status.
+- If it's `FAILED` or `SCAN_QR_CODE` ask user to scan QR code or fix failed
+  session.
+
+## Code
+
+### @Activity Decorator and Presence Tracking
+
+Add `@Activity()` (from `src/core/abc/activity.ts`) to every engine method that
+makes a network call to WhatsApp servers. It triggers `maintainPresenceOnline()`
+before the method runs, keeping the session ONLINE during API activity and
+scheduling an OFFLINE transition after an idle period. Skip it on methods that
+only throw `NotImplementedByEngineError` / `AvailableInPlusVersion`.

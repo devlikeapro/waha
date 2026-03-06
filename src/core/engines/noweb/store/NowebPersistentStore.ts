@@ -44,6 +44,7 @@ import { INowebStorage } from './INowebStorage';
 import { INowebStore } from './INowebStore';
 import { LabelAssociationType } from '../labels/LabelAssociationType';
 import esm from '@waha/vendor/esm';
+import { StatusStringToStatus } from '@waha/core/utils/acks';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const AsyncLock = require('async-lock');
@@ -130,7 +131,7 @@ export class NowebPersistentStore implements INowebStore {
             return {
               id: message.key.remoteJid,
               lid: lid,
-              jid: pn,
+              phoneNumber: pn,
             };
           })
           .filter(Boolean);
@@ -249,6 +250,9 @@ export class NowebPersistentStore implements INowebStore {
   private async syncMessagesHistory(messages) {
     const realMessages = messages.filter(esm.b.isRealMessage);
     messages = messages.filter((msg) => this.jids.include(msg.key.remoteJid));
+    for (const message of messages) {
+      message.status = StatusStringToStatus(message.status);
+    }
     await this.messagesRepo.upsert(realMessages);
     this.logger.info(
       `history sync - '${messages.length}' got messages, '${realMessages.length}' real messages`,
@@ -288,7 +292,11 @@ export class NowebPersistentStore implements INowebStore {
         );
         continue;
       }
-      const message = await this.messagesRepo.getByJidById(jid, update.key.id);
+      let message = await this.messagesRepo.getByJidById(jid, update.key.id);
+      if (!message) {
+        // Fallback to just id
+        message = await this.messagesRepo.getById(update.key.id);
+      }
       if (!message) {
         this.logger.warn(
           `got update for non-existent message. update: '${JSON.stringify(
@@ -599,24 +607,35 @@ export class NowebPersistentStore implements INowebStore {
     chatId: string,
     filter: GetChatMessagesFilter,
     pagination: PaginationParams,
+    merge: boolean = true,
   ): Promise<any> {
     pagination.sortBy = 'messageTimestamp';
     pagination.sortOrder = pagination.sortOrder || SortOrder.DESC;
-    return this.messagesRepo.getAllByJid(chatId, filter, pagination);
+    return this.messagesRepo.getAllByJid(chatId, filter, pagination, merge);
   }
 
-  getMessageById(chatId: string, messageId: string): Promise<any> {
-    return this.messagesRepo.getByJidById(chatId, messageId);
+  getMessageById(
+    chatId: string,
+    messageId: string,
+    merge: boolean = true,
+  ): Promise<any> {
+    return this.messagesRepo.getByJidById(chatId, messageId, merge);
   }
 
   getChats(
     pagination: PaginationParams,
     broadcast: boolean,
     filter?: OverviewFilter,
+    merge: boolean = true,
   ): Promise<Chat[]> {
     pagination.sortBy ||= 'conversationTimestamp';
     pagination.sortOrder ||= SortOrder.DESC;
-    return this.chatRepo.getAllWithMessages(pagination, broadcast, filter);
+    return this.chatRepo.getAllWithMessages(
+      pagination,
+      broadcast,
+      filter,
+      merge,
+    );
   }
 
   async getChat(jid: string): Promise<Chat | null> {

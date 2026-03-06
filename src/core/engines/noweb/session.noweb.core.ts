@@ -91,6 +91,8 @@ import {
   GetChatMessageQuery,
   GetChatMessagesFilter,
   GetChatMessagesQuery,
+  GetChatsOverviewParams,
+  GetChatsParams,
   OverviewFilter,
   PinDuration,
   ReadChatMessagesQuery,
@@ -906,6 +908,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   /**
    * Other methods
    */
+  @Activity()
   async checkNumberStatus(
     request: CheckNumberStatusQuery,
   ): Promise<WANumberExistResult> {
@@ -925,6 +928,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return this.generateMessageID();
   }
 
+  @Activity()
   async rejectCall(from: string, id: string): Promise<void> {
     const jid = toJID(this.ensureSuffix(from));
     await this.sock.rejectCall(id, jid);
@@ -1175,10 +1179,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   ) {
     const downloadMedia = query.downloadMedia;
     const pagination = query as PaginationParams;
+    const merge = query.merge ?? true;
     const messages = await this.store.getMessagesByJid(
       toJID(chatId),
       filter,
       pagination,
+      merge,
     );
 
     const promises = [];
@@ -1204,7 +1210,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     query: GetChatMessageQuery,
   ): Promise<null | WAMessage> {
     const key = parseMessageIdSerialized(messageId, true);
-    const message = await this.store.getMessageById(toJID(chatId), key.id);
+    const merge = query.merge ?? true;
+    const message = await this.store.getMessageById(
+      toJID(chatId),
+      key.id,
+      merge,
+    );
     if (!message) return null;
     return await this.processIncomingMessage(message, query.downloadMedia);
   }
@@ -1291,7 +1302,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
    */
 
   async getChats(pagination: PaginationParams) {
-    const chats = await this.store.getChats(pagination, true);
+    const merge = (pagination as GetChatsParams).merge ?? true;
+    const chats = await this.store.getChats(pagination, true, undefined, merge);
     // Remove unreadCount, it's not ready yet
     chats.forEach((chat) => delete chat.unreadCount);
     return chats;
@@ -1301,6 +1313,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     pagination: PaginationParams,
     filter?: OverviewFilter,
   ): Promise<ChatSummary[]> {
+    const merge = (pagination as GetChatsOverviewParams).merge ?? true;
     // Convert customer format IDs to JID format if filter is provided
     let jidFilter;
     if (filter?.ids && filter.ids.length > 0) {
@@ -1309,19 +1322,27 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       };
     }
 
-    const chats = await this.store.getChats(pagination, false, jidFilter);
+    const chats = await this.store.getChats(
+      pagination,
+      false,
+      jidFilter,
+      merge,
+    );
     // Remove unreadCount, it's not ready yet
     chats.forEach((chat) => delete chat.unreadCount);
 
     const promises = [];
     for (const chat of chats) {
-      promises.push(this.fetchChatSummary(chat));
+      promises.push(this.fetchChatSummary(chat, merge));
     }
     const result = await Promise.all(promises);
     return result;
   }
 
-  protected async fetchChatSummary(chat: Chat): Promise<ChatSummary> {
+  protected async fetchChatSummary(
+    chat: Chat,
+    merge: boolean,
+  ): Promise<ChatSummary> {
     const id = toCusFormat(chat.id);
     let name = chat.name;
     if (!name) {
@@ -1331,11 +1352,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       name = contact?.name || contact?.notify;
     }
     const picture = await this.getContactProfilePicture(chat.id, false);
-    const messages = await this.getChatMessages(
-      chat.id,
-      { limit: 1, offset: 0, downloadMedia: false },
-      {},
-    );
+    const lastMessageQuery: GetChatMessagesQuery = {
+      limit: 1,
+      offset: 0,
+      downloadMedia: false,
+      merge: merge,
+    };
+    const messages = await this.getChatMessages(chat.id, lastMessageQuery, {});
     const message = messages.length > 0 ? messages[0] : null;
     return {
       id: id,
