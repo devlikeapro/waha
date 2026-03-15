@@ -4,6 +4,7 @@ import { WAHAEngine } from '@waha/structures/enums.dto';
 import { getEngineName } from '@waha/version';
 import { Message as MessageInstance } from 'whatsapp-web.js/src/structures';
 import { isLidUser, isPnUser, toCusFormat } from '@waha/core/utils/jids';
+import { parseMessageIdSerialized } from '@waha/core/utils/ids';
 import { WAMessage } from '@waha/structures/responses.dto';
 import { CallData } from '@waha/structures/calls.dto';
 
@@ -52,7 +53,7 @@ class NOWEBHelper implements IEngineHelper {
   }
 
   FilterChatIdsForMessages(chats: string[]): string[] {
-    return chats;
+    return preferPnChats(chats);
   }
 
   ContactIsMy(contact) {
@@ -96,7 +97,7 @@ class GOWSHelper implements IEngineHelper {
   }
 
   FilterChatIdsForMessages(chats: string[]): string[] {
-    return chats;
+    return preferPnChats(chats);
   }
 
   SupportsAllChatForMessage(): boolean {
@@ -150,17 +151,63 @@ class WEBJSHelper implements IEngineHelper {
   }
 
   FilterChatIdsForMessages(chats: string[]): string[] {
-    if (chats.length == 2) {
-      const lidChat = chats.find(isLidUser);
-      const cusChat = chats.find(isPnUser);
-      if (lidChat && cusChat) {
-        return [lidChat];
-      }
-      // WEBJS engine merges messages for @lid and @c.us
-      // into single chat, so it's fine to pull only from one
+    return preferPnChats(chats);
+  }
+
+  SupportsAllChatForMessage(): boolean {
+    return false;
+  }
+
+  ContactIsMy(contact) {
+    return contact.isMyContact;
+  }
+}
+
+class WPPHelper implements IEngineHelper {
+  ChatID(message: WAMessage): string {
+    return toCusFormat(parseMessageIdSerialized(message.id as any).remoteJid);
+  }
+
+  CallChatID(call: CallData): string {
+    return call.from;
+  }
+
+  /**
+   * Parse API response and get the data for WPP engine.
+   * WPP returns message.id as a composite string "fromMe_chatId_msgId".
+   */
+  WhatsAppMessageKeys(message: any): WhatsAppMessage {
+    const parsed = parseMessageIdSerialized(message.id);
+    return {
+      timestamp: new Date(message.timestamp * 1000),
+      from_me: parsed.fromMe,
+      chat_id: toCusFormat(parsed.remoteJid),
+      message_id: parsed.id,
+      participant: message.author || null,
+    };
+  }
+
+  /**
+   * WPP API lacks server-side sorting hooks, so we buffer and sort by the unix timestamp in memory.
+   */
+  async *IterateMessages<T extends { timestamp: number }>(
+    messages: AsyncGenerator<T>,
+  ): AsyncGenerator<T> {
+    const buffer: T[] = [];
+
+    for await (const message of messages) {
+      buffer.push(message);
     }
-    // Otherwise - return the original
-    return chats;
+
+    const sorted = lodash.sortBy(buffer, (item) => item.timestamp);
+
+    for (const message of sorted) {
+      yield message;
+    }
+  }
+
+  FilterChatIdsForMessages(chats: string[]): string[] {
+    return preferPnChats(chats);
   }
 
   SupportsAllChatForMessage(): boolean {
@@ -185,8 +232,22 @@ switch (getEngineName()) {
   case WAHAEngine.WEBJS:
     engineHelper = new WEBJSHelper();
     break;
+  case WAHAEngine.WPP:
+    engineHelper = new WPPHelper();
+    break;
   default:
     engineHelper = new WEBJSHelper(); // Default to WEBJS as it's the default engine
 }
 
 export const EngineHelper = engineHelper;
+
+function preferPnChats(chats: string[]): string[] {
+  const unique = lodash.uniq(chats ?? []);
+  const hasPn = unique.some(isPnUser);
+  const hasLid = unique.some(isLidUser);
+  if (hasPn && hasLid) {
+    // Prefer @c.us / phone chats when both formats exist to avoid duplicate fetches.
+    return unique.filter(isPnUser);
+  }
+  return unique;
+}

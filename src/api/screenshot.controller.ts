@@ -31,7 +31,7 @@ export class ScreenshotController {
   @Get('/screenshot')
   @ApiOperation({
     summary:
-      'Get a screenshot of the current WhatsApp session (**WEBJS** only)',
+      'Get a screenshot of the current WhatsApp session (**WEBJS/WPP** only)',
   })
   @UseInterceptors(new BufferResponseInterceptor('image/jpeg'))
   @ApiFileAcceptHeader('image/jpeg')

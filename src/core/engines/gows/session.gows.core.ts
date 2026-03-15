@@ -65,6 +65,8 @@ import {
   GetChatMessageQuery,
   GetChatMessagesFilter,
   GetChatMessagesQuery,
+  GetChatsOverviewParams,
+  GetChatsParams,
   MessageSortField,
   OverviewFilter,
   ReadChatMessagesQuery,
@@ -914,6 +916,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     return data.id;
   }
 
+  @Activity()
   async rejectCall(from: string, id: string): Promise<void> {
     const request = new messages.RejectCallRequest({
       session: this.session,
@@ -1077,6 +1080,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     };
   }
 
+  @Activity()
   async checkNumberStatus(
     request: CheckNumberStatusQuery,
   ): Promise<WANumberExistResult> {
@@ -1855,24 +1859,27 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       pagination.sortOrder = SortOrder.DESC;
     }
     const chats = await this.getChats(pagination, filter);
+    const merge = (pagination as GetChatsOverviewParams).merge ?? true;
 
     const promises = [];
     for (const chat of chats) {
-      promises.push(this.fetchChatSummary(chat));
+      promises.push(this.fetchChatSummary(chat, merge));
     }
     const result = await Promise.all(promises);
     return result;
   }
 
-  protected async fetchChatSummary(chat): Promise<ChatSummary> {
+  protected async fetchChatSummary(chat, merge: boolean): Promise<ChatSummary> {
     const id = toCusFormat(chat.id);
     const name = chat.name;
     const picture = await this.getContactProfilePicture(chat.id, false);
-    const messages = await this.getChatMessages(
-      chat.id,
-      { limit: 1, offset: 0, downloadMedia: false },
-      {},
-    );
+    const lastMessageQuery: GetChatMessagesQuery = {
+      limit: 1,
+      offset: 0,
+      downloadMedia: false,
+      merge,
+    };
+    const messages = await this.getChatMessages(chat.id, lastMessageQuery, {});
     const message = messages.length > 0 ? messages[0] : null;
     return {
       id: id,
@@ -1897,6 +1904,8 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     pagination: PaginationParams,
     filter: OverviewFilter | null = null,
   ) {
+    const merge =
+      (pagination as GetChatsParams | GetChatsOverviewParams).merge ?? true;
     if (pagination.sortBy === ChatSortField.CONVERSATION_TIMESTAMP) {
       pagination.sortBy = 'timestamp';
     }
@@ -1920,6 +1929,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       filter: new messages.ChatFilter({
         jids: jids,
       }),
+      merge: optional(merge, messages.OptionalBool),
     });
     const response = await promisify(this.client.GetChats)(request);
     const data = parseJsonList(response);
@@ -1932,6 +1942,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     filter: GetChatMessagesFilter,
   ) {
     const downloadMedia = query.downloadMedia;
+    const merge = query.merge ?? true;
     let jid: messages.OptionalString;
     if (chatId === 'all') {
       jid = null;
@@ -1969,6 +1980,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         limit: query.limit,
         offset: query.offset,
       }),
+      merge: optional(merge, messages.OptionalBool),
     });
     const response = await promisify(this.client.GetMessages)(request);
     const msgs = parseJsonList(response);

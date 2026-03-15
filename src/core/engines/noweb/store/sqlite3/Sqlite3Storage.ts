@@ -19,6 +19,7 @@ import { KNEX_SQLITE_CLIENT } from '@waha/core/env';
 export class Sqlite3Storage extends INowebStorage {
   private readonly tables: Schema[];
   private readonly knex: Knex.Knex;
+  private lidRepository: INowebLidPNRepository | null = null;
 
   constructor(filePath: string) {
     super();
@@ -84,10 +85,17 @@ export class Sqlite3Storage extends INowebStorage {
   }
 
   getMessagesRepository() {
-    return new Sqlite3MessagesRepository(this.knex);
+    return new Sqlite3MessagesRepository(this.knex, this.getLidRepository());
   }
 
   getLidPNRepository(): INowebLidPNRepository {
-    return new Sqlite3LidPNRepository(this.knex);
+    return this.getLidRepository();
+  }
+
+  private getLidRepository(): INowebLidPNRepository {
+    if (!this.lidRepository) {
+      this.lidRepository = new Sqlite3LidPNRepository(this.knex);
+    }
+    return this.lidRepository;
   }
 }

@@ -12,6 +12,7 @@ import {
 } from '@waha/apps/app_sdk/services/IAppsService';
 import { EngineBootstrap } from '@waha/core/abc/EngineBootstrap';
 import { GowsEngineConfigService } from '@waha/core/config/GowsEngineConfigService';
+import { WPPEngineConfigService } from '@waha/core/config/WPPEngineConfigService';
 import { WebJSEngineConfigService } from '@waha/core/config/WebJSEngineConfigService';
 import { WhatsappSessionGoWSCore } from '@waha/core/engines/gows/session.gows.core';
 import { WebhookConductor } from '@waha/core/integrations/webhooks/WebhookConductor';
@@ -25,6 +26,7 @@ import { PinoLogger } from 'nestjs-pino';
 import { Observable, retry, share } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { getNamespace, getSessionNamespace } from '../config';
 import { WhatsappConfigService } from '../config.service';
 import {
   WAHAEngine,
@@ -43,6 +45,7 @@ import { populateSessionInfo, SessionManager } from './abc/manager.abc';
 import { SessionParams, WhatsappSession } from './abc/session.abc';
 import { EngineConfigService } from './config/EngineConfigService';
 import { WhatsappSessionNoWebCore } from './engines/noweb/session.noweb.core';
+import { WhatsappSessionWPPCore } from './engines/wpp/session.wpp.core';
 import { WhatsappSessionWebJSCore } from './engines/webjs/session.webjs.core';
 import { DOCS_URL } from './exceptions';
 import { getProxyConfig } from './helpers.proxy';
@@ -89,6 +92,7 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
     config: WhatsappConfigService,
     private engineConfigService: EngineConfigService,
     private webjsEngineConfigService: WebJSEngineConfigService,
+    private wppEngineConfigService: WPPEngineConfigService,
     gowsConfigService: GowsEngineConfigService,
     log: PinoLogger,
     private mediaStorageFactory: MediaStorageFactory,
@@ -130,6 +134,8 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
   protected getEngine(engine: WAHAEngine): typeof WhatsappSession {
     if (engine === WAHAEngine.WEBJS) {
       return WhatsappSessionWebJSCore;
+    } else if (engine === WAHAEngine.WPP) {
+      return WhatsappSessionWPPCore;
     } else if (engine === WAHAEngine.NOWEB) {
       return WhatsappSessionNoWebCore;
     } else if (engine === WAHAEngine.GOWS) {
@@ -229,6 +235,8 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
     };
     if (this.EngineClass === WhatsappSessionWebJSCore) {
       sessionConfig.engineConfig = this.webjsEngineConfigService.getConfig();
+    } else if (this.EngineClass === WhatsappSessionWPPCore) {
+      sessionConfig.engineConfig = this.wppEngineConfigService.getConfig();
     } else if (this.EngineClass === WhatsappSessionGoWSCore) {
       sessionConfig.engineConfig = this.gowsConfigService.getConfig();
     }

@@ -14,9 +14,10 @@ export interface IMessagesRepository {
     jid: string,
     filter: GetChatMessagesFilter,
     pagination: PaginationParams,
+    merge?: boolean,
   ): Promise<any[]>;
 
-  getByJidById(jid: string, id: string): Promise<any | null>;
+  getByJidById(jid: string, id: string, merge?: boolean): Promise<any | null>;
 
   updateByJidAndId(jid: string, id: string, update: any): Promise<boolean>;
 

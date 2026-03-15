@@ -19131,7 +19131,8 @@ proto.messages.GetMessagesRequest.toObject = function(includeInstance, msg) {
     session: (f = msg.getSession()) && proto.messages.Session.toObject(includeInstance, f),
     filters: (f = msg.getFilters()) && proto.messages.MessageFilters.toObject(includeInstance, f),
     pagination: (f = msg.getPagination()) && proto.messages.Pagination.toObject(includeInstance, f),
-    sortby: (f = msg.getSortby()) && proto.messages.SortBy.toObject(includeInstance, f)
+    sortby: (f = msg.getSortby()) && proto.messages.SortBy.toObject(includeInstance, f),
+    merge: (f = msg.getMerge()) && proto.messages.OptionalBool.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -19187,6 +19188,11 @@ proto.messages.GetMessagesRequest.deserializeBinaryFromReader = function(msg, re
       var value = new proto.messages.SortBy;
       reader.readMessage(value,proto.messages.SortBy.deserializeBinaryFromReader);
       msg.setSortby(value);
+      break;
+    case 5:
+      var value = new proto.messages.OptionalBool;
+      reader.readMessage(value,proto.messages.OptionalBool.deserializeBinaryFromReader);
+      msg.setMerge(value);
       break;
     default:
       reader.skipField();
@@ -19247,6 +19253,14 @@ proto.messages.GetMessagesRequest.serializeBinaryToWriter = function(message, wr
       4,
       f,
       proto.messages.SortBy.serializeBinaryToWriter
+    );
+  }
+  f = message.getMerge();
+  if (f != null) {
+    writer.writeMessage(
+      5,
+      f,
+      proto.messages.OptionalBool.serializeBinaryToWriter
     );
   }
 };
@@ -19397,6 +19411,43 @@ proto.messages.GetMessagesRequest.prototype.clearSortby = function() {
  */
 proto.messages.GetMessagesRequest.prototype.hasSortby = function() {
   return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional OptionalBool merge = 5;
+ * @return {?proto.messages.OptionalBool}
+ */
+proto.messages.GetMessagesRequest.prototype.getMerge = function() {
+  return /** @type{?proto.messages.OptionalBool} */ (
+    jspb.Message.getWrapperField(this, proto.messages.OptionalBool, 5));
+};
+
+
+/**
+ * @param {?proto.messages.OptionalBool|undefined} value
+ * @return {!proto.messages.GetMessagesRequest} returns this
+*/
+proto.messages.GetMessagesRequest.prototype.setMerge = function(value) {
+  return jspb.Message.setWrapperField(this, 5, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.messages.GetMessagesRequest} returns this
+ */
+proto.messages.GetMessagesRequest.prototype.clearMerge = function() {
+  return this.setMerge(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.messages.GetMessagesRequest.prototype.hasMerge = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 
@@ -20085,7 +20136,8 @@ proto.messages.GetChatsRequest.toObject = function(includeInstance, msg) {
     session: (f = msg.getSession()) && proto.messages.Session.toObject(includeInstance, f),
     sortby: (f = msg.getSortby()) && proto.messages.SortBy.toObject(includeInstance, f),
     pagination: (f = msg.getPagination()) && proto.messages.Pagination.toObject(includeInstance, f),
-    filter: (f = msg.getFilter()) && proto.messages.ChatFilter.toObject(includeInstance, f)
+    filter: (f = msg.getFilter()) && proto.messages.ChatFilter.toObject(includeInstance, f),
+    merge: (f = msg.getMerge()) && proto.messages.OptionalBool.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -20141,6 +20193,11 @@ proto.messages.GetChatsRequest.deserializeBinaryFromReader = function(msg, reade
       var value = new proto.messages.ChatFilter;
       reader.readMessage(value,proto.messages.ChatFilter.deserializeBinaryFromReader);
       msg.setFilter(value);
+      break;
+    case 5:
+      var value = new proto.messages.OptionalBool;
+      reader.readMessage(value,proto.messages.OptionalBool.deserializeBinaryFromReader);
+      msg.setMerge(value);
       break;
     default:
       reader.skipField();
@@ -20201,6 +20258,14 @@ proto.messages.GetChatsRequest.serializeBinaryToWriter = function(message, write
       4,
       f,
       proto.messages.ChatFilter.serializeBinaryToWriter
+    );
+  }
+  f = message.getMerge();
+  if (f != null) {
+    writer.writeMessage(
+      5,
+      f,
+      proto.messages.OptionalBool.serializeBinaryToWriter
     );
   }
 };
@@ -20351,6 +20416,43 @@ proto.messages.GetChatsRequest.prototype.clearFilter = function() {
  */
 proto.messages.GetChatsRequest.prototype.hasFilter = function() {
   return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional OptionalBool merge = 5;
+ * @return {?proto.messages.OptionalBool}
+ */
+proto.messages.GetChatsRequest.prototype.getMerge = function() {
+  return /** @type{?proto.messages.OptionalBool} */ (
+    jspb.Message.getWrapperField(this, proto.messages.OptionalBool, 5));
+};
+
+
+/**
+ * @param {?proto.messages.OptionalBool|undefined} value
+ * @return {!proto.messages.GetChatsRequest} returns this
+*/
+proto.messages.GetChatsRequest.prototype.setMerge = function(value) {
+  return jspb.Message.setWrapperField(this, 5, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.messages.GetChatsRequest} returns this
+ */
+proto.messages.GetChatsRequest.prototype.clearMerge = function() {
+  return this.setMerge(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.messages.GetChatsRequest.prototype.hasMerge = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 

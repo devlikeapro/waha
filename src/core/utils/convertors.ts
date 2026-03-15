@@ -57,6 +57,7 @@ export function MessagesForRead(
     offset: 0,
     limit: limit,
     downloadMedia: false,
+    merge: true,
   };
   const afterMs = Date.now() - daysToMs(request.days);
   const after = Math.floor(afterMs / 1000);

@@ -1,11 +1,17 @@
 import { ALL_JID } from '@waha/core/engines/noweb/session.noweb.core';
 import { SqlKVRepository } from '@waha/core/storage/sql/SqlKVRepository';
 import { AckToStatus } from '@waha/core/utils/acks';
+import { isLidUser } from '@waha/core/utils/jids';
 import { GetChatMessagesFilter } from '@waha/structures/chats.dto';
 import { PaginationParams } from '@waha/structures/pagination.dto';
+import { Knex } from 'knex';
+import { INowebLidPNRepository } from '../INowebLidPNRepository';
 
 export class SqlMessagesMethods {
-  constructor(private repository: SqlKVRepository<any>) {}
+  constructor(
+    private repository: SqlKVRepository<any>,
+    private lidRepository?: INowebLidPNRepository,
+  ) {}
 
   upsert(messages: any[]): Promise<void> {
     return this.repository.upsertMany(messages);
@@ -15,10 +21,17 @@ export class SqlMessagesMethods {
     jid: string,
     filter: GetChatMessagesFilter,
     pagination: PaginationParams,
+    merge: boolean = true,
   ): Promise<any[]> {
     let query = this.repository.select();
+    const tableName = this.repository.table;
     if (jid !== ALL_JID) {
-      query = this.repository.select().where({ jid: jid });
+      if (merge) {
+        const pnJid = await this.resolvePnJid(jid);
+        query = this.applyPnJidFilter(query, pnJid);
+      } else {
+        query = query.where(`${tableName}.jid`, jid);
+      }
     }
     if (filter['filter.timestamp.lte'] != null) {
       query = query.where(
@@ -34,10 +47,11 @@ export class SqlMessagesMethods {
         filter['filter.timestamp.gte'],
       );
     }
+    const dataColumn = `${this.repository.table}.data`;
     if (filter['filter.fromMe'] != null) {
       // filter by data json inside
       const [sql, value] = this.repository.filterJson(
-        'data',
+        dataColumn,
         'key.fromMe',
         filter['filter.fromMe'],
       );
@@ -45,18 +59,39 @@ export class SqlMessagesMethods {
     }
     if (filter['filter.ack'] != null) {
       const status = AckToStatus(filter['filter.ack']);
-      const [sql, value] = this.repository.filterJson('data', 'status', status);
+      const [sql, value] = this.repository.filterJson(
+        dataColumn,
+        'status',
+        status,
+      );
       query = query.whereRaw(sql, [value]);
     }
     query = this.repository.pagination(query, pagination);
     return this.repository.all(query);
   }
 
-  async getByJidById(jid: string, id: string): Promise<any> {
+  async getByJidById(
+    jid: string,
+    id: string,
+    merge: boolean = true,
+  ): Promise<any> {
     if (jid === ALL_JID) {
       return this.repository.getBy({ id: id });
     }
-    return this.repository.getBy({ jid: jid, id: id });
+    const tableName = this.repository.table;
+    const baseQuery = this.repository.select().where(`${tableName}.id`, id);
+    let query;
+    if (merge) {
+      const pnJid = await this.resolvePnJid(jid);
+      query = this.applyPnJidFilter(baseQuery, pnJid);
+    } else {
+      query = baseQuery.andWhere(`${tableName}.jid`, jid);
+    }
+    const rows = await query.limit(1);
+    if (!rows.length) {
+      return null;
+    }
+    return this.repository.parse(rows[0]);
   }
 
   async updateByJidAndId(
@@ -82,5 +117,40 @@ export class SqlMessagesMethods {
 
   deleteAllByJid(jid: string): Promise<void> {
     return this.repository.deleteBy({ jid: jid });
+  }
+
+  private applyPnJidFilter(
+    query: Knex.QueryBuilder,
+    pnJid: string,
+  ): Knex.QueryBuilder {
+    const tableName = this.repository.table;
+    const pnExpr = this.buildPnJidExpr(tableName, 'jid');
+    return query
+      .leftJoin('lid_map', 'lid_map.id', `${tableName}.jid`)
+      .whereRaw(`${pnExpr} = ?`, [pnJid]);
+  }
+
+  private async resolvePnJid(jid: string): Promise<string> {
+    if (!isLidUser(jid)) {
+      return jid;
+    }
+    if (this.lidRepository) {
+      const mapped = await this.lidRepository.findPNByLid(jid);
+      if (mapped) {
+        return mapped;
+      }
+    }
+    const row = await this.repository
+      .getKnex()
+      .select('pn')
+      .from('lid_map')
+      .where('id', jid)
+      .first();
+    return row?.pn || jid;
+  }
+
+  private buildPnJidExpr(tableName: string, column: string) {
+    const colRef = `"${tableName}"."${column}"`;
+    return `CASE WHEN ${colRef} LIKE '%@lid' THEN COALESCE(lid_map.pn, ${colRef}) ELSE ${colRef} END`;
   }
 }

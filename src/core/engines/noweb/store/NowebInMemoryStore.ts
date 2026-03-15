@@ -2,7 +2,10 @@ import type { Chat, Contact, GroupMetadata, proto } from '@adiwajshing/baileys';
 import type makeWASocket from '@adiwajshing/baileys';
 import type { Label } from '@adiwajshing/baileys/lib/Types/Label';
 import { BadRequestException } from '@nestjs/common';
-import { GetChatMessagesFilter } from '@waha/structures/chats.dto';
+import {
+  GetChatMessagesFilter,
+  OverviewFilter,
+} from '@waha/structures/chats.dto';
 import { LidToPhoneNumber } from '@waha/structures/lids.dto';
 import {
   LimitOffsetParams,
@@ -57,15 +60,25 @@ export class NowebInMemoryStore implements INowebStore {
     chatId: string,
     filter: GetChatMessagesFilter,
     pagination: PaginationParams,
+    merge?: boolean,
   ): Promise<any> {
     throw new BadRequestException(this.errorMessage);
   }
 
-  getMessageById(chatId: string, messageId: string): Promise<any> {
+  getMessageById(
+    chatId: string,
+    messageId: string,
+    merge?: boolean,
+  ): Promise<any> {
     throw new BadRequestException(this.errorMessage);
   }
 
-  getChats(pagination: PaginationParams, broadcast: boolean): Promise<Chat[]> {
+  getChats(
+    pagination: PaginationParams,
+    broadcast: boolean,
+    filter?: OverviewFilter,
+    merge?: boolean,
+  ): Promise<Chat[]> {
     throw new BadRequestException(this.errorMessage);
   }
 

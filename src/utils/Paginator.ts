@@ -56,8 +56,12 @@ export class KnexPaginator extends Paginator {
   constructor(
     pagination: PaginationParams,
     protected jsonQuery: IJsonQuery,
+    protected tableName?: string,
   ) {
     super(pagination);
+    if (tableName) {
+      this.dataField = `${tableName}.data`;
+    }
   }
 
   protected sort(query: any) {

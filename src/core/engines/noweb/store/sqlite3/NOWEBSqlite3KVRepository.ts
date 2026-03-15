@@ -16,7 +16,7 @@ export class NOWEBSqlite3KVRepository<
     return JSON.stringify(data, esm.b.BufferJSON.replacer);
   }
 
-  protected parse(row: any): any {
+  public parse(row: any): any {
     return JSON.parse(row.data, esm.b.BufferJSON.reviver);
   }
 
