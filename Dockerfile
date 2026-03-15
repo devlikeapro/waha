@@ -6,6 +6,11 @@ ARG NODE_IMAGE_TAG=24.11-bookworm-slim
 FROM node:${NODE_IMAGE_TAG} AS build
 ENV PUPPETEER_SKIP_DOWNLOAD=True
 
+ARG RUST_BUN_INSTALL=/root/.bun
+ARG RUST_BUN_VERSION=1.3.9
+ARG RUSTUP_TOOLCHAIN=nightly-2026-01-30
+ARG RUST_WASM_PACK_VERSION=0.14.0
+
 # git + build toolchain for git deps
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git python3 build-essential curl ca-certificates unzip && \
@@ -14,7 +19,7 @@ RUN apt-get update && \
 # bun + rust toolchains for whatsapp-rust-bridge prepare scripts
 RUN set -eux; \
     mkdir -p "${RUST_BUN_INSTALL}"; \
-    curl -fsSL https://bun.sh/install | bash -s -- bun-v${RUST_BUN_VERSION}; \
+    BUN_INSTALL="${RUST_BUN_INSTALL}" curl -fsSL https://bun.sh/install | bash -s -- bun-v${RUST_BUN_VERSION}; \
     curl -fsSL https://sh.rustup.rs | bash -s -- -y --default-toolchain ${RUSTUP_TOOLCHAIN}; \
     /root/.cargo/bin/rustup target add wasm32-unknown-unknown; \
     /root/.cargo/bin/cargo install wasm-pack --vers ${RUST_WASM_PACK_VERSION} --locked; \
