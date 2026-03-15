@@ -14,7 +14,7 @@ export class LocalStoreCore extends LocalStore {
   private readonly sessionNamespace: string;
   private knex: Knex.Knex;
 
-  constructor(namespace: string, sessionNamespace: string) {
+  constructor(namespace: string, sessionNamespace: string = namespace) {
     super();
     this.namespace = namespace;
     this.sessionNamespace = sessionNamespace;
