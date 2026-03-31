@@ -490,6 +490,19 @@ whatsapp.to.chatwoot.message.pix: |-
   💳 **PIX Kopieren und Einfügen gesendet**
   {{/pixData}}
 
+whatsapp.to.chatwoot.message.status.reply.with.text: |-
+  📣 **Antwort auf WhatsApp-Status**
+  🏷️ **Typ:** {{type}}
+  📝 **Originaler Status-Text:** {{quotedText}}
+
+  {{content}}
+
+whatsapp.to.chatwoot.message.status.reply.without.text: |-
+  📣 **Antwort auf WhatsApp-Status**
+  🏷️ **Typ:** {{type}}
+
+  {{content}}
+
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **Dieser Nachrichtentyp wird in dieser Inbox nicht unterstützt.**
   📱 Bitte öffne **WhatsApp**, um ihn anzusehen.

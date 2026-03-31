@@ -487,6 +487,19 @@ whatsapp.to.chatwoot.message.pix: |-
   💳 **تم إرسال PIX نسخ ولصق**
   {{/pixData}}
 
+whatsapp.to.chatwoot.message.status.reply.with.text: |-
+  📣 **رد على حالة واتساب**
+  🏷️ **النوع:** {{type}}
+  📝 **نص الحالة الأصلي:** {{quotedText}}
+
+  {{content}}
+
+whatsapp.to.chatwoot.message.status.reply.without.text: |-
+  📣 **رد على حالة واتساب**
+  🏷️ **النوع:** {{type}}
+
+  {{content}}
+
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **هذا النوع من الرسائل غير مدعوم في هذا الصندوق الوارد.**
   📱 يرجى فتح **WhatsApp** لعرضه.

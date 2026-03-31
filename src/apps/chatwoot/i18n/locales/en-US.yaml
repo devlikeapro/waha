@@ -268,6 +268,19 @@ whatsapp.to.chatwoot.message.pix: |-
   💳 **PIX Copy and Paste sent**
   {{/pixData}}
 
+whatsapp.to.chatwoot.message.status.reply.with.text: |-
+  📣 **Reply to WhatsApp Status**
+  🏷️ **Type:** {{type}}
+  📝 **Original status text:** {{quotedText}}
+
+  {{content}}
+
+whatsapp.to.chatwoot.message.status.reply.without.text: |-
+  📣 **Reply to WhatsApp Status**
+  🏷️ **Type:** {{type}}
+
+  {{content}}
+
 whatsapp.to.chatwoot.message.has.media.no.media: |-
   {{#content}}
   {{{content}}}

@@ -487,6 +487,19 @@ whatsapp.to.chatwoot.message.pix: |-
   💳 **PIX Copier et Coller envoyé**
   {{/pixData}}
 
+whatsapp.to.chatwoot.message.status.reply.with.text: |-
+  📣 **Réponse au statut WhatsApp**
+  🏷️ **Type :** {{type}}
+  📝 **Texte original du statut :** {{quotedText}}
+
+  {{content}}
+
+whatsapp.to.chatwoot.message.status.reply.without.text: |-
+  📣 **Réponse au statut WhatsApp**
+  🏷️ **Type :** {{type}}
+
+  {{content}}
+
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **Ce type de message n’est pas pris en charge dans cette boîte de réception.**
   📱 Veuillez ouvrir **WhatsApp** pour l’afficher.

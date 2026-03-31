@@ -15,6 +15,20 @@ import { Job } from 'bullmq';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const mime = require('mime-types');
 
+type StatusReplyType = 'text' | 'image' | 'audio' | 'video' | 'unknown';
+
+interface StatusReplyMediaDetails {
+  url: string;
+  mimetype?: string;
+  type: 'image' | 'audio' | 'video';
+}
+
+interface StatusReplyDetails {
+  statusType: StatusReplyType;
+  quotedText?: string;
+  media?: StatusReplyMediaDetails;
+}
+
 export class TextMessage implements MessageToChatWootConverter {
   constructor(
     private readonly locale: Locale,
@@ -28,8 +42,12 @@ export class TextMessage implements MessageToChatWootConverter {
     protoMessage: proto.Message | null,
   ): Promise<ChatWootMessagePartial | null> {
     void protoMessage;
-    const attachments = await this.getAttachments(payload);
+    const statusReplyDetails = this.getStatusReplyDetails(payload);
+    const attachments = await this.getAttachments(payload, statusReplyDetails);
     let content = this.locale.key(TKey.WA_TO_CW_MESSAGE).render({ payload });
+    if (statusReplyDetails) {
+      content = this.wrapStatusReplyContent(content, statusReplyDetails);
+    }
     if (isEmptyString(content) && attachments.length === 0) {
       // No media, no content - return null so we can process it later
       return null;
@@ -52,33 +70,179 @@ export class TextMessage implements MessageToChatWootConverter {
     }
     return {
       content: WhatsappToMarkdown(content),
-      attachments,
+      attachments: attachments,
       private: undefined,
     };
   }
 
-  private async getAttachments(payload: WAMessage): Promise<SendAttachment[]> {
-    const hasMedia = payload.media?.url;
-    if (!hasMedia) {
-      return [];
+  private async getAttachments(
+    payload: WAMessage,
+    statusReplyDetails: StatusReplyDetails | null,
+  ): Promise<SendAttachment[]> {
+    const attachments: SendAttachment[] = [];
+    const media = payload.media;
+    if (media?.url) {
+      const attachment = await this.downloadAttachment(media.url, media.filename, {
+        fallbackBaseName: 'no-filename',
+        mimetype: media.mimetype,
+      });
+      if (attachment) {
+        attachments.push(attachment);
+      }
     }
 
-    const media = payload.media!;
-    this.logger.debug(`Downloading media from '${media.url}'...`);
-    const buffer = await this.waha.fetch(media.url);
+    const statusMedia = statusReplyDetails?.media;
+    if (!statusMedia?.url) {
+      return attachments;
+    }
+
+    const statusAttachment = await this.downloadAttachment(
+      statusMedia.url,
+      undefined,
+      {
+        fallbackBaseName: `status-reply-${statusMedia.type}`,
+        mimetype: statusMedia.mimetype,
+      },
+    );
+    if (statusAttachment) {
+      attachments.push(statusAttachment);
+    }
+    return attachments;
+  }
+
+  private async downloadAttachment(
+    url: string,
+    filename: string | undefined,
+    options: {
+      fallbackBaseName: string;
+      mimetype?: string;
+    },
+  ): Promise<SendAttachment | null> {
+    this.logger.debug(`Downloading media from '${url}'...`);
+    const buffer = await this.waha.fetch(url);
     const fileContent = buffer.toString('base64');
-    let filename = media.filename;
-    if (!filename) {
-      const extension = mime.extension(media.mimetype);
-      filename = `no-filename.${extension}`;
-    }
-
+    const resolvedFilename = this.resolveFilename(
+      filename,
+      options.fallbackBaseName,
+      options.mimetype,
+    );
     const attachment: SendAttachment = {
       content: fileContent,
-      filename,
+      filename: resolvedFilename,
       encoding: 'base64',
     };
-    this.logger.info(`Downloaded media from '${media.url}' as '${filename}'`);
-    return [attachment];
+    this.logger.info(`Downloaded media from '${url}' as '${resolvedFilename}'`);
+    return attachment;
+  }
+
+  private resolveFilename(
+    filename: string | undefined,
+    fallbackBaseName: string,
+    mimetype: string | undefined,
+  ): string {
+    if (!isEmptyString(filename)) {
+      return filename!;
+    }
+    const extensionFromMime = mimetype ? mime.extension(mimetype) : false;
+    const extension = extensionFromMime || 'bin';
+    return `${fallbackBaseName}.${extension}`;
+  }
+
+  private wrapStatusReplyContent(
+    content: string | null,
+    statusReplyDetails: StatusReplyDetails,
+  ): string {
+    const contentWithFallback = content ?? '';
+    if (statusReplyDetails.quotedText) {
+      return this.locale.r(TKey.WA_TO_CW_MESSAGE_STATUS_REPLY_WITH_TEXT, {
+        type: statusReplyDetails.statusType,
+        quotedText: statusReplyDetails.quotedText,
+        content: contentWithFallback,
+      });
+    }
+
+    return this.locale.r(TKey.WA_TO_CW_MESSAGE_STATUS_REPLY_WITHOUT_TEXT, {
+      type: statusReplyDetails.statusType,
+      content: contentWithFallback,
+    });
+  }
+
+  private getStatusReplyDetails(payload: WAMessage): StatusReplyDetails | null {
+    if (!payload.replyTo) {
+      return null;
+    }
+
+    const contextInfo = (payload as any)?._data?.Message?.extendedTextMessage
+      ?.contextInfo;
+    const remoteJid = contextInfo?.remoteJID ?? contextInfo?.remoteJid;
+    if (remoteJid !== 'status@broadcast') {
+      return null;
+    }
+
+    const replyData = (payload.replyTo as any)?._data;
+    if (!replyData) {
+      return {
+        statusType: 'unknown',
+      };
+    }
+
+    const imageMessage = replyData.imageMessage;
+    if (imageMessage) {
+      return {
+        statusType: 'image',
+        media: this.getStatusReplyMediaDetails('image', imageMessage),
+      };
+    }
+
+    const audioMessage = replyData.audioMessage;
+    if (audioMessage) {
+      return {
+        statusType: 'audio',
+        media: this.getStatusReplyMediaDetails('audio', audioMessage),
+      };
+    }
+
+    const videoMessage = replyData.videoMessage;
+    if (videoMessage) {
+      return {
+        statusType: 'video',
+        media: this.getStatusReplyMediaDetails('video', videoMessage),
+      };
+    }
+
+    const extendedTextMessage = replyData.extendedTextMessage;
+    if (extendedTextMessage) {
+      return {
+        statusType: 'text',
+        quotedText: extendedTextMessage.text,
+      };
+    }
+
+    const conversation = replyData.conversation;
+    if (conversation) {
+      return {
+        statusType: 'text',
+        quotedText: conversation,
+      };
+    }
+
+    return {
+      statusType: 'unknown',
+    };
+  }
+
+  private getStatusReplyMediaDetails(
+    type: 'image' | 'audio' | 'video',
+    data: any,
+  ): StatusReplyMediaDetails | undefined {
+    const url = data?.URL ?? data?.url;
+    if (!url) {
+      return undefined;
+    }
+    return {
+      type: type,
+      url: url,
+      mimetype: data?.mimetype,
+    };
   }
 }

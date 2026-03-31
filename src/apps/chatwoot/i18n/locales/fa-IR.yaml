@@ -487,6 +487,19 @@ whatsapp.to.chatwoot.message.pix: |-
   💳 **PIX کپی و چسباندن ارسال شد**
   {{/pixData}}
 
+whatsapp.to.chatwoot.message.status.reply.with.text: |-
+  📣 **پاسخ به وضعیت واتساپ**
+  🏷️ **نوع:** {{type}}
+  📝 **متن اصلی وضعیت:** {{quotedText}}
+
+  {{content}}
+
+whatsapp.to.chatwoot.message.status.reply.without.text: |-
+  📣 **پاسخ به وضعیت واتساپ**
+  🏷️ **نوع:** {{type}}
+
+  {{content}}
+
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **این نوع پیام در این صندوق ورودی پشتیبانی نمی‌شود.**
   📱 لطفاً برای مشاهده آن **WhatsApp** را باز کنید.

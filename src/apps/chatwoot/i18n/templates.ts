@@ -54,6 +54,8 @@ export enum TKey {
   WA_TO_CW_MESSAGE_POLL = 'whatsapp.to.chatwoot.message.poll',
   WA_TO_CW_MESSAGE_EVENT = 'whatsapp.to.chatwoot.message.event',
   WA_TO_CW_MESSAGE_PIX = 'whatsapp.to.chatwoot.message.pix',
+  WA_TO_CW_MESSAGE_STATUS_REPLY_WITH_TEXT = 'whatsapp.to.chatwoot.message.status.reply.with.text',
+  WA_TO_CW_MESSAGE_STATUS_REPLY_WITHOUT_TEXT = 'whatsapp.to.chatwoot.message.status.reply.without.text',
   WA_TO_CW_MESSAGE_UNSUPPORTED = 'whatsapp.to.chatwoot.message.unsupported',
   WA_TO_CW_MESSAGE_FACEBOOK_AD = 'whatsapp.to.chatwoot.message.facebook.ad',
   WA_TO_CW_MESSAGE_LIST = 'whatsapp.to.chatwoot.message.list',
@@ -188,6 +190,15 @@ export type TemplatePayloads = {
     payload: WAMessage;
     message: proto.Message | null;
     pixData: PixTemplatePayload;
+  };
+  [TKey.WA_TO_CW_MESSAGE_STATUS_REPLY_WITH_TEXT]: {
+    type: string;
+    quotedText: string;
+    content: string;
+  };
+  [TKey.WA_TO_CW_MESSAGE_STATUS_REPLY_WITHOUT_TEXT]: {
+    type: string;
+    content: string;
   };
   [TKey.WA_TO_CW_MESSAGE_UNSUPPORTED]: { details: Link };
   [TKey.WA_TO_CW_MESSAGE_FACEBOOK_AD]: {

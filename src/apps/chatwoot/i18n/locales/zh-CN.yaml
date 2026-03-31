@@ -487,6 +487,19 @@ whatsapp.to.chatwoot.message.pix: |-
   💳 **PIX 复制粘贴已发送**
   {{/pixData}}
 
+whatsapp.to.chatwoot.message.status.reply.with.text: |-
+  📣 **回复 WhatsApp 状态**
+  🏷️ **类型：**{{type}}
+  📝 **原始状态文本：**{{quotedText}}
+
+  {{content}}
+
+whatsapp.to.chatwoot.message.status.reply.without.text: |-
+  📣 **回复 WhatsApp 状态**
+  🏷️ **类型：**{{type}}
+
+  {{content}}
+
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **此收件箱不支持此消息类型。**
   📱 请打开 **WhatsApp** 查看。

@@ -487,6 +487,19 @@ whatsapp.to.chatwoot.message.pix: |-
   💳 **PIX Salin dan Tempel terkirim**
   {{/pixData}}
 
+whatsapp.to.chatwoot.message.status.reply.with.text: |-
+  📣 **Balasan ke Status WhatsApp**
+  🏷️ **Tipe:** {{type}}
+  📝 **Teks status asli:** {{quotedText}}
+
+  {{content}}
+
+whatsapp.to.chatwoot.message.status.reply.without.text: |-
+  📣 **Balasan ke Status WhatsApp**
+  🏷️ **Tipe:** {{type}}
+
+  {{content}}
+
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **Jenis pesan ini tidak didukung di kotak masuk ini.**
   📱 Silakan buka **WhatsApp** untuk melihatnya.

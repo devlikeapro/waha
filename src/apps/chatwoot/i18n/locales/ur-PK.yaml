@@ -487,6 +487,19 @@ whatsapp.to.chatwoot.message.pix: |-
   💳 **PIX کاپی اور پیسٹ بھیج دیا گیا**
   {{/pixData}}
 
+whatsapp.to.chatwoot.message.status.reply.with.text: |-
+  📣 **WhatsApp اسٹیٹس کا جواب**
+  🏷️ **قسم:** {{type}}
+  📝 **اصل اسٹیٹس کا متن:** {{quotedText}}
+
+  {{content}}
+
+whatsapp.to.chatwoot.message.status.reply.without.text: |-
+  📣 **WhatsApp اسٹیٹس کا جواب**
+  🏷️ **قسم:** {{type}}
+
+  {{content}}
+
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **اس قسم کا پیغام اس انبکس میں معاونت یافتہ نہیں ہے۔**
   📱 اسے دیکھنے کے لیے براہ کرم **WhatsApp** کھولیں۔
