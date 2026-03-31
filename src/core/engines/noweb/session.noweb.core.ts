@@ -2420,13 +2420,16 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   shouldProcessIncomingMessage(message): boolean {
     // if there is no text or media message
     if (!message) return;
-    if (!message.message) return;
+    // View-once (self-destructing) messages arrive with key.isViewOnce=true but
+    // no message content (burned by sender). Allow them through so a webhook
+    // is still fired with key/timestamp metadata.
+    if (!message.message && !message.key?.isViewOnce) return;
     // Ignore reactions, we have dedicated handler for that
-    if (message.message.reactionMessage) return;
+    if (message.message?.reactionMessage) return;
     // Ignore poll votes, we have dedicated handler for that
-    if (message.message.pollUpdateMessage) return;
+    if (message.message?.pollUpdateMessage) return;
     // Ignore calls, we have dedicated handler for that
-    if (message.message.call?.callKey) return;
+    if (message.message?.call?.callKey) return;
     // Ignore revoke, we have a dedicated event for that
     if (
       message.message?.protocolMessage?.type ===
@@ -2530,6 +2533,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   protected extractReplyTo(message): ReplyToMessage | null {
+    if (!message) return null;
     const msgType = getContentType(message);
     const contextInfo = message[msgType]?.contextInfo;
     if (!contextInfo) {

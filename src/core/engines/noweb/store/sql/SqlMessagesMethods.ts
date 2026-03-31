@@ -124,10 +124,17 @@ export class SqlMessagesMethods {
     pnJid: string,
   ): Knex.QueryBuilder {
     const tableName = this.repository.table;
-    const pnExpr = this.buildPnJidExpr(tableName, 'jid');
-    return query
-      .leftJoin('lid_map', 'lid_map.id', `${tableName}.jid`)
-      .whereRaw(`${pnExpr} = ?`, [pnJid]);
+    const knex = this.repository.getKnex();
+    // Use OR conditions on the raw jid column so the (jid, messageTimestamp) index
+    // can be used for both branches instead of a per-row CASE expression.
+    return query.where((builder) => {
+      builder
+        .where(`${tableName}.jid`, pnJid)
+        .orWhereIn(
+          `${tableName}.jid`,
+          knex.select('id').from('lid_map').where('pn', pnJid),
+        );
+    });
   }
 
   private async resolvePnJid(jid: string): Promise<string> {
@@ -147,10 +154,5 @@ export class SqlMessagesMethods {
       .where('id', jid)
       .first();
     return row?.pn || jid;
-  }
-
-  private buildPnJidExpr(tableName: string, column: string) {
-    const colRef = `"${tableName}"."${column}"`;
-    return `CASE WHEN ${colRef} LIKE '%@lid' THEN COALESCE(lid_map.pn, ${colRef}) ELSE ${colRef} END`;
   }
 }
