@@ -86,7 +86,13 @@ export class MessageAnyHandler extends MessageBaseHandler<WAMessage> {
       return msg;
     }
 
-    converter = new TextMessage(this.l, this.logger, this.waha, this.job);
+    converter = new TextMessage(
+      this.l,
+      this.logger,
+      this.waha,
+      this.job,
+      this.session,
+    );
     msg = await converter.convert(payload, null);
     if (msg) {
       return msg;

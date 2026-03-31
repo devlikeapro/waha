@@ -11,6 +11,7 @@ import { MessageToChatWootConverter } from '@waha/apps/chatwoot/messages/to/chat
 import { WhatsappToMarkdown } from '@waha/apps/chatwoot/messages/to/chatwoot/utils/markdown';
 import { JobLink } from '@waha/apps/app_sdk/JobUtils';
 import { Job } from 'bullmq';
+import { WAHASessionAPI } from '@waha/apps/app_sdk/waha/WAHASelf';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const mime = require('mime-types');
@@ -27,6 +28,7 @@ interface StatusReplyDetails {
   statusType: StatusReplyType;
   quotedText?: string;
   media?: StatusReplyMediaDetails;
+  replyMessageId?: string;
 }
 
 export class TextMessage implements MessageToChatWootConverter {
@@ -35,6 +37,7 @@ export class TextMessage implements MessageToChatWootConverter {
     private readonly logger: ILogger,
     private readonly waha: WAHASelf,
     private readonly job: Job,
+    private readonly session: WAHASessionAPI,
   ) {}
 
   async convert(
@@ -91,8 +94,10 @@ export class TextMessage implements MessageToChatWootConverter {
       }
     }
 
-    const statusMedia = statusReplyDetails?.media;
-    if (!statusMedia?.url) {
+    const statusMedia =
+      (await this.getStatusReplyMedia(payload, statusReplyDetails)) ||
+      statusReplyDetails?.media;
+    if (!statusMedia || !statusMedia.url) {
       return attachments;
     }
 
@@ -108,6 +113,39 @@ export class TextMessage implements MessageToChatWootConverter {
       attachments.push(statusAttachment);
     }
     return attachments;
+  }
+
+  private async getStatusReplyMedia(
+    payload: WAMessage,
+    statusReplyDetails: StatusReplyDetails | null,
+  ): Promise<StatusReplyMediaDetails | null> {
+    void payload;
+    if (!statusReplyDetails?.replyMessageId) {
+      return statusReplyDetails?.media || null;
+    }
+
+    try {
+      const quotedMessage = await this.session.getMessageById(
+        'status@broadcast',
+        statusReplyDetails.replyMessageId,
+        true,
+      );
+      const quotedMedia = quotedMessage?.media;
+      if (!quotedMedia?.url) {
+        return statusReplyDetails?.media || null;
+      }
+      return {
+        type: statusReplyDetails.statusType as 'image' | 'audio' | 'video',
+        url: quotedMedia.url,
+        mimetype: quotedMedia.mimetype || statusReplyDetails?.media?.mimetype,
+      };
+    } catch (error) {
+      this.logger.warn(
+        `Failed to resolve status reply media via message id '${statusReplyDetails.replyMessageId}'`,
+      );
+      this.logger.debug(error);
+      return statusReplyDetails?.media || null;
+    }
   }
 
   private async downloadAttachment(
@@ -180,9 +218,11 @@ export class TextMessage implements MessageToChatWootConverter {
     }
 
     const replyData = (payload.replyTo as any)?._data;
+    const replyMessageId = payload.replyTo.id;
     if (!replyData) {
       return {
         statusType: 'unknown',
+        replyMessageId: replyMessageId,
       };
     }
 
@@ -191,6 +231,7 @@ export class TextMessage implements MessageToChatWootConverter {
       return {
         statusType: 'image',
         media: this.getStatusReplyMediaDetails('image', imageMessage),
+        replyMessageId: replyMessageId,
       };
     }
 
@@ -199,6 +240,7 @@ export class TextMessage implements MessageToChatWootConverter {
       return {
         statusType: 'audio',
         media: this.getStatusReplyMediaDetails('audio', audioMessage),
+        replyMessageId: replyMessageId,
       };
     }
 
@@ -207,6 +249,7 @@ export class TextMessage implements MessageToChatWootConverter {
       return {
         statusType: 'video',
         media: this.getStatusReplyMediaDetails('video', videoMessage),
+        replyMessageId: replyMessageId,
       };
     }
 
@@ -215,6 +258,7 @@ export class TextMessage implements MessageToChatWootConverter {
       return {
         statusType: 'text',
         quotedText: extendedTextMessage.text,
+        replyMessageId: replyMessageId,
       };
     }
 
@@ -223,11 +267,13 @@ export class TextMessage implements MessageToChatWootConverter {
       return {
         statusType: 'text',
         quotedText: conversation,
+        replyMessageId: replyMessageId,
       };
     }
 
     return {
       statusType: 'unknown',
+      replyMessageId: replyMessageId,
     };
   }
 
