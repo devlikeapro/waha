@@ -2848,9 +2848,12 @@ export class NOWEBEngineMediaProcessor implements IMediaEngineProcessor<any> {
       content.url = null;
     }
 
-    return (await downloadMediaMessage(
+    // Use 'stream' mode instead of 'buffer' to fix 0-byte audio files
+    // 'buffer' mode silently returns empty buffer for audio/voice messages
+    // See: https://github.com/devlikeapro/waha/issues/1996
+    const stream = await downloadMediaMessage(
       message,
-      'buffer',
+      'stream',
       {},
       {
         logger: this.logger,
@@ -2859,7 +2862,12 @@ export class NOWEBEngineMediaProcessor implements IMediaEngineProcessor<any> {
     ).finally(() => {
       // Set url back in case we removed it
       content.url = url;
-    })) as Buffer;
+    });
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream) {
+      chunks.push(chunk);
+    }
+    return Buffer.concat(chunks);
   }
 
   getFilename(message: any): string | null {
