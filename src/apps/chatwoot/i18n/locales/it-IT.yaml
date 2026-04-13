@@ -116,12 +116,14 @@ whatsapp.contact.broadcast.suffix: 'Lista Broadcast'
 whatsapp.contact.status.name: 'Stato'
 
 chatwoot.to.whatsapp.message.text: |-
-  {{{ content }}}
+  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
+  {{/chatwoot.sender.name}}{{{ content }}}
 
 chatwoot.to.whatsapp.message.media.caption: |-
   {{#singleAttachment}}
   {{#content}}
-  {{{ content }}}
+  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
+  {{/chatwoot.sender.name}}{{{ content }}}
   {{/content}}
   {{/singleAttachment}}
 
