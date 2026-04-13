@@ -14,6 +14,7 @@ const writeFileAtomic = require('write-file-atomic');
  * Save files locally using the filesystem
  */
 export class MediaLocalStorage implements IMediaStorage {
+  private static readonly MAX_SETTIMEOUT_MS = 2_147_483_647;
   private readonly lifetimeMs: number;
 
   constructor(
@@ -25,6 +26,12 @@ export class MediaLocalStorage implements IMediaStorage {
     this.lifetimeMs = lifetimeSeconds * SECOND;
     if (this.lifetimeMs === 0) {
       this.log.info('Files lifetime is 0, files will not be removed');
+    }
+    if (this.lifetimeMs > MediaLocalStorage.MAX_SETTIMEOUT_MS) {
+      this.log.warn(
+        `Files lifetime ${lifetimeSeconds}s (${this.lifetimeMs}ms) exceeds setTimeout ` +
+          `max (${MediaLocalStorage.MAX_SETTIMEOUT_MS}ms). Using setInterval-based cleanup instead.`,
+      );
     }
   }
 
@@ -84,13 +91,26 @@ export class MediaLocalStorage implements IMediaStorage {
     if (this.lifetimeMs === 0) {
       return;
     }
-    setTimeout(
-      () =>
-        fs.unlink(filepath, () => {
-          this.log.info(`File ${filepath} was removed`);
-        }),
-      this.lifetimeMs,
-    );
+    const remove = () =>
+      fs.unlink(filepath, () => {
+        this.log.info(`File ${filepath} was removed`);
+      });
+    if (this.lifetimeMs <= MediaLocalStorage.MAX_SETTIMEOUT_MS) {
+      setTimeout(remove, this.lifetimeMs);
+    } else {
+      // For lifetimes exceeding setTimeout's 32-bit signed int max,
+      // chain multiple timeouts to avoid silent overflow to ~1ms.
+      let remaining = this.lifetimeMs;
+      const step = () => {
+        if (remaining <= MediaLocalStorage.MAX_SETTIMEOUT_MS) {
+          setTimeout(remove, remaining);
+        } else {
+          remaining -= MediaLocalStorage.MAX_SETTIMEOUT_MS;
+          setTimeout(step, MediaLocalStorage.MAX_SETTIMEOUT_MS);
+        }
+      };
+      step();
+    }
   }
 
   async close() {
