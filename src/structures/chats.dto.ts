@@ -220,6 +220,20 @@ export enum PinDuration {
   MONTH = 2592000,
 }
 
+export class DeleteMessageQuery {
+  @ApiProperty({
+    example: false,
+    required: false,
+    description:
+      'Delete message for the current user only (local deletion). ' +
+      'If false, attempts to revoke the message for everyone.',
+  })
+  @Transform(BooleanString)
+  @IsBoolean()
+  @IsOptional()
+  forMe?: boolean = false;
+}
+
 export class PinMessageRequest {
   @IsNumber()
   @IsEnum(PinDuration)

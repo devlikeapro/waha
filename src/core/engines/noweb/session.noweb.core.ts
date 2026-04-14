@@ -948,7 +948,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   @Activity()
-  public deleteMessage(chatId: string, messageId: string) {
+  public deleteMessage(chatId: string, messageId: string, forMe?: boolean) {
     const jid = toJID(this.ensureSuffix(chatId));
     const key = parseMessageIdSerialized(messageId);
     const options = {

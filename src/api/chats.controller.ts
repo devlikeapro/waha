@@ -26,6 +26,7 @@ import {
   ChatPictureQuery,
   ChatPictureResponse,
   ChatSummary,
+  DeleteMessageQuery,
   GetChatMessageQuery,
   GetChatMessagesFilter,
   GetChatMessagesQuery,
@@ -216,8 +217,9 @@ class ChatsController {
     @WorkingSessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
     @Param('messageId') messageId: string,
+    @Query() query: DeleteMessageQuery,
   ) {
-    return session.deleteMessage(chatId, messageId);
+    return session.deleteMessage(chatId, messageId, query.forMe);
   }
 
   @Put(':chatId/messages/:messageId')

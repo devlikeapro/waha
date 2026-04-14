@@ -740,7 +740,7 @@ export abstract class WhatsappSession {
     throw new NotImplementedByEngineError();
   }
 
-  public deleteMessage(chatId: string, messageId: string) {
+  public deleteMessage(chatId: string, messageId: string, forMe?: boolean) {
     throw new NotImplementedByEngineError();
   }
 
