@@ -7,7 +7,7 @@ __metadata:
 
 "@adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-2026-02-11":
   version: 7.0.0-rc.9
-  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=555d5cc1826d49d10eaf7254ff6b9c5d64d106cc"
+  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=92a9f60f6ab1eeb93ee9957e536f2e355f859189"
   dependencies:
     "@cacheable/node-cache": "npm:^1.4.0"
     "@hapi/boom": "npm:^9.1.3"
@@ -32,7 +32,7 @@ __metadata:
       optional: true
     link-preview-js:
       optional: true
-  checksum: 10/94b18c0b49ab75248438067be08c73c0dd37f628be99a025ea74f6d08aa443c9719bf6975d0409dcb9034e248521cf8425d043abe941b9cf3bd2844852ff5845
+  checksum: 10/0ff00980c1abf919de39170082677b71a774b1b4dc1d748556fb696d67ed68540b0d5c018ba6bfbfae4b7af6eea0e8c705f06b44248538ce0e1016fd35e676e3
   languageName: node
   linkType: hard
 
@@ -4439,6 +4439,13 @@ __metadata:
   version: 3.23.2
   resolution: "@wppconnect/wa-js@npm:3.23.2"
   checksum: 10/68ec7e73d3c0dc078956890941988645cc585dda6f63426f27fbd01e0c0e47f56f3bffa61469a486c9e93f9cff9ae56ab8ec5915a9a7c51fa6327c026885784a
+  languageName: node
+  linkType: hard
+
+"@wppconnect/wa-js@npm:^3.23.3":
+  version: 3.23.3
+  resolution: "@wppconnect/wa-js@npm:3.23.3"
+  checksum: 10/8b4407f3f90f781f63800b1023943ff1978ced614c4f9b7075e6470d5feac8176efe25a44b327234c5d2d265b2cf4f490c3fa09dea63720a94be6489cf98cd30
   languageName: node
   linkType: hard
 
@@ -13547,6 +13554,7 @@ __metadata:
     "@types/user-agents": "npm:^1"
     "@types/ws": "npm:^8.5.4"
     "@wppconnect-team/wppconnect": "npm:^1.41.1"
+    "@wppconnect/wa-js": "npm:^3.23.3"
     adm-zip: "npm:0.5.10"
     agentkeepalive: "npm:^4.5.0"
     async-lock: "npm:^1.4.1"
@@ -13725,7 +13733,7 @@ __metadata:
 
 "whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-2026-02-18":
   version: 1.34.6
-  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=3b8999cec79a37bf4d3aea62988db175f73eb19f"
+  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=d9f107887470bd4349cd9f639fb9cb1d63027efc"
   dependencies:
     archiver: "npm:^5.3.1"
     fluent-ffmpeg: "npm:2.1.3"
@@ -13742,7 +13750,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 10/e67e8b5910bf2cc5fb34e1167b334598a86a4f2d3e9b462647687f3befb8fbae069814fbb6f9dbbd6bfb062b4ebb952bb6cb98cc5f85bd31a0ac2cc9b98521e3
+  checksum: 10/705f16bd7c70afae7d8a76fbfc640fbb2be7d8d99695a694f0953507716c65cbbd44f68dcf5298bc5d61fa8cc55dd5d2ec9bc3d1cfc51281a35723b936c0994c
   languageName: node
   linkType: hard
 

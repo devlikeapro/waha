@@ -6,6 +6,7 @@ import {
   NoRetriesJobOptions,
 } from '@waha/apps/app_sdk/constants';
 import { MessageCleanupConsumer } from '@waha/apps/chatwoot/consumers/scheduled/message.cleanup';
+import { CheckTierConsumer } from '@waha/apps/chatwoot/consumers/scheduled/check.tier';
 import { ChatWootAppService } from '@waha/apps/chatwoot/services/ChatWootAppService';
 import * as lodash from 'lodash';
 
@@ -49,6 +50,10 @@ const IMPORTS = lodash.flatten([
   }),
   RegisterAppQueue({
     name: QueueName.SCHEDULED_CHECK_VERSION,
+    defaultJobOptions: merge(NoRetriesJobOptions, JobRemoveOptions),
+  }),
+  RegisterAppQueue({
+    name: QueueName.SCHEDULED_CHECK_TIER,
     defaultJobOptions: merge(NoRetriesJobOptions, JobRemoveOptions),
   }),
   RegisterAppQueue({
@@ -145,6 +150,7 @@ const PROVIDERS = [
   // Scheduled
   MessageCleanupConsumer,
   CheckVersionConsumer,
+  CheckTierConsumer,
   // Services
   ChatWootWAHAQueueService,
   ChatWootQueueService,

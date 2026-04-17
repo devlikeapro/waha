@@ -28,6 +28,21 @@ ADD . /git
 RUN yarn install
 RUN yarn build && find ./dist -name "*.d.ts" -delete
 
+# Rebuild sharp from source on x86-64 so it runs on pre-v2 CPUs (no SSE4.2 requirement).
+# The prebuilt @img/sharp-linux-x64 binary requires x86-64-v2; -march=x86-64 limits
+# code generation to baseline x86-64 (SSE2 only). ARM64 prebuilts have no such
+# constraint, so no rebuild is needed there.
+# We call sharp's own install/build.js (not npm rebuild) so it first generates config.gypi
+# with include/lib paths pointing to its bundled @img/sharp-libvips-linux-x64 package,
+# then invokes node-gyp with those paths. Without this step node-gyp cannot find vips headers.
+RUN if [ "$(uname -m)" = "x86_64" ]; then \
+        LIBVIPS_DEV_VER=$(node -e "require('/git/node_modules/sharp/package.json').devDependencies['@img/sharp-libvips-dev']" | tr -d '^') && \
+        npm install --prefix /tmp/sharp-dev --no-package-lock "@img/sharp-libvips-dev@${LIBVIPS_DEV_VER}" && \
+        cp -r /tmp/sharp-dev/node_modules/@img/sharp-libvips-dev /git/node_modules/@img/ && \
+        cd /git/node_modules/sharp && \
+        PATH="/git/node_modules/.bin:$PATH" CFLAGS="-march=x86-64" CXXFLAGS="-march=x86-64" node install/build.js; \
+    fi
+
 #
 # Dashboard
 #

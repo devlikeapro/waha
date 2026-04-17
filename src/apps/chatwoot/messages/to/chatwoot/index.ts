@@ -13,6 +13,7 @@ export { EventMessage } from './EventMessage';
 export { PixMessage } from './PixMessage';
 export { ListMessage } from './ListMessage';
 export { AlbumMessage } from './AlbumMessage';
+export { StatusReplyMessage } from './StatusReplyMessage';
 
 export type Awaitable<T> = T | Promise<T>;
 

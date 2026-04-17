@@ -325,6 +325,8 @@ waha.new.version.available: |-
 
   👉 Mira qué hay de nuevo en el [**🆕 Registro de Cambios**]({{{changelogUrl}}})
 
+  _Para desactivar estas notificaciones, envía_ `queue stop check.version`
+
 waha.core.version.used: |-
   ❤️ **¡Apoya a WAHA!**
 
@@ -335,14 +337,12 @@ waha.core.version.used: |-
   [**🎁 Apóyanos**]({{{supportUrl}}})
 
 chatwoot.to.whatsapp.message.text: |-
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
 
 chatwoot.to.whatsapp.message.media.caption: |-
   {{#singleAttachment}}
   {{#content}}
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
   {{/content}}
   {{/singleAttachment}}
 
@@ -488,6 +488,15 @@ whatsapp.to.chatwoot.message.pix: |-
 
   💳 **PIX Copiar y Pegar enviado**
   {{/pixData}}
+
+whatsapp.to.chatwoot.message.status.reply: |-
+  📣 **Respuesta al estado de WhatsApp**
+  🏷️ **Tipo:** {{type}}
+  {{#quotedText}}
+  📝 **Texto del Estado:** {{quotedText}}
+  {{/quotedText}}
+
+  {{content}}
 
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **Este tipo de mensaje no es compatible con esta bandeja de entrada.**

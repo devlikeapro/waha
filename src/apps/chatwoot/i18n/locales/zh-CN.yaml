@@ -325,6 +325,8 @@ waha.new.version.available: |-
 
   👉 查看[**🆕 更新日志**]({{{changelogUrl}}})
 
+  _要禁用这些通知，请发送_ `queue stop check.version`
+
 waha.core.version.used: |-
   ❤️ **支持 WAHA！**
 
@@ -335,14 +337,12 @@ waha.core.version.used: |-
   [**🎁 支持我们**]({{{supportUrl}}})
 
 chatwoot.to.whatsapp.message.text: |-
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
 
 chatwoot.to.whatsapp.message.media.caption: |-
   {{#singleAttachment}}
   {{#content}}
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
   {{/content}}
   {{/singleAttachment}}
 
@@ -488,6 +488,15 @@ whatsapp.to.chatwoot.message.pix: |-
 
   💳 **PIX 复制粘贴已发送**
   {{/pixData}}
+
+whatsapp.to.chatwoot.message.status.reply: |-
+  📣 **回复 WhatsApp 状态**
+  🏷️ **类型：**{{type}}
+  {{#quotedText}}
+  📝 **状态文本：**{{quotedText}}
+  {{/quotedText}}
+
+  {{content}}
 
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **此收件箱不支持此消息类型。**

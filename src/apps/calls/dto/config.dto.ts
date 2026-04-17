@@ -2,8 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
+  IsNumber,
   IsOptional,
   IsString,
+  Min,
   ValidateNested,
 } from 'class-validator';
 
@@ -23,6 +25,26 @@ export class CallsAppChannelConfig {
   @IsOptional()
   @IsString()
   message?: string;
+
+  @ApiProperty({
+    description:
+      'Seconds to wait before declining the call. If not set or undefined, the call is declined immediately (0 seconds).',
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  waitBeforeDecline?: number;
+
+  @ApiProperty({
+    description:
+      'Seconds to wait before sending the auto-reply message. If not set or undefined, the message is sent immediately (0 seconds).',
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  waitBeforeResponse?: number;
 }
 
 export class CallsAppConfig {

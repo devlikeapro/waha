@@ -596,6 +596,9 @@ export class NowebPersistentStore implements INowebStore {
       data = await this.messagesRepo.getById(id);
     } else {
       data = await this.messagesRepo.getByJidById(jid, id);
+      if (!data) {
+        data = await this.messagesRepo.getById(id);
+      }
     }
     if (!data) {
       return null;

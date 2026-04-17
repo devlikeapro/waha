@@ -325,6 +325,8 @@ waha.new.version.available: |-
 
   👉 בדוק מה חדש ב[**🆕 יומן שינויים**]({{{changelogUrl}}})
 
+  _כדי לבטל התראות אלו, שלח_ `queue stop check.version`
+
 waha.core.version.used: |-
   ❤️ **תמוך ב-WAHA!**
 
@@ -335,14 +337,12 @@ waha.core.version.used: |-
   [**🎁 תמוך בנו**]({{{supportUrl}}})
 
 chatwoot.to.whatsapp.message.text: |-
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
 
 chatwoot.to.whatsapp.message.media.caption: |-
   {{#singleAttachment}}
   {{#content}}
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
   {{/content}}
   {{/singleAttachment}}
 
@@ -488,6 +488,15 @@ whatsapp.to.chatwoot.message.pix: |-
 
   💳 **PIX העתק והדבק נשלח**
   {{/pixData}}
+
+whatsapp.to.chatwoot.message.status.reply: |-
+  📣 **תגובה לסטטוס ב-WhatsApp**
+  🏷️ **סוג:** {{type}}
+  {{#quotedText}}
+  📝 **טקסט הסטטוס:** {{quotedText}}
+  {{/quotedText}}
+
+  {{content}}
 
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **סוג הודעה זה אינו נתמך בתיבה זו.**

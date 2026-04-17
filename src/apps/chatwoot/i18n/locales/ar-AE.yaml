@@ -325,6 +325,8 @@ waha.new.version.available: |-
 
   👉 تحقق مما هو جديد في [**🆕 سجل التغييرات**]({{{changelogUrl}}})
 
+  _لإيقاف هذه الإشعارات، أرسل_ `queue stop check.version`
+
 waha.core.version.used: |-
   ❤️ **ادعم WAHA!**
 
@@ -335,14 +337,12 @@ waha.core.version.used: |-
   [**🎁 ادعمنا**]({{{supportUrl}}})
 
 chatwoot.to.whatsapp.message.text: |-
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
 
 chatwoot.to.whatsapp.message.media.caption: |-
   {{#singleAttachment}}
   {{#content}}
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
   {{/content}}
   {{/singleAttachment}}
 
@@ -488,6 +488,15 @@ whatsapp.to.chatwoot.message.pix: |-
 
   💳 **تم إرسال PIX نسخ ولصق**
   {{/pixData}}
+
+whatsapp.to.chatwoot.message.status.reply: |-
+  📣 **رد على حالة واتساب**
+  🏷️ **النوع:** {{type}}
+  {{#quotedText}}
+  📝 **نص الحالة:** {{quotedText}}
+  {{/quotedText}}
+
+  {{content}}
 
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **هذا النوع من الرسائل غير مدعوم في هذا الصندوق الوارد.**

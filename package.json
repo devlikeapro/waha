@@ -58,6 +58,7 @@
     "@types/sqlite3": "^5.1.0",
     "@types/ws": "^8.5.4",
     "@wppconnect-team/wppconnect": "^1.41.1",
+    "@wppconnect/wa-js": "^3.23.3",
     "adm-zip": "0.5.10",
     "agentkeepalive": "^4.5.0",
     "async-lock": "^1.4.1",

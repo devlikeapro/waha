@@ -4,6 +4,7 @@ export enum QueueName {
   //
   SCHEDULED_MESSAGE_CLEANUP = 'chatwoot.scheduled | message.cleanup',
   SCHEDULED_CHECK_VERSION = 'chatwoot.scheduled | check.version',
+  SCHEDULED_CHECK_TIER = 'chatwoot.scheduled | check.tier',
 
   //
   // Task

@@ -3,6 +3,7 @@
  */
 
 import { normalizeMessageContent, proto } from '@adiwajshing/baileys';
+import esm from '@waha/vendor/esm';
 
 export function IsEditedMessage(message: proto.IMessage): boolean {
   message = normalizeMessageContent(message);
@@ -36,4 +37,12 @@ export function IsHistorySyncNotification(message: proto.IMessage): boolean {
     return false;
   }
   return true;
+}
+
+export function getContextInfo(
+  protoMessage: proto.Message | null,
+): proto.IContextInfo | null {
+  const type = esm.b.getContentType(protoMessage);
+  const message = protoMessage[type] as any;
+  return message?.contextInfo;
 }

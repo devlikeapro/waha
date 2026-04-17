@@ -325,6 +325,8 @@ waha.new.version.available: |-
 
   👉 Перевірте, що нового у [**🆕 Журналі змін**]({{{changelogUrl}}})
 
+  _Щоб вимкнути ці сповіщення, надішліть_ `queue stop check.version`
+
 waha.core.version.used: |-
   ❤️ **Підтримайте WAHA!**
 
@@ -335,14 +337,12 @@ waha.core.version.used: |-
   [**🎁 Підтримайте нас**]({{{supportUrl}}})
 
 chatwoot.to.whatsapp.message.text: |-
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
 
 chatwoot.to.whatsapp.message.media.caption: |-
   {{#singleAttachment}}
   {{#content}}
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
   {{/content}}
   {{/singleAttachment}}
 
@@ -488,6 +488,15 @@ whatsapp.to.chatwoot.message.pix: |-
 
   💳 **PIX Копіювати та Вставити надіслано**
   {{/pixData}}
+
+whatsapp.to.chatwoot.message.status.reply: |-
+  📣 **Відповідь на статус WhatsApp**
+  🏷️ **Тип:** {{type}}
+  {{#quotedText}}
+  📝 **Текст Статусу:** {{quotedText}}
+  {{/quotedText}}
+
+  {{content}}
 
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **Цей тип повідомлення не підтримується в цих вхідних.**

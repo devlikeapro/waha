@@ -5,7 +5,7 @@ import * as path from 'path';
 import { Logger } from 'pino';
 import fs = require('fs');
 import { fileExists } from '@waha/utils/files';
-import { deleteAsync } from 'del';
+import { setLongTimeout } from '@waha/utils/promiseTimeout';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const writeFileAtomic = require('write-file-atomic');
@@ -58,16 +58,33 @@ export class MediaLocalStorage implements IMediaStorage {
       return;
     }
 
-    if (fs.existsSync(this.filesFolder)) {
-      deleteAsync([`${this.filesFolder}/*`], { force: true }).then((paths) => {
-        if (paths.length === 0) {
-          return;
-        }
-        this.log.info('Deleted files and directories:\n', paths.join('\n'));
-      });
-    } else {
+    if (!fs.existsSync(this.filesFolder)) {
       fs.mkdirSync(this.filesFolder);
       this.log.info(`Directory '${this.filesFolder}' created from scratch`);
+      return;
+    }
+
+    const now = Date.now();
+    const entries = await fsp.readdir(this.filesFolder, { recursive: true });
+    for (const entry of entries) {
+      try {
+        const filepath = path.join(this.filesFolder, entry as string);
+        const stat = await fsp.stat(filepath);
+        if (!stat.isFile()) {
+          continue;
+        }
+        // Schedule removal:
+        // - expired files get a random jitter to spread deletions out,
+        // - non-expired files are scheduled for the time they have left.
+        const age = now - stat.mtimeMs;
+        const expired = age >= this.lifetimeMs;
+        const left = this.lifetimeMs - age;
+        const jitter = Math.random() * 10 * SECOND;
+        const remaining = expired ? jitter : left;
+        this.postponeRemoval(filepath, remaining);
+      } catch (err) {
+        this.log.warn(`Failed to schedule removal for file ${entry}`, err);
+      }
     }
   }
 
@@ -80,16 +97,17 @@ export class MediaLocalStorage implements IMediaStorage {
     return path.resolve(`${this.filesFolder}/${filepath}`);
   }
 
-  private postponeRemoval(filepath: string) {
+  private postponeRemoval(filepath: string, delayMs: number | null = null) {
     if (this.lifetimeMs === 0) {
       return;
     }
-    setTimeout(
+    const delay = delayMs ?? this.lifetimeMs;
+    setLongTimeout(
       () =>
         fs.unlink(filepath, () => {
-          this.log.info(`File ${filepath} was removed`);
+          this.log.debug(`File ${filepath} was removed`);
         }),
-      this.lifetimeMs,
+      delay,
     );
   }
 

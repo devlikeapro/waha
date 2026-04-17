@@ -325,6 +325,8 @@ waha.new.version.available: |-
 
   👉 [**🆕 ਬਦਲਾਅ ਲੌਗ**]({{{changelogUrl}}}) ਵਿੱਚ ਨਵਾਂ ਕੀ ਹੈ ਦੇਖੋ
 
+  _ਇਹ ਸੂਚਨਾਵਾਂ ਬੰਦ ਕਰਨ ਲਈ, ਭੇਜੋ_ `queue stop check.version`
+
 waha.core.version.used: |-
   ❤️ **WAHA ਦਾ ਸਮਰਥਨ ਕਰੋ!**
 
@@ -335,14 +337,12 @@ waha.core.version.used: |-
   [**🎁 ਸਾਡਾ ਸਮਰਥਨ ਕਰੋ**]({{{supportUrl}}})
 
 chatwoot.to.whatsapp.message.text: |-
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
 
 chatwoot.to.whatsapp.message.media.caption: |-
   {{#singleAttachment}}
   {{#content}}
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
   {{/content}}
   {{/singleAttachment}}
 
@@ -488,6 +488,15 @@ whatsapp.to.chatwoot.message.pix: |-
 
   💳 **PIX ਕਾਪੀ ਅਤੇ ਪੇਸਟ ਭੇਜਿਆ ਗਿਆ**
   {{/pixData}}
+
+whatsapp.to.chatwoot.message.status.reply: |-
+  📣 **WhatsApp ਸਟੇਟਸ ਦਾ ਜਵਾਬ**
+  🏷️ **ਕਿਸਮ:** {{type}}
+  {{#quotedText}}
+  📝 **ਸਟੇਟਸ ਲਿਖਤ:** {{quotedText}}
+  {{/quotedText}}
+
+  {{content}}
 
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **ਇਹ ਸੁਨੇਹੇ ਦੀ ਕਿਸਮ ਇਸ ਇਨਬਾਕਸ ਵਿੱਚ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।**

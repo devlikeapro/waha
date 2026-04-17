@@ -116,14 +116,12 @@ whatsapp.contact.broadcast.suffix: 'Broadcast List'
 whatsapp.contact.status.name: 'Status'
 
 chatwoot.to.whatsapp.message.text: |-
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
 
 chatwoot.to.whatsapp.message.media.caption: |-
   {{#singleAttachment}}
   {{#content}}
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
   {{/content}}
   {{/singleAttachment}}
 
@@ -269,6 +267,15 @@ whatsapp.to.chatwoot.message.pix: |-
 
   💳 **PIX Copy and Paste sent**
   {{/pixData}}
+
+whatsapp.to.chatwoot.message.status.reply: |-
+  📣 **Reply to WhatsApp Status**
+  🏷️ **Type:** {{type}}
+  {{#quotedText}}
+  📝 **Status Text:** {{quotedText}}
+  {{/quotedText}}
+
+  {{content}}
 
 whatsapp.to.chatwoot.message.has.media.no.media: |-
   {{#content}}
@@ -706,6 +713,8 @@ waha.new.version.available: |-
   New version: **{{{newVersion}}}**
 
   👉 Check out what's new in the [**🆕 Changelog**]({{{changelogUrl}}})
+
+  _To disable these notifications, send_ `queue stop check.version`
 
 waha.core.version.used: |-
   ❤️ **Support WAHA!**

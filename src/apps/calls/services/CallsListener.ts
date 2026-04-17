@@ -92,10 +92,14 @@ export class CallsListener {
     }
 
     if (shouldReject) {
+      const waitBeforeDeclineMs = (config.waitBeforeDecline ?? 0) * 1000;
+      await sleep(waitBeforeDeclineMs);
       await this.rejectCall(call);
     }
 
     if (shouldMessage) {
+      const waitBeforeResponseMs = (config.waitBeforeResponse ?? 0) * 1000;
+      await sleep(waitBeforeResponseMs);
       await this.replyWithTyping(call.from, message);
     }
   }

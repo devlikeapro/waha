@@ -325,6 +325,8 @@ waha.new.version.available: |-
 
   👉 موارد جدید را در [**🆕 تغییرات**]({{{changelogUrl}}}) مشاهده کنید
 
+  _برای غیرفعال کردن این اعلان‌ها، ارسال کنید_ `queue stop check.version`
+
 waha.core.version.used: |-
   ❤️ **از WAHA پشتیبانی کنید!**
 
@@ -335,14 +337,12 @@ waha.core.version.used: |-
   [**🎁 از ما حمایت کنید**]({{{supportUrl}}})
 
 chatwoot.to.whatsapp.message.text: |-
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
 
 chatwoot.to.whatsapp.message.media.caption: |-
   {{#singleAttachment}}
   {{#content}}
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
   {{/content}}
   {{/singleAttachment}}
 
@@ -488,6 +488,15 @@ whatsapp.to.chatwoot.message.pix: |-
 
   💳 **PIX کپی و چسباندن ارسال شد**
   {{/pixData}}
+
+whatsapp.to.chatwoot.message.status.reply: |-
+  📣 **پاسخ به وضعیت واتساپ**
+  🏷️ **نوع:** {{type}}
+  {{#quotedText}}
+  📝 **متن وضعیت:** {{quotedText}}
+  {{/quotedText}}
+
+  {{content}}
 
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **این نوع پیام در این صندوق ورودی پشتیبانی نمی‌شود.**

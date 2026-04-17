@@ -325,6 +325,8 @@ waha.new.version.available: |-
 
   👉 [**🆕 Değişiklik Günlüğü**]({{{changelogUrl}}}) içinde yenilikleri kontrol edin
 
+  _Bu bildirimleri devre dışı bırakmak için gönderin_ `queue stop check.version`
+
 waha.core.version.used: |-
   ❤️ **WAHA'yı Destekleyin!**
 
@@ -335,14 +337,12 @@ waha.core.version.used: |-
   [**🎁 Bizi Destekleyin**]({{{supportUrl}}})
 
 chatwoot.to.whatsapp.message.text: |-
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
 
 chatwoot.to.whatsapp.message.media.caption: |-
   {{#singleAttachment}}
   {{#content}}
-  {{#chatwoot.sender.name}}*{{{chatwoot.sender.name}}}*:
-  {{/chatwoot.sender.name}}{{{ content }}}
+  {{{ content }}}
   {{/content}}
   {{/singleAttachment}}
 
@@ -488,6 +488,15 @@ whatsapp.to.chatwoot.message.pix: |-
 
   💳 **PIX Kopyala ve Yapıştır gönderildi**
   {{/pixData}}
+
+whatsapp.to.chatwoot.message.status.reply: |-
+  📣 **WhatsApp Durumuna Yanıt**
+  🏷️ **Tür:** {{type}}
+  {{#quotedText}}
+  📝 **Durum Metni:** {{quotedText}}
+  {{/quotedText}}
+
+  {{content}}
 
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **Bu mesaj türü bu gelen kutusunda desteklenmiyor.**

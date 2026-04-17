@@ -1,5 +1,5 @@
-import { Browsers, WABrowserDescription } from '@adiwajshing/baileys';
 import makeWASocket, {
+  Browsers,
   Chat,
   Contact,
   decryptPollVote,
@@ -19,6 +19,7 @@ import makeWASocket, {
   PresenceData,
   proto,
   SocketConfig,
+  WABrowserDescription,
   WAMessageContent,
   WAMessageKey,
   WAMessageUpdate,
@@ -183,13 +184,13 @@ import * as NodeCache from 'node-cache';
 import {
   filter,
   fromEvent,
+  groupBy,
   identity,
   merge,
   mergeAll,
   mergeMap,
   Observable,
   partition,
-  groupBy,
   share,
   tap,
 } from 'rxjs';
@@ -2482,9 +2483,24 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       return null;
     }
     // Media
-    if (downloadMedia) {
-      const media = await this.downloadMediaSafe(message);
-      wamessage.media = media;
+    if (downloadMedia && wamessage.hasMedia) {
+      wamessage.media = await this.downloadMediaSafe(message);
+    }
+
+    if (downloadMedia && wamessage.replyTo?.hasMedia) {
+      const mediaContent = extractMediaContent(wamessage.replyTo._data);
+      const m = {
+        message: wamessage.replyTo._data,
+        key: {
+          id:
+            wamessage.replyTo.id ||
+            mediaContent.fileSha256 ||
+            mediaContent.fileEncSha256 ||
+            mediaContent.mediaKeyTimestamp,
+          remoteJid: message.key.remoteJid,
+        },
+      };
+      wamessage.replyTo.media = await this.downloadMediaSafe(m);
     }
     return wamessage;
   }
@@ -2544,10 +2560,15 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       return null;
     }
     const body = extractBody(quotedMessage);
+    const mediaContent = extractMediaContent(quotedMessage);
     return {
       id: contextInfo.stanzaId,
       participant: toCusFormat(contextInfo.participant),
       body: body,
+      // Media
+      hasMedia: Boolean(mediaContent),
+      media: null,
+      // Data
       _data: quotedMessage,
     };
   }

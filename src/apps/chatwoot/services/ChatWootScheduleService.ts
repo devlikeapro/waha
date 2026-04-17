@@ -54,6 +54,21 @@ export class ChatWootScheduleService {
         },
       },
     );
+    // Check the tier
+    const checkTierQueue = this.queueRegistry.queue(
+      QueueName.SCHEDULED_CHECK_TIER,
+    );
+    await checkTierQueue.upsertJobScheduler(
+      this.JobId(QueueName.SCHEDULED_CHECK_TIER, appId),
+      // Every Monday (1) at 14:00
+      { pattern: '0 0 14 * * 1' },
+      {
+        data: {
+          app: appId,
+          session: sessionName,
+        },
+      },
+    );
   }
 
   async unschedule(appId: string, sessionName: string): Promise<void> {
@@ -70,6 +85,13 @@ export class ChatWootScheduleService {
     );
     await checkVersionQueue.removeJobScheduler(
       this.JobId(QueueName.SCHEDULED_CHECK_VERSION, appId),
+    );
+    // Check the tier
+    const checkTierQueue = this.queueRegistry.queue(
+      QueueName.SCHEDULED_CHECK_TIER,
+    );
+    await checkTierQueue.removeJobScheduler(
+      this.JobId(QueueName.SCHEDULED_CHECK_TIER, appId),
     );
 
     // contacts

@@ -45,6 +45,7 @@ up-webjs:
 
 up-wpp:
 	yarn up @wppconnect-team/wppconnect
+	yarn up @wppconnect/wa-js
 
 up-rust-bridge:
 	yarn up -R whatsapp-rust-bridge
@@ -57,8 +58,11 @@ proto-gows:
 
 gows:
 	cd ../gows && \
-	export PATH=${HOME}/go/bin:${PATH} && \
+	(export PATH=${HOME}/go/bin:${PATH} || echo failed) && \
 	make all
+
+up-dashboard:
+	node scripts/up-dashboard.js
 
 copy-dashboard:
 	cd ../waha-hub/ui && \

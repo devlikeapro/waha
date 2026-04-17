@@ -1,1 +1,1 @@
-- Read `AGENTS.md` for more instructions
+AGENTS.md

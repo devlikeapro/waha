@@ -37,6 +37,10 @@ This guide summarizes how to explore, modify, and validate the WhatsApp HTTP API
 - **Utilities**: RxJS streams (`SwitchObservable`, `DefaultMap`) drive webhook
   event fan-out. Prefer existing helpers in `src/utils` and `src/core/utils`
   before adding bespoke logic.
+- **OS** - the project works on any OS inside the Docker container; the base
+  image is defined in `Dockerfile`.
+- **CPU** - the image must run on both `x86_64` (including pre-v2 CPUs without
+  SSE4.2) and `aarch64`.
 
 ## Repository Landmarks
 
@@ -111,8 +115,7 @@ This guide summarizes how to explore, modify, and validate the WhatsApp HTTP API
 2. Lean on existing services/managers; extend the appropriate session manager
    rather than branching logic inline.
 3. After edits run:
-   - Do **not** run `pre-commit run --all-files` unless the user explicitly
-     asks.
+   - `pre-commit run --all-files`
    - `yarn build`
    - `yarn test --watchman=false`
 4. Do **not** start the application yourself; ask the user to run it if runtime

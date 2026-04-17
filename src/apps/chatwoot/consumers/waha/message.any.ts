@@ -26,6 +26,7 @@ import {
   PollMessage,
   ListMessage,
   ShareContactMessage,
+  StatusReplyMessage,
   TextMessage,
   UnsupportedMessage,
   AlbumMessage,
@@ -81,6 +82,18 @@ export class MessageAnyHandler extends MessageBaseHandler<WAMessage> {
 
     // Check for Facebook Ad first - but let it use the normal flow later
     converter = new FacebookAdMessage(this.l, this.logger);
+    msg = await converter.convert(payload, protoMessage);
+    if (msg) {
+      return msg;
+    }
+
+    converter = new StatusReplyMessage(
+      this.l,
+      this.logger,
+      this.waha,
+      this.job,
+      this.session,
+    );
     msg = await converter.convert(payload, protoMessage);
     if (msg) {
       return msg;
