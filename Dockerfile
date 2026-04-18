@@ -109,6 +109,9 @@ ARG WHATSAPP_DEFAULT_ENGINE
 
 RUN echo "USE_BROWSER=$USE_BROWSER"
 
+# Apply all available security patches for OS packages
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+
 # Install ffmpeg to generate previews for videos
 RUN apt-get update && apt-get install -y ffmpeg --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
