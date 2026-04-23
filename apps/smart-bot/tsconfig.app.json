@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/apps/smart-bot",
+    "baseUrl": ".",
+    "paths": {
+      "@waha/shared": ["../../libs/shared/src/index"],
+      "@waha/shared/*": ["../../libs/shared/src/*"],
+      "@waha/*": ["../../src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
+}

@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/libs/shared",
+    "baseUrl": "./",
+    "paths": {
+        "@waha/*": ["../../src/*"],
+        "@waha/shared": ["./src/index.ts"],
+        "@waha/shared/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
+}

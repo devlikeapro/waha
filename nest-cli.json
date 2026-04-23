@@ -1,15 +1,51 @@
 {
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
+  "monorepo": true,
+  "root": ".",
   "compilerOptions": {
-    "plugins": ["@nestjs/swagger"],
-    "assets": [
-      "dashboard/**",
-      "core/engines/webjs/*",
-      "plus/engines/webjs/*",
-      "apps/chatwoot/i18n/locales/*.yaml",
-      "apps/chatwoot/i18n/locales/*.yml"
-    ],
-    "watchAssets": true
+    "tsConfigPath": "tsconfig.build.json"
+  },
+  "projects": {
+    "waha": {
+      "type": "application",
+      "root": ".",
+      "entryFile": "main",
+      "sourceRoot": "src",
+      "compilerOptions": {
+        "tsConfigPath": "tsconfig.build.json",
+        "plugins": ["@nestjs/swagger"],
+        "assets": [
+          "dashboard/**",
+          "core/engines/webjs/*",
+          "plus/engines/webjs/*",
+          "apps/chatwoot/i18n/locales/*.yaml",
+          "apps/chatwoot/i18n/locales/*.yml"
+        ],
+        "watchAssets": true
+      }
+    },
+    "smart-bot": {
+      "type": "application",
+      "root": "apps/smart-bot",
+      "entryFile": "main",
+      "sourceRoot": "apps/smart-bot/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/smart-bot/tsconfig.app.json",
+        "assets": [
+          "dashboard/**/*"
+        ],
+        "watchAssets": true
+      }
+    },
+    "shared": {
+      "type": "library",
+      "root": "libs/shared",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared/tsconfig.lib.json"
+      }
+    }
   }
 }

@@ -33,28 +33,106 @@ services:
     env_file:
       - .env
 
+  smart-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.smart-bot
+    restart: always
+    ports:
+      - '127.0.0.1:3001:3001/tcp'
+    environment:
+      POSTGRES_URL: postgres://postgres:postgres@postgres:5432/smartbot
+      REDIS_URL: redis://redis:6379
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+
+  vision-worker:
+    build:
+      context: apps/vision-worker
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - '127.0.0.1:8000:8000/tcp'
+    environment:
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      S3_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      S3_BUCKET: ${S3_BUCKET:-waha-media}
+      VISION_API_KEY: ${VISION_API_KEY:-}
+      DET_SIZE: ${DET_SIZE:-1280}
+    depends_on:
+      - minio
+
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - '127.0.0.1:6379:6379'
+    volumes:
+      - redis_data:/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # MinIO (Local S3)
+  minio:
+    image: quay.io/minio/minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # Create the default bucket automatically
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb myminio/waha-media;
+      /usr/bin/mc policy set download myminio/waha-media;
+      exit 0;
+      "
+
 # NOTE: Only if you're using PostgreSQL to save sessions
 # https://waha.devlike.pro/docs/how-to/storages/#media---postgresql
-#  postgres:
-#    image: postgres:17.6
-#    restart: always
-#    environment:
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: postgres
-#      POSTGRES_DB: postgres
-#    ports:
-#      - "127.0.0.1:5432:5432"
-#    volumes:
-#      - pg_data:/var/lib/postgresql/data
-#    command:
-#      - postgres
-#      - "-c"
-#      - "max_connections=3000"
-#    logging:
-#      driver: "json-file"
-#      options:
-#        max-size: "100m"
-#        max-file: "10"
+  postgres:
+    image: pgvector/pgvector:pg17
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: smartbot
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    command:
+      - postgres
+      - "-c"
+      - "max_connections=3000"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
 
 # NOTE: Only if you're using MongoDB
 # https://waha.devlike.pro/docs/how-to/storages/#sessions---mongodb
@@ -102,3 +180,4 @@ volumes:
   mongodb_data: {}
   minio_data: {}
   pg_data: {}
+  redis_data: {}

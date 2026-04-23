@@ -9,9 +9,11 @@
     "target": "es2017",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@waha/*": ["*"]
+      "@waha/shared": ["libs/shared/src/index"],
+      "@waha/shared/*": ["libs/shared/src/*"],
+      "@waha/*": ["src/*"]
     },
     "incremental": true,
     "resolveJsonModule": true,

@@ -1,0 +1,15 @@
+fastapi==0.109.2
+uvicorn==0.27.1
+insightface==0.7.3
+onnxruntime==1.17.1
+numpy==1.26.4
+python-multipart==0.0.9
+boto3==1.34.42
+pydantic==2.6.1
+requests==2.31.0
+opencv-python-headless==4.9.0.80
+slowapi==0.1.9
+
+# Testing
+pytest==8.0.0
+httpx==0.26.0
