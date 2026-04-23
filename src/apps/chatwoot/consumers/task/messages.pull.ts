@@ -212,7 +212,11 @@ class MessagesPullHandler {
 
     // Perform some actions before any job started
     if (options.pause) {
-      await this.queueManager.pause();
+      const queues = [
+        ...this.queueManager.resolve('inbox'),
+        ...this.queueManager.resolve('waha'),
+      ];
+      await this.queueManager.pause(queues);
       await this.activity.queue(true);
     }
   }
@@ -228,7 +232,11 @@ class MessagesPullHandler {
 
     // Resume queues if paused
     if (options.pause) {
-      await this.queueManager.resume();
+      const queues = [
+        ...this.queueManager.resolve('inbox'),
+        ...this.queueManager.resolve('waha'),
+      ];
+      await this.queueManager.resume(queues);
       await this.activity.queue(false);
     }
     // Progress summary

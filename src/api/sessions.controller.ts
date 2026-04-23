@@ -81,7 +81,7 @@ class SessionsController {
     @Req() req,
   ): Promise<SessionInfo[]> {
     let sessions = await this.manager.getSessions(query.all);
-    if (!req.user.isAdmin) {
+    if (!req.user?.isAdmin) {
       sessions = FilterSessions(req.ability, Action.Read, sessions);
     }
     if (query.expand?.includes(SessionExpand.apps)) {

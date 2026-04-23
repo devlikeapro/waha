@@ -6,7 +6,7 @@ import { Locale } from '@waha/apps/chatwoot/i18n/locale';
  * Parse human string into milliseconds
  */
 export function ParseMS(value: string) {
-  const duration = ms(value);
+  const duration = ms(value as ms.StringValue);
   if (duration == null) throw new Error(`Invalid duration: "${value}"`);
   if (duration < 0) throw new Error(`Duration cannot be negative: "${value}"`);
   return duration;

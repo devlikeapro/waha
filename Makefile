@@ -35,13 +35,20 @@ for-swagger:
 	export WHATSAPP_SWAGGER_CONFIG_ADVANCED=true && export WHATSAPP_SWAGGER_PASSWORD=666 && yarn start
 
 up-noweb:
-	yarn up @adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-2026-01-25
+	yarn up @adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-2026-02-11
 
 up-noweb-libsignal:
 	yarn up libsignal@github:devlikeapro/libsignal-node#fork-master
 
 up-webjs:
-	yarn up whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-2026-02-01
+	yarn up whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-2026-02-18
+
+up-wpp:
+	yarn up @wppconnect-team/wppconnect
+	yarn up @wppconnect/wa-js
+
+up-rust-bridge:
+	yarn up -R whatsapp-rust-bridge
 
 start-proxy:
 	docker run --rm -d --name squid-container -e TZ=UTC -p 3128:3128 ubuntu/squid:5.2-22.04_beta
@@ -51,10 +58,12 @@ proto-gows:
 
 gows:
 	cd ../gows && \
-	export PATH=${HOME}/go/bin:${PATH} && \
+	(export PATH=${HOME}/go/bin:${PATH} || echo failed) && \
 	make all
+
+up-dashboard:
+	node scripts/up-dashboard.js
 
 copy-dashboard:
 	cd ../waha-hub/ui && \
 	make copy-waha
-

@@ -268,6 +268,15 @@ whatsapp.to.chatwoot.message.pix: |-
   💳 **PIX Copia e Incolla inviato**
   {{/pixData}}
 
+whatsapp.to.chatwoot.message.status.reply: |-
+  📣 **Risposta allo stato di WhatsApp**
+  🏷️ **Tipo:** {{type}}
+  {{#quotedText}}
+  📝 **Testo dello Stato:** {{quotedText}}
+  {{/quotedText}}
+
+  {{content}}
+
 whatsapp.to.chatwoot.message.has.media.no.media: |-
   {{#content}}
   {{{content}}}
@@ -704,6 +713,8 @@ waha.new.version.available: |-
   Nuova versione: **{{{newVersion}}}**
 
   👉 Scopri le novità nel [**🆕 Changelog**]({{{changelogUrl}}})
+
+  _Per disattivare queste notifiche, invia_ `queue stop check.version`
 
 waha.core.version.used: |-
   ❤️ **Supporta WAHA!**

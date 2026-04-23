@@ -1,4 +1,7 @@
 import {
+  getBrowserExecutablePath as getBrowserExecutablePathAutodetect,
+} from '@waha/core/abc/session.browser';
+import {
   CoreMediaConverter,
   IMediaConverter,
 } from '@waha/core/media/IConverter';
@@ -142,15 +145,6 @@ const qrcode = require('qrcode-terminal');
 
 axiosRetry(axios, { retries: 3 });
 
-const CHROME_PATH = '/usr/bin/google-chrome-stable';
-const CHROMIUM_PATH = '/usr/bin/chromium';
-
-export function getBrowserExecutablePath() {
-  if (fs.existsSync(CHROME_PATH)) {
-    return CHROME_PATH;
-  }
-  return CHROMIUM_PATH;
-}
 
 export function ensureSuffix(phone) {
   const suffix = '@c.us';
@@ -360,7 +354,7 @@ export abstract class WhatsappSession {
   }
 
   getBrowserExecutablePath() {
-    return getBrowserExecutablePath();
+    return getBrowserExecutablePathAutodetect();
   }
 
   getBrowserArgsForPuppeteer() {

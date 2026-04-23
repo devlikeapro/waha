@@ -32,7 +32,7 @@
     "gows:proto": "yarn gows:proto:fetch && yarn gows:proto:build"
   },
   "dependencies": {
-    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-2026-01-25",
+    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-2026-02-11",
     "@adiwajshing/keyed-db": "^0.2.4",
     "@ai-sdk/google": "^3.0.20",
     "@ai-sdk/openai": "^3.0.25",
@@ -67,6 +67,8 @@
     "@types/sqlite3": "^5.1.0",
     "@types/ws": "^8.5.4",
     "@willsoto/nestjs-prometheus": "^6.0.2",
+    "@wppconnect-team/wppconnect": "^1.41.1",
+    "@wppconnect/wa-js": "^3.23.3",
     "adm-zip": "0.5.10",
     "agentkeepalive": "^4.5.0",
     "ai": "^6.0.67",
@@ -119,14 +121,15 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^4.3.0",
     "rxjs": "^7.8.1",
-    "sharp": "^0.33.4",
+    "sharp": "^0.34.5",
     "shell-quote": "^1.8.3",
     "sqlite3": "^5.1.7",
     "swagger-ui-express": "^4.1.4",
     "ulid": "^2.3.0",
     "undici": "^7.16.0",
     "uniqid": "^5.4.0",
-    "whatsapp-web.js": "github:devlikeapro/whatsapp-web.js#fork-main-2026-02-01",
+    "user-agents": "^1.1.669",
+    "whatsapp-web.js": "github:devlikeapro/whatsapp-web.js#fork-main-2026-02-18",
     "write-file-atomic": "^6.0.0",
     "yaml": "^2.7.1",
     "zod": "^4.3.6"
@@ -140,7 +143,8 @@
     "ws": "^8.18.0",
     "puppeteer": "^24.31.0",
     "whatwg-url": "13.0.0",
-    "axios": "^1.9.0"
+    "axios": "^1.9.0",
+    "whatsapp-rust-bridge": "npm:@devlikeapro/whatsapp-rust-bridge@0.5.2"
   },
   "devDependencies": {
     "@grpc/grpc-js": "^1.14.1",
@@ -156,6 +160,7 @@
     "@types/pg": "^8.16.0",
     "@types/semver": "^7.7.0",
     "@types/supertest": "^2.0.8",
+    "@types/user-agents": "^1",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
     "dotenv": "^17.2.3",
@@ -184,7 +189,10 @@
           "ts"
         ],
         "rootDir": ".",
-        "roots": ["<rootDir>/src", "<rootDir>/apps"],
+        "roots": [
+          "<rootDir>/src",
+          "<rootDir>/apps"
+        ],
         "moduleNameMapper": {
           "^@waha/(.*)$": "<rootDir>/src/$1"
         },
@@ -207,7 +215,10 @@
           "ts"
         ],
         "rootDir": ".",
-        "roots": ["<rootDir>/src", "<rootDir>/apps"],
+        "roots": [
+          "<rootDir>/src",
+          "<rootDir>/apps"
+        ],
         "moduleNameMapper": {
           "^@waha/(.*)$": "<rootDir>/src/$1"
         },

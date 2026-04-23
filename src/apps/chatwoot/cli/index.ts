@@ -17,6 +17,9 @@ export async function runText(
     .map((line) => line.trimStart()) // remove indentation
     .join(' ') // join with space
     .trim(); // final cleanup
+  // Strip WhatsApp/markdown formatting characters so shell-quote doesn't
+  // treat them as glob operators and return non-string tokens
+  text = text.replace(/[*_~`]/g, '');
   const output = new BufferedOutput();
   const program = BuildProgram(commands, ctx, output);
   const argv = parse(text);

@@ -1,5 +1,5 @@
-import { Browsers, WABrowserDescription } from '@adiwajshing/baileys';
 import makeWASocket, {
+  Browsers,
   Chat,
   Contact,
   decryptPollVote,
@@ -19,6 +19,7 @@ import makeWASocket, {
   PresenceData,
   proto,
   SocketConfig,
+  WABrowserDescription,
   WAMessageContent,
   WAMessageKey,
   WAMessageUpdate,
@@ -91,6 +92,8 @@ import {
   GetChatMessageQuery,
   GetChatMessagesFilter,
   GetChatMessagesQuery,
+  GetChatsOverviewParams,
+  GetChatsParams,
   OverviewFilter,
   PinDuration,
   ReadChatMessagesQuery,
@@ -189,13 +192,13 @@ import * as NodeCache from 'node-cache';
 import {
   filter,
   fromEvent,
+  groupBy,
   identity,
   merge,
   mergeAll,
   mergeMap,
   Observable,
   partition,
-  groupBy,
   share,
   tap,
 } from 'rxjs';
@@ -914,6 +917,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   /**
    * Other methods
    */
+  @Activity()
   async checkNumberStatus(
     request: CheckNumberStatusQuery,
   ): Promise<WANumberExistResult> {
@@ -933,6 +937,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return this.generateMessageID();
   }
 
+  @Activity()
   async rejectCall(from: string, id: string): Promise<void> {
     const jid = toJID(this.ensureSuffix(from));
     await this.sock.rejectCall(id, jid);
@@ -962,24 +967,63 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   @Activity()
-  public editMessage(
+  public async editMessage(
     chatId: string,
     messageId: string,
     request: EditMessageRequest,
   ) {
     const jid = toJID(this.ensureSuffix(chatId));
     const key = parseMessageIdSerialized(messageId);
-    const message = {
+    const stored = await this.store
+      ?.loadMessage(key.remoteJid, key.id)
+      .catch(() => null);
+    const content = extractMessageContent(stored?.message);
+    let editedMessage = undefined;
+    if (content?.imageMessage) {
+      editedMessage = {
+        imageMessage: {
+          caption: request.text,
+        },
+      };
+    } else if (content?.videoMessage) {
+      editedMessage = {
+        videoMessage: {
+          caption: request.text,
+        },
+      };
+    } else if (content?.documentMessage) {
+      editedMessage = {
+        documentMessage: {
+          caption: request.text,
+        },
+      };
+    } else if (content?.documentWithCaptionMessage?.message?.documentMessage) {
+      editedMessage = {
+        documentWithCaptionMessage: {
+          message: {
+            documentMessage: {
+              caption: request.text,
+            },
+          },
+        },
+      };
+    }
+    let message: any = {
       text: request.text,
       mentions: request.mentions?.map(toJID),
       edit: key,
+      editedMessage: editedMessage,
       linkPreview: this.getLinkPreview(request),
       linkPreviewHighQuality: request.linkPreviewHighQuality,
     };
     const options = {
       messageId: this.generateMessageID(),
     };
-    return this.sock.sendMessage(jid, message, options);
+    if (isJidNewsletter(jid)) {
+      // Newsletter edits reuse the original message ID
+      options.messageId = key.id;
+    }
+    return await this.sock.sendMessage(jid, message, options);
   }
 
   @Activity()
@@ -1213,10 +1257,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   ) {
     const downloadMedia = query.downloadMedia;
     const pagination = query as PaginationParams;
+    const merge = query.merge ?? true;
     const messages = await this.store.getMessagesByJid(
       toJID(chatId),
       filter,
       pagination,
+      merge,
     );
 
     const promises = [];
@@ -1242,7 +1288,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     query: GetChatMessageQuery,
   ): Promise<null | WAMessage> {
     const key = parseMessageIdSerialized(messageId, true);
-    const message = await this.store.getMessageById(toJID(chatId), key.id);
+    const merge = query.merge ?? true;
+    const message = await this.store.getMessageById(
+      toJID(chatId),
+      key.id,
+      merge,
+    );
     if (!message) return null;
     return await this.processIncomingMessage(message, query.downloadMedia);
   }
@@ -1329,7 +1380,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
    */
 
   async getChats(pagination: PaginationParams) {
-    const chats = await this.store.getChats(pagination, true);
+    const merge = (pagination as GetChatsParams).merge ?? true;
+    const chats = await this.store.getChats(pagination, true, undefined, merge);
     // Remove unreadCount, it's not ready yet
     chats.forEach((chat) => delete chat.unreadCount);
     return chats;
@@ -1339,6 +1391,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     pagination: PaginationParams,
     filter?: OverviewFilter,
   ): Promise<ChatSummary[]> {
+    const merge = (pagination as GetChatsOverviewParams).merge ?? true;
     // Convert customer format IDs to JID format if filter is provided
     let jidFilter;
     if (filter?.ids && filter.ids.length > 0) {
@@ -1347,19 +1400,27 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       };
     }
 
-    const chats = await this.store.getChats(pagination, false, jidFilter);
+    const chats = await this.store.getChats(
+      pagination,
+      false,
+      jidFilter,
+      merge,
+    );
     // Remove unreadCount, it's not ready yet
     chats.forEach((chat) => delete chat.unreadCount);
 
     const promises = [];
     for (const chat of chats) {
-      promises.push(this.fetchChatSummary(chat));
+      promises.push(this.fetchChatSummary(chat, merge));
     }
     const result = await Promise.all(promises);
     return result;
   }
 
-  protected async fetchChatSummary(chat: Chat): Promise<ChatSummary> {
+  protected async fetchChatSummary(
+    chat: Chat,
+    merge: boolean,
+  ): Promise<ChatSummary> {
     const id = toCusFormat(chat.id);
     let name = chat.name;
     if (!name) {
@@ -1369,11 +1430,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       name = contact?.name || contact?.notify;
     }
     const picture = await this.getContactProfilePicture(chat.id, false);
-    const messages = await this.getChatMessages(
-      chat.id,
-      { limit: 1, offset: 0, downloadMedia: false },
-      {},
-    );
+    const lastMessageQuery: GetChatMessagesQuery = {
+      limit: 1,
+      offset: 0,
+      downloadMedia: false,
+      merge: merge,
+    };
+    const messages = await this.getChatMessages(chat.id, lastMessageQuery, {});
     const message = messages.length > 0 ? messages[0] : null;
     return {
       id: id,
@@ -2435,13 +2498,16 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   shouldProcessIncomingMessage(message): boolean {
     // if there is no text or media message
     if (!message) return;
-    if (!message.message) return;
+    // View-once (self-destructing) messages arrive with key.isViewOnce=true but
+    // no message content (burned by sender). Allow them through so a webhook
+    // is still fired with key/timestamp metadata.
+    if (!message.message && !message.key?.isViewOnce) return;
     // Ignore reactions, we have dedicated handler for that
-    if (message.message.reactionMessage) return;
+    if (message.message?.reactionMessage) return;
     // Ignore poll votes, we have dedicated handler for that
-    if (message.message.pollUpdateMessage) return;
+    if (message.message?.pollUpdateMessage) return;
     // Ignore calls, we have dedicated handler for that
-    if (message.message.call?.callKey) return;
+    if (message.message?.call?.callKey) return;
     // Ignore revoke, we have a dedicated event for that
     if (
       message.message?.protocolMessage?.type ===
@@ -2494,9 +2560,24 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       return null;
     }
     // Media
-    if (downloadMedia) {
-      const media = await this.downloadMediaSafe(message);
-      wamessage.media = media;
+    if (downloadMedia && wamessage.hasMedia) {
+      wamessage.media = await this.downloadMediaSafe(message);
+    }
+
+    if (downloadMedia && wamessage.replyTo?.hasMedia) {
+      const mediaContent = extractMediaContent(wamessage.replyTo._data);
+      const m = {
+        message: wamessage.replyTo._data,
+        key: {
+          id:
+            wamessage.replyTo.id ||
+            mediaContent.fileSha256 ||
+            mediaContent.fileEncSha256 ||
+            mediaContent.mediaKeyTimestamp,
+          remoteJid: message.key.remoteJid,
+        },
+      };
+      wamessage.replyTo.media = await this.downloadMediaSafe(m);
     }
     return wamessage;
   }
@@ -2545,6 +2626,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   protected extractReplyTo(message): ReplyToMessage | null {
+    if (!message) return null;
     const msgType = getContentType(message);
     const contextInfo = message[msgType]?.contextInfo;
     if (!contextInfo) {
@@ -2555,10 +2637,15 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       return null;
     }
     const body = extractBody(quotedMessage);
+    const mediaContent = extractMediaContent(quotedMessage);
     return {
       id: contextInfo.stanzaId,
       participant: toCusFormat(contextInfo.participant),
       body: body,
+      // Media
+      hasMedia: Boolean(mediaContent),
+      media: null,
+      // Data
       _data: quotedMessage,
     };
   }
@@ -2859,9 +2946,12 @@ export class NOWEBEngineMediaProcessor implements IMediaEngineProcessor<any> {
       content.url = null;
     }
 
-    return (await downloadMediaMessage(
+    // Use 'stream' mode instead of 'buffer' to fix 0-byte audio files
+    // 'buffer' mode silently returns empty buffer for audio/voice messages
+    // See: https://github.com/devlikeapro/waha/issues/1996
+    const stream = await downloadMediaMessage(
       message,
-      'buffer',
+      'stream',
       {},
       {
         logger: this.logger,
@@ -2870,7 +2960,12 @@ export class NOWEBEngineMediaProcessor implements IMediaEngineProcessor<any> {
     ).finally(() => {
       // Set url back in case we removed it
       content.url = url;
-    })) as Buffer;
+    });
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream) {
+      chunks.push(chunk);
+    }
+    return Buffer.concat(chunks);
   }
 
   getFilename(message: any): string | null {

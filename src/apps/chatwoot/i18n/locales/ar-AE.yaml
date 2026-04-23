@@ -325,6 +325,8 @@ waha.new.version.available: |-
 
   👉 تحقق مما هو جديد في [**🆕 سجل التغييرات**]({{{changelogUrl}}})
 
+  _لإيقاف هذه الإشعارات، أرسل_ `queue stop check.version`
+
 waha.core.version.used: |-
   ❤️ **ادعم WAHA!**
 
@@ -486,6 +488,15 @@ whatsapp.to.chatwoot.message.pix: |-
 
   💳 **تم إرسال PIX نسخ ولصق**
   {{/pixData}}
+
+whatsapp.to.chatwoot.message.status.reply: |-
+  📣 **رد على حالة واتساب**
+  🏷️ **النوع:** {{type}}
+  {{#quotedText}}
+  📝 **نص الحالة:** {{quotedText}}
+  {{/quotedText}}
+
+  {{content}}
 
 whatsapp.to.chatwoot.message.unsupported: |-
   ⚠️ **هذا النوع من الرسائل غير مدعوم في هذا الصندوق الوارد.**

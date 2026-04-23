@@ -31,14 +31,20 @@ export interface INowebStore {
     chatId: string,
     filter: GetChatMessagesFilter,
     pagination: PaginationParams,
+    merge?: boolean,
   ): Promise<any>;
 
-  getMessageById(chatId: string, messageId: string): Promise<any>;
+  getMessageById(
+    chatId: string,
+    messageId: string,
+    merge?: boolean,
+  ): Promise<any>;
 
   getChats(
     pagination: PaginationParams,
     broadcast: boolean,
     filter?: OverviewFilter,
+    merge?: boolean,
   ): Promise<Chat[]>;
 
   getChat(jid: string): Promise<Chat | null>;

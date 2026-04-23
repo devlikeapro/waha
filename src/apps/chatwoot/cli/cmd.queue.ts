@@ -20,8 +20,18 @@ export async function QueueStatus(ctx: QueueCommandContext, name: string) {
   for (const status of result) {
     status.name = QueueNameRepr(status.name);
   }
-  // locked: true - last
-  result = lodash.sortBy(result, [(x) => !!x.locked, 'name']);
+  const categoryOrder = ['inbox', 'whatsapp', 'task', 'scheduled'];
+  const categoryIndex = (name: string) => {
+    const category = name.split(' | ')[0];
+    const index = categoryOrder.indexOf(category);
+    return index === -1 ? categoryOrder.length : index;
+  };
+  // locked: true - last, then by category (inbox/whatsapp/task/scheduled), then by name
+  result = lodash.sortBy(result, [
+    (x) => !!x.locked,
+    (x) => categoryIndex(x.name),
+    'name',
+  ]);
   const msg = ctx.l.r('cli.cmd.queue.status.result', {
     queues: result,
   });

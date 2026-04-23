@@ -56,7 +56,15 @@ export class PhoneJidNormalizer {
 }
 
 const RULES = [
-  // Brazil - ensure mobile numbers have 9 digits after DDD
+  // Brazil landline (fixed line) heuristic:
+  // +55 <DDD:2> <local:8> where local[0] is 2..5 => do NOT add extra 9
+  {
+    name: 'br-no-add-9-for-landline',
+    re: /^\+55(\d{2})([2-5]\d{7})$/,
+    replace: '+55$1$2',
+  },
+  // Brazil mobile/others:
+  // +55 <DDD:2> <local:8> => add extra 9 after DDD
   {
     name: 'br-add-9-after-ddd',
     re: /^\+55(\d{2})(\d{8})$/,

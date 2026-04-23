@@ -181,8 +181,10 @@ import {
 
 import { WAJSPresenceChatStateType, WebJSPresence } from './types';
 import {
+  isJidCus,
   isJidGroup,
   isJidStatusBroadcast,
+  isLidUser,
   normalizeJid,
   toCusFormat,
 } from '@waha/core/utils/jids';
@@ -193,6 +195,9 @@ import {
   WAHA_CLIENT_BROWSER_NAME,
   WAHA_CLIENT_DEVICE_NAME,
 } from '@waha/core/env';
+import { removeSingletonFiles } from '@waha/core/utils/chrome';
+import { killProcessesByPatterns } from '@waha/core/utils/processes';
+import { IsChrome } from '@waha/version';
 
 export interface WebJSConfig {
   webVersion?: string;
@@ -210,6 +215,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   private engineStateCheckDelayedJob: SingleDelayedJobRunner;
   private shouldRestart: boolean;
   private lastQRDate: Date = null;
+  private static readonly REACTION_MAX_AGE_MS = 2 * 24 * 60 * 60 * 1000;
 
   whatsapp: WebjsClientCore;
   protected qr: QR;
@@ -277,6 +283,11 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         strict: true,
       },
     };
+  }
+
+  protected getUserDataDir(): string {
+    const base = process.env.WAHA_LOCAL_STORE_BASE_DIR || './.sessions';
+    return `${base}/webjs/default/session-${this.name}`;
   }
 
   protected async buildClient() {
@@ -366,6 +377,16 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
           PAGE_CALL_ERROR_EVENT,
           (event: CallErrorEvent) => {
             if (event.error instanceof ProtocolError) {
+              if (this.shouldIgnoreProtocolError(event.error)) {
+                this.logger.warn(
+                  `ProtocolError when calling page method: ${String(
+                    event.method,
+                  )}, ignoring...`,
+                );
+                this.logger.warn(event.error);
+                return;
+              }
+
               this.logger.error(
                 `ProtocolError when calling page method: ${String(
                   event.method,
@@ -401,6 +422,13 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   async start() {
+    await killProcessesByPatterns(
+      [IsChrome ? 'chrome' : 'chromium', `--a-waha-session=${this.name}`],
+      'SIGKILL',
+      this.logger,
+    );
+    await removeSingletonFiles(this.getUserDataDir());
+
     this.status = WAHASessionStatus.STARTING;
     await this.init().catch((err) => {
       this.logger.error('Failed to start the client');
@@ -424,6 +452,16 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     // We'll restart the client if it's in the process of unpairing
     this.status = WAHASessionStatus.FAILED;
     this.restartClient();
+  }
+
+  /**
+   * Certain Puppeteer ProtocolErrors (e.g. Network.getResponseBody) are harmless.
+   * Ignore them so we do not thrash the session state machine.
+   * https://github.com/devlikeapro/waha/issues/1918
+   */
+  private shouldIgnoreProtocolError(error: ProtocolError): boolean {
+    const message = error?.message ?? String(error ?? '');
+    return message.includes('Network.getResponseBody');
   }
 
   async unpair() {
@@ -682,6 +720,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     return screenshot as Buffer;
   }
 
+  @Activity()
   async checkNumberStatus(
     request: CheckNumberStatusQuery,
   ): Promise<WANumberExistResult> {
@@ -725,6 +764,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   /**
    * Other methods
    */
+  @Activity()
   async rejectCall(from: string, id: string): Promise<void> {
     const peerJid = normalizeJid(this.ensureSuffix(from));
     const call = new CallInstance(this.whatsapp, null);
@@ -1063,7 +1103,50 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     messageId: string,
     query: GetChatMessageQuery,
   ): Promise<null | WAMessage> {
-    const message = await this.whatsapp.getMessageById(messageId);
+    chatId = this.ensureSuffix(chatId);
+
+    // WEBJS waits the serializer messageId
+    // {fromMe}_{chatId}_{id}[_{participant}]
+    if (isJidStatusBroadcast(chatId) && !messageId.includes('_')) {
+      // For status - resolve it as "my" if no details provided
+      const me = this.getSessionMeInfo();
+      const lid = me.lid || (await this.whatsapp.findLIDByPhoneNumber(me.id));
+      messageId = SerializeMessageKey({
+        fromMe: true,
+        id: messageId,
+        remoteJid: Jid.BROADCAST,
+        participant: lid,
+      });
+    }
+
+    let message: Message | null = null;
+    if (isLidUser(chatId) || isJidCus(chatId)) {
+      // If in DM chats and not fromMe specified - try both fromMe and not
+      if (!messageId.includes('_')) {
+        // FromMe - true
+        if (!message) {
+          const id = SerializeMessageKey({
+            fromMe: true,
+            id: messageId,
+            remoteJid: chatId,
+          });
+          message = await this.whatsapp.getMessageById(id);
+        }
+        // FromMe - false
+        if (!message) {
+          const id = SerializeMessageKey({
+            fromMe: false,
+            id: messageId,
+            remoteJid: chatId,
+          });
+          message = await this.whatsapp.getMessageById(id);
+        }
+      }
+    }
+
+    if (!message) {
+      message = await this.whatsapp.getMessageById(messageId);
+    }
     if (!message) return null;
     if (
       isJidGroup(message.id.remote) ||
@@ -1981,6 +2064,12 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       const media = await this.downloadMediaSafe(message);
       wamessage.media = media;
     }
+    if (downloadMedia && wamessage.replyTo?.hasMedia) {
+      const quotedMessage = await message.getQuotedMessage().catch(() => null);
+      if (quotedMessage) {
+        wamessage.replyTo.media = await this.downloadMediaSafe(quotedMessage);
+      }
+    }
     return wamessage;
   }
 
@@ -2008,6 +2097,14 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       if (reaction.timestamp < this.lastQRDate.getTime() / 1000) {
         return null;
       }
+    }
+
+    // Ignore reactions older than 2 days to prevent stale reactions
+    // when session reconnects and replays buffered events
+    const twoDaysAgoSec =
+      (Date.now() - WhatsappSessionWebJSCore.REACTION_MAX_AGE_MS) / 1000;
+    if (reaction.timestamp < twoDaysAgoSec) {
+      return null;
     }
 
     const source = this.getMessageSource(reaction.id.id);
@@ -2135,15 +2232,21 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   protected extractReplyTo(message: Message): ReplyToMessage | null {
+    const rawData: any = message.rawData;
     // @ts-ignore
-    const quotedMsg = message.rawData?.quotedMsg;
-    if (!quotedMsg) {
+    const quotedMsg = rawData?.quotedMsg;
+    const quotedStanzaId = rawData?.quotedStanzaID || rawData?.quotedStanzaId;
+    if (!quotedMsg && !quotedStanzaId) {
       return;
     }
+    const quotedParticipant =
+      rawData?.quotedParticipant || quotedMsg?.author || quotedMsg?.from;
     return {
-      id: quotedMsg.id?.id,
-      participant: quotedMsg.author || quotedMsg.from,
-      body: quotedMsg.caption || quotedMsg.body,
+      id: quotedStanzaId || quotedMsg?.id?.id,
+      participant: quotedParticipant,
+      body: quotedMsg?.caption || quotedMsg?.body,
+      hasMedia: Boolean(quotedMsg?.directPath),
+      media: null,
       _data: quotedMsg,
     };
   }

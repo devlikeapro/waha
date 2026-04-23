@@ -10,15 +10,18 @@ export class LocalStoreCore extends LocalStore {
   protected readonly baseDirectory: string =
     process.env.WAHA_LOCAL_STORE_BASE_DIR || './.sessions';
 
-  private readonly engine: string;
+  private readonly namespace: string;
+  private readonly sessionNamespace: string;
   private knex: Knex.Knex;
 
-  constructor(engine: string) {
+  constructor(namespace: string, sessionNamespace: string) {
     super();
-    this.engine = engine;
+    this.namespace = namespace;
+    this.sessionNamespace = sessionNamespace;
   }
 
   async init(sessionName?: string) {
+    await fs.mkdir(this.getMainDirectory(), { recursive: true });
     await fs.mkdir(this.getEngineDirectory(), { recursive: true });
     if (!this.knex) {
       this.knex = this.buildKnex();
@@ -41,10 +44,17 @@ export class LocalStoreCore extends LocalStore {
   }
 
   /**
+   * Get the directory where the main WAHA database (SQLite) is stored
+   */
+  getMainDirectory() {
+    return safeJoin(this.baseDirectory, this.namespace);
+  }
+
+  /**
    * Get the directory where the engine sessions are stored
    */
   getEngineDirectory() {
-    return safeJoin(this.baseDirectory, this.engine);
+    return safeJoin(this.baseDirectory, this.sessionNamespace);
   }
 
   getSessionDirectory(name: string): string {
@@ -67,8 +77,8 @@ export class LocalStoreCore extends LocalStore {
   }
 
   buildKnex(): Knex.Knex {
-    const engineDir = this.getEngineDirectory();
-    const database = path.join(engineDir, 'waha.sqlite3');
+    const mainDir = this.getMainDirectory();
+    const database = path.join(mainDir, 'waha.sqlite3');
     return Knex({
       client: KNEX_SQLITE_CLIENT,
       connection: { filename: database },

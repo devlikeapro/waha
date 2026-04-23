@@ -1,4 +1,3 @@
-import { exposeFunctionIfAbsent } from '@waha/core/engines/webjs/Puppeteer';
 import { WebJSPresence } from '@waha/core/engines/webjs/types';
 import { GetChatMessagesFilter } from '@waha/structures/chats.dto';
 import { Label } from '@waha/structures/labels.dto';
@@ -25,6 +24,11 @@ const { LoadPaginator } = require('./_Paginator.js');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ChatFactory = require('whatsapp-web.js/src/factories/ChatFactory');
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const {
+  exposeFunctionIfAbsent,
+} = require('whatsapp-web.js/src/util/Puppeteer');
 
 export class WebjsClientCore extends Client {
   public events = new EventEmitter();
@@ -300,24 +304,131 @@ export class WebjsClientCore extends Client {
 
         // @ts-ignore
         const chat = await window.WWebJS.getChat(chatId, { getAsModel: false });
-        let msgs = chat.msgs.getModelsArray().filter(msgFilter);
+        if (!chat) return [];
 
-        while (msgs.length < pagination.limit + pagination.offset) {
-          const loadedMessages =
+        let msgs = [];
+
+        // Try new WhatsApp API (>= 2.3000.1034162388) which replaced loadEarlierMsgs
+        // @ts-ignore
+        const WAWebDBMessageFindLocal = window.require(
+          'WAWebDBMessageFindLocal',
+        );
+        if (WAWebDBMessageFindLocal?.msgFindByDirection) {
+          const BATCH_SIZE = 20;
+
+          // Construct the initial anchor the same way wa-js does:
+          // serialize to string then reconstruct via MsgKey.fromString so the
+          // object has the exact shape msgFindByDirection expects.
+          const lastReceivedSerialized = chat.lastReceivedKey?._serialized;
+          if (!lastReceivedSerialized) return [];
+          // @ts-ignore
+          let currentAnchorKey = window.Store.MsgKey.fromString(
+            lastReceivedSerialized,
+          );
+
+          // msgFindByDirection is exclusive of the anchor; include the anchor
+          // message itself (the most recent message in the chat) upfront
+          // @ts-ignore
+          const anchorMsg = window.Store.Msg.get(lastReceivedSerialized);
+          if (anchorMsg) {
+            msgs.push(anchorMsg);
+          }
+
+          const neededFiltered = Number.isFinite(
+            pagination.limit + pagination.offset,
+          )
+            ? pagination.limit + pagination.offset
+            : Infinity;
+
+          // @ts-ignore
+          const toModel = (m) => {
+            if (m && typeof m.serialize === 'function') return m;
+            const serializedId = m?.id?._serialized;
+            if (serializedId) {
+              // @ts-ignore
+              const stored = window.Store.Msg.get(serializedId);
+              if (stored) return stored;
+            }
             // @ts-ignore
-            await window.Store.ConversationMsgs.loadEarlierMsgs(chat);
-          if (!loadedMessages || loadedMessages.length == 0) break;
+            return new window.Store.Msg.modelClass(m);
+          };
 
-          msgs = [...loadedMessages.filter(msgFilter), ...msgs];
-          msgs = msgs.sort((a, b) => b.t - a.t);
+          while (true) {
+            const result = await WAWebDBMessageFindLocal.msgFindByDirection({
+              anchor: currentAnchorKey,
+              count: BATCH_SIZE,
+              direction: 'before',
+            });
 
-          // Check if the earliest message is already outside the timerange filter
-          const earliest = msgs[msgs.length - 1];
-          if (earliest.t < (filter['filter.timestamp.gte'] || Infinity)) {
-            // Add only messages that pass the filter and stop loading more
-            break;
+            const batch = Array.isArray(result)
+              ? result
+              : result?.messages || [];
+            if (!batch || batch.length === 0) break;
+
+            const batchModels = batch.map(toModel);
+
+            // msgFindByDirection returns newest-first (descending) so prepend
+            // to keep the accumulated list in approximate ascending order
+            msgs = [...batchModels, ...msgs];
+
+            // Deduplicate by serialized id — the same Backbone model object can
+            // appear in multiple batches when anchors overlap
+            const seenIds = new Set();
+            msgs = msgs.filter((m) => {
+              const sid = m?.id?._serialized;
+              if (!sid || seenIds.has(sid)) return false;
+              seenIds.add(sid);
+              return true;
+            });
+
+            // Stop once we have enough messages that pass the filter
+            if (msgs.filter(msgFilter).length >= neededFiltered) break;
+
+            // Stop if the oldest message in this batch is already before the
+            // lower timestamp bound - no earlier messages can be in range
+            if (filter['filter.timestamp.gte'] != null) {
+              const batchMinT = batchModels.reduce(
+                (min, m) => Math.min(min, m.t ?? Infinity),
+                Infinity,
+              );
+              if (batchMinT < filter['filter.timestamp.gte']) break;
+            }
+
+            // No more messages available
+            if (batch.length < BATCH_SIZE) break;
+
+            // msgFindByDirection returns newest-first, so the LAST element is
+            // the oldest message in this batch — use it as the next anchor to
+            // walk further back in history without overlap
+            const oldestInBatch = batchModels[batchModels.length - 1];
+            const oldestSerialized = oldestInBatch?.id?._serialized;
+            if (!oldestSerialized) break;
+            // @ts-ignore
+            currentAnchorKey = window.Store.MsgKey.fromString(oldestSerialized);
+          }
+        } else {
+          // Legacy fallback: loadEarlierMsgs loop
+          msgs = chat.msgs.getModelsArray();
+          while (msgs.length < pagination.limit + pagination.offset) {
+            const loadedMessages =
+              // @ts-ignore
+              await window.Store.ConversationMsgs.loadEarlierMsgs(
+                chat,
+                chat.msgs,
+              );
+            if (!loadedMessages || loadedMessages.length == 0) break;
+
+            msgs = [...loadedMessages, ...msgs];
+            msgs = msgs.sort((a, b) => b.t - a.t);
+
+            const earliest = msgs[msgs.length - 1];
+            if (earliest.t < (filter['filter.timestamp.gte'] || Infinity)) {
+              break;
+            }
           }
         }
+
+        msgs = msgs.filter(msgFilter);
 
         // Always sort newest first before applying the pagination window.
         msgs = msgs.sort((a, b) => b.t - a.t);

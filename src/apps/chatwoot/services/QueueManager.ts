@@ -1,6 +1,7 @@
 import { QueueName } from '../consumers/QueueName';
 import { QueueRegistry } from '@waha/apps/chatwoot/services/QueueRegistry';
 import { Injectable } from '@nestjs/common';
+import { QueueNameRepr } from '@waha/apps/app_sdk/JobUtils';
 
 const Managable = true;
 const Locked = false;
@@ -18,7 +19,8 @@ export class QueueManager {
   constructor(private readonly registry: QueueRegistry) {
     this.queues = {
       [QueueName.SCHEDULED_MESSAGE_CLEANUP]: Locked,
-      [QueueName.SCHEDULED_CHECK_VERSION]: Locked,
+      [QueueName.SCHEDULED_CHECK_VERSION]: Managable,
+      [QueueName.SCHEDULED_CHECK_TIER]: Locked,
       [QueueName.TASK_CONTACTS_PULL]: Locked,
       [QueueName.TASK_MESSAGES_PULL]: Locked,
       [QueueName.WAHA_SESSION_STATUS]: Locked,
@@ -75,8 +77,19 @@ export class QueueManager {
       case undefined:
         return queues;
 
-      default:
+      default: {
+        const matches = queues.filter((q) => q.split(' | ')[1] === shortcut);
+        if (matches.length === 1) {
+          return [matches[0]];
+        }
+        if (matches.length > 1) {
+          const names = matches.map(QueueNameRepr).join(', ');
+          throw new Error(
+            `Ambiguous queue name "${shortcut}", matches: ${names}`,
+          );
+        }
         return [shortcut as QueueName];
+      }
     }
   }
 

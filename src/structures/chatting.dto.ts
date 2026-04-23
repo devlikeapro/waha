@@ -227,7 +227,8 @@ export class LinkPreviewData {
     example: {
       url:
         process.env.WHATSAPP_SWAGGER_JPG_EXAMPLE_URL ||
-        'https://github.com/devlikeapro/waha/raw/core/examples/waha.jpg',
+        'https://picsum.photos/1024',
+      // 'https://github.com/devlikeapro/waha/raw/core/examples/waha.jpg',
     },
   })
   image?: FileType;

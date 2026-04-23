@@ -13,6 +13,7 @@ import {
   isJidStatusBroadcast,
   isLidUser,
   isPnUser,
+  normalizeJid,
 } from '@waha/core/utils/jids';
 import { UnknownJIDFormat } from '@waha/apps/chatwoot/errors';
 import { E164Parser } from '@waha/core/utils/PhoneJidNormalizer';
@@ -270,7 +271,7 @@ export function WhatsAppContactInfo(
   } else if (isJidBroadcast(chatId)) {
     return new BroadcastContactInfo(session, chatId, locale);
   } else if (isLidUser(chatId)) {
-    return new LidContactInfo(session, chatId, locale);
+    return new LidContactInfo(session, normalizeJid(chatId), locale);
   } else if (isPnUser(chatId)) {
     return new JidContactInfo(session, chatId, locale);
   } else {

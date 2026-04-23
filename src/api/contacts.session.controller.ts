@@ -1,12 +1,13 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Put,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
-import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { PoliciesGuard } from '@waha/core/auth/policies.guard';
 import { CheckPolicies } from '@waha/core/auth/policies.decorator';
 import { CanSession, FromParam } from '@waha/core/auth/policies';
@@ -30,6 +31,27 @@ import { Action } from '@waha/core/auth/casl.types';
 @CheckPolicies(CanSession(Action.Use, FromParam('session')))
 export class ContactsSessionController {
   constructor(private manager: SessionManager) {}
+
+  @Get('/:id')
+  @SessionApiParam
+  @ApiParam({
+    name: 'id',
+    required: true,
+    type: 'string',
+    description: 'Contact ID',
+    example: '123456789@c.us',
+  })
+  @ApiOperation({
+    summary: 'Get contact basic info',
+    description:
+      'The method always return result, even if the phone number is not registered in WhatsApp. For that - use /contacts/check-exists endpoint below.',
+  })
+  async get(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+  ) {
+    return session.getContact({ session: session.name, contactId: id });
+  }
 
   @Put('/:chatId')
   @SessionApiParam

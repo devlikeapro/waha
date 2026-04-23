@@ -131,14 +131,15 @@ export class ChannelsController {
   })
   async previewChannelMessages(
     @WorkingSessionParam session: WhatsappSession,
-    @Param('id') code: string,
+    @Param('id') codeOrId: string,
     @Query() query: PreviewChannelMessages,
   ): Promise<ChannelMessage[]> {
-    if (isJidNewsletter(code)) {
-      const channel = await session.channelsGetChannel(code);
+    let code = null;
+    if (isJidNewsletter(codeOrId)) {
+      const channel = await session.channelsGetChannel(codeOrId);
       code = parseChannelInviteLink(channel.invite);
     }
-    const inviteCode = parseChannelInviteLink(code);
+    const inviteCode = parseChannelInviteLink(code || codeOrId);
     return session.previewChannelMessages(inviteCode, query);
   }
 

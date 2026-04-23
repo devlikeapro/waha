@@ -24,9 +24,14 @@ export function toVcardV3(data: Contact | VCardContact): string {
   return parts.join('\n');
 }
 
+export function normalizePN(phoneNumber: string): string {
+  return phoneNumber.replace(/[^0-9]/g, '');
+}
+
 export interface SimpleVCardInfo {
   fullName: string;
   phoneNumbers: string[];
+  whatsappId: string | null;
 }
 
 export function parseVCardV3(vcardText: string): SimpleVCardInfo {
@@ -46,14 +51,22 @@ export function parseVCardV3(vcardText: string): SimpleVCardInfo {
     }
   }
 
-  // Collect all TEL values
+  // Collect all TEL values and waid parameter
+  let waid: string | null = null;
   const phoneNumbers = comp
     .getAllProperties('tel')
-    .map((p) => String(p.getFirstValue() ?? ''))
+    .map((p) => {
+      const w = p.getParameter('waid');
+      if (w && !waid) {
+        waid = String(w);
+      }
+      return String(p.getFirstValue() ?? '');
+    })
     .filter((n) => n.length > 0);
 
   return {
     fullName: fullName || '',
     phoneNumbers: phoneNumbers,
+    whatsappId: waid,
   };
 }

@@ -25,15 +25,15 @@ import { WhatsappSession } from '../core/abc/session.abc';
 import {
   ChatPictureQuery,
   ChatPictureResponse,
-  ChatsPaginationParams,
   ChatSummary,
   GetChatMessageQuery,
   GetChatMessagesFilter,
   GetChatMessagesQuery,
+  GetChatsOverviewParams,
+  GetChatsParams,
   MessageSortField,
   OverviewBodyRequest,
   OverviewFilter,
-  OverviewPaginationParams,
   PinMessageRequest,
   ReadChatMessagesQuery,
   ReadChatMessagesResponse,
@@ -61,7 +61,7 @@ class ChatsController {
   @ApiOperation({ summary: 'Get chats' })
   getChats(
     @WorkingSessionParam session: WhatsappSession,
-    @Query() pagination: ChatsPaginationParams,
+    @Query() pagination: GetChatsParams,
   ) {
     return session.getChats(pagination);
   }
@@ -75,7 +75,7 @@ class ChatsController {
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   getChatsOverview(
     @WorkingSessionParam session: WhatsappSession,
-    @Query() pagination: OverviewPaginationParams,
+    @Query() pagination: GetChatsOverviewParams,
     @Query() filter: OverviewFilter,
   ): Promise<ChatSummary[]> {
     return session.getChatsOverview(pagination, filter);

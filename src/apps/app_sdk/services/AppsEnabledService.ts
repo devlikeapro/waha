@@ -90,10 +90,10 @@ export class AppsEnabledService implements IAppsService {
     }
 
     const service = this.getAppService(app);
-    if (!service && !AppRuntimeConfig.HasApp(app.app)) {
+    if (app.enabled && !service && !AppRuntimeConfig.HasApp(app.app)) {
       throw new AppDisableError(app.app);
     }
-    service.validate(app);
+    service?.validate(app);
     // Only run beforeCreated when app is enabled (default true if omitted)
     if (app.enabled !== false) {
       await service.beforeCreated(app);
@@ -147,21 +147,21 @@ export class AppsEnabledService implements IAppsService {
     }
 
     const service = this.getAppService(app);
-    if (!service && !AppRuntimeConfig.HasApp(app.app)) {
+    if (app.enabled && !service && !AppRuntimeConfig.HasApp(app.app)) {
       throw new AppDisableError(app.app);
     }
-    service.validate(app);
+    service?.validate(app);
 
     const hasEnabledChange = savedApp.enabled !== app.enabled;
 
     if (hasEnabledChange) {
       if (app.enabled) {
-        await service.beforeEnabled(savedApp, app);
+        await service?.beforeEnabled(savedApp, app);
       } else {
-        await service.beforeDisabled(savedApp, app);
+        await service?.beforeDisabled(savedApp, app);
       }
     } else {
-      await service.beforeUpdated(savedApp, app);
+      await service?.beforeUpdated(savedApp, app);
     }
     await repo.update(app.id, app);
     const updated = await repo.getById(app.id);

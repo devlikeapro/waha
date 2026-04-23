@@ -16,6 +16,8 @@ export class QueueRegistry {
     private readonly scheduledMessageCleanupQueue: Queue,
     @InjectQueue(QueueName.SCHEDULED_CHECK_VERSION)
     private readonly scheduledCheckVersionQueue: Queue,
+    @InjectQueue(QueueName.SCHEDULED_CHECK_TIER)
+    private readonly scheduledCheckTierQueue: Queue,
     @InjectQueue(QueueName.TASK_CONTACTS_PULL)
     private readonly taskContactsPullQueue: Queue,
     @InjectQueue(QueueName.TASK_MESSAGES_PULL)
@@ -55,6 +57,7 @@ export class QueueRegistry {
     this.queues = {
       [QueueName.SCHEDULED_MESSAGE_CLEANUP]: this.scheduledMessageCleanupQueue,
       [QueueName.SCHEDULED_CHECK_VERSION]: this.scheduledCheckVersionQueue,
+      [QueueName.SCHEDULED_CHECK_TIER]: this.scheduledCheckTierQueue,
       [QueueName.TASK_CONTACTS_PULL]: this.taskContactsPullQueue,
       [QueueName.TASK_MESSAGES_PULL]: this.taskMessagesPullQueue,
       [QueueName.WAHA_SESSION_STATUS]: this.wahaSessionStatusQueue,

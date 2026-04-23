@@ -32,7 +32,10 @@ export class WAHAMessageReactionConsumer extends ChatWootWAHABaseConsumer {
   }
 
   GetChatId(event: WAHAWebhookMessageReaction): string {
-    if (event.environment?.engine == WAHAEngine.WEBJS) {
+    if (
+      event.environment?.engine == WAHAEngine.WEBJS ||
+      event.environment?.engine == WAHAEngine.WPP
+    ) {
       // chat in "to" field for WEBJS for message.reaction
       // probably we need to set it to "from"
       // but for backward compatability we do this

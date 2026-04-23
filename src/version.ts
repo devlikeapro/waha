@@ -1,7 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import { getEngineName } from '@waha/config';
 
-import { getBrowserExecutablePath } from './core/abc/session.abc';
+import {
+  getBrowserExecutablePath,
+  isChromeExecutablePath,
+} from './core/abc/session.browser';
 import { WAHAEngine } from './structures/enums.dto';
 import { WAHAEnvironment } from './structures/environment.dto';
 
@@ -34,7 +37,8 @@ export function getWorker() {
 }
 
 function getBrowser() {
-  return getEngineName() === WAHAEngine.WEBJS
+  return getEngineName() === WAHAEngine.WEBJS ||
+    getEngineName() === WAHAEngine.WPP
     ? getBrowserExecutablePath()
     : null;
 }
@@ -44,7 +48,7 @@ function getPlatform() {
 }
 
 export const VERSION: WAHAEnvironment = {
-  version: '2026.2.1',
+  version: '2026.4.2',
   engine: getEngineName(),
   tier: getWAHAVersion(),
   browser: getBrowser(),
@@ -52,6 +56,8 @@ export const VERSION: WAHAEnvironment = {
   worker: getWorker(),
 };
 
-export const IsChrome = VERSION.browser?.includes('chrome');
+export const IsChrome = VERSION.browser
+  ? isChromeExecutablePath(VERSION.browser)
+  : false;
 
 export { getEngineName };
