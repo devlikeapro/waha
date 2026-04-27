@@ -51,6 +51,7 @@ export class ApiKeysController {
         key: `key_${generateSecret(32)}`,
         isActive: body.isActive,
         isAdmin: body.isAdmin,
+        tenantId: body.tenantId,
         session: body.session,
         rules: null,
       };
@@ -134,6 +135,7 @@ function ApiKeyToDTO(apikey: ApiKey): ApiKeyDTO {
     key: apikey.key,
     isActive: apikey.isActive,
     isAdmin: apikey.isAdmin,
+    tenantId: apikey.tenantId,
     session: apikey.session,
   };
 }

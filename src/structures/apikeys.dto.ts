@@ -16,6 +16,9 @@ export class ApiKeyDTO {
   @ApiProperty({ example: false })
   isAdmin: boolean;
 
+  @ApiProperty({ example: 'tenant_123', required: false, nullable: true })
+  tenantId: string | null;
+
   @ApiProperty({ example: 'default', required: false, nullable: true })
   session: string | null;
 }
@@ -24,6 +27,10 @@ export class ApiKeyRequest {
   @ApiProperty({ example: false })
   @IsBoolean()
   isAdmin: boolean = false;
+
+  @ApiProperty({ example: 'tenant_123', required: false, nullable: true })
+  @IsOptional()
+  tenantId: string | null = null;
 
   @ApiProperty({ example: 'default', nullable: true })
   @SessionName()

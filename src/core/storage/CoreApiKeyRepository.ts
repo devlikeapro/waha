@@ -23,6 +23,7 @@ export class CoreApiKeyRepository extends Sqlite3KVRepository<ApiKey>
   get metadata(): Map<string, (entity: ApiKey) => any> {
     return new Map<string, (entity: ApiKey) => any>([
       ['isActive', (entity) => (entity.isActive ? 1 : 0)],
+      ['tenantId', (entity) => entity.tenantId ?? null],
       ['session', (entity) => entity.session ?? null],
     ]);
   }
@@ -67,7 +68,8 @@ export class CoreApiKeyRepository extends Sqlite3KVRepository<ApiKey>
       id: apiKey.id,
       key: apiKey.key,
       isActive: apiKey.isActive ?? Boolean(row.isActive),
-      isAdmin: apiKey.isAdmin ?? false,
+      isAdmin: apiKey.isAdmin ?? Boolean(row.isAdmin),
+      tenantId: apiKey.tenantId ?? row.tenantId ?? null,
       session: apiKey.session ?? row.session ?? null,
       rules: apiKey.rules ?? null,
     };

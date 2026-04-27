@@ -7,6 +7,9 @@ export interface ApiKey {
   key: string;
   isActive: boolean;
   isAdmin: boolean;
+  /** Tenant ID - null means global admin key */
+  tenantId: string | null;
+  /** Session name - null means tenant-wide key (admin keys only) */
   session: string | null;
   rules: RawRuleOf<AppAbility>[] | null;
 }
@@ -30,16 +33,24 @@ export interface IApiKeyRepository {
 }
 
 export function CheckInvariant(
-  apiKey: Pick<ApiKey, 'isAdmin' | 'session'>,
+  apiKey: Pick<ApiKey, 'isAdmin' | 'tenantId' | 'session'>,
 ): void {
+  // Admin keys cannot have a session (but can have tenantId for tenant admin)
   if (apiKey.isAdmin && apiKey.session) {
     throw new UnprocessableEntityException(
       'Session is not allowed for admin keys',
     );
   }
-  if (!apiKey.isAdmin && !apiKey.session) {
+  // Non-admin keys must have both tenantId and session
+  if (!apiKey.isAdmin && (!apiKey.tenantId || !apiKey.session)) {
     throw new UnprocessableEntityException(
-      'Either isAdmin must be true or session must be provided',
+      'Session-bound keys must have both tenantId and session',
+    );
+  }
+  // Admin keys with tenantId cannot have session (handled above)
+  if (apiKey.isAdmin && apiKey.tenantId && apiKey.session) {
+    throw new UnprocessableEntityException(
+      'Session is not allowed for admin keys',
     );
   }
 }
