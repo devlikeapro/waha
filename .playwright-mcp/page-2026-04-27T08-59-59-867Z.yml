@@ -1,0 +1,539 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e2]:
+    - link "💵 $2,000 Bug Bounty – Help Secure WAHA!" [ref=e4] [cursor=pointer]:
+      - /url: https://github.com/devlikeapro/waha/issues/1076
+    - button "Close" [ref=e5] [cursor=pointer]
+  - banner [ref=e7]:
+    - generic [ref=e8]:
+      - link "WAHA" [ref=e9] [cursor=pointer]:
+        - /url: /
+      - generic "WAHA" [ref=e10]:
+        - generic [ref=e11]:
+          - list [ref=e12]:
+            - listitem [ref=e13]:
+              - button "📖 Documentation" [ref=e14] [cursor=pointer]:
+                - text: 📖 Documentation
+                - img [ref=e15]
+            - listitem [ref=e18]:
+              - link "📝 Blog" [ref=e19] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e20]:
+              - link "🎁 Support Us" [ref=e21] [cursor=pointer]:
+                - /url: /support-us
+            - listitem [ref=e22]:
+              - link "📧 Contact" [ref=e23] [cursor=pointer]:
+                - /url: /contact
+            - listitem [ref=e24]:
+              - button "👇 More" [ref=e25] [cursor=pointer]:
+                - text: 👇 More
+                - img [ref=e26]
+            - listitem [ref=e29]:
+              - button "🌍 Language" [ref=e30] [cursor=pointer]:
+                - text: 🌍 Language
+                - img [ref=e31]
+          - button "Search website" [ref=e34] [cursor=pointer]:
+            - img [ref=e35]
+          - button "Toggle theme" [ref=e39] [cursor=pointer]:
+            - img [ref=e40]
+          - list [ref=e43]:
+            - listitem [ref=e44]:
+              - link "GitHub" [ref=e45] [cursor=pointer]:
+                - /url: https://github.com/devlikeapro/waha
+                - img [ref=e46]
+                - generic [ref=e48]: GitHub
+      - button "Get Started" [ref=e49] [cursor=pointer]
+  - document [ref=e50]:
+    - generic [ref=e52]:
+      - navigation [ref=e54]:
+        - list [ref=e55]:
+          - listitem [ref=e56]:
+            - group [ref=e57]:
+              - generic "📄 Overview" [ref=e58] [cursor=pointer]
+              - list [ref=e59]:
+                - listitem [ref=e60]:
+                  - link "📖 Introduction" [ref=e61] [cursor=pointer]:
+                    - /url: /docs/overview/introduction/
+                - listitem [ref=e62]:
+                  - link "⚡ Quick Start" [ref=e63] [cursor=pointer]:
+                    - /url: /docs/overview/quick-start/
+                - listitem [ref=e64]:
+                  - link "⚠️ How to Avoid Blocking" [ref=e65] [cursor=pointer]:
+                    - /url: /docs/overview/%EF%B8%8F-how-to-avoid-blocking/
+                - listitem [ref=e66]:
+                  - link "❓ FAQ" [ref=e67] [cursor=pointer]:
+                    - /url: /docs/overview/faq/
+                - listitem [ref=e68]:
+                  - link "🆕 Changelog" [ref=e69] [cursor=pointer]:
+                    - /url: /docs/overview/changelog/
+          - listitem [ref=e70]:
+            - group [ref=e71]:
+              - generic "🔍 How-to guides" [ref=e72] [cursor=pointer]
+          - listitem [ref=e73]:
+            - group [ref=e74]:
+              - generic "🧩 Apps" [ref=e75] [cursor=pointer]
+          - listitem [ref=e76]:
+            - group [ref=e77]:
+              - generic "🏭 Engines" [ref=e78] [cursor=pointer]
+          - listitem [ref=e79]:
+            - group [ref=e80]:
+              - generic "🔌 Integrations" [ref=e81] [cursor=pointer]
+      - navigation "Secondary navigation" [ref=e82]:
+        - generic [ref=e83]:
+          - heading "On this page" [level=3] [ref=e84]
+          - navigation [ref=e85]:
+            - list [ref=e86]:
+              - listitem [ref=e87]:
+                - link "Step-by-Step guide" [ref=e88] [cursor=pointer]:
+                  - /url: "#step-by-step-guide"
+              - listitem [ref=e89]:
+                - link "Step 0. Requirements" [ref=e90] [cursor=pointer]:
+                  - /url: "#step-0-requirements"
+              - listitem [ref=e91]:
+                - link "Step 1. Download image" [ref=e92] [cursor=pointer]:
+                  - /url: "#step-1-download-image"
+              - listitem [ref=e93]:
+                - link "Step 2. Init WAHA" [ref=e94] [cursor=pointer]:
+                  - /url: "#step-2-init-waha"
+              - listitem [ref=e95]:
+                - link "Step 3. Run WAHA" [ref=e96] [cursor=pointer]:
+                  - /url: "#step-3-run-waha"
+              - listitem [ref=e97]:
+                - link "Step 4. Start a new session" [ref=e98] [cursor=pointer]:
+                  - /url: "#step-4-start-a-new-session"
+              - listitem [ref=e99]:
+                - link "Step 5. Get and scan QR" [ref=e100] [cursor=pointer]:
+                  - /url: "#step-5-get-and-scan-qr"
+              - listitem [ref=e101]:
+                - link "Step 6. Send a text message" [ref=e102] [cursor=pointer]:
+                  - /url: "#step-6-send-a-text-message"
+              - listitem [ref=e103]:
+                - link "What’s next?" [ref=e104] [cursor=pointer]:
+                  - /url: "#whats-next"
+      - main [ref=e105]:
+        - heading "⚡ Quick Start" [level=1] [ref=e106]
+        - link [ref=e108] [cursor=pointer]:
+          - /url: waha-first-message.jpg
+        - heading "Step-by-Step guide" [level=2] [ref=e109]
+        - paragraph [ref=e110]:
+          - text: On this page, you’re going to install and run WAHA, authenticate the client using a QR code, and send
+          - strong [ref=e111]: your first message
+          - text: to WhatsApp using the API!
+        - paragraph [ref=e112]: We will guide you through the necessary steps to successfully send your first text message using the WhatsApp API.
+        - generic [ref=e113]:
+          - text: Are you a visual learner?
+          - paragraph [ref=e114]:
+            - text: We’ve got you covered!
+            - text: Watch the video tutorial below to see how to send your first message using WAHA
+          - iframe [ref=e116]:
+            - generic [active] [ref=f1e1]:
+              - generic "YouTube 视频播放器" [ref=f1e3]
+              - generic [ref=f1e5]:
+                - generic:
+                  - generic:
+                    - button "播放视频" [ref=f1e10] [cursor=pointer]
+                    - button "隐藏播放器控件" [ref=f1e12] [cursor=pointer]
+                    - generic [ref=f1e14]:
+                      - generic [ref=f1e19]:
+                        - generic [ref=f1e20]:
+                          - link "Run Your Own Free WhatsApp HTTP API - Step-by-Step Guide" [ref=f1e21] [cursor=pointer]:
+                            - /url: https://www.youtube.com/watch?v=RFerMyAUPRg
+                          - link "devlikeapro" [ref=f1e22] [cursor=pointer]:
+                            - /url: /channel/UCXC3mpY0LNxr-I2iNXcWBmQ
+                            - generic [ref=f1e23]: devlikeapro
+                        - generic [ref=f1e24]:
+                          - button [ref=f1e25] [cursor=pointer]
+                          - generic [ref=f1e27]:
+                            - generic: devlikeapro
+                            - generic: 484位订阅者
+                      - generic [ref=f1e28]:
+                        - button "分享" [ref=f1e31] [cursor=pointer]:
+                          - generic [ref=f1e35]:
+                            - img
+                        - link "在 YouTube 上观看" [ref=f1e42] [cursor=pointer]:
+                          - /url: https://www.youtube.com/watch?v=RFerMyAUPRg
+                          - generic [ref=f1e45]:
+                            - text: 前往平台观看：
+                            - img [ref=f1e47]:
+                              - generic [ref=f1e49]:
+                                - img
+        - heading "Step 0. Requirements" [level=2] [ref=e117]
+        - paragraph [ref=e118]:
+          - text: WAHA works on top of
+          - strong [ref=e119]: Docker
+          - text: ", that’s the only thing you’ll need!"
+        - img "logo" [ref=e121]
+        - paragraph [ref=e122]:
+          - text: 👉 Please follow the
+          - link "Docker official guides to install it on Linux, Windows, and macOS" [ref=e123] [cursor=pointer]:
+            - /url: https://docs.docker.com/engine/install/
+        - group [ref=e124]:
+          - generic "Why Docker?" [ref=e125] [cursor=pointer]
+        - heading "Step 1. Download image" [level=2] [ref=e126]
+        - paragraph [ref=e127]:
+          - text: Assuming you have installed
+          - link "Docker" [ref=e128] [cursor=pointer]:
+            - /url: https://docs.docker.com/get-docker/
+          - text: ", let’s download the image! Follow the instructions below:"
+        - navigation [ref=e129]:
+          - tablist [ref=e130]:
+            - tab "WAHA Core" [selected] [ref=e131] [cursor=pointer]
+            - tab "➕ WAHA Plus" [ref=e132] [cursor=pointer]
+            - tab "WAHA (ARM)" [ref=e133] [cursor=pointer]
+        - tabpanel "WAHA Core" [ref=e135]:
+          - paragraph [ref=e136]: "Run the command below:"
+          - figure [ref=e138]:
+            - generic [ref=e141]:
+              - button "Clipboard button" [ref=e143] [cursor=pointer]
+              - code [ref=e146]:
+                - generic [ref=e148]: docker pull devlikeapro/waha
+        - heading "Step 2. Init WAHA" [level=2] [ref=e149]
+        - paragraph [ref=e150]:
+          - text: Generate a
+          - code [ref=e151]: .env
+          - text: "file that we’ll use in the next step for credentials:"
+        - figure "Init WAHA" [ref=e153]:
+          - generic [ref=e155]: Init WAHA
+          - generic "Init WAHA" [ref=e156]:
+            - button "Clipboard button" [ref=e158] [cursor=pointer]
+            - code [ref=e161]:
+              - generic [ref=e163]: docker run --rm -v "$(pwd)":/app/env devlikeapro/waha init-waha /app/env
+        - figure "Init WAHA (Output)" [ref=e165]:
+          - generic [ref=e167]: Init WAHA (Output)
+          - generic "Init WAHA (Output)" [ref=e168]:
+            - button "Clipboard button" [ref=e170] [cursor=pointer]
+            - code [ref=e173]:
+              - generic [ref=e175]: Credentials generated.
+              - generic [ref=e178]: "Dashboard and Swagger:"
+              - generic [ref=e180]: "- Username: admin"
+              - generic [ref=e182]: "- Password: 11111111111111111111111111111111"
+              - generic [ref=e185]: "API key:"
+              - generic [ref=e187]: "- 00000000000000000000000000000000"
+              - generic [ref=e190]: "Use it in the Dashboard connection flow: https://waha.devlike.pro/docs/how-to/dashboard/#api-key"
+        - paragraph [ref=e191]:
+          - text: Remember these values (you can always check the
+          - code [ref=e192]: .env
+          - text: "file if you forget them):"
+        - list [ref=e193]:
+          - listitem [ref=e194]:
+            - strong [ref=e195]: Username / Password
+            - text: ":"
+            - code [ref=e196]: admin / 11...11
+            - text: "- use them to access the Dashboard and Swagger UI"
+          - listitem [ref=e197]:
+            - strong [ref=e198]: Api Key
+            - text: ":"
+            - code [ref=e199]: 00...00
+            - text: "- use it to connect to your server"
+        - paragraph [ref=e200]:
+          - text: 👉 You can change variables to any values, but use
+          - strong [ref=e201]: long strings
+          - text: (like
+          - strong [ref=e202]: UUIDv4
+          - text: )
+        - heading "Step 3. Run WAHA" [level=2] [ref=e203]
+        - paragraph [ref=e204]: "Run WhatsApp HTTP API:"
+        - figure [ref=e206]:
+          - generic [ref=e209]:
+            - button "Clipboard button" [ref=e211] [cursor=pointer]
+            - code [ref=e214]:
+              - generic [ref=e216]: docker run -it --env-file "$(pwd)/.env" -v "$(pwd)/sessions:/app/.sessions" --rm -p 3000:3000 --name waha devlikeapro/waha
+        - generic [ref=e217]:
+          - img [ref=e218]
+          - generic [ref=e222]:
+            - paragraph [ref=e224]: Not a Production-Ready Installation!
+            - generic [ref=e225]:
+              - paragraph [ref=e226]:
+                - text: ☝️ The above command is meant only for
+                - strong [ref=e227]: initial testing
+                - text: ", not for production use."
+              - paragraph [ref=e228]:
+                - text: Please follow the
+                - link "🔧 Install & Update" [ref=e229] [cursor=pointer]:
+                  - /url: /docs/how-to/install/
+                  - strong [ref=e230]: 🔧 Install & Update
+                - text: guide to set up a secure WAHA instance after you finish the quick start guide.
+        - paragraph [ref=e231]:
+          - text: Now, open the
+          - link "📊 Dashboard" [ref=e232] [cursor=pointer]:
+            - /url: /docs/how-to/dashboard/
+          - text: at
+          - link "http://localhost:3000/dashboard" [ref=e233] [cursor=pointer]:
+            - /url: http://localhost:3000/dashboard
+        - paragraph [ref=e234]:
+          - text: Use
+          - strong [ref=e235]: username/password
+          - text: from the previous step (
+          - code [ref=e236]: .env
+          - text: file -
+          - code [ref=e237]: WAHA_DASHBOARD_USERNAME / WAHA_DASHBOARD_PASSWORD
+          - text: "):"
+        - paragraph [ref=e239]:
+          - img "Dashboard" [ref=e240]
+        - paragraph [ref=e241]:
+          - text: Next, connect to the server using
+          - strong [ref=e242]: api key
+          - text: from the previous step (
+          - code [ref=e243]: .env
+          - text: file -
+          - code [ref=e244]: WAHA_API_KEY
+          - text: "):"
+        - paragraph [ref=e246]:
+          - img "Dashboard with API Key" [ref=e247]
+        - heading "Step 4. Start a new session" [level=2] [ref=e248]
+        - paragraph [ref=e249]:
+          - text: To start a new session, you should have your mobile phone with the
+          - strong [ref=e250]: WhatsApp application
+          - text: installed close to you.
+        - paragraph [ref=e251]:
+          - text: Here is the
+          - link "official instruction on WhatsApp site" [ref=e252] [cursor=pointer]:
+            - /url: https://faq.whatsapp.com/381777293328336/?helpref=hc_fnav
+          - text: on how to log in.
+        - paragraph [ref=e253]:
+          - text: Now you can start the
+          - strong [ref=e254]: default
+          - text: session (current status should be
+          - code [ref=e255]: STOPPED
+          - text: ).
+        - paragraph [ref=e256]: "You can leave all configuration parameters as default:"
+        - paragraph [ref=e258]:
+          - img "alt"
+        - heading "Step 5. Get and scan QR" [level=2] [ref=e259]
+        - paragraph [ref=e260]:
+          - text: Wait until the session status is
+          - code [ref=e261]: SCAN_QR
+          - text: "and click on the “camera” icon:"
+        - paragraph [ref=e263]:
+          - img "alt"
+        - paragraph [ref=e264]:
+          - text: 👉 If instead of the QR you see
+          - strong [ref=e265]: Click to reload QR
+          - text: "-"
+          - strong [ref=e266]: stop
+          - text: the session and
+          - strong [ref=e267]: start
+          - text: it again.
+        - paragraph [ref=e268]:
+          - text: You’ll see the QR code from the WhatsApp Web app. Now get
+          - strong [ref=e269]: your phone
+          - text: with the WhatsApp application installed and
+          - strong [ref=e270]: scan the QR
+          - text: ":"
+        - paragraph [ref=e272]:
+          - img "alt"
+        - paragraph [ref=e273]:
+          - text: The session status will move to
+          - code [ref=e274]: WORKING
+          - text: "status:"
+        - paragraph [ref=e276]:
+          - img "alt"
+        - heading "Step 6. Send a text message" [level=2] [ref=e277]
+        - paragraph [ref=e278]: Now we’re ready to send the first messages to WhatsApp via the API!
+        - list [ref=e279]:
+          - listitem [ref=e280]:
+            - text: Replace
+            - code [ref=e281]: "123123"
+            - text: with
+            - strong [ref=e282]: your phone number without +
+            - text: ", but keep the"
+            - code [ref=e283]: "@c.us"
+            - text: part.
+          - listitem [ref=e284]:
+            - text: Use the API key from your
+            - code [ref=e285]: .env
+            - text: file (
+            - code [ref=e286]: WAHA_API_KEY
+            - text: ).
+        - paragraph [ref=e287]:
+          - text: The examples below use a placeholder
+          - code [ref=e288]: "00000000000000000000000000000000"
+          - text: "- swap it with your real value:"
+        - navigation [ref=e289]:
+          - tablist [ref=e290]:
+            - tab "curl" [selected] [ref=e291] [cursor=pointer]
+            - tab "JavaScript" [ref=e292] [cursor=pointer]
+            - tab "Python" [ref=e293] [cursor=pointer]
+        - tabpanel "curl" [ref=e295]:
+          - figure [ref=e297]:
+            - generic [ref=e300]:
+              - button "Clipboard button" [ref=e302] [cursor=pointer]
+              - code [ref=e305]:
+                - generic [ref=e307]: curl -X 'POST' \
+                - generic [ref=e309]: "'http://localhost:3000/api/sendText' \\"
+                - generic [ref=e311]: "-H 'Accept: application/json' \\"
+                - generic [ref=e313]: "-H 'Content-Type: application/json' \\"
+                - generic [ref=e315]: "-H \"X-Api-Key: 00000000000000000000000000000000\" \\"
+                - generic [ref=e317]: "-d '{"
+                - generic [ref=e319]: "\"chatId\": \"123123@c.us\","
+                - generic [ref=e321]: "\"text\": \"Hi there!\","
+                - generic [ref=e323]: "\"session\": \"default\""
+                - generic [ref=e325]: "}'"
+        - paragraph
+        - paragraph [ref=e326]:
+          - text: As alternative to
+          - code [ref=e327]: curl
+          - text: ", you can use"
+          - link "📚 Swagger" [ref=e328] [cursor=pointer]:
+            - /url: /docs/how-to/swagger/
+            - strong [ref=e329]: 📚 Swagger
+          - text: for that.
+        - paragraph [ref=e330]:
+          - text: Open Swagger at
+          - link "http://localhost:3000/#/chatting" [ref=e331] [cursor=pointer]:
+            - /url: http://localhost:3000/#/chatting
+          - text: .
+        - paragraph [ref=e332]:
+          - strong [ref=e333]: Authorize
+          - text: using the
+          - strong [ref=e334]: Api Key
+          - text: (
+          - code [ref=e335]: .env
+          - text: file -
+          - code [ref=e336]: WAHA_API_KEY
+          - text: "):"
+        - paragraph [ref=e338]:
+          - img "swagger auth"
+        - list [ref=e339]:
+          - listitem [ref=e340]:
+            - text: Scroll down to
+            - strong [ref=e341]: chatting
+            - text: section.
+          - listitem [ref=e342]:
+            - text: Find
+            - code [ref=e343]: POST /api/sendText
+            - text: endpoint and expand it
+          - listitem [ref=e344]:
+            - text: Click
+            - strong [ref=e345]: Try it out
+          - listitem [ref=e346]:
+            - text: Replace
+            - code [ref=e347]: 123123@c.us
+            - text: with
+            - strong [ref=e348]: your phone number without +
+            - text: ", but keep"
+            - code [ref=e349]: "@c.us"
+            - text: part
+          - listitem [ref=e350]:
+            - text: Click
+            - strong [ref=e351]: Execute
+        - paragraph [ref=e353]:
+          - img "swagger send text"
+        - heading "What’s next?" [level=2] [ref=e354]
+        - generic [ref=e355]:
+          - img [ref=e356]
+          - generic [ref=e360]:
+            - paragraph [ref=e362]: Looking for Hosting?
+            - generic [ref=e363]:
+              - paragraph [ref=e364]:
+                - text: We’ve been using
+                - link "the.hosting" [ref=e365] [cursor=pointer]:
+                  - /url: https://the.hosting/?from=686406
+                  - strong [ref=e366]: the.hosting
+                - text: for quite a while and had a great experience.
+              - paragraph [ref=e367]: They offer a wide range of server configurations and locations - highly recommended! 👍
+        - generic [ref=e368]:
+          - img [ref=e369]
+          - generic [ref=e374]:
+            - paragraph [ref=e376]: Build Fast
+            - paragraph [ref=e378]:
+              - text: Ask
+              - link "🤖 WAHA GPT" [ref=e379] [cursor=pointer]:
+                - /url: /gpt/
+                - strong [ref=e380]: 🤖 WAHA GPT
+              - text: to help you build
+              - strong [ref=e381]: "{python|js|php}"
+              - text: code!
+        - generic [ref=e382]:
+          - generic [ref=e384]:
+            - generic [ref=e385]:
+              - img [ref=e386]
+              - generic [ref=e390]: Learn WAHA
+            - list [ref=e392]:
+              - listitem [ref=e393]:
+                - link "⚡ Quick Start" [ref=e394] [cursor=pointer]:
+                  - /url: /docs/overview/quick-start/
+                  - strong [ref=e395]: ⚡ Quick Start
+              - listitem [ref=e396]:
+                - link "📤 Send messages" [ref=e397] [cursor=pointer]:
+                  - /url: /docs/how-to/send-messages/
+              - listitem [ref=e398]:
+                - link "📥 Receive messages" [ref=e399] [cursor=pointer]:
+                  - /url: /docs/how-to/receive-messages/
+              - listitem [ref=e400]:
+                - link "📊 Dashboard" [ref=e401] [cursor=pointer]:
+                  - /url: /docs/how-to/dashboard/
+              - listitem [ref=e402]:
+                - link "🔍 Other How-to guides" [ref=e403] [cursor=pointer]:
+                  - /url: /docs/how-to/
+          - generic [ref=e405]:
+            - generic [ref=e406]:
+              - img [ref=e407]
+              - generic [ref=e411]: Get Ready for Production
+            - list [ref=e413]:
+              - listitem [ref=e414]:
+                - link "🔧 Install & Update" [ref=e415] [cursor=pointer]:
+                  - /url: /docs/how-to/install/
+              - listitem [ref=e416]:
+                - link "🏭 Engines" [ref=e417] [cursor=pointer]:
+                  - /url: /docs/how-to/engines/
+              - listitem [ref=e418]:
+                - link "🗄️ Storages" [ref=e419] [cursor=pointer]:
+                  - /url: /docs/how-to/sessions/
+              - listitem [ref=e420]:
+                - link "🔒 Security" [ref=e421] [cursor=pointer]:
+                  - /url: /docs/how-to/security/
+              - listitem [ref=e422]:
+                - link "➕ WAHA Plus" [ref=e423] [cursor=pointer]:
+                  - /url: /docs/how-to/waha-plus/
+        - generic [ref=e424]:
+          - generic [ref=e426]:
+            - generic [ref=e427]:
+              - img [ref=e428]
+              - generic [ref=e432]: What's going on?
+            - list [ref=e434]:
+              - listitem [ref=e435]:
+                - link "🆕 Changelog" [ref=e436] [cursor=pointer]:
+                  - /url: /docs/overview/changelog/
+              - listitem [ref=e437]:
+                - link "🐙 GitHub" [ref=e438] [cursor=pointer]:
+                  - /url: https://github.com/devlikeapro/waha
+          - generic [ref=e440]:
+            - generic [ref=e441]:
+              - img [ref=e442]
+              - generic [ref=e449]: Other docs
+            - list [ref=e451]:
+              - listitem [ref=e452]:
+                - link "🧩 Apps" [ref=e453] [cursor=pointer]:
+                  - /url: /docs/apps/about/
+              - listitem [ref=e454]:
+                - link "🔌 Integrations" [ref=e455] [cursor=pointer]:
+                  - /url: /docs/integrations/
+              - listitem [ref=e456]:
+                - link "📚 Swagger" [ref=e457] [cursor=pointer]:
+                  - /url: /docs/how-to/swagger/
+        - link "Edit this page on GitHub" [ref=e460] [cursor=pointer]:
+          - /url: https://github.com/devlikeapro/waha-docs/blob/main/content//docs/overview/quick-start/index.md
+          - img [ref=e461]
+          - text: Edit this page on GitHub
+        - generic [ref=e463]:
+          - generic [ref=e465]:
+            - img [ref=e467]
+            - generic [ref=e471]:
+              - generic [ref=e472]: Prev
+              - link "📖 Introduction" [ref=e473] [cursor=pointer]:
+                - /url: /docs/overview/introduction/
+          - generic [ref=e475]:
+            - generic [ref=e476]:
+              - generic [ref=e477]: Next
+              - link "⚠️ How to Avoid Blocking" [ref=e478] [cursor=pointer]:
+                - /url: /docs/overview/%EF%B8%8F-how-to-avoid-blocking/
+            - img [ref=e480]
+  - contentinfo [ref=e484]:
+    - generic [ref=e486]:
+      - list [ref=e488]:
+        - listitem
+      - generic:
+        - list
+  - button "Top" [ref=e490] [cursor=pointer]:
+    - generic [ref=e491]: Top
+    - img [ref=e492]

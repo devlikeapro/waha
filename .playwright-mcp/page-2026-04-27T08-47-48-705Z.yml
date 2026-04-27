@@ -1,0 +1,138 @@
+- generic [ref=e1]:
+  - generic [ref=e20]:
+    - generic [ref=e21]:
+      - button "" [ref=e22] [cursor=pointer]:
+        - generic [ref=e23]: 
+      - link "logo Dashboard" [ref=e24] [cursor=pointer]:
+        - /url: /dashboard/
+        - img "logo" [ref=e25]
+        - generic [ref=e26]: Dashboard
+      - text: 
+      - generic [ref=e27]:
+        - button "" [ref=e28] [cursor=pointer]:
+          - generic [ref=e29]: 
+        - link "" [ref=e30] [cursor=pointer]:
+          - /url: /dashboard/event-monitor
+          - generic [ref=e31]: 
+        - button "" [ref=e32] [cursor=pointer]:
+          - generic [ref=e33]: 
+    - list [ref=e35]:
+      - listitem [ref=e36]:
+        - generic [ref=e37]: Home
+        - text: 
+        - list [ref=e38]:
+          - listitem [ref=e39]:
+            - link " Dashboard" [ref=e40] [cursor=pointer]:
+              - /url: /dashboard/
+              - generic [ref=e41]: 
+              - generic [ref=e42]: Dashboard
+          - listitem [ref=e43]:
+            - link " Workers" [ref=e44] [cursor=pointer]:
+              - /url: /dashboard/workers
+              - generic [ref=e45]: 
+              - generic [ref=e46]: Workers
+          - listitem [ref=e47]:
+            - link " Sessions" [ref=e48] [cursor=pointer]:
+              - /url: /dashboard/sessions
+              - generic [ref=e49]: 
+              - generic [ref=e50]: Sessions
+          - listitem [ref=e51]:
+            - link " Event Monitor" [ref=e52] [cursor=pointer]:
+              - /url: /dashboard/event-monitor
+              - generic [ref=e53]: 
+              - generic [ref=e54]: Event Monitor
+    - generic [ref=e59]:
+      - generic [ref=e60]:
+        - heading " Sessions" [level=5] [ref=e62]:
+          - generic [ref=e63]: 
+          - generic [ref=e64]: Sessions
+        - button "" [ref=e66] [cursor=pointer]:
+          - generic [ref=e67]: 
+      - generic [ref=e68]:
+        - generic [ref=e70]:
+          - button "Start New" [active] [ref=e72] [cursor=pointer]:
+            - generic [ref=e73]: 
+            - generic [ref=e74]: Start New
+          - generic [ref=e75]:
+            - generic [ref=e77]:
+              - generic [ref=e78]: 
+              - textbox "Search by Name, Phone, Metadata" [ref=e79]
+            - generic [ref=e81] [cursor=pointer]:
+              - generic [ref=e82]:
+                - combobox "Columns"
+              - generic [ref=e84]: Columns
+              - img [ref=e86]
+        - table [ref=e89]:
+          - rowgroup [ref=e90]:
+            - row "Name Metadata Account Status Server" [ref=e91]:
+              - columnheader [ref=e92]
+              - columnheader "Name" [ref=e94] [cursor=pointer]:
+                - generic [ref=e96]:
+                  - generic [ref=e97]: Name
+                  - img [ref=e99]
+              - columnheader "Metadata" [ref=e101]:
+                - generic [ref=e104]: Metadata
+              - columnheader "Account" [ref=e105]:
+                - generic [ref=e108]: Account
+              - columnheader "Status" [ref=e109]:
+                - generic [ref=e112]: Status
+              - columnheader "Server" [ref=e113]:
+                - generic [ref=e116]: Server
+              - columnheader [ref=e117]
+            - row "All items unselected     " [ref=e118]:
+              - columnheader "All items unselected" [ref=e119]:
+                - generic:
+                  - checkbox "All items unselected" [disabled]
+              - columnheader [ref=e120]:
+                - textbox "Session" [ref=e123]
+              - columnheader [ref=e124]
+              - columnheader [ref=e125]:
+                - generic [ref=e126]:
+                  - textbox "Account (Phone Number)" [ref=e128]
+                  - button [ref=e129] [cursor=pointer]:
+                    - img [ref=e130]
+              - columnheader [ref=e132]:
+                - generic [ref=e135] [cursor=pointer]:
+                  - combobox "Any" [ref=e136]
+                  - img [ref=e138]
+              - columnheader [ref=e140]:
+                - generic [ref=e143] [cursor=pointer]:
+                  - combobox "Any" [ref=e144]
+                  - img [ref=e146]
+              - columnheader "    " [ref=e148]:
+                - generic [ref=e152]:
+                  - button "" [disabled]:
+                    - generic: 
+                  - button "" [disabled]:
+                    - generic: 
+                  - button "" [disabled]:
+                    - generic: 
+                  - button "" [disabled]:
+                    - generic: 
+                  - button "" [disabled]:
+                    - generic: 
+          - rowgroup [ref=e153]:
+            - row "No sessions found" [ref=e154]:
+              - cell "No sessions found" [ref=e155]
+        - navigation [ref=e156]:
+          - generic [ref=e157]:
+            - button "First Page" [disabled]:
+              - img
+            - button "Previous Page" [disabled]:
+              - img
+            - button "Next Page" [disabled]:
+              - img
+            - button "Last Page" [disabled]:
+              - img
+            - generic:
+              - combobox "Rows per page" [disabled]: "10"
+              - generic:
+                - img
+  - alert [ref=e160]:
+    - generic [ref=e161]:
+      - img [ref=e162]
+      - generic [ref=e164]:
+        - text: No connected server
+        - generic [ref=e165]: Please connect to a server first
+      - button "Close" [ref=e167] [cursor=pointer]:
+        - img [ref=e168]

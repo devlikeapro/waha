@@ -1,0 +1,356 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e2]:
+    - link "💵 $2,000 Bug Bounty – Help Secure WAHA!" [ref=e4] [cursor=pointer]:
+      - /url: https://github.com/devlikeapro/waha/issues/1076
+    - button "Close" [ref=e5] [cursor=pointer]
+  - banner [ref=e7]:
+    - generic [ref=e8]:
+      - link "WAHA" [ref=e9] [cursor=pointer]:
+        - /url: /
+      - generic "WAHA" [ref=e10]:
+        - generic [ref=e11]:
+          - list [ref=e12]:
+            - listitem [ref=e13]:
+              - button "📖 Documentation" [ref=e14] [cursor=pointer]:
+                - text: 📖 Documentation
+                - img [ref=e15]
+            - listitem [ref=e18]:
+              - link "📝 Blog" [ref=e19] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e20]:
+              - link "🎁 Support Us" [ref=e21] [cursor=pointer]:
+                - /url: /support-us
+            - listitem [ref=e22]:
+              - link "📧 Contact" [ref=e23] [cursor=pointer]:
+                - /url: /contact
+            - listitem [ref=e24]:
+              - button "👇 More" [ref=e25] [cursor=pointer]:
+                - text: 👇 More
+                - img [ref=e26]
+            - listitem [ref=e29]:
+              - button "🌍 Language" [ref=e30] [cursor=pointer]:
+                - text: 🌍 Language
+                - img [ref=e31]
+          - button "Search website" [ref=e34] [cursor=pointer]:
+            - img [ref=e35]
+          - button "Toggle theme" [ref=e39] [cursor=pointer]:
+            - img [ref=e40]
+          - list [ref=e43]:
+            - listitem [ref=e44]:
+              - link "GitHub" [ref=e45] [cursor=pointer]:
+                - /url: https://github.com/devlikeapro/waha
+                - img [ref=e46]
+                - generic [ref=e48]: GitHub
+      - button "Get Started" [ref=e49] [cursor=pointer]
+  - document [ref=e50]:
+    - generic [ref=e52]:
+      - navigation [ref=e54]:
+        - list [ref=e55]:
+          - listitem [ref=e56]:
+            - group [ref=e57]:
+              - generic "📄 Overview" [ref=e58] [cursor=pointer]
+          - listitem [ref=e59]:
+            - group [ref=e60]:
+              - generic "🔍 How-to guides" [ref=e61] [cursor=pointer]
+              - list [ref=e62]:
+                - listitem [ref=e63]:
+                  - link "🔧 Install & Update" [ref=e64] [cursor=pointer]:
+                    - /url: /docs/how-to/install/
+                - listitem [ref=e65]:
+                  - link "📊 Dashboard" [ref=e66] [cursor=pointer]:
+                    - /url: /docs/how-to/dashboard/
+                - listitem [ref=e67]:
+                  - link "📚 Swagger (OpenAPI)" [ref=e68] [cursor=pointer]:
+                    - /url: /docs/how-to/swagger/
+                - listitem [ref=e69]:
+                  - link "🖥️ Sessions" [ref=e70] [cursor=pointer]:
+                    - /url: /docs/how-to/sessions/
+                - listitem [ref=e71]:
+                  - link "📤 Send messages" [ref=e72] [cursor=pointer]:
+                    - /url: /docs/how-to/send-messages/
+                - listitem [ref=e73]:
+                  - link "📥 Receive messages" [ref=e74] [cursor=pointer]:
+                    - /url: /docs/how-to/receive-messages/
+                - listitem [ref=e75]:
+                  - link "🔄 Events" [ref=e76] [cursor=pointer]:
+                    - /url: /docs/how-to/events/
+                - listitem [ref=e77]:
+                  - link "🆔 Profile" [ref=e78] [cursor=pointer]:
+                    - /url: /docs/how-to/profile/
+                - listitem [ref=e79]:
+                  - link "🌐 Proxy" [ref=e80] [cursor=pointer]:
+                    - /url: /docs/how-to/proxy/
+                - listitem [ref=e81]:
+                  - link "📶 Polls" [ref=e82] [cursor=pointer]:
+                    - /url: /docs/how-to/polls/
+                - listitem [ref=e83]:
+                  - link "💬 Chats" [ref=e84] [cursor=pointer]:
+                    - /url: /docs/how-to/chats/
+                - listitem [ref=e85]:
+                  - link "👤 Contacts" [ref=e86] [cursor=pointer]:
+                    - /url: /docs/how-to/contacts/
+                - listitem [ref=e87]:
+                  - link "📢 Channels" [ref=e88] [cursor=pointer]:
+                    - /url: /docs/how-to/channels/
+                - listitem [ref=e89]:
+                  - link "🟢 Status" [ref=e90] [cursor=pointer]:
+                    - /url: /docs/how-to/status/
+                - listitem [ref=e91]:
+                  - link "👥 Groups" [ref=e92] [cursor=pointer]:
+                    - /url: /docs/how-to/groups/
+                - listitem [ref=e93]:
+                  - link "✅ Presence" [ref=e94] [cursor=pointer]:
+                    - /url: /docs/how-to/presence/
+                - listitem [ref=e95]:
+                  - link "🏷️ Labels" [ref=e96] [cursor=pointer]:
+                    - /url: /docs/how-to/labels/
+                - listitem [ref=e97]:
+                  - link "📅 Event Message" [ref=e98] [cursor=pointer]:
+                    - /url: /docs/how-to/event-message/
+                - listitem [ref=e99]:
+                  - link "📞 Calls" [ref=e100] [cursor=pointer]:
+                    - /url: /docs/how-to/calls/
+                - listitem [ref=e101]:
+                  - link "🏭 Engines" [ref=e102] [cursor=pointer]:
+                    - /url: /docs/how-to/engines/
+                - listitem [ref=e103]:
+                  - link "⚙️ Configuration" [ref=e104] [cursor=pointer]:
+                    - /url: /docs/how-to/config/
+                - listitem [ref=e105]:
+                  - link "🔍 Observability" [ref=e106] [cursor=pointer]:
+                    - /url: /docs/how-to/observability/
+                - listitem [ref=e107]:
+                  - link "🔒 Security" [ref=e108] [cursor=pointer]:
+                    - /url: /docs/how-to/security/
+                - listitem [ref=e109]:
+                  - link "🗄️ Storages" [ref=e110] [cursor=pointer]:
+                    - /url: /docs/how-to/storages/
+                - listitem [ref=e111]:
+                  - link "➕ WAHA Plus" [ref=e112] [cursor=pointer]:
+                    - /url: /docs/how-to/waha-plus/
+          - listitem [ref=e113]:
+            - group [ref=e114]:
+              - generic "🧩 Apps" [ref=e115] [cursor=pointer]
+          - listitem [ref=e116]:
+            - group [ref=e117]:
+              - generic "🏭 Engines" [ref=e118] [cursor=pointer]
+          - listitem [ref=e119]:
+            - group [ref=e120]:
+              - generic "🔌 Integrations" [ref=e121] [cursor=pointer]
+      - navigation "Secondary navigation" [ref=e122]:
+        - generic [ref=e123]:
+          - heading "On this page" [level=3] [ref=e124]
+          - navigation [ref=e125]:
+            - list [ref=e126]:
+              - listitem [ref=e127]:
+                - link "Configuration" [ref=e128] [cursor=pointer]:
+                  - /url: "#configuration"
+              - listitem [ref=e129]:
+                - link "API Key" [ref=e130] [cursor=pointer]:
+                  - /url: "#api-key"
+              - listitem [ref=e131]:
+                - link "API Keys" [ref=e132] [cursor=pointer]:
+                  - /url: "#api-keys"
+              - listitem [ref=e133]:
+                - link "Event Monitor" [ref=e134] [cursor=pointer]:
+                  - /url: "#event-monitor"
+              - listitem [ref=e135]:
+                - link "Chat UI" [ref=e136] [cursor=pointer]:
+                  - /url: "#chat-ui"
+              - listitem [ref=e137]:
+                - link "FAQ" [ref=e138] [cursor=pointer]:
+                  - /url: "#faq"
+                - list [ref=e139]:
+                  - listitem [ref=e140]:
+                    - link "Connect Single Dashboard to Multiple Servers" [ref=e141] [cursor=pointer]:
+                      - /url: "#connect-single-dashboard-to-multiple-servers"
+      - main [ref=e142]:
+        - heading "📊 Dashboard" [level=1] [ref=e143]
+        - paragraph [ref=e144]:
+          - strong [ref=e145]: Dashboard
+          - text: is a UI to manage your WhatsApp sessions!
+        - generic [ref=e146]: Download the .
+        - paragraph [ref=e147]:
+          - text: You can access
+          - strong [ref=e148]: Dashboard
+          - text: by running the project and opening
+          - link "http://localhost:3000/dashboard" [ref=e149] [cursor=pointer]:
+            - /url: http://localhost:3000/dashboard
+          - text: (or similar, but with
+          - link "/dashboard" [ref=e150] [cursor=pointer]:
+            - /url: /dashboard
+          - text: at the end).
+        - paragraph [ref=e151]:
+          - text: ℹ️
+          - strong [ref=e152]: Default username and password
+          - text: ":"
+          - code [ref=e153]: admin/admin
+          - text: (or
+          - code [ref=e154]: waha/waha
+          - text: )
+        - figure [ref=e156]:
+          - generic [ref=e159]:
+            - button "Clipboard button" [ref=e161] [cursor=pointer]
+            - code [ref=e164]:
+              - generic [ref=e166]: docker run -it -p 3000:3000 devlikeapro/waha-plus
+        - heading "Configuration" [level=2] [ref=e167]
+        - paragraph [ref=e168]: "When running WAHA you can set the following environment variables to configure the dashboard:"
+        - list [ref=e169]:
+          - listitem [ref=e170]:
+            - code [ref=e171]: WAHA_DASHBOARD_ENABLED=true
+            - text: "- enable or disable the dashboard, by default"
+            - code [ref=e172]: "true"
+            - text: . Set to
+            - code [ref=e173]: "false"
+            - text: to disable the dashboard.
+          - listitem [ref=e174]:
+            - code [ref=e175]: WAHA_DASHBOARD_USERNAME=waha
+            - text: "- username used to log in, by default"
+            - code [ref=e176]: admin
+            - text: or
+            - code [ref=e177]: waha
+          - listitem [ref=e178]:
+            - code [ref=e179]: WAHA_DASHBOARD_PASSWORD=waha
+            - text: "- password used to log in, generated random."
+        - figure [ref=e181]:
+          - generic [ref=e184]:
+            - button "Clipboard button" [ref=e186] [cursor=pointer]
+            - code [ref=e189]:
+              - generic [ref=e191]: docker run -it -p 3000:3000 -e WAHA_DASHBOARD_USERNAME=waha -e WAHA_DASHBOARD_PASSWORD=waha devlikeapro/waha-plus
+        - heading "API Key" [level=2] [ref=e192]
+        - paragraph [ref=e193]:
+          - text: If you’re using
+          - link "API Key" [ref=e194] [cursor=pointer]:
+            - /url: /docs/how-to/security/
+          - text: ", remember to set up the key in the dashboard."
+        - paragraph [ref=e196]:
+          - img "Dashboard with API Key" [ref=e197]
+        - heading "API Keys" [level=2] [ref=e198]
+        - paragraph [ref=e199]:
+          - img "API Keys" [ref=e200]
+        - paragraph [ref=e201]:
+          - text: You can use
+          - code [ref=e202]: WAHA_API_KEY
+          - text: as an API key, or you can create a new
+          - strong [ref=e203]: admin
+          - text: or
+          - strong [ref=e204]: session
+          - text: API Key using the
+          - link "🔒 Keys API" [ref=e205] [cursor=pointer]:
+            - /url: /docs/how-to/security/#keys-api
+            - strong [ref=e206]: 🔒 Keys API
+          - text: or the
+          - link "📊 Dashboard" [ref=e207] [cursor=pointer]:
+            - /url: /docs/how-to/dashboard/#api-keys
+            - strong [ref=e208]: 📊 Dashboard
+          - text: .
+        - paragraph [ref=e209]:
+          - text: Admin keys can access all sessions. Session keys are scoped to a single session via the
+          - code [ref=e210]: session
+          - text: field.
+        - heading "Event Monitor" [level=2] [ref=e211]
+        - paragraph [ref=e212]:
+          - text: You can observe
+          - link "Events" [ref=e213] [cursor=pointer]:
+            - /url: /docs/how-to/events/
+            - strong [ref=e214]: Events
+          - text: in real-time using
+          - strong [ref=e215]: Event Monitor
+          - text: ":"
+        - paragraph [ref=e216]:
+          - link "http://localhost:3000/dashboard/event-monitor" [ref=e217] [cursor=pointer]:
+            - /url: http://localhost:3000/dashboard/event-monitor
+        - paragraph [ref=e219]:
+          - img "Event Monitor" [ref=e220]
+        - heading "Chat UI" [level=2] [ref=e221]
+        - paragraph [ref=e222]:
+          - text: We’ve built a simple
+          - strong [ref=e223]: Chat UI
+          - text: in Dashboard, so you can see what is possible to implement using WAHA!
+        - generic [ref=e224]:
+          - link [ref=e225] [cursor=pointer]:
+            - /url: /images/waha/dashboard/waha-dashboard-chat-ui.png
+          - generic [ref=e226]: Click to open full size.
+        - paragraph [ref=e227]:
+          - text: You can implement
+          - strong [ref=e228]: Live Chat
+          - text: ","
+          - strong [ref=e229]: Multiple Agents
+          - text: ", and more features using"
+          - link "WAHA API" [ref=e230] [cursor=pointer]:
+            - /url: https://waha.devlike.pro/
+            - strong [ref=e231]: WAHA API
+          - text: ":"
+        - list [ref=e232]:
+          - listitem [ref=e233]:
+            - link "💬 Chats API" [ref=e234] [cursor=pointer]:
+              - /url: /docs/how-to/chats/
+              - strong [ref=e235]: 💬 Chats API
+            - text: to get chats overview and messages.
+          - listitem [ref=e236]:
+            - link "📤 Send messages API" [ref=e237] [cursor=pointer]:
+              - /url: /docs/how-to/send-messages/
+              - strong [ref=e238]: 📤 Send messages API
+            - text: to send messages to chats.
+          - listitem [ref=e239]:
+            - link "🔄 Message ACK" [ref=e240] [cursor=pointer]:
+              - /url: /docs/how-to/events/#messageack
+              - strong [ref=e241]: 🔄 Message ACK
+            - text: to get message status.
+          - listitem [ref=e242]:
+            - link "🔄 Websockets" [ref=e243] [cursor=pointer]:
+              - /url: /docs/how-to/events/#websockets
+              - strong [ref=e244]: 🔄 Websockets
+            - text: to get real-time messages on the client side.
+        - paragraph [ref=e245]:
+          - text: 👉
+          - link "Source Code on Github" [ref=e246] [cursor=pointer]:
+            - /url: https://github.com/devlikeapro/waha-hub/tree/main/ui/components/chat
+            - strong [ref=e247]: Source Code on Github
+          - text: (Vue3 + PrimeVue) available for
+          - link "WAHA PRO" [ref=e248] [cursor=pointer]:
+            - /url: https://waha.devlike.pro/support-us/#tier-pro
+          - text: supporters!
+        - heading "FAQ" [level=2] [ref=e249]
+        - heading "Connect Single Dashboard to Multiple Servers" [level=3] [ref=e250]
+        - paragraph [ref=e251]:
+          - text: If you’re running multiple servers (like
+          - link "using sharding to handle 50+ sessions ->" [ref=e252] [cursor=pointer]:
+            - /url: /blog/waha-scaling-how-to-handle-500-sessions/
+            - strong [ref=e253]: using sharding to handle 50+ sessions ->
+          - text: ") you can run a dedicated WAHA just to have a single place where from you can manage all servers:"
+        - generic [ref=e254]:
+          - link [ref=e255] [cursor=pointer]:
+            - /url: /images/waha/dashboard/waha-dashboard-servers.drawio.png
+          - generic [ref=e256]: Click to open full size.
+        - paragraph [ref=e257]: "After that you can connect all server to the single dashboard:"
+        - generic [ref=e258]:
+          - link [ref=e259] [cursor=pointer]:
+            - /url: /images/waha/dashboard/waha-single-dashboard-multiple-servers.png
+          - generic [ref=e260]: Click to open full size.
+        - link "Edit this page on GitHub" [ref=e263] [cursor=pointer]:
+          - /url: https://github.com/devlikeapro/waha-docs/blob/main/content//docs/how-to/dashboard/index.md
+          - img [ref=e264]
+          - text: Edit this page on GitHub
+        - generic [ref=e266]:
+          - generic [ref=e268]:
+            - img [ref=e270]
+            - generic [ref=e274]:
+              - generic [ref=e275]: Prev
+              - link "🔧 Install & Update" [ref=e276] [cursor=pointer]:
+                - /url: /docs/how-to/install/
+          - generic [ref=e278]:
+            - generic [ref=e279]:
+              - generic [ref=e280]: Next
+              - link "📚 Swagger (OpenAPI)" [ref=e281] [cursor=pointer]:
+                - /url: /docs/how-to/swagger/
+            - img [ref=e283]
+  - contentinfo [ref=e287]:
+    - generic [ref=e289]:
+      - list [ref=e291]:
+        - listitem
+      - generic:
+        - list
+  - button "Top" [ref=e293] [cursor=pointer]:
+    - generic [ref=e294]: Top
+    - img [ref=e295]

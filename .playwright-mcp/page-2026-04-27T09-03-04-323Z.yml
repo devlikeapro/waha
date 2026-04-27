@@ -1,0 +1,320 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - button "" [ref=e5] [cursor=pointer]:
+        - generic [ref=e6]: 
+      - link "logo Dashboard" [ref=e7] [cursor=pointer]:
+        - /url: /dashboard/
+        - img "logo" [ref=e8]
+        - generic [ref=e9]: Dashboard
+      - text: 
+      - generic [ref=e10]:
+        - button "" [ref=e11] [cursor=pointer]:
+          - generic [ref=e12]: 
+        - link "" [ref=e13] [cursor=pointer]:
+          - /url: /dashboard/event-monitor
+          - generic [ref=e14]: 
+        - button "" [ref=e15] [cursor=pointer]:
+          - generic [ref=e16]: 
+    - list [ref=e18]:
+      - listitem [ref=e19]:
+        - generic [ref=e20]: Home
+        - text: 
+        - list [ref=e21]:
+          - listitem [ref=e22]:
+            - link " Dashboard" [ref=e23] [cursor=pointer]:
+              - /url: /dashboard/
+              - generic [ref=e24]: 
+              - generic [ref=e25]: Dashboard
+          - listitem [ref=e26]:
+            - link " Workers" [ref=e27] [cursor=pointer]:
+              - /url: /dashboard/workers
+              - generic [ref=e28]: 
+              - generic [ref=e29]: Workers
+          - listitem [ref=e30]:
+            - link " Sessions" [ref=e31] [cursor=pointer]:
+              - /url: /dashboard/sessions
+              - generic [ref=e32]: 
+              - generic [ref=e33]: Sessions
+          - listitem [ref=e34]:
+            - link " Event Monitor" [ref=e35] [cursor=pointer]:
+              - /url: /dashboard/event-monitor
+              - generic [ref=e36]: 
+              - generic [ref=e37]: Event Monitor
+    - generic [ref=e40]:
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - generic [ref=e45]: Sessions
+            - generic [ref=e46]: "1"
+          - generic [ref=e47]:
+            - generic [ref=e304]:
+              - generic [ref=e305]: Hide Duplicates
+              - generic [ref=e306]: 
+              - switch [ref=e308] [cursor=pointer]
+            - generic [ref=e49]: 
+        - text: 0 working, 1 stopped
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - generic [ref=e53]:
+            - generic [ref=e54]: Workers
+            - generic [ref=e55]: "2"
+          - generic [ref=e57]: 
+        - generic [ref=e58]: 1 not connected / 1 connected
+      - generic [ref=e60]:
+        - generic [ref=e61]:
+          - generic [ref=e62]:
+            - generic [ref=e63]: Updates
+            - generic [ref=e65]:
+              - generic [ref=e66]: 
+              - text: All workers up to date!
+          - generic [ref=e68]: 
+        - generic [ref=e69]:
+          - link "Changelog " [ref=e70] [cursor=pointer]:
+            - /url: https://waha.devlike.pro/docs/overview/changelog/
+            - text: Changelog
+            - generic [ref=e71]: 
+          - link "How to Update " [ref=e72] [cursor=pointer]:
+            - /url: https://waha.devlike.pro/blog/waha-update/
+            - text: How to Update
+            - generic [ref=e73]: 
+      - generic [ref=e75]:
+        - generic [ref=e76]:
+          - heading " Workers" [level=5] [ref=e78]:
+            - generic [ref=e79]: 
+            - generic [ref=e80]: Workers
+          - button "" [ref=e82] [cursor=pointer]:
+            - generic [ref=e83]: 
+        - generic [ref=e84]:
+          - generic [ref=e86]:
+            - button "Connect" [ref=e87] [cursor=pointer]:
+              - generic [ref=e88]: 
+              - generic [ref=e89]: Connect
+            - generic [ref=e90]:
+              - generic [ref=e91]: 
+              - textbox "Keyword Search" [ref=e92]
+          - table [ref=e94]:
+            - rowgroup [ref=e95]:
+              - row "Name API Info Sessions" [ref=e96]:
+                - columnheader "Name" [ref=e97]:
+                  - generic [ref=e100]: Name
+                - columnheader "API" [ref=e101]:
+                  - generic [ref=e104]: API
+                - columnheader "Info" [ref=e105]:
+                  - generic [ref=e108]: Info
+                - columnheader "Sessions" [ref=e109]:
+                  - generic [ref=e112]: Sessions
+                - columnheader [ref=e113]
+            - rowgroup [ref=e114]:
+              - row "WAHA  http://localhost:3000        " [ref=e115]:
+                - cell "WAHA" [ref=e116]:
+                  - generic [ref=e117]: WAHA
+                - cell " http://localhost:3000" [ref=e118]:
+                  - generic [ref=e120]:
+                    - generic [ref=e121]: 
+                    - link "http://localhost:3000" [ref=e122] [cursor=pointer]:
+                      - /url: http://localhost:3000
+                - cell "" [ref=e123]:
+                  - generic [ref=e310]: 
+                - cell "" [ref=e125]:
+                  - generic [ref=e311]: 
+                - cell "     " [ref=e128]:
+                  - generic [ref=e129]:
+                    - button "" [ref=e130] [cursor=pointer]:
+                      - generic [ref=e131]: 
+                    - button "" [disabled]:
+                      - generic: 
+                    - button "" [disabled]:
+                      - generic: 
+                    - button "" [ref=e132] [cursor=pointer]:
+                      - generic [ref=e133]: 
+                    - button "" [ref=e134] [cursor=pointer]:
+                      - generic [ref=e135]: 
+                    - button "" [ref=e136] [cursor=pointer]:
+                      - generic [ref=e137]: 
+              - 'row "WAHA  http://localhost:3000 WEBJS (2026.4.2 CORE) 00:02:04 up  STOPPED: 1      " [ref=e312]':
+                - cell "WAHA" [ref=e313]:
+                  - generic [ref=e314]: WAHA
+                - cell " http://localhost:3000" [ref=e315]:
+                  - generic [ref=e317]:
+                    - generic [ref=e318]: 
+                    - link "http://localhost:3000" [ref=e319] [cursor=pointer]:
+                      - /url: http://localhost:3000
+                - cell "WEBJS (2026.4.2 CORE) 00:02:04 up " [ref=e320]:
+                  - generic [ref=e321]:
+                    - code [ref=e322]: WEBJS
+                    - code [ref=e323]: (
+                    - code [ref=e324]: 2026.4.2 CORE
+                    - code [ref=e325]: )
+                  - generic [ref=e326]:
+                    - text: 00:02:04 up
+                    - generic [ref=e327]: 
+                - 'cell "STOPPED: 1" [ref=e328]':
+                  - generic [ref=e331]: "STOPPED: 1"
+                - cell "     " [ref=e332]:
+                  - generic [ref=e333]:
+                    - button "" [ref=e334] [cursor=pointer]:
+                      - generic [ref=e335]: 
+                    - button "" [ref=e336] [cursor=pointer]:
+                      - generic [ref=e337]: 
+                    - button "" [ref=e338] [cursor=pointer]:
+                      - generic [ref=e339]: 
+                    - button "" [ref=e340] [cursor=pointer]:
+                      - generic [ref=e341]: 
+                    - button "" [ref=e342] [cursor=pointer]:
+                      - generic [ref=e343]: 
+                    - button "" [ref=e344] [cursor=pointer]:
+                      - generic [ref=e345]: 
+          - navigation [ref=e138]:
+            - generic [ref=e139]:
+              - button "First Page" [disabled]:
+                - img
+              - button "Previous Page" [disabled]:
+                - img
+              - button "Page 1" [ref=e141] [cursor=pointer]: "1"
+              - button "Next Page" [disabled]:
+                - img
+              - button "Last Page" [disabled]:
+                - img
+      - generic [ref=e143]:
+        - generic [ref=e144]:
+          - heading " Sessions" [level=5] [ref=e146]:
+            - generic [ref=e147]: 
+            - generic [ref=e148]: Sessions
+          - button "" [ref=e150] [cursor=pointer]:
+            - generic [ref=e151]: 
+        - generic [ref=e152]:
+          - generic [ref=e154]:
+            - button "Start New" [ref=e156] [cursor=pointer]:
+              - generic [ref=e157]: 
+              - generic [ref=e158]: Start New
+            - generic [ref=e159]:
+              - generic [ref=e346]:
+                - generic [ref=e347]: Hide Duplicates
+                - generic [ref=e348]: 
+                - switch [ref=e350] [cursor=pointer]
+              - generic [ref=e161]:
+                - generic [ref=e162]: 
+                - textbox "Search by Name, Phone, Metadata" [ref=e163]
+              - generic [ref=e165] [cursor=pointer]:
+                - generic [ref=e166]:
+                  - combobox "Columns"
+                - generic [ref=e168]: Columns
+                - img [ref=e170]
+          - table [ref=e173]:
+            - rowgroup [ref=e174]:
+              - row "Name Metadata Account Status Server" [ref=e175]:
+                - columnheader [ref=e176]
+                - columnheader "Name" [ref=e178] [cursor=pointer]:
+                  - generic [ref=e180]:
+                    - generic [ref=e181]: Name
+                    - img [ref=e183]
+                - columnheader "Metadata" [ref=e185]:
+                  - generic [ref=e188]: Metadata
+                - columnheader "Account" [ref=e189]:
+                  - generic [ref=e192]: Account
+                - columnheader "Status" [ref=e193]:
+                  - generic [ref=e196]: Status
+                - columnheader "Server" [ref=e197]:
+                  - generic [ref=e200]: Server
+                - columnheader [ref=e201]
+              - row "All items unselected     " [ref=e202]:
+                - columnheader "All items unselected" [ref=e203]:
+                  - checkbox "All items unselected" [ref=e353] [cursor=pointer]
+                - columnheader [ref=e204]:
+                  - textbox "Session" [ref=e207]
+                - columnheader [ref=e208]
+                - columnheader [ref=e209]:
+                  - generic [ref=e210]:
+                    - textbox "Account (Phone Number)" [ref=e212]
+                    - button [ref=e213] [cursor=pointer]:
+                      - img [ref=e214]
+                - columnheader [ref=e216]:
+                  - generic [ref=e219] [cursor=pointer]:
+                    - combobox "Any" [ref=e220]
+                    - img [ref=e222]
+                - columnheader [ref=e224]:
+                  - generic [ref=e227] [cursor=pointer]:
+                    - combobox "Any" [ref=e228]
+                    - img [ref=e230]
+                - columnheader "    " [ref=e232]:
+                  - generic [ref=e236]:
+                    - button "" [disabled]:
+                      - generic: 
+                    - button "" [disabled]:
+                      - generic: 
+                    - button "" [disabled]:
+                      - generic: 
+                    - button "" [disabled]:
+                      - generic: 
+                    - button "" [disabled]:
+                      - generic: 
+            - rowgroup [ref=e237]:
+              - row "Row Unselected default     STOPPED WAHA       " [ref=e355]:
+                - cell "Row Unselected" [ref=e356]:
+                  - checkbox "Row Unselected" [ref=e358] [cursor=pointer]
+                - cell "default" [ref=e360]
+                - cell [ref=e361]
+                - cell [ref=e362]
+                - cell "    STOPPED" [ref=e363]:
+                  - generic [ref=e364]:
+                    - generic [ref=e365]:
+                      - button "" [disabled]:
+                        - generic: 
+                    - generic [ref=e366]:
+                      - button "" [disabled]:
+                        - generic: 
+                    - generic [ref=e367]:
+                      - button "" [disabled]:
+                        - generic: 
+                    - button "" [ref=e369] [cursor=pointer]:
+                      - generic [ref=e370]: 
+                    - generic [ref=e373]: STOPPED
+                - cell "WAHA" [ref=e374]
+                - cell "      " [ref=e375]:
+                  - generic [ref=e377]:
+                    - button "" [ref=e378] [cursor=pointer]:
+                      - generic [ref=e379]: 
+                    - button "" [ref=e380] [cursor=pointer]:
+                      - generic [ref=e381]: 
+                    - button "" [ref=e382] [cursor=pointer]:
+                      - generic [ref=e383]: 
+                    - button "" [ref=e384] [cursor=pointer]:
+                      - generic [ref=e385]: 
+                    - button "" [ref=e386] [cursor=pointer]:
+                      - generic [ref=e387]: 
+                    - button "" [ref=e388] [cursor=pointer]:
+                      - generic [ref=e389]: 
+                    - button "" [ref=e390] [cursor=pointer]:
+                      - generic [ref=e391]: 
+          - navigation [ref=e240]:
+            - generic [ref=e241]:
+              - button "First Page" [disabled]:
+                - img
+              - button "Previous Page" [disabled]:
+                - img
+              - button "Page 1" [ref=e393] [cursor=pointer]: "1"
+              - button "Next Page" [disabled]:
+                - img
+              - button "Last Page" [disabled]:
+                - img
+              - generic [ref=e394] [cursor=pointer]:
+                - combobox "Rows per page" [ref=e395]: "10"
+                - img [ref=e397]
+  - generic [ref=e243]:
+    - alert [ref=e399]:
+      - generic [ref=e400]:
+        - img [ref=e401]
+        - generic [ref=e403]:
+          - text: Connected to server
+          - generic [ref=e404]: WAHA
+        - button "Close" [ref=e406] [cursor=pointer]:
+          - img [ref=e407]
+    - alert [ref=e409]:
+      - generic [ref=e410]:
+        - img [ref=e411]
+        - generic [ref=e413]:
+          - text: Server connection failed
+          - generic [ref=e414]: WAHA (http://localhost:3000) is not connected. Please make sure it's online and set right API key in the configuration.
+        - button "Close" [ref=e416] [cursor=pointer]:
+          - img [ref=e417]

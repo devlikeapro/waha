@@ -1,0 +1,12 @@
+# Build from existing waha image and copy our dist
+FROM devlikeapro/waha:latest
+
+# Copy built dist from local
+COPY dist /app/dist
+
+# Set environment
+ENV WAHA_API_KEY=minimax_multitenant
+ENV WAHA_DASHBOARD_USERNAME=admin
+ENV WAHA_DASHBOARD_PASSWORD=admin123
+ENV WAHA_LOG_LEVEL=info
+ENV WAHA_LOG_FORMAT=json
