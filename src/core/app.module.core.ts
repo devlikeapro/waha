@@ -41,6 +41,7 @@ import { Logger as NestJSPinoLogger } from 'nestjs-pino';
 import { join } from 'path';
 import { Logger } from 'pino';
 
+import { AdminController } from '../api/admin.controller';
 import { AuthController } from '../api/auth.controller';
 import { CallsController } from '../api/calls.controller';
 import { ChatsController } from '../api/chats.controller';
@@ -107,7 +108,9 @@ export const IMPORTS_CORE = [
   ConfigModule.forRoot({
     isGlobal: true,
     validationSchema: Joi.object({
-      WHATSAPP_API_SCHEMA: Joi.string().valid('http', 'https').default('http'),
+      WHATSAPP_API_SCHEMA: Joi.string()
+        .valid('http', 'https')
+        .default('http'),
     }),
   }),
   ServeStaticModule.forRootAsync({
@@ -144,6 +147,7 @@ const IMPORTS_MEDIA = [
 const IMPORTS = [...IMPORTS_CORE, ...IMPORTS_MEDIA];
 
 export const CONTROLLERS = [
+  AdminController,
   AuthController,
   ApiKeysController,
   SessionsController,
@@ -197,9 +201,10 @@ export const PROVIDERS_BASE: Provider[] = [
 ];
 
 const PROVIDERS = [
+  SessionManagerCore,
   {
     provide: SessionManager,
-    useClass: SessionManagerCore,
+    useExisting: SessionManagerCore,
   },
   {
     provide: WAHAHealthCheckService,

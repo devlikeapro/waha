@@ -183,6 +183,16 @@ export class WhatsappConfigService implements OnApplicationBootstrap {
   }
 
   /**
+   * If true, clears all media storage on every boot.
+   * WARNING: This will delete all media files for all sessions!
+   * Default is false for safety.
+   */
+  get shouldClearStorageOnBoot(): boolean {
+    const value = this.configService.get('WAHA_CLEAR_STORAGE_ON_BOOT', 'false');
+    return parseBool(value);
+  }
+
+  /**
    * Global default "ignore settings" for chats.
    * If not defined, defaults to false (do not ignore anything).
    */

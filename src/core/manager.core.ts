@@ -110,9 +110,19 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
 
     this.store = new LocalStoreCore(getNamespace(), getSessionNamespace());
     this.sessionAuthRepository = new LocalSessionAuthRepository(this.store);
-    this.clearStorage().catch((error) => {
-      this.log.error({ error }, 'Error while clearing storage');
-    });
+    if (this.config.shouldClearStorageOnBoot) {
+      this.clearStorage().catch((error) => {
+        this.log.error({ error }, 'Error while clearing storage');
+      });
+    }
+  }
+
+  async clearStorage(): Promise<void> {
+    const storage = await this.mediaStorageFactory.build(
+      'all',
+      this.log.logger.child({ name: 'Storage' }),
+    );
+    await storage.purge();
   }
 
   protected getEngine(engine: WAHAEngine): typeof WhatsappSession {
@@ -144,17 +154,11 @@ export class SessionManagerCore extends SessionManager implements OnModuleInit {
   }
 
   async onApplicationBootstrap() {
-    this.apiKeyRepository = new CoreApiKeyRepository();
+    await this.store.init();
+    this.apiKeyRepository = new CoreApiKeyRepository(this.store);
+    await this.apiKeyRepository.init();
     await this.engineBootstrap.bootstrap();
     this.startPredefinedSessions();
-  }
-
-  private async clearStorage() {
-    const storage = await this.mediaStorageFactory.build(
-      'all',
-      this.log.logger.child({ name: 'Storage' }),
-    );
-    await storage.purge();
   }
 
   //
