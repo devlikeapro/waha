@@ -193,6 +193,14 @@ export class WhatsappConfigService implements OnApplicationBootstrap {
   }
 
   /**
+   * Storage backend type: SQLITE (default), POSTGRESQL, or MONGODB.
+   * PostgreSQL is recommended for multi-account deployments.
+   */
+  get storageBackend(): 'SQLITE' | 'POSTGRESQL' | 'MONGODB' {
+    return this.configService.get('WAHA_STORAGE_BACKEND', 'SQLITE') as any;
+  }
+
+  /**
    * Global default "ignore settings" for chats.
    * If not defined, defaults to false (do not ignore anything).
    */
