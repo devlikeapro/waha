@@ -56,6 +56,7 @@ import { PingController } from '../api/ping.controller';
 import { PresenceController } from '../api/presence.controller';
 import { ScreenshotController } from '../api/screenshot.controller';
 import { SessionsController } from '../api/sessions.controller';
+import { TenantsController } from '../api/tenants.controller';
 import { StatusController } from '../api/status.controller';
 import { VersionController } from '../api/version.controller';
 import { WhatsappConfigService } from '../config.service';
@@ -151,6 +152,7 @@ export const CONTROLLERS = [
   AuthController,
   ApiKeysController,
   SessionsController,
+  TenantsController,
   ProfileController,
   ChattingController,
   ChatsController,

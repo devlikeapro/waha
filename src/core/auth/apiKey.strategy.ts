@@ -6,7 +6,8 @@ import { ApiKeyService } from '@waha/core/auth/ApiKeyService';
 
 export interface User {
   isAdmin: boolean;
-  session?: string;
+  tenantId?: string | null;
+  session?: string | null;
 }
 
 function AdminUser(): User {

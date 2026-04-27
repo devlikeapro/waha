@@ -16,6 +16,7 @@ export class ApiKeyService {
     }
     return {
       isAdmin: key.isAdmin,
+      tenantId: key.tenantId,
       session: key.session,
     };
   }
