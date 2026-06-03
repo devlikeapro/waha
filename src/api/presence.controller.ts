@@ -31,12 +31,12 @@ import { Action } from '@waha/core/auth/casl.types';
 @Controller('api/:session/presence')
 @ApiTags('✅ Presence')
 @UseGuards(PoliciesGuard)
-@CheckPolicies(CanSession(Action.Use, FromParam('session')))
 export class PresenceController {
   constructor(private manager: SessionManager) {}
 
   @Post('')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Set session presence' })
   setPresence(
     @WorkingSessionParam session: WhatsappSession,
@@ -67,6 +67,7 @@ export class PresenceController {
 
   @Get('')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get all subscribed presence information.' })
   getPresenceAll(
     @WorkingSessionParam session: WhatsappSession,
@@ -77,6 +78,7 @@ export class PresenceController {
   @Get(':chatId')
   @SessionApiParam
   @ChatIdApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({
     summary:
       "Get the presence for the chat id. If it hasn't been subscribed - it also subscribes to it.",
@@ -91,6 +93,7 @@ export class PresenceController {
   @Post(':chatId/subscribe')
   @SessionApiParam
   @ChatIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({
     summary: 'Subscribe to presence events for the chat.',
   })

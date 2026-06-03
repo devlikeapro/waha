@@ -6,6 +6,7 @@ import { ChatWootAppConfig } from '@waha/apps/chatwoot/dto/config.dto';
 import { ChatWootScheduleService } from '@waha/apps/chatwoot/services/ChatWootScheduleService';
 import { ChatWootWAHAQueueService } from '@waha/apps/chatwoot/services/ChatWootWAHAQueueService';
 import { App } from '@waha/apps/chatwoot/storage';
+import { SessionManager } from '@waha/core/abc/manager.abc';
 import { WhatsappSession } from '@waha/core/abc/session.abc';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
@@ -38,27 +39,31 @@ export class ChatWootAppService implements IAppService {
   }
 
   async beforeEnabled(
+    manager: SessionManager,
     savedApp: App<ChatWootAppConfig>,
     newApp: App<ChatWootAppConfig>,
   ): Promise<void> {
+    void manager;
     // Enabling -> behave like created
     await this.beforeCreated(newApp);
-    return;
   }
 
   async beforeDisabled(
+    manager: SessionManager,
     savedApp: App<ChatWootAppConfig>,
     newApp: App<ChatWootAppConfig>,
   ): Promise<void> {
+    void manager;
     // Disabling -> behave like deleted
-    await this.beforeDeleted(savedApp);
-    return;
+    await this.beforeDeleted(manager, savedApp);
   }
 
   async beforeUpdated(
+    manager: SessionManager,
     savedApp: App<ChatWootAppConfig>,
     newApp: App<ChatWootAppConfig>,
   ) {
+    void manager;
     const isTheSameUrl = savedApp.config.url === newApp.config.url;
     const isTheSameInboxId = savedApp.config.inboxId === newApp.config.inboxId;
     const isTheSameInbox = isTheSameUrl && isTheSameInboxId;
@@ -76,7 +81,11 @@ export class ChatWootAppService implements IAppService {
     }
   }
 
-  async beforeDeleted(app: App<ChatWootAppConfig>): Promise<void> {
+  async beforeDeleted(
+    manager: SessionManager,
+    app: App<ChatWootAppConfig>,
+  ): Promise<void> {
+    void manager;
     await this.chatWootScheduleService.unschedule(app.id, app.session);
     this.cleanCache(app);
     this.sendDisconnectedMessage(app).catch((err) => {
@@ -84,6 +93,30 @@ export class ChatWootAppService implements IAppService {
         'Error sending disconnected message to ChatWoot - ' + err,
       );
     });
+  }
+
+  async afterCreated(
+    manager: SessionManager,
+    app: App<ChatWootAppConfig>,
+  ): Promise<void> {
+    void manager;
+    void app;
+  }
+
+  async beforeSessionDeleted(
+    manager: SessionManager,
+    app: App<ChatWootAppConfig>,
+  ): Promise<void> {
+    void manager;
+    void app;
+  }
+
+  async enrich(
+    manager: SessionManager,
+    app: App<ChatWootAppConfig>,
+  ): Promise<void> {
+    void manager;
+    void app;
   }
 
   private async sendConnectedMessage(app: App<ChatWootAppConfig>) {

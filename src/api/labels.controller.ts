@@ -37,12 +37,12 @@ import { Action } from '@waha/core/auth/casl.types';
 @Controller('api/:session/labels')
 @ApiTags('🏷️ Labels')
 @UseGuards(PoliciesGuard)
-@CheckPolicies(CanSession(Action.Use, FromParam('session')))
 export class LabelsController {
   constructor(private manager: SessionManager) {}
 
   @Get('/')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get all labels' })
   getAll(@WorkingSessionParam session: WhatsappSession): Promise<Label[]> {
     return session.getLabels();
@@ -50,6 +50,7 @@ export class LabelsController {
 
   @Post('/')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Create a new label' })
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async create(
@@ -75,6 +76,7 @@ export class LabelsController {
 
   @Put('/:labelId')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Update a label' })
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async update(
@@ -106,6 +108,7 @@ export class LabelsController {
 
   @Delete('/:labelId')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Delete a label' })
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async delete(
@@ -123,6 +126,7 @@ export class LabelsController {
   @Get('/chats/:chatId')
   @SessionApiParam
   @ChatIdApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get labels for the chat' })
   getChatLabels(
     @WorkingSessionParam session: WhatsappSession,
@@ -134,6 +138,7 @@ export class LabelsController {
   @Put('/chats/:chatId')
   @SessionApiParam
   @ChatIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Save labels for the chat' })
   putChatLabels(
     @WorkingSessionParam session: WhatsappSession,
@@ -145,6 +150,7 @@ export class LabelsController {
 
   @Get('/:labelId/chats')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get chats by label' })
   getChatsByLabel(
     @WorkingSessionParam session: WhatsappSession,

@@ -42,7 +42,7 @@ export class ServerController {
 
   @Get('version')
   @ApiOperation({ summary: 'Get the version of the server' })
-  @CheckPolicies(CanServer(Action.Read))
+  @CheckPolicies(CanServer(Action.Retrieve))
   get(): WAHAEnvironment {
     return VERSION;
   }
@@ -76,7 +76,7 @@ export class ServerController {
 
   @Get('status')
   @ApiOperation({ summary: 'Get the server status' })
-  @CheckPolicies(CanServer(Action.Read))
+  @CheckPolicies(CanServer(Action.Retrieve))
   async status(): Promise<ServerStatusResponse> {
     const now = Date.now();
     const uptime = Math.floor(process.uptime() * 1000);

@@ -51,12 +51,12 @@ import { Action } from '@waha/core/auth/casl.types';
 @Controller('api/:session/groups')
 @ApiTags('👥 Groups')
 @UseGuards(PoliciesGuard)
-@CheckPolicies(CanSession(Action.Use, FromParam('session')))
 export class GroupsController {
   constructor(private manager: SessionManager) {}
 
   @Post('')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Create a new group.' })
   createGroup(
     @WorkingSessionParam session: WhatsappSession,
@@ -67,6 +67,7 @@ export class GroupsController {
 
   @Get('join-info')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get info about the group before joining.' })
   async joinInfoGroup(
     @WorkingSessionParam session: WhatsappSession,
@@ -79,6 +80,7 @@ export class GroupsController {
   @Post('join')
   @HttpCode(HttpStatus.OK)
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Join group via code' })
   async joinGroup(
     @WorkingSessionParam session: WhatsappSession,
@@ -91,6 +93,7 @@ export class GroupsController {
 
   @Get('')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get all groups.' })
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async getGroups(
@@ -105,6 +108,7 @@ export class GroupsController {
 
   @Get('/count')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get the number of groups.' })
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async getGroupsCount(
@@ -120,6 +124,7 @@ export class GroupsController {
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Refresh groups from the server.' })
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async refreshGroups(@WorkingSessionParam session: WhatsappSession) {
@@ -129,6 +134,7 @@ export class GroupsController {
   @Get(':id')
   @GroupIdApiParam
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get the group.' })
   getGroup(
     @WorkingSessionParam session: WhatsappSession,
@@ -140,6 +146,7 @@ export class GroupsController {
   @Delete(':id')
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Delete the group.' })
   deleteGroup(
     @WorkingSessionParam session: WhatsappSession,
@@ -152,6 +159,7 @@ export class GroupsController {
   @HttpCode(HttpStatus.OK)
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Leave the group.' })
   leaveGroup(
     @WorkingSessionParam session: WhatsappSession,
@@ -163,6 +171,7 @@ export class GroupsController {
   @Get(':id/picture')
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get group picture' })
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async getChatPicture(
@@ -177,6 +186,7 @@ export class GroupsController {
   @Put(':id/picture')
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Set group picture' })
   async setPicture(
     @Param('id') id: string,
@@ -190,6 +200,7 @@ export class GroupsController {
   @Delete(':id/picture')
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Delete group picture' })
   async deletePicture(
     @Param('id') id: string,
@@ -207,6 +218,7 @@ export class GroupsController {
   })
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   setDescription(
     @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
@@ -218,6 +230,7 @@ export class GroupsController {
   @Put(':id/subject')
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({
     summary: 'Updates the group subject',
     description:
@@ -234,6 +247,7 @@ export class GroupsController {
   @Put(':id/settings/security/info-admin-only')
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({
     summary: 'Updates the group "info admin only" settings.',
     description:
@@ -250,6 +264,7 @@ export class GroupsController {
   @Get(':id/settings/security/info-admin-only')
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({
     summary: "Get the group's 'info admin only' settings.",
     description:
@@ -265,6 +280,7 @@ export class GroupsController {
   @Put(':id/settings/security/messages-admin-only')
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({
     summary: 'Update settings - who can send messages',
     description:
@@ -281,6 +297,7 @@ export class GroupsController {
   @Get(':id/settings/security/messages-admin-only')
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({
     summary: 'Get settings - who can send messages',
     description: 'The group settings to only allow admins to send messages.',
@@ -295,6 +312,7 @@ export class GroupsController {
   @Get(':id/invite-code')
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Gets the invite code for the group.' })
   getInviteCode(
     @WorkingSessionParam session: WhatsappSession,
@@ -307,6 +325,7 @@ export class GroupsController {
   @HttpCode(HttpStatus.OK)
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({
     summary:
       'Invalidates the current group invite code and generates a new one.',
@@ -321,6 +340,7 @@ export class GroupsController {
   @Get(':id/participants/')
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get participants' })
   getParticipants(
     @WorkingSessionParam session: WhatsappSession,
@@ -332,6 +352,7 @@ export class GroupsController {
   @Get(':id/participants/v2')
   @GroupIdApiParam
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get group participants.' })
   getGroupParticipants(
     @WorkingSessionParam session: WhatsappSession,
@@ -344,6 +365,7 @@ export class GroupsController {
   @HttpCode(HttpStatus.OK)
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Add participants' })
   addParticipants(
     @WorkingSessionParam session: WhatsappSession,
@@ -357,6 +379,7 @@ export class GroupsController {
   @HttpCode(HttpStatus.OK)
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({
     summary: 'Remove participants',
   })
@@ -372,6 +395,7 @@ export class GroupsController {
   @HttpCode(HttpStatus.OK)
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Promote participants to admin users.' })
   promoteToAdmin(
     @WorkingSessionParam session: WhatsappSession,
@@ -385,6 +409,7 @@ export class GroupsController {
   @HttpCode(HttpStatus.OK)
   @SessionApiParam
   @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Demotes participants to regular users.' })
   demoteToAdmin(
     @WorkingSessionParam session: WhatsappSession,

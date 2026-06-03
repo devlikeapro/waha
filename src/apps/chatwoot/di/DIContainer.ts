@@ -30,6 +30,7 @@ import {
   ConversationSelector,
   ConversationSort,
 } from '@waha/apps/chatwoot/services/ConversationSelector';
+import { Auth } from '@waha/core/auth/config';
 
 /**
  * Dependency Injection Container for ChatWoot
@@ -194,7 +195,7 @@ export class DIContainer {
    */
   @CacheSync()
   public WAHASelf(): WAHASelf {
-    const self = new WAHASelf();
+    const self = new WAHASelf(Auth.keyplain.value);
     const logging = new AxiosLogging(this.Logger());
     logging.applyTo(self.client);
     return self;

@@ -39,6 +39,7 @@ import {
   NotImplementedByEngineError,
 } from '@waha/core/exceptions';
 import { IMediaEngineProcessor } from '@waha/core/media/IMediaEngineProcessor';
+import { LottieMediaProcessorWrapper } from '@waha/core/media/LottieMediaProcessorWrapper';
 import { QR } from '@waha/core/QR';
 import { ExtractMessageKeysForRead } from '@waha/core/utils/convertors';
 import { parseMessageIdSerialized } from '@waha/core/utils/ids';
@@ -931,6 +932,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   async sendText(request: MessageTextRequest) {
     const jid = normalizeJid(toJID(this.ensureSuffix(request.chatId)));
     const message = new messages.MessageRequest({
+      id: request.id,
       jid: jid,
       text: request.text,
       session: this.session,
@@ -976,6 +978,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       vcard: toVcardV3(el),
     }));
     const message = new messages.MessageRequest({
+      id: request.id,
       jid: jid,
       session: this.session,
       replyTo: getMessageIdFromSerialized(request.reply_to),
@@ -990,6 +993,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   async sendPoll(request: MessagePollRequest) {
     const jid = normalizeJid(toJID(request.chatId));
     const message = new messages.MessageRequest({
+      id: request.id,
       jid: jid,
       session: this.session,
       replyTo: getMessageIdFromSerialized(request.reply_to),
@@ -1109,6 +1113,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   async sendLocation(request: MessageLocationRequest) {
     const jid = normalizeJid(toJID(this.ensureSuffix(request.chatId)));
     const message = new messages.MessageRequest({
+      id: request.id,
       jid: jid,
       session: this.session,
       replyTo: getMessageIdFromSerialized(request.reply_to),
@@ -2220,7 +2225,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   protected async downloadMedia(message) {
-    const processor = new GOWSEngineMediaProcessor(this);
+    let processor: IMediaEngineProcessor<any> = new GOWSEngineMediaProcessor(
+      this,
+    );
+    processor = new LottieMediaProcessorWrapper(processor, this.logger);
     const media = await this.mediaManager.processMedia(
       processor,
       message,
@@ -2547,6 +2555,50 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 }
 
+/**
+ * Many encrypted stickers carry URL "https://a.whatsapp.net" with no path. If
+ * that string is passed to DownloadMedia, the Go client may attempt HTTP GET to
+ * that host instead of decrypting via directPath. Real CDN links use hosts
+ * such as mmg.whatsapp.net with a full path.
+ *
+ * GOWS also exposes stickerMessage.URL (uppercase); some paths expect url
+ * (lowercase). We mirror URL -> url only for real HTTP-style URLs.
+ */
+function isPlaceholderWhatsAppMediaUrl(url: unknown): boolean {
+  if (typeof url !== 'string' || url.length === 0) {
+    return false;
+  }
+  try {
+    const parsed = new URL(url.trim());
+    if (parsed.hostname !== 'a.whatsapp.net') {
+      return false;
+    }
+    const path = parsed.pathname.replace(/\/+$/, '');
+    return path === '';
+  } catch {
+    return false;
+  }
+}
+
+function normalizeGowsStickerUrlForDownload(message: any): any {
+  const sticker = message?.Message?.stickerMessage;
+  if (!sticker) {
+    return message;
+  }
+
+  if (isPlaceholderWhatsAppMediaUrl(sticker.URL)) {
+    delete sticker.URL;
+  }
+  if (isPlaceholderWhatsAppMediaUrl(sticker.url)) {
+    delete sticker.url;
+  }
+
+  if (sticker.URL && !sticker.url) {
+    sticker.url = sticker.URL;
+  }
+  return message;
+}
+
 export class GOWSEngineMediaProcessor implements IMediaEngineProcessor<any> {
   constructor(public session: WhatsappSessionGoWSCore) {}
 
@@ -2569,6 +2621,8 @@ export class GOWSEngineMediaProcessor implements IMediaEngineProcessor<any> {
 
   async getMediaBuffer(message: any): Promise<Buffer | null> {
     const mediaDownloadTimeoutMs = 600_000; // 10 minutes
+
+    message = normalizeGowsStickerUrlForDownload(message);
 
     const data = JSON.stringify(message.Message);
     const tmpdir = new TmpDir(

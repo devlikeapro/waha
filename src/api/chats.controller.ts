@@ -52,12 +52,12 @@ import { Action } from '@waha/core/auth/casl.types';
 @ApiTags('💬 Chats')
 @UsePipes(new ValidationPipe({ transform: true }))
 @UseGuards(PoliciesGuard)
-@CheckPolicies(CanSession(Action.Use, FromParam('session')))
 class ChatsController {
   constructor(private manager: SessionManager) {}
 
   @Get('')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get chats' })
   getChats(
     @WorkingSessionParam session: WhatsappSession,
@@ -68,6 +68,7 @@ class ChatsController {
 
   @Get('overview')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({
     summary:
       'Get chats overview. Includes all necessary things to build UI "your chats overview" page - chat id, name, picture, last message. Sorting by last message timestamp',
@@ -83,6 +84,7 @@ class ChatsController {
 
   @Post('overview')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({
     summary:
       'Get chats overview. Use POST if you have too many "ids" params - GET can limit it',
@@ -97,6 +99,7 @@ class ChatsController {
 
   @Delete(':chatId')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Deletes the chat' })
   @ChatIdApiParam
   deleteChat(
@@ -108,6 +111,7 @@ class ChatsController {
 
   @Get(':chatId/picture')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Gets chat picture' })
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async getChatPicture(
@@ -121,6 +125,7 @@ class ChatsController {
 
   @Get(':chatId/messages')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Gets messages in the chat' })
   @ChatIdApiParam
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
@@ -141,6 +146,7 @@ class ChatsController {
 
   @Post(':chatId/messages/read')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Read unread messages in the chat' })
   @ChatIdApiParam
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
@@ -154,6 +160,7 @@ class ChatsController {
 
   @Get(':chatId/messages/:messageId')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Gets message by id' })
   @ChatIdApiParam
   async getChatMessage(
@@ -171,6 +178,7 @@ class ChatsController {
 
   @Post(':chatId/messages/:messageId/pin')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Pins a message in the chat' })
   @ChatIdApiParam
   async pinMessage(
@@ -185,6 +193,7 @@ class ChatsController {
 
   @Post(':chatId/messages/:messageId/unpin')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Unpins a message in the chat' })
   @ChatIdApiParam
   async unpinMessage(
@@ -198,6 +207,7 @@ class ChatsController {
 
   @Delete(':chatId/messages')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Clears all messages from the chat' })
   @ChatIdApiParam
   clearMessages(
@@ -209,6 +219,7 @@ class ChatsController {
 
   @Delete(':chatId/messages/:messageId')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ChatIdApiParam
   @MessageIdApiParam
   @ApiOperation({ summary: 'Deletes a message from the chat' })
@@ -222,6 +233,7 @@ class ChatsController {
 
   @Put(':chatId/messages/:messageId')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ChatIdApiParam
   @MessageIdApiParam
   @ApiOperation({ summary: 'Edits a message in the chat' })
@@ -236,6 +248,7 @@ class ChatsController {
 
   @Post(':chatId/archive')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ChatIdApiParam
   @ApiOperation({ summary: 'Archive the chat' })
   archiveChat(
@@ -247,6 +260,7 @@ class ChatsController {
 
   @Post(':chatId/unarchive')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ChatIdApiParam
   @ApiOperation({ summary: 'Unarchive the chat' })
   unarchiveChat(
@@ -258,6 +272,7 @@ class ChatsController {
 
   @Post(':chatId/unread')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ChatIdApiParam
   @ApiOperation({ summary: 'Unread the chat' })
   unreadChat(

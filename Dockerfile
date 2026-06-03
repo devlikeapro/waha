@@ -249,7 +249,7 @@ ENV CHOKIDAR_INTERVAL=5000
 ENV WAHA_ZIPPER=ZIPUNZIP
 
 # GOWS - use libc DNS resolver
-ENV GODEBUG netdns=cgo
+ENV GODEBUG=netdns=cgo
 
 # Run command, etc
 EXPOSE 3000

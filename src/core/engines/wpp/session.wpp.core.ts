@@ -126,6 +126,7 @@ import {
   NotImplementedByEngineError,
 } from '@waha/core/exceptions';
 import { IMediaEngineProcessor } from '@waha/core/media/IMediaEngineProcessor';
+import { LottieMediaProcessorWrapper } from '@waha/core/media/LottieMediaProcessorWrapper';
 import { IWPPAuthManager } from '@waha/core/engines/wpp/IWPPAuthManager';
 import { QR } from '@waha/core/QR';
 import { removeSingletonFiles } from '@waha/core/utils/chrome';
@@ -2118,7 +2119,8 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
   }
 
   protected async downloadMedia(message: any): Promise<WAMedia | null> {
-    const processor = new WPPEngineMediaProcessor(this.wpp);
+    let processor = new WPPEngineMediaProcessor(this.wpp);
+    processor = new LottieMediaProcessorWrapper(processor, this.logger);
     return this.mediaManager.processMedia(processor, message, this.name);
   }
 

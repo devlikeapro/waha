@@ -1,5 +1,6 @@
 import { ChatWootAppConfig } from '@waha/apps/chatwoot/dto/config.dto';
 import { CallsAppConfig } from '@waha/apps/calls/dto/config.dto';
+import { McpAppConfig } from '@waha/apps/mcp/dto/config.dto';
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
@@ -11,9 +12,12 @@ import {
 import { ApiExtraModels, ApiProperty } from '@nestjs/swagger';
 import { AppName } from '@waha/apps/app_sdk/apps/name';
 
-export type AllowedAppConfig = ChatWootAppConfig | CallsAppConfig;
+export type AllowedAppConfig =
+  | ChatWootAppConfig
+  | CallsAppConfig
+  | McpAppConfig;
 
-@ApiExtraModels(ChatWootAppConfig, CallsAppConfig)
+@ApiExtraModels(ChatWootAppConfig, CallsAppConfig, McpAppConfig)
 export class App<T extends AllowedAppConfig = any> {
   @IsString()
   id: string;
@@ -43,6 +47,8 @@ export class App<T extends AllowedAppConfig = any> {
           return ChatWootAppConfig;
         case AppName.calls:
           return CallsAppConfig;
+        case AppName.mcp:
+          return McpAppConfig;
         default:
           return Object;
       }
@@ -62,4 +68,9 @@ export class CallsAppDto extends App<CallsAppConfig> {
   config: CallsAppConfig;
 }
 
-export type AppDto = ChatWootAppDto | CallsAppDto;
+export class McpAppDto extends App<McpAppConfig> {
+  @Type(() => McpAppConfig)
+  config: McpAppConfig;
+}
+
+export type AppDto = ChatWootAppDto | CallsAppDto | McpAppDto;

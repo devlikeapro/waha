@@ -86,12 +86,12 @@ export class WebsocketGatewayCore
     const params = this.getParams(request);
     let session: string = params.session;
     const ability = this.casl.createForUser(user);
-    if (session == '*' && !ability.can(Action.Use, 'all')) {
+    if (session == '*' && !ability.can(Action.Manage, 'all')) {
       // Limit user to listen only the session events
       session = user.session;
     }
 
-    if (!ability.can(Action.Use, new SessionName(session))) {
+    if (!ability.can(Action.Read, new SessionName(session))) {
       socket.close(WebSocketCloseCode.POLICY_VIOLATION, 'Forbidden');
       return;
     }

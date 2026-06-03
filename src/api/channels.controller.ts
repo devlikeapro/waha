@@ -50,7 +50,6 @@ import { Action } from '@waha/core/auth/casl.types';
 @Controller('api/:session/channels')
 @ApiTags('📢 Channels')
 @UseGuards(PoliciesGuard)
-@CheckPolicies(CanSession(Action.Use, FromParam('session')))
 export class ChannelsController {
   constructor(
     private manager: SessionManager,
@@ -59,6 +58,7 @@ export class ChannelsController {
 
   @Get('')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get list of know channels' })
   async list(
     @WorkingSessionParam session: WhatsappSession,
@@ -69,6 +69,7 @@ export class ChannelsController {
 
   @Post('')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Create a new channel.' })
   create(
     @WorkingSessionParam session: WhatsappSession,
@@ -80,6 +81,7 @@ export class ChannelsController {
   @Delete(':id')
   @SessionApiParam
   @NewsletterIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Delete the channel.' })
   delete(
     @WorkingSessionParam session: WhatsappSession,
@@ -91,6 +93,7 @@ export class ChannelsController {
   @Get(':id')
   @SessionApiParam
   @NewsletterIdOrInviteCodeApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({
     summary: 'Get the channel info',
     description:
@@ -111,6 +114,7 @@ export class ChannelsController {
 
   @Get(':id/messages/preview')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @UsePipes(new WAHAValidationPipe())
   @ApiParam({
     name: 'id',
@@ -146,6 +150,7 @@ export class ChannelsController {
   @Post(':id/follow')
   @SessionApiParam
   @NewsletterIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Follow the channel.' })
   follow(
     @WorkingSessionParam session: WhatsappSession,
@@ -157,6 +162,7 @@ export class ChannelsController {
   @Post(':id/unfollow')
   @SessionApiParam
   @NewsletterIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Unfollow the channel.' })
   unfollow(
     @WorkingSessionParam session: WhatsappSession,
@@ -168,6 +174,7 @@ export class ChannelsController {
   @Post(':id/mute')
   @SessionApiParam
   @NewsletterIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Mute the channel.' })
   mute(
     @WorkingSessionParam session: WhatsappSession,
@@ -179,6 +186,7 @@ export class ChannelsController {
   @Post(':id/unmute')
   @SessionApiParam
   @NewsletterIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Unmute the channel.' })
   unmute(
     @WorkingSessionParam session: WhatsappSession,
@@ -190,6 +198,7 @@ export class ChannelsController {
   @Post('/search/by-view')
   @HttpCode(HttpStatus.OK)
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @UsePipes(new WAHAValidationPipe())
   @ApiOperation({ summary: 'Search for channels (by view)' })
   async searchByView(
@@ -202,6 +211,7 @@ export class ChannelsController {
   @Post('/search/by-text')
   @HttpCode(HttpStatus.OK)
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @UsePipes(new WAHAValidationPipe())
   @ApiOperation({ summary: 'Search for channels (by text)' })
   async searchByText(
@@ -213,6 +223,7 @@ export class ChannelsController {
 
   @Get('/search/views')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get list of views for channel search' })
   getSearchViews(): Promise<ChannelView[]> {
     return this.channelsInfoService.getViews();
@@ -220,6 +231,7 @@ export class ChannelsController {
 
   @Get('/search/countries')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get list of countries for channel search' })
   getSearchCountries(): Promise<ChannelCountry[]> {
     return this.channelsInfoService.getCountries();
@@ -227,6 +239,7 @@ export class ChannelsController {
 
   @Get('/search/categories')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get list of categories for channel search' })
   getSearchCategories(): Promise<ChannelCategory[]> {
     return this.channelsInfoService.getCategories();

@@ -33,12 +33,12 @@ import { Action } from '@waha/core/auth/casl.types';
 @Controller('api/:session/profile')
 @ApiTags('🆔 Profile')
 @UseGuards(PoliciesGuard)
-@CheckPolicies(CanSession(Action.Use, FromParam('session')))
 export class ProfileController {
   constructor(private manager: SessionManager) {}
 
   @Get('')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get my profile' })
   async getMyProfile(
     @WorkingSessionParam session: WhatsappSession,
@@ -57,6 +57,7 @@ export class ProfileController {
 
   @Put('/name')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @UsePipes(new WAHAValidationPipe())
   @ApiOperation({ summary: 'Set my profile name' })
   async setProfileName(
@@ -69,6 +70,7 @@ export class ProfileController {
 
   @Put('/status')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @UsePipes(new WAHAValidationPipe())
   @ApiOperation({ summary: 'Set profile status (About)' })
   async setProfileStatus(
@@ -81,6 +83,7 @@ export class ProfileController {
 
   @Put('/picture')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Set profile picture' })
   async setProfilePicture(
     @WorkingSessionParam session: WhatsappSession,
@@ -92,6 +95,7 @@ export class ProfileController {
 
   @Delete('/picture')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Delete profile picture' })
   async deleteProfilePicture(
     @WorkingSessionParam session: WhatsappSession,

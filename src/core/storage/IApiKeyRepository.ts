@@ -1,6 +1,4 @@
-import { RawRuleOf } from '@casl/ability';
-import { UnprocessableEntityException } from '@nestjs/common';
-import { AppAbility } from '../auth/casl.types';
+import { SessionActions } from '../auth/casl.types';
 
 export interface ApiKey {
   id: string;
@@ -8,7 +6,8 @@ export interface ApiKey {
   isActive: boolean;
   isAdmin: boolean;
   session: string | null;
-  rules: RawRuleOf<AppAbility>[] | null;
+  actions: SessionActions | null;
+  app_id?: string | null;
 }
 
 export interface IApiKeyRepository {
@@ -27,19 +26,4 @@ export interface IApiKeyRepository {
   deleteById(id: string): Promise<void>;
 
   deleteBySession(session: string): Promise<void>;
-}
-
-export function CheckInvariant(
-  apiKey: Pick<ApiKey, 'isAdmin' | 'session'>,
-): void {
-  if (apiKey.isAdmin && apiKey.session) {
-    throw new UnprocessableEntityException(
-      'Session is not allowed for admin keys',
-    );
-  }
-  if (!apiKey.isAdmin && !apiKey.session) {
-    throw new UnprocessableEntityException(
-      'Either isAdmin must be true or session must be provided',
-    );
-  }
 }

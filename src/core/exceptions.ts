@@ -25,3 +25,11 @@ export class AvailableInPlusVersion extends UnprocessableEntityException {
     );
   }
 }
+
+export class AvailableInPlusVersionAll extends UnprocessableEntityException {
+  constructor(feature: string = 'The feature') {
+    super(
+      `${feature} is available only in Plus version. Check this out: ${DOCS_URL}`,
+    );
+  }
+}

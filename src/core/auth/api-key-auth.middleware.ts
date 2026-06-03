@@ -12,6 +12,7 @@ export class ApiKeyAuthMiddleware implements NestMiddleware {
 
   use(req: any, res: any, next: () => void) {
     if (this.auth instanceof NoAuth) {
+      delete req.query['x-api-key'];
       next();
       return;
     }
@@ -31,6 +32,7 @@ export class ApiKeyAuthMiddleware implements NestMiddleware {
         return;
       }
       req.user = user;
+      delete req.query['x-api-key'];
       next();
     })(req, res, next);
   }

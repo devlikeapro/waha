@@ -11,6 +11,7 @@ import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
+  IsDefined,
   IsEnum,
   IsNumber,
   IsOptional,
@@ -265,13 +266,15 @@ export class OverviewFilter {
 }
 
 export class OverviewBodyRequest {
+  @IsDefined()
   @ValidateNested()
   @Type(() => GetChatsOverviewParams)
   pagination: GetChatsOverviewParams;
 
+  @IsOptional()
   @ValidateNested()
   @Type(() => OverviewFilter)
-  filter: OverviewFilter;
+  filter?: OverviewFilter;
 }
 
 export class ChatSummary {

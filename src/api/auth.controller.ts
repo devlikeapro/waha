@@ -35,7 +35,7 @@ import { Action } from '@waha/core/auth/casl.types';
 @Controller('api/:session/auth')
 @ApiTags('📱 Pairing')
 @UseGuards(PoliciesGuard)
-@CheckPolicies(CanSession(Action.Use, FromParam('session')))
+@CheckPolicies(CanSession(Action.Control, FromParam('session')))
 class AuthController {
   constructor(private manager: SessionManager) {}
 

@@ -13,8 +13,7 @@ import {
   WANumberExistResult,
 } from '@waha/structures/chatting.dto';
 import { SessionInfo } from '@waha/structures/sessions.dto';
-import axios, { AxiosInstance } from 'axios';
-import { Auth } from '@waha/core/auth/config';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { ContactSortField } from '@waha/structures/contacts.dto';
 import { PaginationParams } from '@waha/structures/pagination.dto';
 
@@ -25,9 +24,7 @@ export interface RequestOptions {
 export class WAHASelf {
   public client: AxiosInstance;
 
-  constructor() {
-    // Set 'X-Api-Key'
-    const key = Auth.keyplain.value;
+  constructor(public key: string) {
     const port =
       parseInt(process.env.PORT) ||
       parseInt(process.env.WHATSAPP_API_PORT) ||
@@ -40,6 +37,10 @@ export class WAHASelf {
         'Content-Type': 'application/json',
       },
     });
+  }
+
+  request(config: AxiosRequestConfig) {
+    return this.client.request(config);
   }
 
   async fetch(url: string, opts?: RequestOptions): Promise<Buffer> {

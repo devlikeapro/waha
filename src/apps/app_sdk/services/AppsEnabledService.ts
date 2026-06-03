@@ -9,6 +9,7 @@ import { IAppService } from '@waha/apps/app_sdk/services/IAppService';
 import { IAppsService } from '@waha/apps/app_sdk/services/IAppsService';
 import { ChatWootAppService } from '@waha/apps/chatwoot/services/ChatWootAppService';
 import { CallsAppService } from '@waha/apps/calls/services/CallsAppService';
+import { McpAppService } from '@waha/apps/mcp/services/McpAppService';
 import { DataStore } from '@waha/core/abc/DataStore';
 import { SessionManager } from '@waha/core/abc/manager.abc';
 import { WhatsappSession } from '@waha/core/abc/session.abc';
@@ -36,15 +37,18 @@ export class AppsEnabledService implements IAppsService {
     protected logger: PinoLogger,
     @Optional() protected readonly chatwootService: ChatWootAppService,
     @Optional() protected readonly callsAppService: CallsAppService,
+    @Optional() protected readonly mcpAppService: McpAppService,
   ) {}
 
   async list(manager: SessionManager, session: string): Promise<App[]> {
     const knex = manager.store.getWAHADatabase();
     const repo = new AppRepository(knex);
     const apps = await repo.getAllBySession(session);
-    apps.forEach((app) => {
+    for (const app of apps) {
       delete app.pk;
-    });
+      const service = this.getAppService(app);
+      await service?.enrich(manager, app);
+    }
     return apps;
   }
 
@@ -101,6 +105,9 @@ export class AppsEnabledService implements IAppsService {
 
     const result = await repo.save(app);
     delete result.pk;
+    if (app.enabled !== false) {
+      await service?.afterCreated(manager, result);
+    }
     return result;
   }
 
@@ -112,6 +119,8 @@ export class AppsEnabledService implements IAppsService {
       return null;
     }
     delete (app as any).pk;
+    const service = this.getAppService(app);
+    await service?.enrich(manager, app);
     return app;
   }
 
@@ -156,12 +165,12 @@ export class AppsEnabledService implements IAppsService {
 
     if (hasEnabledChange) {
       if (app.enabled) {
-        await service?.beforeEnabled(savedApp, app);
+        await service?.beforeEnabled(manager, savedApp, app);
       } else {
-        await service?.beforeDisabled(savedApp, app);
+        await service?.beforeDisabled(manager, savedApp, app);
       }
     } else {
-      await service?.beforeUpdated(savedApp, app);
+      await service?.beforeUpdated(manager, savedApp, app);
     }
     await repo.update(app.id, app);
     const updated = await repo.getById(app.id);
@@ -177,7 +186,7 @@ export class AppsEnabledService implements IAppsService {
       throw new NotFoundException(`App '${appId}' not found`);
     }
     const service = this.getAppService(app);
-    await service?.beforeDeleted(app);
+    await service?.beforeDeleted(manager, app);
     await repo.delete(app.id);
     delete app.pk;
     return app;
@@ -186,6 +195,11 @@ export class AppsEnabledService implements IAppsService {
   async removeBySession(manager: SessionManager, session: string) {
     const knex = manager.store.getWAHADatabase();
     const repo = new AppRepository(knex);
+    const apps = await repo.getAllBySession(session);
+    for (const app of apps) {
+      const service = this.getAppService(app);
+      await service?.beforeSessionDeleted(manager, app);
+    }
     await repo.deleteBySession(session);
   }
 
@@ -257,6 +271,8 @@ export class AppsEnabledService implements IAppsService {
         return this.chatwootService;
       case AppName.calls:
         return this.callsAppService;
+      case AppName.mcp:
+        return this.mcpAppService;
       default:
         throw new Error(`App '${app.app}' not supported`);
     }

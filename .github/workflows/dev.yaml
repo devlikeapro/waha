@@ -42,6 +42,7 @@ jobs:
       ${{ matrix.engine }} - ${{ matrix.browser }} - ${{ matrix.platform }} -
       ${{ matrix.tag }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           # Chromium - x86

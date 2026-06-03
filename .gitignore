@@ -1,3 +1,4 @@
+openapi.json
 tmp/*
 src/core/engines/gows/proto
 .env

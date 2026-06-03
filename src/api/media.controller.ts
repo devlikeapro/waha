@@ -32,7 +32,7 @@ import { Action } from '@waha/core/auth/casl.types';
 @Controller('api/:session/media')
 @ApiTags('🖼️ Media')
 @UseGuards(PoliciesGuard)
-@CheckPolicies(CanSession(Action.Use, FromParam('session')))
+@CheckPolicies(CanSession(Action.Read, FromParam('session')))
 class MediaController {
   constructor(private manager: SessionManager) {}
 

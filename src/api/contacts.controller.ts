@@ -37,7 +37,7 @@ export class ContactsController {
 
   @Get('/all')
   @ApiOperation({ summary: 'Get all contacts' })
-  @CheckPolicies(CanSession(Action.Use, FromQuery('session')))
+  @CheckPolicies(CanSession(Action.Read, FromQuery('session')))
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async getAll(
     @Query() query: SessionQuery,
@@ -53,7 +53,7 @@ export class ContactsController {
     description:
       'The method always return result, even if the phone number is not registered in WhatsApp. For that - use /contacts/check-exists endpoint below.',
   })
-  @CheckPolicies(CanSession(Action.Use, FromQuery('session')))
+  @CheckPolicies(CanSession(Action.Read, FromQuery('session')))
   async get(@Query() query: ContactQuery) {
     const whatsapp = await this.manager.getWorkingSession(query.session);
     return whatsapp.getContact(query);
@@ -61,7 +61,7 @@ export class ContactsController {
 
   @Get('/check-exists')
   @ApiOperation({ summary: 'Check phone number is registered in WhatsApp.' })
-  @CheckPolicies(CanSession(Action.Use, FromQuery('session')))
+  @CheckPolicies(CanSession(Action.Read, FromQuery('session')))
   async checkExists(
     @Query() request: CheckNumberStatusQuery,
   ): Promise<WANumberExistResult> {
@@ -75,7 +75,7 @@ export class ContactsController {
     description:
       'Returns null if you do not have permission to read their status.',
   })
-  @CheckPolicies(CanSession(Action.Use, FromQuery('session')))
+  @CheckPolicies(CanSession(Action.Read, FromQuery('session')))
   async getAbout(@Query() query: ContactQuery) {
     const whatsapp = await this.manager.getWorkingSession(query.session);
     return whatsapp.getContactAbout(query);
@@ -87,7 +87,7 @@ export class ContactsController {
     description:
       'If privacy settings do not allow to get the picture, the method will return null.',
   })
-  @CheckPolicies(CanSession(Action.Use, FromQuery('session')))
+  @CheckPolicies(CanSession(Action.Read, FromQuery('session')))
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async getProfilePicture(@Query() query: ContactProfilePictureQuery) {
     const whatsapp = await this.manager.getWorkingSession(query.session);
@@ -100,7 +100,7 @@ export class ContactsController {
 
   @Post('/block')
   @ApiOperation({ summary: 'Block contact' })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async block(@Body() request: ContactRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.blockContact(request);
@@ -108,7 +108,7 @@ export class ContactsController {
 
   @Post('/unblock')
   @ApiOperation({ summary: 'Unblock contact' })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async unblock(@Body() request: ContactRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.unblockContact(request);

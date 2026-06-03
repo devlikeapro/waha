@@ -22,6 +22,19 @@ export function IsEditedMessage(message: proto.IMessage): boolean {
   return true;
 }
 
+export function IsSecretEncryptedMessageEdit(
+  message: proto.IMessage | null | undefined,
+): boolean {
+  const sem = message?.secretEncryptedMessage;
+  if (!sem) {
+    return false;
+  }
+  return (
+    sem.secretEncType ===
+    proto.Message.SecretEncryptedMessage.SecretEncType.MESSAGE_EDIT
+  );
+}
+
 export function IsHistorySyncNotification(message: proto.IMessage): boolean {
   message = normalizeMessageContent(message);
   if (!message) {

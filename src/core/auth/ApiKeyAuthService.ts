@@ -3,7 +3,7 @@ import { User } from '@waha/core/auth/apiKey.strategy';
 import { SessionManager } from '@waha/core/abc/manager.abc';
 
 @Injectable()
-export class ApiKeyService {
+export class ApiKeyAuthService {
   constructor(private manager: SessionManager) {}
 
   async get(apikey: string): Promise<User | null> {
@@ -17,6 +17,7 @@ export class ApiKeyService {
     return {
       isAdmin: key.isAdmin,
       session: key.session,
+      actions: key.actions,
     };
   }
 }

@@ -37,6 +37,7 @@ import {
 import {
   ChatIdProperty,
   ConvertApiProperty,
+  GeneratedMessageIdProperty,
   ReplyToProperty,
 } from './properties.dto';
 
@@ -158,6 +159,9 @@ export class Contact {
 
 @ApiExtraModels(Contact, VCardContact)
 export class MessageContactVcardRequest extends ChatRequest {
+  @GeneratedMessageIdProperty()
+  id?: string;
+
   @ApiProperty({
     type: 'array',
     oneOf: [
@@ -176,12 +180,16 @@ export class MessageContactVcardRequest extends ChatRequest {
 }
 
 export class MessageTextRequest extends ChatRequest {
+  @GeneratedMessageIdProperty()
+  id?: string;
+
   text: string = 'Hi there!';
 
   @ApiHideProperty()
   mentions?: string[];
 
   @ReplyToProperty()
+  @IsOptional()
   reply_to?: string;
 
   linkPreview?: boolean = true;
@@ -271,6 +279,9 @@ export class MessageReplyRequest extends MessageTextRequest {
 }
 
 export class MessageLocationRequest extends ChatRequest {
+  @GeneratedMessageIdProperty()
+  id?: string;
+
   @ApiProperty({
     example: 38.8937255,
   })
@@ -371,11 +382,17 @@ export class MessageVideoRequest extends ChatRequest {
 }
 
 export class MessageLinkPreviewRequest extends ChatRequest {
+  @GeneratedMessageIdProperty()
+  id?: string;
+
   url: string;
   title: string;
 }
 
 export class MessageForwardRequest extends ChatRequest {
+  @GeneratedMessageIdProperty()
+  id?: string;
+
   @ApiProperty({
     example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
   })
@@ -422,6 +439,9 @@ export class MessagePoll {
 }
 
 export class MessagePollRequest extends ChatRequest {
+  @GeneratedMessageIdProperty()
+  id?: string;
+
   poll: MessagePoll;
 
   @ApiProperty({

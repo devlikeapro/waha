@@ -30,6 +30,15 @@ function ReplyToProperty() {
   });
 }
 
+function GeneratedMessageIdProperty() {
+  return ApiProperty({
+    description: 'Pre-generated message id',
+    example: 'BBBBBBBBBBBBBBBBB',
+    default: null,
+    required: false,
+  });
+}
+
 export function ConvertApiProperty() {
   return ApiProperty({
     description:
@@ -40,6 +49,7 @@ export function ConvertApiProperty() {
 
 export {
   ChatIdProperty,
+  GeneratedMessageIdProperty,
   MessageIdOnlyProperty,
   MessageIdProperty,
   ReplyToProperty,

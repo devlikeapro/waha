@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { App } from '@waha/apps/app_sdk/dto/app.dto';
 import { IAppService } from '@waha/apps/app_sdk/services/IAppService';
 import { CallsAppConfig } from '@waha/apps/calls/dto/config.dto';
+import { SessionManager } from '@waha/core/abc/manager.abc';
 import { WhatsappSession } from '@waha/core/abc/session.abc';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { CallsListener } from '@waha/apps/calls/services/CallsListener';
@@ -25,32 +26,64 @@ export class CallsAppService implements IAppService {
   }
 
   async beforeEnabled(
+    manager: SessionManager,
     savedApp: App<CallsAppConfig>,
     newApp: App<CallsAppConfig>,
   ): Promise<void> {
-    // Enabling behaves the same as creating for this lightweight app.
+    void manager;
     void savedApp;
     void newApp;
-    return;
   }
 
   async beforeDisabled(
+    manager: SessionManager,
     savedApp: App<CallsAppConfig>,
     newApp: App<CallsAppConfig>,
   ): Promise<void> {
-    void newApp;
+    void manager;
     void savedApp;
+    void newApp;
   }
 
   async beforeUpdated(
+    manager: SessionManager,
     savedApp: App<CallsAppConfig>,
     newApp: App<CallsAppConfig>,
   ): Promise<void> {
+    void manager;
     void savedApp;
     void newApp;
   }
 
-  async beforeDeleted(app: App<CallsAppConfig>): Promise<void> {
+  async beforeDeleted(
+    manager: SessionManager,
+    app: App<CallsAppConfig>,
+  ): Promise<void> {
+    void manager;
+    void app;
+  }
+
+  async afterCreated(
+    manager: SessionManager,
+    app: App<CallsAppConfig>,
+  ): Promise<void> {
+    void manager;
+    void app;
+  }
+
+  async beforeSessionDeleted(
+    manager: SessionManager,
+    app: App<CallsAppConfig>,
+  ): Promise<void> {
+    void manager;
+    void app;
+  }
+
+  async enrich(
+    manager: SessionManager,
+    app: App<CallsAppConfig>,
+  ): Promise<void> {
+    void manager;
     void app;
   }
 

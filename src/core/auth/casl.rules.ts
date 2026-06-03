@@ -1,5 +1,5 @@
 import { RawRuleOf } from '@casl/ability';
-import { Action, AppAbility } from './casl.types';
+import { Action, AppAbility, SessionActions } from './casl.types';
 
 export function AdminRules(): RawRuleOf<AppAbility>[] {
   return [
@@ -10,36 +10,75 @@ export function AdminRules(): RawRuleOf<AppAbility>[] {
   ];
 }
 
-export function SessionRules(name: string): RawRuleOf<AppAbility>[] {
-  return [
-    //
-    // Server
-    //
+const DefaultSessionActions: SessionActions = {
+  delete: false,
+  setting: true,
+  control: true,
+  app: true,
+  read: true,
+  send: true,
+};
+
+export function SessionRules(
+  name: string,
+  rules: SessionActions | null = null,
+): RawRuleOf<AppAbility>[] {
+  const actions = rules ?? DefaultSessionActions;
+  const result: RawRuleOf<AppAbility>[] = [
     {
-      action: 'read',
+      action: 'retrieve',
       subject: 'server',
     },
-    //
-    // Session
-    //
     {
       action: Action.List,
       subject: 'session',
+      // "conditions" is not required here, we filter session list dynamically later
     },
-    {
+    { action: Action.Retrieve, subject: 'session', conditions: { name: name } },
+  ];
+
+  if (actions.read) {
+    result.push({
       action: Action.Read,
       subject: 'session',
       conditions: { name: name },
-    },
-    // {
-    //   action: Action.Delete,
-    //   subject: 'session',
-    //   conditions: { name: name },
-    // },
-    {
-      action: Action.Use,
+    });
+  }
+  if (actions.send) {
+    result.push({
+      action: Action.Send,
       subject: 'session',
       conditions: { name: name },
-    },
-  ];
+    });
+  }
+  if (actions.control) {
+    result.push({
+      action: Action.Control,
+      subject: 'session',
+      conditions: { name: name },
+    });
+  }
+  if (actions.setting) {
+    result.push({
+      action: Action.Setting,
+      subject: 'session',
+      conditions: { name: name },
+    });
+  }
+  if (actions.app) {
+    result.push({
+      action: Action.App,
+      subject: 'session',
+      conditions: { name: name },
+    });
+  }
+  if (actions.delete) {
+    result.push({
+      action: Action.Delete,
+      subject: 'session',
+      conditions: { name: name },
+    });
+  }
+
+  return result;
 }

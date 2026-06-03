@@ -34,6 +34,7 @@ import {
   NotImplementedByEngineError,
 } from '@waha/core/exceptions';
 import { IMediaEngineProcessor } from '@waha/core/media/IMediaEngineProcessor';
+import { LottieMediaProcessorWrapper } from '@waha/core/media/LottieMediaProcessorWrapper';
 import { QR } from '@waha/core/QR';
 import { StatusToAck } from '@waha/core/utils/acks';
 import {
@@ -2263,7 +2264,8 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   protected async downloadMedia(message: Message) {
-    const processor = new WEBJSEngineMediaProcessor();
+    let processor = new WEBJSEngineMediaProcessor();
+    processor = new LottieMediaProcessorWrapper(processor, this.logger);
     const media = await this.mediaManager.processMedia(
       processor,
       message,

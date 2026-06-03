@@ -79,4 +79,16 @@ export function getPinoTransport() {
   };
 }
 
+export function redactUrlParams(
+  key: string,
+  url: string,
+  query: Record<string, string>,
+): string {
+  const value = query[key];
+  if (!value) {
+    return url;
+  }
+  return url.replace(value, '[REDACTED]');
+}
+
 export { getNestJSLogLevels };

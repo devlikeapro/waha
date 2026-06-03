@@ -7749,7 +7749,9 @@ proto.messages.VideoInfo.prototype.toObject = function(opt_includeInstance) {
  */
 proto.messages.VideoInfo.toObject = function(includeInstance, msg) {
   var f, obj = {
-    duration: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0)
+    duration: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+    gifplayback: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+    externalsharefullvideodurationinseconds: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -7790,6 +7792,14 @@ proto.messages.VideoInfo.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readFloat());
       msg.setDuration(value);
       break;
+    case 2:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setGifplayback(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setExternalsharefullvideodurationinseconds(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -7826,6 +7836,20 @@ proto.messages.VideoInfo.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getGifplayback();
+  if (f) {
+    writer.writeBool(
+      2,
+      f
+    );
+  }
+  f = message.getExternalsharefullvideodurationinseconds();
+  if (f !== 0) {
+    writer.writeUint32(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -7844,6 +7868,42 @@ proto.messages.VideoInfo.prototype.getDuration = function() {
  */
 proto.messages.VideoInfo.prototype.setDuration = function(value) {
   return jspb.Message.setProto3FloatField(this, 1, value);
+};
+
+
+/**
+ * optional bool gifPlayback = 2;
+ * @return {boolean}
+ */
+proto.messages.VideoInfo.prototype.getGifplayback = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.messages.VideoInfo} returns this
+ */
+proto.messages.VideoInfo.prototype.setGifplayback = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 2, value);
+};
+
+
+/**
+ * optional uint32 externalShareFullVideoDurationInSeconds = 3;
+ * @return {number}
+ */
+proto.messages.VideoInfo.prototype.getExternalsharefullvideodurationinseconds = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.messages.VideoInfo} returns this
+ */
+proto.messages.VideoInfo.prototype.setExternalsharefullvideodurationinseconds = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 

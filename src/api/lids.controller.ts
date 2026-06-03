@@ -33,7 +33,7 @@ import { Action } from '@waha/core/auth/casl.types';
 @Controller('api/:session/lids')
 @ApiTags('👤 Contacts')
 @UseGuards(PoliciesGuard)
-@CheckPolicies(CanSession(Action.Use, FromParam('session')))
+@CheckPolicies(CanSession(Action.Read, FromParam('session')))
 export class LidsController {
   constructor(private manager: SessionManager) {}
 

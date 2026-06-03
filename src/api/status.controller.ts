@@ -25,12 +25,12 @@ import { Action } from '@waha/core/auth/casl.types';
 @Controller('api/:session/status')
 @ApiTags('🟢 Status')
 @UseGuards(PoliciesGuard)
-@CheckPolicies(CanSession(Action.Use, FromParam('session')))
 class StatusController {
   constructor(private manager: SessionManager) {}
 
   @Post('text')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Send text status' })
   sendTextStatus(
     @WorkingSessionParam session: WhatsappSession,
@@ -41,6 +41,7 @@ class StatusController {
 
   @Post('image')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Send image status' })
   sendImageStatus(
     @WorkingSessionParam session: WhatsappSession,
@@ -51,6 +52,7 @@ class StatusController {
 
   @Post('voice')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Send voice status' })
   sendVoiceStatus(
     @WorkingSessionParam session: WhatsappSession,
@@ -61,6 +63,7 @@ class StatusController {
 
   @Post('video')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'Send video status' })
   sendVideoStatus(
     @WorkingSessionParam session: WhatsappSession,
@@ -71,6 +74,7 @@ class StatusController {
 
   @Post('delete')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({ summary: 'DELETE sent status' })
   deleteStatus(
     @WorkingSessionParam session: WhatsappSession,
@@ -81,6 +85,7 @@ class StatusController {
 
   @Get('new-message-id')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({
     summary: 'Generate message ID you can use to batch contacts',
   })

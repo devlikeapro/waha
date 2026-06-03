@@ -66,13 +66,14 @@ import { toVcardV3 } from '@waha/core/vcard';
 import { createAgentProxy } from '@waha/core/helpers.proxy';
 import type { Agent } from 'https';
 import { IMediaEngineProcessor } from '@waha/core/media/IMediaEngineProcessor';
+import { LottieMediaProcessorWrapper } from '@waha/core/media/LottieMediaProcessorWrapper';
 import { QR } from '@waha/core/QR';
 import { AckToStatus, StatusToAck } from '@waha/core/utils/acks';
 import { pairs } from '@waha/utils/pairs';
 import { ExtractMessageKeysForRead } from '@waha/core/utils/convertors';
 import { parseMessageIdSerialized } from '@waha/core/utils/ids';
 import { isJidNewsletter, toCusFormat, toJID } from '@waha/core/utils/jids';
-import { DistinctAck } from '@waha/core/utils/reactive';
+import { DistinctAck, DistinctMessages } from '@waha/core/utils/reactive';
 import { flipObject, splitAt } from '@waha/helpers';
 import { PairingCodeResponse } from '@waha/structures/auth.dto';
 import { CallData } from '@waha/structures/calls.dto';
@@ -204,7 +205,13 @@ import { Agents } from '@waha/core/engines/noweb/types';
 import {
   IsEditedMessage,
   IsHistorySyncNotification,
+  IsSecretEncryptedMessageEdit,
 } from '@waha/core/utils/pwa';
+import {
+  decryptSecretEncryptedMessageEditProto,
+  getOrigSenderJidForMsgSecret,
+  jidToNonAD,
+} from '@waha/core/utils/secretEncryptedMessageEdit';
 import { extractWALocation } from '@waha/core/engines/waproto/locaiton';
 import { extractVCards } from '@waha/core/engines/waproto/vcards';
 import { Activity } from '@waha/core/abc/activity';
@@ -2079,10 +2086,14 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     );
     messagesFromMe$ = messagesFromMe$.pipe(
       mergeMap((msg) => this.processIncomingMessage(msg, true)),
+      filter(Boolean),
+      DistinctMessages(),
       share(), // share it so we don't process twice in message.any
     );
     messagesFromOthers$ = messagesFromOthers$.pipe(
       mergeMap((msg) => this.processIncomingMessage(msg, true)),
+      filter(Boolean),
+      DistinctMessages(),
       share(), // share it so we don't process twice in message.any
     );
     const messagesFromAll$ = merge(messagesFromMe$, messagesFromOthers$);
@@ -2112,14 +2123,25 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
     // Handle edited messages
     const messagesEdited$ = messagesUpsert$.pipe(
-      filter((message) => IsEditedMessage(message.message)),
+      filter(
+        (message) =>
+          IsEditedMessage(message.message) ||
+          IsSecretEncryptedMessageEdit(message.message),
+      ),
       mergeMap(async (message): Promise<WAMessageEditedBody> => {
         const waMessage = this.toWAMessage(message);
-        // Extract the body from editedMessage using extractBody function
-        const content = normalizeMessageContent(message.message);
-        const body = extractBody(content.protocolMessage.editedMessage) || '';
-        // Extract the original message ID from protocolMessage.key
-        const editedMessageId = content.protocolMessage.key?.id;
+        let body = '';
+        let editedMessageId: string | undefined;
+        if (IsEditedMessage(message.message)) {
+          const content = normalizeMessageContent(message.message);
+          body = extractBody(content.protocolMessage.editedMessage) || '';
+          editedMessageId = content.protocolMessage.key?.id;
+        } else if (IsSecretEncryptedMessageEdit(message.message)) {
+          const sem = message.message.secretEncryptedMessage;
+          editedMessageId = sem.targetMessageKey?.id;
+          body =
+            (await this.tryDecryptNOWEBSecretMessageEdit(message, sem)) || '';
+        }
         return {
           ...waMessage,
           body: body,
@@ -2439,6 +2461,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       return;
     // Ignore edit, we have a dedicated event for that
     if (IsEditedMessage(message.message)) return;
+    // Ignore secret-encrypted message edits (mobile app format), dedicated handler routes them
+    if (IsSecretEncryptedMessageEdit(message.message)) return;
 
     // Ignore history sync notifications
     if (IsHistorySyncNotification(message.message)) return;
@@ -2467,6 +2491,99 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       if (message?.message?.senderKeyDistributionMessage) return;
     }
     return true;
+  }
+
+  protected async tryDecryptNOWEBSecretMessageEdit(
+    editMessage: proto.IWebMessageInfo,
+    sem: proto.Message.ISecretEncryptedMessage,
+  ): Promise<string> {
+    const targetKey = sem.targetMessageKey;
+    const origMsgId = targetKey?.id;
+    if (!origMsgId) {
+      return '';
+    }
+    const jidsToTry = [targetKey.remoteJid, editMessage.key?.remoteJid].filter(
+      Boolean,
+    );
+    let stored: proto.IWebMessageInfo | undefined;
+    for (const jid of jidsToTry) {
+      stored = await this.store?.loadMessage(jid, origMsgId);
+      if (stored) {
+        break;
+      }
+    }
+    if (!stored) {
+      this.logger.debug(
+        { origMsgId: origMsgId },
+        'NOWEB message edit decrypt: original message not found in store',
+      );
+      return '';
+    }
+    const secretBytes =
+      normalizeMessageContent(stored.message)?.messageContextInfo
+        ?.messageSecret ?? stored.message?.messageContextInfo?.messageSecret;
+    if (!secretBytes || secretBytes.length !== 32) {
+      this.logger.debug(
+        { origMsgId: origMsgId },
+        'NOWEB message edit decrypt: missing messageSecret on original',
+      );
+      return '';
+    }
+    const origSecret = Buffer.from(secretBytes);
+    const encPayload = sem.encPayload ? Buffer.from(sem.encPayload) : null;
+    const encIv = sem.encIv ? Buffer.from(sem.encIv) : null;
+    if (!encPayload || !encIv) {
+      return '';
+    }
+    const editInfo = {
+      Chat: editMessage.key?.remoteJid,
+      Sender:
+        editMessage.key?.participant ||
+        (editMessage.key?.fromMe ? undefined : editMessage.key?.remoteJid),
+    };
+    const modificationSenderJid = jidToNonAD(editInfo.Sender || '');
+    const primaryOrig = getOrigSenderJidForMsgSecret(editInfo, {
+      fromMe: targetKey.fromMe,
+      remoteJID: targetKey.remoteJid,
+      participant: targetKey.participant,
+    });
+    const candidates: string[] = [primaryOrig];
+    const remoteNonAD = targetKey.remoteJid
+      ? jidToNonAD(targetKey.remoteJid)
+      : '';
+    if (remoteNonAD && !candidates.includes(remoteNonAD)) {
+      candidates.push(remoteNonAD);
+    }
+    const participantNonAD = targetKey.participant
+      ? jidToNonAD(targetKey.participant)
+      : '';
+    if (participantNonAD && !candidates.includes(participantNonAD)) {
+      candidates.push(participantNonAD);
+    }
+    let lastErr: unknown;
+    for (const origSenderJid of candidates) {
+      try {
+        const decoded = decryptSecretEncryptedMessageEditProto({
+          encPayload: encPayload,
+          encIv: encIv,
+          origMsgId: origMsgId,
+          origSenderJid: origSenderJid,
+          modificationSenderJid: modificationSenderJid,
+          origMsgSecret: origSecret,
+        });
+        const text = extractBody(decoded) || '';
+        if (text) {
+          return text;
+        }
+      } catch (err) {
+        lastErr = err;
+      }
+    }
+    this.logger.debug(
+      { err: lastErr, origMsgId: origMsgId, candidates: candidates },
+      'NOWEB message edit decrypt: AES-GCM or protobuf decode failed',
+    );
+    return '';
   }
 
   protected async processIncomingMessage(
@@ -2766,11 +2883,16 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   protected async downloadMedia(message): Promise<WAMedia | null> {
-    const processor = new NOWEBEngineMediaProcessor(this, this.loggerBuilder);
+    let processor: IMediaEngineProcessor<any> = new NOWEBEngineMediaProcessor(
+      this,
+      this.loggerBuilder,
+    );
+    processor = new LottieMediaProcessorWrapper(processor, this.logger);
     return this.mediaManager.processMedia(processor, message, this.name);
   }
 
   protected async getMessageOptions(request: {
+    id?: string;
     chatId: string;
     reply_to?: string;
   }) {
@@ -2782,7 +2904,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       quoted = await this.store.loadMessage(jid, key.id);
     }
     const chat = await this.store.getChat(jid);
-    const messageId = this.generateMessageID();
+    const messageId = request.id ? request.id : this.generateMessageID();
+    this.saveSentMessageId(messageId);
     return {
       quoted: quoted,
       ephemeralExpiration: chat?.ephemeralExpiration,

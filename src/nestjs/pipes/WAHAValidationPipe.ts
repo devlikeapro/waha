@@ -1,4 +1,8 @@
-import { ValidationPipe, ValidationPipeOptions } from '@nestjs/common';
+import {
+  ArgumentMetadata,
+  ValidationPipe,
+  ValidationPipeOptions,
+} from '@nestjs/common';
 import { parseBool } from '@waha/helpers';
 
 // So we can change it to True during development and testing
@@ -11,5 +15,12 @@ export class WAHAValidationPipe extends ValidationPipe {
     options.whitelist = true;
     options.forbidNonWhitelisted = WAHA_HTTP_STRICT_MODE;
     super(options);
+  }
+
+  async transform(value: any, metadata: ArgumentMetadata) {
+    if (metadata.type === 'query' && value && typeof value === 'object') {
+      delete value['x-api-key'];
+    }
+    return super.transform(value, metadata);
   }
 }

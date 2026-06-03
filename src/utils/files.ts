@@ -2,6 +2,8 @@ import * as path from 'path';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require('fs-extra');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const fileType = require('file-type');
 
 export async function fileExists(filepath: string) {
   try {
@@ -10,6 +12,14 @@ export async function fileExists(filepath: string) {
     return false;
   }
   return true;
+}
+
+export async function detectMimetype(
+  buffer: Buffer,
+  fallback = 'application/octet-stream',
+): Promise<string> {
+  const result = await fileType.fromBuffer(buffer);
+  return result?.mime ?? fallback;
 }
 
 export function safeJoin(base: string, input: string): string {

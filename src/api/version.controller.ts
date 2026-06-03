@@ -13,7 +13,7 @@ import { Action } from '@waha/core/auth/casl.types';
 @Controller('api/version')
 @ApiTags('🔍 Observability')
 @UseGuards(PoliciesGuard)
-@CheckPolicies(CanServer(Action.Read))
+@CheckPolicies(CanServer(Action.Retrieve))
 export class VersionController {
   @Get('')
   @ApiOperation({

@@ -41,6 +41,7 @@ import {
   MessageTextRequest,
   MessageVideoRequest,
   MessageVoiceRequest,
+  NewMessageIDResponse,
   SendSeenRequest,
   WANumberExistResult,
 } from '../structures/chatting.dto';
@@ -49,9 +50,19 @@ import {
   mentionsAll,
   validateRequestMentions,
 } from '@waha/core/utils/mentions.all';
+import {
+  SessionApiParam,
+  WorkingSessionParam,
+} from '@waha/nestjs/params/SessionApiParam';
+import { WhatsappSession } from '@waha/core/abc/session.abc';
 import { PoliciesGuard } from '@waha/core/auth/policies.guard';
 import { CheckPolicies } from '@waha/core/auth/policies.decorator';
-import { CanSession, FromBody, FromQuery } from '@waha/core/auth/policies';
+import {
+  CanSession,
+  FromBody,
+  FromParam,
+  FromQuery,
+} from '@waha/core/auth/policies';
 
 import { Action } from '@waha/core/auth/casl.types';
 
@@ -64,7 +75,7 @@ export class ChattingController {
 
   @Post('/sendText')
   @ApiOperation({ summary: 'Send a text message' })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendText(@Body() request: MessageTextRequest): Promise<WAMessage> {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     if (mentionsAll(request)) {
@@ -80,7 +91,7 @@ export class ChattingController {
     description:
       'Either from an URL or base64 data - look at the request schemas for details.',
   })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendImage(@Body() request: MessageImageRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     if (mentionsAll(request)) {
@@ -96,7 +107,7 @@ export class ChattingController {
     description:
       'Either from an URL or base64 data - look at the request schemas for details.',
   })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendFile(@Body() request: MessageFileRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     if (mentionsAll(request)) {
@@ -112,7 +123,7 @@ export class ChattingController {
     description:
       'Either from an URL or base64 data - look at the request schemas for details.',
   })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendVoice(@Body() request: MessageVoiceRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.sendVoice(request);
@@ -124,7 +135,7 @@ export class ChattingController {
     description:
       'Either from an URL or base64 data - look at the request schemas for details.',
   })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendVideo(@Body() request: MessageVideoRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     if (mentionsAll(request)) {
@@ -140,7 +151,7 @@ export class ChattingController {
     description:
       'You can use regular /api/sendText if you wanna send auto-generated link preview.',
   })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   @UsePipes(new WAHAValidationPipe())
   async sendLinkCustomPreview(
     @Body() request: MessageLinkCustomPreviewRequest,
@@ -160,7 +171,7 @@ export class ChattingController {
     description: 'Send Buttons',
     deprecated: true,
   })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   @UsePipes(new WAHAValidationPipe())
   async sendButtons(@Body() request: SendButtonsRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
@@ -172,7 +183,7 @@ export class ChattingController {
     summary: 'Send a list message (interactive)',
     description: 'Send a List message with sections and rows',
   })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   @UsePipes(new WAHAValidationPipe())
   async sendList(@Body() request: SendListRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
@@ -180,7 +191,7 @@ export class ChattingController {
   }
 
   @Post('/forwardMessage')
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async forwardMessage(
     @Body() request: MessageForwardRequest,
   ): Promise<WAMessage> {
@@ -189,7 +200,7 @@ export class ChattingController {
   }
 
   @Post('/sendSeen')
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendSeen(@Body() chat: SendSeenRequest) {
     const hasMessageId = chat.messageIds?.length > 0 || Boolean(chat.messageId);
     if (!hasMessageId) {
@@ -205,7 +216,7 @@ export class ChattingController {
   }
 
   @Post('/startTyping')
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async startTyping(@Body() chat: ChatRequest) {
     // It's infinitive action
     const whatsapp = await this.manager.getWorkingSession(chat.session);
@@ -214,7 +225,7 @@ export class ChattingController {
   }
 
   @Post('/stopTyping')
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async stopTyping(@Body() chat: ChatRequest) {
     const whatsapp = await this.manager.getWorkingSession(chat.session);
     await whatsapp.stopTyping(chat);
@@ -223,7 +234,7 @@ export class ChattingController {
 
   @Put('/reaction')
   @ApiOperation({ summary: 'React to a message with an emoji' })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async setReaction(@Body() request: MessageReactionRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.setReaction(request);
@@ -231,7 +242,7 @@ export class ChattingController {
 
   @Put('/star')
   @ApiOperation({ summary: 'Star or unstar a message' })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async setStar(@Body() request: MessageStarRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     await whatsapp.setStar(request);
@@ -243,7 +254,7 @@ export class ChattingController {
     summary: 'Send a poll with options',
     description: 'You can use it as buttons or list replacement',
   })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendPoll(@Body() request: MessagePollRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.sendPoll(request);
@@ -254,7 +265,7 @@ export class ChattingController {
     summary: 'Vote on a poll',
     description: 'Cast vote(s) on an existing poll message',
   })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   @UsePipes(new WAHAValidationPipe())
   async sendPollVote(@Body() request: MessagePollVoteRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
@@ -262,14 +273,14 @@ export class ChattingController {
   }
 
   @Post('/sendLocation')
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendLocation(@Body() request: MessageLocationRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.sendLocation(request);
   }
 
   @Post('/sendContactVcard')
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendContactVcard(@Body() request: MessageContactVcardRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.sendContactVCard(request);
@@ -279,7 +290,7 @@ export class ChattingController {
   @ApiOperation({
     summary: 'Reply on a button message',
   })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async sendButtonsReply(@Body() request: MessageButtonReply) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
@@ -288,7 +299,7 @@ export class ChattingController {
 
   @Get('/sendText')
   @ApiOperation({ summary: 'Send a text message', deprecated: true })
-  @CheckPolicies(CanSession(Action.Use, FromQuery('session')))
+  @CheckPolicies(CanSession(Action.Send, FromQuery('session')))
   async sendTextGet(@Query() query: MessageTextQuery) {
     const whatsapp = await this.manager.getWorkingSession(query.session);
     const msg = new MessageTextRequest();
@@ -303,7 +314,7 @@ export class ChattingController {
     description: 'DEPRECATED. Use "GET /api/chats/{id}/messages" instead',
     deprecated: true,
   })
-  @CheckPolicies(CanSession(Action.Use, FromQuery('session')))
+  @CheckPolicies(CanSession(Action.Read, FromQuery('session')))
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async getMessages(
     @Query() query: GetMessageQuery,
@@ -320,7 +331,7 @@ export class ChattingController {
     description: 'DEPRECATED. Use "POST /contacts/check-exists" instead',
     deprecated: true,
   })
-  @CheckPolicies(CanSession(Action.Use, FromQuery('session')))
+  @CheckPolicies(CanSession(Action.Read, FromQuery('session')))
   async DEPRECATED_checkNumberStatus(
     @Query() request: CheckNumberStatusQuery,
   ): Promise<WANumberExistResult> {
@@ -334,7 +345,7 @@ export class ChattingController {
       'DEPRECATED - you can set "reply_to" field when sending text, image, etc',
     deprecated: true,
   })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async reply(@Body() request: MessageReplyRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.reply(request);
@@ -342,9 +353,20 @@ export class ChattingController {
 
   @Post('/sendLinkPreview')
   @ApiOperation({ deprecated: true })
-  @CheckPolicies(CanSession(Action.Use, FromBody('session')))
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendLinkPreview_DEPRECATED(@Body() request: MessageLinkPreviewRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.sendLinkPreview(request);
+  }
+
+  @Get('/:session/new-message-id')
+  @SessionApiParam
+  @ApiOperation({ summary: 'Generate a new message ID' })
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
+  async getNewMessageId(
+    @WorkingSessionParam session: WhatsappSession,
+  ): Promise<NewMessageIDResponse> {
+    const id = await session.generateNewMessageId();
+    return { id: id };
   }
 }

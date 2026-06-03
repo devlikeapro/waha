@@ -29,7 +29,7 @@
     "gows:proto": "yarn gows:proto:fetch && yarn gows:proto:build"
   },
   "dependencies": {
-    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-2026-02-11",
+    "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-2026-04-28",
     "@adiwajshing/keyed-db": "^0.2.4",
     "@aws-sdk/client-s3": "^3.633.0",
     "@aws-sdk/s3-request-presigner": "^3.633.0",
@@ -39,6 +39,9 @@
     "@casl/ability": "^6.8.0",
     "@figuro/chatwoot-sdk": "^1.1.17",
     "@liaoliaots/nestjs-redis": "^9",
+    "@lottiefiles/dotlottie-web": "^0.72.1",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@napi-rs/canvas": "^1.0.0",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/bullmq": "^11.0.2",
     "@nestjs/common": "^11.0.0",
@@ -57,8 +60,8 @@
     "@types/passport": "^1.0.17",
     "@types/sqlite3": "^5.1.0",
     "@types/ws": "^8.5.4",
-    "@wppconnect-team/wppconnect": "^1.41.1",
-    "@wppconnect/wa-js": "^3.23.3",
+    "@wppconnect-team/wppconnect": "^2.2.1",
+    "@wppconnect/wa-js": "^4.3.0",
     "adm-zip": "0.5.10",
     "agentkeepalive": "^4.5.0",
     "async-lock": "^1.4.1",
@@ -93,9 +96,11 @@
     "mustache": "^4.2.0",
     "nestjs-pino": "^4.1.0",
     "node-cache": "5.1.2",
+    "node-webpmux": "^3.2.1",
     "passport": "^0.7.0",
     "passport-headerapikey": "^1.2.2",
     "pg": "^8.13.1",
+    "pg-copy-streams": "^6.0.0",
     "pino-http": "^10.2.0",
     "pino-pretty": "^11.2.1",
     "pretty-bytes": "5.6.0",
@@ -116,7 +121,8 @@
     "user-agents": "^1.1.669",
     "whatsapp-web.js": "github:devlikeapro/whatsapp-web.js#fork-main-2026-02-18",
     "write-file-atomic": "^6.0.0",
-    "yaml": "^2.7.1"
+    "yaml": "^2.7.1",
+    "zod": "^4.3.6"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"

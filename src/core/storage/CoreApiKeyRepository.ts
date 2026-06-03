@@ -1,5 +1,4 @@
-import { UnprocessableEntityException } from '@nestjs/common';
-import { DOCS_URL } from '@waha/core/exceptions';
+import { AvailableInPlusVersionAll } from '@waha/core/exceptions';
 import {
   ApiKey,
   IApiKeyRepository,
@@ -31,22 +30,16 @@ export class CoreApiKeyRepository implements IApiKeyRepository {
 
   async upsert(key: ApiKey): Promise<ApiKey> {
     void key;
-    throw new UnprocessableEntityException(
-      `API key management is not available in this edition. See ${DOCS_URL}`,
-    );
+    throw new AvailableInPlusVersionAll('API key management');
   }
 
   async deleteById(id: string): Promise<void> {
     void id;
-    throw new UnprocessableEntityException(
-      `API key management is not available in this edition. See ${DOCS_URL}`,
-    );
+    throw new AvailableInPlusVersionAll('API key management');
   }
 
   async deleteBySession(session: string): Promise<void> {
     void session;
-    throw new UnprocessableEntityException(
-      `API key management is not available in this edition. See ${DOCS_URL}`,
-    );
+    throw new AvailableInPlusVersionAll('API key management');
   }
 }

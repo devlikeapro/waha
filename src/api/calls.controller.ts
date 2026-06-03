@@ -25,7 +25,7 @@ import { Action } from '@waha/core/auth/casl.types';
 @Controller('api/:session/calls')
 @ApiTags('📞 Calls')
 @UseGuards(PoliciesGuard)
-@CheckPolicies(CanSession(Action.Use, FromParam('session')))
+@CheckPolicies(CanSession(Action.Send, FromParam('session')))
 export class CallsController {
   constructor(private manager: SessionManager) {}
 

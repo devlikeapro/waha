@@ -1,6 +1,4 @@
-import {
-  getBrowserExecutablePath as getBrowserExecutablePathAutodetect,
-} from '@waha/core/abc/session.browser';
+import { getBrowserExecutablePath as getBrowserExecutablePathAutodetect } from '@waha/core/abc/session.browser';
 import {
   CoreMediaConverter,
   IMediaConverter,
@@ -144,7 +142,6 @@ import { Activity } from '@waha/core/abc/activity';
 const qrcode = require('qrcode-terminal');
 
 axiosRetry(axios, { retries: 3 });
-
 
 export function ensureSuffix(phone) {
   const suffix = '@c.us';

@@ -17,7 +17,9 @@ export class CaslAbilityFactory {
       return createMongoAbility(AdminRules());
     }
     if (user.session) {
-      return createMongoAbility(SessionRules(user.session));
+      return createMongoAbility(
+        SessionRules(user.session, user.actions ?? null),
+      );
     }
     return createMongoAbility([]);
   }

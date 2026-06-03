@@ -28,12 +28,12 @@ import { Action } from '@waha/core/auth/casl.types';
 @Controller('api/:session/contacts')
 @ApiTags('👤 Contacts')
 @UseGuards(PoliciesGuard)
-@CheckPolicies(CanSession(Action.Use, FromParam('session')))
 export class ContactsSessionController {
   constructor(private manager: SessionManager) {}
 
   @Get('/:id')
   @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiParam({
     name: 'id',
     required: true,
@@ -56,6 +56,7 @@ export class ContactsSessionController {
   @Put('/:chatId')
   @SessionApiParam
   @ChatIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
   @ApiOperation({
     summary: 'Create or update contact',
     description:

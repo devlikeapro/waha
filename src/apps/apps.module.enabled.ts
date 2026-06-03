@@ -5,6 +5,7 @@ import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
 import { BullAuthMiddleware } from '@waha/apps/app_sdk/auth';
 import { ChatWootExports } from '@waha/apps/chatwoot/chatwoot.module';
+import { McpModuleExports } from '@waha/apps/mcp/mcp.module';
 import { AppsController } from '@waha/apps/app_sdk/api/apps.controller';
 import { CallsAppExports } from '@waha/apps/calls/calls.module';
 import { AppsService } from '@waha/apps/app_sdk/services/IAppsService';
@@ -83,6 +84,8 @@ function getAppModule(name: AppName) {
       return CallsAppExports;
     case AppName.chatwoot:
       return ChatWootExports;
+    case AppName.mcp:
+      return McpModuleExports;
     default:
       throw Error(`App module not found for ${name}`);
   }
@@ -91,11 +94,13 @@ function getAppModule(name: AppName) {
 export const AppsEnabled = {
   imports: [
     ...QUEUES_IMPORTS,
+    ...getAppModule(AppName.mcp).imports,
     ...getAppModule(AppName.chatwoot).imports,
     ...getAppModule(AppName.calls).imports,
   ],
   controllers: [
     AppsController,
+    ...getAppModule(AppName.mcp).controllers,
     ...getAppModule(AppName.chatwoot).controllers,
     ...getAppModule(AppName.calls).controllers,
   ],
@@ -104,6 +109,7 @@ export const AppsEnabled = {
       provide: AppsService,
       useClass: AppsEnabledService,
     },
+    ...getAppModule(AppName.mcp).providers,
     ...getAppModule(AppName.calls).providers,
     ...getAppModule(AppName.chatwoot).providers,
   ],

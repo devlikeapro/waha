@@ -3000,12 +3000,20 @@ export namespace messages {
         #one_of_decls: number[][] = [];
         constructor(data?: any[] | {
             duration?: number;
+            gifPlayback?: boolean;
+            externalShareFullVideoDurationInSeconds?: number;
         }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
             if (!Array.isArray(data) && typeof data == "object") {
                 if ("duration" in data && data.duration != undefined) {
                     this.duration = data.duration;
+                }
+                if ("gifPlayback" in data && data.gifPlayback != undefined) {
+                    this.gifPlayback = data.gifPlayback;
+                }
+                if ("externalShareFullVideoDurationInSeconds" in data && data.externalShareFullVideoDurationInSeconds != undefined) {
+                    this.externalShareFullVideoDurationInSeconds = data.externalShareFullVideoDurationInSeconds;
                 }
             }
         }
@@ -3015,21 +3023,49 @@ export namespace messages {
         set duration(value: number) {
             pb_1.Message.setField(this, 1, value);
         }
+        get gifPlayback() {
+            return pb_1.Message.getFieldWithDefault(this, 2, false) as boolean;
+        }
+        set gifPlayback(value: boolean) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        get externalShareFullVideoDurationInSeconds() {
+            return pb_1.Message.getFieldWithDefault(this, 3, 0) as number;
+        }
+        set externalShareFullVideoDurationInSeconds(value: number) {
+            pb_1.Message.setField(this, 3, value);
+        }
         static fromObject(data: {
             duration?: number;
+            gifPlayback?: boolean;
+            externalShareFullVideoDurationInSeconds?: number;
         }): VideoInfo {
             const message = new VideoInfo({});
             if (data.duration != null) {
                 message.duration = data.duration;
+            }
+            if (data.gifPlayback != null) {
+                message.gifPlayback = data.gifPlayback;
+            }
+            if (data.externalShareFullVideoDurationInSeconds != null) {
+                message.externalShareFullVideoDurationInSeconds = data.externalShareFullVideoDurationInSeconds;
             }
             return message;
         }
         toObject() {
             const data: {
                 duration?: number;
+                gifPlayback?: boolean;
+                externalShareFullVideoDurationInSeconds?: number;
             } = {};
             if (this.duration != null) {
                 data.duration = this.duration;
+            }
+            if (this.gifPlayback != null) {
+                data.gifPlayback = this.gifPlayback;
+            }
+            if (this.externalShareFullVideoDurationInSeconds != null) {
+                data.externalShareFullVideoDurationInSeconds = this.externalShareFullVideoDurationInSeconds;
             }
             return data;
         }
@@ -3039,6 +3075,10 @@ export namespace messages {
             const writer = w || new pb_1.BinaryWriter();
             if (this.duration != 0)
                 writer.writeFloat(1, this.duration);
+            if (this.gifPlayback != false)
+                writer.writeBool(2, this.gifPlayback);
+            if (this.externalShareFullVideoDurationInSeconds != 0)
+                writer.writeUint32(3, this.externalShareFullVideoDurationInSeconds);
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -3050,6 +3090,12 @@ export namespace messages {
                 switch (reader.getFieldNumber()) {
                     case 1:
                         message.duration = reader.readFloat();
+                        break;
+                    case 2:
+                        message.gifPlayback = reader.readBool();
+                        break;
+                    case 3:
+                        message.externalShareFullVideoDurationInSeconds = reader.readUint32();
                         break;
                     default: reader.skipField();
                 }

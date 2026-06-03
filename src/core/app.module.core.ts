@@ -34,6 +34,7 @@ import {
   getPinoHttpUseLevel,
   getPinoLogLevel,
   getPinoTransport,
+  redactUrlParams,
 } from '@waha/utils/logging';
 import * as Joi from 'joi';
 import { LoggerModule } from 'nestjs-pino';
@@ -68,7 +69,8 @@ import { WAHAHealthCheckServiceCore } from './health/WAHAHealthCheckServiceCore'
 import { SessionManagerCore } from './manager.core';
 import { CaslAbilityFactory } from '@waha/core/auth/casl.ability';
 import { PoliciesGuard } from '@waha/core/auth/policies.guard';
-import { ApiKeyService } from '@waha/core/auth/ApiKeyService';
+import { ApiKeyAuthService } from './auth/ApiKeyAuthService';
+import { SessionService } from '@waha/core/services/SessionService';
 
 export const IMPORTS_CORE = [
   ...AppsModuleExports.imports,
@@ -90,11 +92,15 @@ export const IMPORTS_CORE = [
           );
         },
       },
+      redact: {
+        paths: ['req.query["x-api-key"]'],
+        censor: '[REDACTED]',
+      },
       serializers: {
         req: (req) => ({
           id: req.id,
           method: req.method,
-          url: req.url,
+          url: redactUrlParams('x-api-key', req.url, req.query),
           query: req.query,
           params: req.params,
         }),
@@ -185,9 +191,10 @@ export const PROVIDERS_BASE: Provider[] = [
   MediaLocalStorageConfig,
   WebSocketAuth,
   ApiKeyStrategy,
-  ApiKeyService,
+  ApiKeyAuthService,
   CaslAbilityFactory,
   PoliciesGuard,
+  SessionService,
   {
     provide: IApiKeyAuth,
     useFactory: ApiKeyAuthFactory,
@@ -250,7 +257,7 @@ export class AppModuleCore {
     consumer
       .apply(ApiKeyAuthMiddleware)
       .exclude(...exclude)
-      .forRoutes('api', 'health');
+      .forRoutes('api', 'health', 'mcp');
 
     // Dashboard
     const dashboardCredentials = this.dashboardConfig.credentials;
