@@ -1,0 +1,78 @@
+services:
+  gows-plus:
+    build:
+      context: ../gows-plus
+    image: attivus/gows-plus:test
+    command: >
+      sh -lc "rm -rf /gows-plus-bin/* &&
+      cp /release/gows /gows-plus-bin/gows &&
+      cp -R /release/native /gows-plus-bin/native &&
+      chmod +x /gows-plus-bin/gows &&
+      ln -sf libopus_mlow.so /gows-plus-bin/native/libopus.so.0 &&
+      ln -sf libopus_mlow.so /gows-plus-bin/native/libopus-0.so"
+    volumes:
+      - gows_plus_bin:/gows-plus-bin
+    restart: "no"
+
+  postgres:
+    image: postgres:17.6
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    command:
+      - postgres
+      - "-c"
+      - "max_connections=3000"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  waha:
+    build:
+      context: .
+      args:
+        USE_BROWSER: none
+        WHATSAPP_DEFAULT_ENGINE: GOWS
+    image: attivus/waha-gows-plus:test
+    entrypoint:
+      - /usr/bin/tini
+      - --
+      - sh
+      - -lc
+      - tr -d '\r' < /entrypoint.sh > /tmp/entrypoint.sh && exec sh /tmp/entrypoint.sh
+    restart: unless-stopped
+    depends_on:
+      gows-plus:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    ports:
+      - "127.0.0.1:3000:3000"
+    env_file:
+      - .env.gows-test
+    volumes:
+      - ./sessions:/app/.sessions
+      - ./media:/app/.media
+      - ./src/dashboard:/app/dist/dashboard:ro
+      - ../gows-plus/proto:/app/dist/core/engines/gows/proto:ro
+      - gows_plus_bin:/gows-plus:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "10"
+
+volumes:
+  gows_plus_bin: {}
+  pg_data: {}

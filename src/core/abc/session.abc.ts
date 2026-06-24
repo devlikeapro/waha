@@ -659,6 +659,39 @@ export abstract class WhatsappSession {
     throw new NotImplementedByEngineError();
   }
 
+  public startCall(
+    jid: string,
+    video?: boolean,
+  ): Promise<{ call_id: string }> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public acceptCall(callId: string, ownerId?: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public endCall(callId: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public exchangeCallWebRTC(
+    callId: string,
+    sdpOffer: string,
+  ): Promise<{ sdp_answer: string }> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public getCallState(): Promise<{
+    active: boolean;
+    call_id: string;
+    from: string;
+    direction: string;
+    status: string;
+    event: string;
+  }> {
+    throw new NotImplementedByEngineError();
+  }
+
   /**
    * Chats methods
    */

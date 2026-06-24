@@ -54,7 +54,7 @@ start-proxy:
 	docker run --rm -d --name squid-container -e TZ=UTC -p 3128:3128 ubuntu/squid:5.2-22.04_beta
 
 proto-gows:
-	node scripts/gows-proto.js build --dir ../gows/proto
+	node scripts/gows-proto.js build --dir ../gows-plus/proto
 
 gows:
 	cd ../gows && \

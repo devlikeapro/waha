@@ -344,6 +344,42 @@ export class WAHAWebhookCallRejected extends WAHAWebhook {
   payload: CallData;
 }
 
+export class WAHAWebhookCallRinging extends WAHAWebhook {
+  @ApiProperty({
+    description: 'VoIP call is ringing (GOWS engine).',
+  })
+  event = WAHAEvents.CALL_RINGING;
+
+  payload: CallData;
+}
+
+export class WAHAWebhookCallConnecting extends WAHAWebhook {
+  @ApiProperty({
+    description: 'VoIP call is connecting after accept (GOWS engine).',
+  })
+  event = WAHAEvents.CALL_CONNECTING;
+
+  payload: CallData;
+}
+
+export class WAHAWebhookCallActive extends WAHAWebhook {
+  @ApiProperty({
+    description: 'VoIP call media path is active (GOWS engine).',
+  })
+  event = WAHAEvents.CALL_ACTIVE;
+
+  payload: CallData;
+}
+
+export class WAHAWebhookCallEnded extends WAHAWebhook {
+  @ApiProperty({
+    description: 'VoIP call ended (GOWS engine).',
+  })
+  event = WAHAEvents.CALL_ENDED;
+
+  payload: CallData;
+}
+
 export class WAHAWebhookLabelUpsert extends WAHAWebhook {
   @ApiProperty({
     description: 'The event is triggered when a label is created or updated',

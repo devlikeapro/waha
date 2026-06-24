@@ -32,6 +32,10 @@ export class GowsSubprocess {
 
     this.child = spawn(this.path, args, {
       detached: true,
+      env: {
+        ...process.env,
+        LD_LIBRARY_PATH: this.buildLibraryPath(process.env.LD_LIBRARY_PATH),
+      },
     });
     this.logger.debug(`GOWS started with PID: ${this.child.pid}`);
     this.child.on('close', (code, signal) => {
@@ -98,6 +102,17 @@ export class GowsSubprocess {
     this.logger.info('Stopping GOWS subprocess...');
     this.child?.kill('SIGTERM');
     this.logger.info('GOWS subprocess stopped');
+  }
+
+  private buildLibraryPath(current?: string): string | undefined {
+    const nativeDir = this.path.includes('/')
+      ? `${this.path.replace(/\/[^/]+$/, '')}/native`
+      : undefined;
+    if (!nativeDir) {
+      return current;
+    }
+    const parts = [nativeDir, current].filter(Boolean);
+    return parts.join(':');
   }
 
   private log(msg) {

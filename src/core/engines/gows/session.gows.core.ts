@@ -13,6 +13,7 @@ import {
 } from '@waha/core/abc/session.abc';
 import { Jid } from '@waha/core/engines/const';
 import { EventsFromObservable } from '@waha/core/engines/gows/EventsFromObservable';
+import { GowsCallsClient } from '@waha/core/engines/gows/GowsCallsClient';
 import { GowsEventStreamObservable } from '@waha/core/engines/gows/GowsEventStreamObservable';
 import {
   ToGroupParticipants,
@@ -163,7 +164,7 @@ import {
   share,
   Subject,
 } from 'rxjs';
-import { map, debounceTime } from 'rxjs/operators';
+import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { promisify } from 'util';
 
 import * as gows from './types';
@@ -264,6 +265,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   protected qr: QR;
   public client: MessageServiceClient;
+  private callsClient: GowsCallsClient;
   protected stream$: GowsEventStreamObservable;
   protected all$: Observable<EnginePayload>;
   protected events: EventsFromObservable<WhatsMeowEvent>;
@@ -321,6 +323,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     });
 
     this.client = BuildMessageServiceClient(
+      this.engineConfig.connection,
+      grpc.credentials.createInsecure(),
+    );
+    this.callsClient = new GowsCallsClient(
       this.engineConfig.connection,
       grpc.credentials.createInsecure(),
     );
@@ -619,19 +625,38 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     //
     // Calls
     //
-    const callOffer$ = all$.pipe(
+    const callLifecycle$ = (eventName: string) =>
+      this.all$.pipe(
+        filter((obj) => obj.event === eventName),
+        map((obj) => this.lifecycleToCallData(obj.data, eventName)),
+      );
+
+    const callOfferReceived$ = all$.pipe(
       onlyEvent(WhatsMeowEvent.CALL_OFFER),
-      filter(this.shouldProcessCallEvent.bind(this)),
-      map(this.toCallData.bind(this)),
-    );
-    const callOfferNotice$ = all$.pipe(
-      onlyEvent(WhatsMeowEvent.CALL_OFFER_NOTICE),
       filter(this.shouldProcessCallEvent.bind(this)),
       map(this.toCallData.bind(this)),
     );
     this.events2
       .get(WAHAEvents.CALL_RECEIVED)
-      .switch(merge(callOffer$, callOfferNotice$));
+      .switch(
+        merge(callLifecycle$('call.received'), callOfferReceived$).pipe(
+          distinctUntilChanged(
+            (a, b) => Boolean(a?.id) && a?.id === b?.id,
+          ),
+        ),
+      );
+    this.events2
+      .get(WAHAEvents.CALL_RINGING)
+      .switch(callLifecycle$('call.ringing'));
+    this.events2
+      .get(WAHAEvents.CALL_CONNECTING)
+      .switch(callLifecycle$('call.connecting'));
+    this.events2
+      .get(WAHAEvents.CALL_ACTIVE)
+      .switch(callLifecycle$('call.active'));
+    this.events2
+      .get(WAHAEvents.CALL_ENDED)
+      .switch(callLifecycle$('call.ended'));
 
     const callAccept$ = all$.pipe(
       onlyEvent(WhatsMeowEvent.CALL_ACCEPT),
@@ -643,24 +668,26 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     const callReject$ = all$.pipe(
       onlyEvent(WhatsMeowEvent.CALL_REJECT),
       filter(this.shouldProcessCallEvent.bind(this)),
+      filter((call: any) => !this.isCallRejectedOnLinkedDevice(call)),
     );
     const callTerminate$ = all$.pipe(
       onlyEvent(WhatsMeowEvent.CALL_TERMINATE),
       filter(this.shouldProcessCallEvent.bind(this)),
-      // Skip terminate events that only mean the call was accepted or rejected on another device
       filter(
         (call: any) =>
           call?.Reason !== 'accepted_elsewhere' &&
           call?.Reason !== 'rejected_elsewhere',
       ),
     );
-    // Debounce per call to collapse duplicate reject/terminate events
-    const callRejected$ = merge(callReject$, callTerminate$).pipe(
+    const callLifecycleRejected$ = callLifecycle$('call.rejected');
+    const callRejectedRaw$ = merge(callReject$, callTerminate$).pipe(
       groupBy((call: any) => this.getCallId(call) || 'unknown'),
       mergeMap((group$) => group$.pipe(debounceTime(1_000))),
       map(this.toCallData.bind(this)),
     );
-    this.events2.get(WAHAEvents.CALL_REJECTED).switch(callRejected$);
+    this.events2
+      .get(WAHAEvents.CALL_REJECTED)
+      .switch(merge(callRejectedRaw$, callLifecycleRejected$));
 
     const presence$ = all$.pipe(
       onlyEvent(WhatsMeowEvent.PRESENCE),
@@ -822,6 +849,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       await promisify(this.client.StopSession)(this.session);
       this.client?.close();
     }
+    this.callsClient?.close();
   }
 
   public async requestCode(phoneNumber: string, method: string, params?: any) {
@@ -970,6 +998,44 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       id: id,
     });
     await promisify(this.client.RejectCall)(request);
+  }
+
+  @Activity()
+  async startCall(
+    jid: string,
+    video = false,
+  ): Promise<{ call_id: string }> {
+    return this.callsClient.startCall(this.name, jid, video);
+  }
+
+  @Activity()
+  async acceptCall(callId: string, ownerId?: string): Promise<void> {
+    await this.callsClient.acceptCall(this.name, callId, ownerId);
+  }
+
+  @Activity()
+  async endCall(callId: string): Promise<void> {
+    await this.callsClient.endCall(this.name, callId);
+  }
+
+  @Activity()
+  async exchangeCallWebRTC(
+    callId: string,
+    sdpOffer: string,
+  ): Promise<{ sdp_answer: string }> {
+    return this.callsClient.exchangeCallWebRTC(this.name, callId, sdpOffer);
+  }
+
+  @Activity()
+  async getCallState(): Promise<{
+    active: boolean;
+    call_id: string;
+    from: string;
+    direction: string;
+    status: string;
+    event: string;
+  }> {
+    return this.callsClient.getCallState(this.name);
   }
 
   @Activity()
@@ -2734,12 +2800,44 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     return this.jids.include(call.From);
   }
 
+  private isCallRejectedOnLinkedDevice(call: any): boolean {
+    const creator =
+      call?.CallCreator || call?.Data?.Attrs?.['call-creator'] || '';
+    if (!creator || !call?.From) {
+      return false;
+    }
+    const normalize = (jid: string) => jid.split(':')[0].toLowerCase();
+    return normalize(call.From) !== normalize(creator);
+  }
+
+  private lifecycleToCallData(payload: any, lifecycleEvent?: string): CallData {
+    const date = payload?.timestamp
+      ? new Date(payload.timestamp)
+      : new Date();
+    return {
+      id: payload?.id,
+      from: payload?.from ? toCusFormat(payload.from) : undefined,
+      timestamp: date.getTime(),
+      isVideo: payload?.isVideo ?? false,
+      isGroup: false,
+      direction: payload?.direction,
+      status: payload?.status,
+      reason: payload?.reason,
+      lifecycleEvent: lifecycleEvent || payload?.event,
+      _data: payload,
+    };
+  }
+
   private toCallData(call: any): CallData {
     const date = call?.Timestamp ? new Date(call.Timestamp) : new Date();
     const timestamp = date.getTime() / 1000;
     const isVideo = this.isVideoCall(call);
     const isGroup = this.isGroupCall(call);
-    const from = call?.From || call?.GroupJID;
+    const from =
+      call?.CallCreatorAlt ||
+      call?.Data?.Attrs?.['caller_pn'] ||
+      call?.From ||
+      call?.GroupJID;
     return {
       id: this.getCallId(call),
       from: from ? toCusFormat(from) : undefined,
