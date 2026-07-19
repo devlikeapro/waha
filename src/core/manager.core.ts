@@ -21,6 +21,7 @@ import { getProxyConfig } from '@waha/core/helpers.proxy';
 import { WebhookConductor } from '@waha/core/integrations/webhooks/WebhookConductor';
 import { MediaManager } from '@waha/core/media/MediaManager';
 import { MediaStorageFactory } from '@waha/core/media/MediaStorageFactory';
+import { restartStoppedSessionsLoop } from '@waha/core/utils/restartSessions';
 import { LocalSessionAuthRepository } from '@waha/core/storage/LocalSessionAuthRepository';
 import { LocalSessionConfigRepository } from '@waha/core/storage/LocalSessionConfigRepository';
 import { LocalStoreCore } from '@waha/core/storage/LocalStoreCore';
@@ -234,17 +235,13 @@ export class SessionManagerCore
     const sleepS = this.config.autoStartDelaySeconds;
     this.log.info(`Restarting sessions with delay of ${sleepS} seconds...`);
     const sleepMs = this.config.autoStartDelaySeconds * 1000;
-    for (const sessionName of sessions) {
-      await this.withLock(sessionName, async () => {
-        const log = this.log.logger.child({ session: sessionName });
-        log.info(`Restarting STOPPED session...`);
-        await this.start(sessionName).catch((error) => {
-          log.error(`Failed to start STOPPED session: ${error}`);
-          log.error(error.stack);
-        });
-      });
-      await sleep(sleepMs);
-    }
+    await restartStoppedSessionsLoop({
+      sessions: sessions,
+      sleepMs: sleepMs,
+      withLock: (name, fn) => this.withLock(name, fn),
+      start: (name) => this.start(name),
+      loggerFor: (name) => this.log.logger.child({ session: name }),
+    });
     this.log.info(`STOPPED sessions have been restarted.`);
   }
 
