@@ -98,6 +98,7 @@ class LidContactInfo extends ChatContactInfo {
     return new JidContactInfo(this.session, pn, this.locale);
   }
 
+  @CacheAsync()
   async AvatarUrl(): Promise<string | null> {
     const jid = await this.jid();
     if (jid) {

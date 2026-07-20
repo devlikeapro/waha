@@ -101,7 +101,11 @@ async function bootstrap() {
   AppModule.appReady(app, logger);
   app.enableShutdownHooks();
   const config = app.get(WhatsappConfigService);
-  await app.listen(config.port);
+  // Bind explicitly to 0.0.0.0 so the HTTP server accepts IPv4 traffic.
+  // When host is omitted, Node may bind to "::1" (IPv6 loopback) on some
+  // platforms, which makes internal axios calls to "http://localhost:3000"
+  // fail to connect (localhost resolves to 127.0.0.1 and IPv4 is refused).
+  await app.listen(config.port, '0.0.0.0');
   logger.info(`WhatsApp HTTP API is running on: ${await app.getUrl()}`);
   logger.info(VERSION, 'Environment');
 }

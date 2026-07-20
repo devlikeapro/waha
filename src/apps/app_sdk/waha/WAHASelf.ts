@@ -29,7 +29,11 @@ export class WAHASelf {
       parseInt(process.env.PORT) ||
       parseInt(process.env.WHATSAPP_API_PORT) ||
       3000;
-    const url = `http://localhost:${port}`;
+    // Use 127.0.0.1 (IPv4 loopback) instead of "localhost" to avoid
+    // resolution ambiguity. WAHA forces IPv4 via undici dispatcher, and
+    // some platforms bind the HTTP server to IPv6 only ("::1"), so a
+    // bare "localhost" can resolve to 127.0.0.1 and fail to connect.
+    const url = `http://127.0.0.1:${port}`;
     this.client = axios.create({
       baseURL: url,
       headers: {
