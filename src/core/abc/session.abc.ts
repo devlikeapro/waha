@@ -107,6 +107,7 @@ import {
   GroupParticipant,
   GroupsListFields,
   ParticipantsRequest,
+  SettingsMemberAddMode,
   SettingsSecurityChangeInfo,
 } from '../../structures/groups.dto';
 import { WAHAChatPresences } from '../../structures/presence.dto';
@@ -1002,6 +1003,14 @@ export abstract class WhatsappSession {
   }
 
   public setMessagesAdminsOnly(id, value) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public getMemberAddMode(id): Promise<SettingsMemberAddMode> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public setMemberAddMode(id, value) {
     throw new NotImplementedByEngineError();
   }
 

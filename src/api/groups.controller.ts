@@ -38,6 +38,7 @@ import {
   JoinGroupRequest,
   JoinGroupResponse,
   ParticipantsRequest,
+  SettingsMemberAddMode,
   SettingsSecurityChangeInfo,
   SubjectRequest,
 } from '../structures/groups.dto';
@@ -307,6 +308,39 @@ export class GroupsController {
     @Param('id') id: string,
   ): Promise<SettingsSecurityChangeInfo> {
     return session.getMessagesAdminsOnly(id);
+  }
+
+  @Put(':id/settings/security/member-add-mode')
+  @SessionApiParam
+  @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
+  @ApiOperation({
+    summary: 'Update settings - who can add new members',
+    description:
+      'Updates the group settings for who can add new members to the group - all members or admins only.',
+  })
+  setMemberAddMode(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+    @Body() request: SettingsMemberAddMode,
+  ) {
+    return session.setMemberAddMode(id, request.membersCanAddNewMember);
+  }
+
+  @Get(':id/settings/security/member-add-mode')
+  @SessionApiParam
+  @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
+  @ApiOperation({
+    summary: 'Get settings - who can add new members',
+    description:
+      'The group settings for who can add new members to the group - all members or admins only.',
+  })
+  getMemberAddMode(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+  ): Promise<SettingsMemberAddMode> {
+    return session.getMemberAddMode(id);
   }
 
   @Get(':id/invite-code')
