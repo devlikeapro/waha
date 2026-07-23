@@ -33,6 +33,7 @@ import { MongoStoreHealthIndicator } from '@waha/core/health/MongoStoreHealthInd
 import { ChannelsInfoServiceCore } from '@waha/core/services/ChannelsInfoServiceCore';
 import { parseBool } from '@waha/helpers';
 import { BufferJsonReplacerInterceptor } from '@waha/nestjs/BufferJsonReplacerInterceptor';
+import { generateRequestId, RequestIdInterceptor } from '@waha/nestjs/requestId';
 import { HttpsExpress } from '@waha/nestjs/HttpsExpress';
 import {
   getPinoHttpUseLevel,
@@ -82,6 +83,7 @@ export const IMPORTS_CORE = [
   LoggerModule.forRoot({
     renameContext: 'name',
     pinoHttp: {
+      genReqId: generateRequestId,
       quietReqLogger: true,
       level: getPinoLogLevel(),
       useLevel: getPinoHttpUseLevel(),
@@ -196,6 +198,10 @@ export const CONTROLLERS = [
   ...AppsModuleExports.controllers,
 ];
 export const PROVIDERS_BASE: Provider[] = [
+  {
+    provide: APP_INTERCEPTOR,
+    useClass: RequestIdInterceptor,
+  },
   {
     provide: APP_INTERCEPTOR,
     useClass: BufferJsonReplacerInterceptor,
