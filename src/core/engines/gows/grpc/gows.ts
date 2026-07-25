@@ -11434,6 +11434,15 @@ export namespace messages {
                 responseSerialize: (message: Empty) => Buffer.from(message.serialize()),
                 responseDeserialize: (bytes: Buffer) => Empty.deserialize(new Uint8Array(bytes))
             },
+            FetchMessageCapping: {
+                path: "/messages.MessageService/FetchMessageCapping",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: Session) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => Session.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: Json) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => Json.deserialize(new Uint8Array(bytes))
+            },
             GenerateNewMessageID: {
                 path: "/messages.MessageService/GenerateNewMessageID",
                 requestStream: false,
@@ -11751,6 +11760,7 @@ export namespace messages {
         abstract SubscribePresence(call: grpc_1.ServerUnaryCall<SubscribePresenceRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
         abstract CheckPhones(call: grpc_1.ServerUnaryCall<CheckPhonesRequest, CheckPhonesResponse>, callback: grpc_1.sendUnaryData<CheckPhonesResponse>): void;
         abstract MarkChatUnread(call: grpc_1.ServerUnaryCall<ChatUnreadRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
+        abstract FetchMessageCapping(call: grpc_1.ServerUnaryCall<Session, Json>, callback: grpc_1.sendUnaryData<Json>): void;
         abstract GenerateNewMessageID(call: grpc_1.ServerUnaryCall<Session, NewMessageIDResponse>, callback: grpc_1.sendUnaryData<NewMessageIDResponse>): void;
         abstract SendMessage(call: grpc_1.ServerUnaryCall<MessageRequest, MessageResponse>, callback: grpc_1.sendUnaryData<MessageResponse>): void;
         abstract SendReaction(call: grpc_1.ServerUnaryCall<MessageReaction, MessageResponse>, callback: grpc_1.sendUnaryData<MessageResponse>): void;
@@ -11894,6 +11904,9 @@ export namespace messages {
         };
         MarkChatUnread: GrpcUnaryServiceInterface<ChatUnreadRequest, Empty> = (message: ChatUnreadRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<Empty>, options?: grpc_1.CallOptions | grpc_1.requestCallback<Empty>, callback?: grpc_1.requestCallback<Empty>): grpc_1.ClientUnaryCall => {
             return super.MarkChatUnread(message, metadata, options, callback);
+        };
+        FetchMessageCapping: GrpcUnaryServiceInterface<Session, Json> = (message: Session, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<Json>, options?: grpc_1.CallOptions | grpc_1.requestCallback<Json>, callback?: grpc_1.requestCallback<Json>): grpc_1.ClientUnaryCall => {
+            return super.FetchMessageCapping(message, metadata, options, callback);
         };
         GenerateNewMessageID: GrpcUnaryServiceInterface<Session, NewMessageIDResponse> = (message: Session, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<NewMessageIDResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<NewMessageIDResponse>, callback?: grpc_1.requestCallback<NewMessageIDResponse>): grpc_1.ClientUnaryCall => {
             return super.GenerateNewMessageID(message, metadata, options, callback);

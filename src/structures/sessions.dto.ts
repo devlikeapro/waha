@@ -375,6 +375,71 @@ export class ReachoutTimelockData {
   timeEnforcementEnds: number | null;
 }
 
+/**
+ * Capping status for the per-cycle new-chat message quota.
+ * WhatsApp may introduce new values at any time - treat it as an open set.
+ */
+export enum MessageCappingStatus {
+  NONE = 'NONE',
+  FIRST_WARNING = 'FIRST_WARNING',
+  SECOND_WARNING = 'SECOND_WARNING',
+  CAPPED = 'CAPPED',
+}
+
+export class MessageCappingData {
+  @ApiProperty({
+    example: MessageCappingStatus.FIRST_WARNING,
+    enum: MessageCappingStatus,
+    description:
+      'How close the account is to its new-chat quota. ' +
+      'CAPPED means new chats are blocked. WhatsApp may introduce new values, ' +
+      'so treat it as an open set.',
+  })
+  cappingStatus: MessageCappingStatus;
+
+  @ApiProperty({
+    example: 1000,
+    description:
+      'New-chat messages allowed in the current cycle. -1 when the account ' +
+      'has no cap.',
+  })
+  totalQuota: number;
+
+  @ApiProperty({
+    example: 640,
+    description: 'New-chat messages already used in the current cycle.',
+  })
+  usedQuota: number;
+
+  @ApiProperty({
+    example: 1782874800,
+    nullable: true,
+    description: 'Unix timestamp (seconds) when the current cycle started.',
+  })
+  cycleStart: number | null;
+
+  @ApiProperty({
+    example: 1785553199,
+    nullable: true,
+    description: 'Unix timestamp (seconds) when the current cycle ends.',
+  })
+  cycleEnd: number | null;
+
+  @ApiProperty({
+    example: 'NOT_ELIGIBLE',
+    nullable: true,
+    description: 'Meta Verified status. Informational.',
+  })
+  mvStatus: string | null;
+
+  @ApiProperty({
+    example: 'NOT_ELIGIBLE',
+    nullable: true,
+    description: 'One-time engagement status. Informational.',
+  })
+  oteStatus: string | null;
+}
+
 export class MeInfo {
   @ChatIdProperty()
   id: string;
@@ -400,6 +465,15 @@ export class MeInfo {
       'Null if no enforcement has been seen for the account.',
   })
   reachoutTimelock?: ReachoutTimelockData | null;
+
+  @ApiProperty({
+    required: false,
+    nullable: true,
+    description:
+      'WhatsApp new-chat message capping (per-cycle quota) info. ' +
+      'Null until the capping state has been fetched for the account.',
+  })
+  messageCapping?: MessageCappingData | null;
 }
 
 export class SessionInfo extends SessionDTO {

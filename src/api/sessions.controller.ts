@@ -34,6 +34,7 @@ import { WhatsappSession } from '../core/abc/session.abc';
 import {
   ListSessionsQuery,
   MeInfo,
+  MessageCappingData,
   SessionCreateRequest,
   SessionDTO,
   SessionExpand,
@@ -96,6 +97,23 @@ class SessionsController {
   @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   getMe(@SessionParam session: WhatsappSession): MeInfo | null {
     return this.sessionService.getSessionMe(session);
+  }
+
+  @Get(':session/capping')
+  @SessionApiParam
+  @ApiOperation({
+    summary: 'Fetch the account new-chat message capping (per-cycle quota)',
+    description:
+      'Fetch a fresh new-chat message capping (quota) state from WhatsApp. ' +
+      'The same value is also available under me.messageCapping in the session ' +
+      'info, and changes are pushed through the session.status event. ' +
+      'GOWS engine only.',
+  })
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
+  fetchMessageCapping(
+    @SessionParam session: WhatsappSession,
+  ): Promise<MessageCappingData> {
+    return session.fetchMessageCapping();
   }
 
   @Post('')

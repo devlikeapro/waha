@@ -1,3 +1,4 @@
+import { MessageCappingTracker } from '@waha/core/abc/MessageCappingTracker';
 import { ReachoutTimelockTracker } from '@waha/core/abc/ReachoutTimelockTracker';
 import { getBrowserExecutablePath as getBrowserExecutablePathAutodetect } from '@waha/core/abc/session.browser';
 import { IMediaConverter } from '@waha/core/media/IConverter';
@@ -114,6 +115,8 @@ import {
 import { WAHAChatPresences } from '../../structures/presence.dto';
 import {
   MeInfo,
+  MessageCappingData,
+  MessageCappingStatus,
   ProxyConfig,
   SessionConfig,
 } from '../../structures/sessions.dto';
@@ -199,6 +202,7 @@ export abstract class WhatsappSession {
   private _status: WAHASessionStatus;
   private _statusData: any = null;
   protected reachoutTimelock: ReachoutTimelockTracker;
+  protected messageCapping: MessageCappingTracker;
   private _presence:
     | WAHAPresenceStatus.ONLINE
     | WAHAPresenceStatus.OFFLINE
@@ -251,6 +255,15 @@ export abstract class WhatsappSession {
         // Re-issue WORKING so 'session.status' consumers get the update
         this.setStatus(WAHASessionStatus.WORKING, {
           reachoutTimelock: timelock,
+        });
+      }
+    });
+    this.messageCapping = new MessageCappingTracker(this.logger);
+    this.messageCapping.changes$.subscribe((capping) => {
+      if (this.status === WAHASessionStatus.WORKING) {
+        // Re-issue WORKING so 'session.status' consumers get the update
+        this.setStatus(WAHASessionStatus.WORKING, {
+          messageCapping: capping,
         });
       }
     });
@@ -362,13 +375,20 @@ export abstract class WhatsappSession {
       // wait for STOPPED event, ignore the rest
       return;
     }
-    if (
-      status === WAHASessionStatus.WORKING &&
-      data == null &&
-      this.reachoutTimelock.value?.isActive
-    ) {
-      // Plain 'status = WORKING' assignments (reconnects) must keep carrying the active timelock info
-      data = { reachoutTimelock: this.reachoutTimelock.value };
+    if (status === WAHASessionStatus.WORKING && data == null) {
+      // Plain 'status = WORKING' assignments (reconnects) must keep carrying the
+      // active account-restriction info so 'session.status' consumers do not lose it
+      const carry: any = {};
+      if (this.reachoutTimelock.value?.isActive) {
+        carry.reachoutTimelock = this.reachoutTimelock.value;
+      }
+      const capping = this.messageCapping.value;
+      if (capping && capping.cappingStatus !== MessageCappingStatus.NONE) {
+        carry.messageCapping = capping;
+      }
+      if (Object.keys(carry).length > 0) {
+        data = carry;
+      }
     }
     if (
       status === WAHASessionStatus.STOPPED ||
@@ -503,6 +523,10 @@ export abstract class WhatsappSession {
    */
 
   public browserTrace(query: BrowserTraceQuery): Promise<string> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public fetchMessageCapping(): Promise<MessageCappingData> {
     throw new NotImplementedByEngineError();
   }
 

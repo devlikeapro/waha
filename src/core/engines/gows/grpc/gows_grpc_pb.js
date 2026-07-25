@@ -709,9 +709,9 @@ function deserialize_messages_UpsertLabelRequest(buffer_arg) {
 }
 
 
-//
+// 
 // Events
-//
+// 
 var EventStreamService = exports.EventStreamService = {
   streamEvents: {
     path: '/messages.EventStream/StreamEvents',
@@ -728,9 +728,9 @@ var EventStreamService = exports.EventStreamService = {
 
 exports.EventStreamClient = grpc.makeGenericClientConstructor(EventStreamService, 'EventStream');
 var MessageServiceService = exports.MessageServiceService = {
-  //
+  // 
 // Session management
-//
+// 
 startSession: {
     path: '/messages.MessageService/StartSession',
     requestStream: false,
@@ -808,9 +808,9 @@ startSession: {
     responseSerialize: serialize_messages_Empty,
     responseDeserialize: deserialize_messages_Empty,
   },
-  //
+  // 
 // Profile
-//
+// 
 setProfileName: {
     path: '/messages.MessageService/SetProfileName',
     requestStream: false,
@@ -844,9 +844,9 @@ setProfileName: {
     responseSerialize: serialize_messages_Empty,
     responseDeserialize: deserialize_messages_Empty,
   },
-  //
+  // 
 // Lids
-//
+// 
 getAllLids: {
     path: '/messages.MessageService/GetAllLids',
     requestStream: false,
@@ -891,9 +891,9 @@ getAllLids: {
     responseSerialize: serialize_messages_OptionalString,
     responseDeserialize: deserialize_messages_OptionalString,
   },
-  //
+  // 
 // Groups
-//
+// 
 fetchGroups: {
     path: '/messages.MessageService/FetchGroups',
     requestStream: false,
@@ -1073,9 +1073,9 @@ updateGroupParticipants: {
     responseSerialize: serialize_messages_JsonList,
     responseDeserialize: deserialize_messages_JsonList,
   },
-  //
+  // 
 // Actions
-//
+// 
 getProfilePicture: {
     path: '/messages.MessageService/GetProfilePicture',
     requestStream: false,
@@ -1142,9 +1142,24 @@ getProfilePicture: {
     responseSerialize: serialize_messages_Empty,
     responseDeserialize: deserialize_messages_Empty,
   },
-  //
+  // 
+// Account
+// 
+// Fetch the account's current new-chat message capping (per-cycle quota).
+fetchMessageCapping: {
+    path: '/messages.MessageService/FetchMessageCapping',
+    requestStream: false,
+    responseStream: false,
+    requestType: gows_pb.Session,
+    responseType: gows_pb.Json,
+    requestSerialize: serialize_messages_Session,
+    requestDeserialize: deserialize_messages_Session,
+    responseSerialize: serialize_messages_Json,
+    responseDeserialize: deserialize_messages_Json,
+  },
+  // 
 // Message
-//
+// 
 generateNewMessageID: {
     path: '/messages.MessageService/GenerateNewMessageID',
     requestStream: false,
@@ -1222,9 +1237,9 @@ generateNewMessageID: {
     responseSerialize: serialize_messages_MessageResponse,
     responseDeserialize: deserialize_messages_MessageResponse,
   },
-  //
+  // 
 // Newsletters
-//
+// 
 getSubscribedNewsletters: {
     path: '/messages.MessageService/GetSubscribedNewsletters',
     requestStream: false,
@@ -1313,9 +1328,9 @@ getSubscribedNewsletters: {
     responseSerialize: serialize_messages_Empty,
     responseDeserialize: deserialize_messages_Empty,
   },
-  //
+  // 
 // Labels
-//
+// 
 getLabels: {
     path: '/messages.MessageService/GetLabels',
     requestStream: false,
@@ -1393,9 +1408,9 @@ getLabels: {
     responseSerialize: serialize_messages_JsonList,
     responseDeserialize: deserialize_messages_JsonList,
   },
-  //
+  // 
 // Contacts
-//
+// 
 updateContact: {
     path: '/messages.MessageService/UpdateContact',
     requestStream: false,
@@ -1429,9 +1444,9 @@ updateContact: {
     responseSerialize: serialize_messages_Json,
     responseDeserialize: deserialize_messages_Json,
   },
-  //
+  // 
 // Events
-//
+// 
 cancelEventMessage: {
     path: '/messages.MessageService/CancelEventMessage',
     requestStream: false,
@@ -1443,9 +1458,9 @@ cancelEventMessage: {
     responseSerialize: serialize_messages_MessageResponse,
     responseDeserialize: deserialize_messages_MessageResponse,
   },
-  //
+  // 
 // Media
-//
+// 
 downloadMedia: {
     path: '/messages.MessageService/DownloadMedia',
     requestStream: false,
@@ -1457,9 +1472,9 @@ downloadMedia: {
     responseSerialize: serialize_messages_DownloadMediaResponse,
     responseDeserialize: deserialize_messages_DownloadMediaResponse,
   },
-  //
+  // 
 // Calls
-//
+// 
 rejectCall: {
     path: '/messages.MessageService/RejectCall',
     requestStream: false,
@@ -1471,9 +1486,9 @@ rejectCall: {
     responseSerialize: serialize_messages_Empty,
     responseDeserialize: deserialize_messages_Empty,
   },
-  //
+  // 
 // Storage
-//
+// 
 getMessageById: {
     path: '/messages.MessageService/GetMessageById',
     requestStream: false,
