@@ -603,8 +603,11 @@ export class WebjsClientCore extends Client {
   /**
    * Presences methods
    */
-  public async subscribePresence(chatId: string): Promise<void> {
-    const method = getPresenceSubscriptionMethod(chatId);
+  public async subscribePresence(
+    chatId: string,
+    subscriptionChatId: string = chatId,
+  ): Promise<void> {
+    const method = getPresenceSubscriptionMethod(subscriptionChatId);
     await this.pupPage.evaluate(async (chatId, method) => {
       const d = require;
       const WidFactory = d('WAWebWidFactory');
@@ -613,12 +616,13 @@ export class WebjsClientCore extends Client {
       const chat = d('WAWebChatCollection').ChatCollection.get(wid);
       const tc = chat == null ? void 0 : chat.getTcToken();
       const bridge = d('WAWebContactPresenceBridge');
-      const presenceWid =
-        method === 'subscribeUserPresence'
-          ? WidFactory.createUserLidOrThrow(wid)
-          : wid;
+      const presenceWid = method === 'subscribeUserPresence'
+        ? chatId.endsWith('@lid')
+          ? wid
+          : WidFactory.createUserLidOrThrow(wid)
+        : wid;
       await bridge[method](presenceWid, tc);
-    }, chatId, method);
+    }, subscriptionChatId, method);
   }
 
   private async getCurrentPresence(chatId: string): Promise<WebJSPresence[]> {
@@ -651,9 +655,12 @@ export class WebjsClientCore extends Client {
     return result;
   }
 
-  public async getPresence(chatId: string): Promise<WebJSPresence[]> {
+  public async getPresence(
+    chatId: string,
+    subscriptionChatId: string = chatId,
+  ): Promise<WebJSPresence[]> {
     await this.sendPresenceAvailable();
-    await this.subscribePresence(chatId);
+    await this.subscribePresence(chatId, subscriptionChatId);
     await sleep(3_000);
     return await this.getCurrentPresence(chatId);
   }
