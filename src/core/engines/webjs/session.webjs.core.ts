@@ -31,6 +31,7 @@ import {
   CallErrorEvent,
   PAGE_CALL_ERROR_EVENT,
 } from '@waha/core/engines/webjs/WPage';
+import { getWebjsMessageOptions } from '@waha/core/engines/webjs/message-options';
 import { WAMimeType } from '@waha/core/media/WAMimeType';
 import { detectMimetype } from '@waha/utils/files';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
@@ -2514,16 +2515,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   protected getMessageOptions(request: any): any {
-    let mentions = request.mentions;
-    mentions = mentions ? mentions.map(this.ensureSuffix) : undefined;
-
-    const quotedMessageId = request.reply_to || request.replyTo;
-
-    return {
-      mentions: mentions,
-      quotedMessageId: quotedMessageId,
-      linkPreview: request.linkPreview,
-    };
+    return getWebjsMessageOptions(request, this.ensureSuffix);
   }
 }
 
