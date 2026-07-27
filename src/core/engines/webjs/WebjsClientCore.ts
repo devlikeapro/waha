@@ -35,6 +35,12 @@ export interface WebjsChannelMessage {
   viewCount: number;
 }
 
+export function getPresenceSubscriptionMethod(chatId: string): string {
+  return chatId.endsWith('@g.us')
+    ? 'subscribeGroupPresence'
+    : 'subscribeUserPresence';
+}
+
 class ChannelMessageReaction {
   reaction: string;
   count: number;
@@ -605,7 +611,9 @@ export class WebjsClientCore extends Client {
       const wid = WidFactory.createWidFromWidLike(chatId);
       const chat = d('WAWebChatCollection').ChatCollection.get(wid);
       const tc = chat == null ? void 0 : chat.getTcToken();
-      await d('WAWebContactPresenceBridge').subscribePresence(wid, tc);
+      const bridge = d('WAWebContactPresenceBridge');
+      const method = getPresenceSubscriptionMethod(chatId);
+      await bridge[method](wid, tc);
     }, chatId);
   }
 
