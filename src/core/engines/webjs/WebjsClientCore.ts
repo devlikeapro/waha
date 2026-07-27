@@ -604,6 +604,7 @@ export class WebjsClientCore extends Client {
    * Presences methods
    */
   public async subscribePresence(chatId: string): Promise<void> {
+    const method = getPresenceSubscriptionMethod(chatId);
     await this.pupPage.evaluate(async (chatId) => {
       const d = require;
       const WidFactory = d('WAWebWidFactory');
@@ -612,9 +613,8 @@ export class WebjsClientCore extends Client {
       const chat = d('WAWebChatCollection').ChatCollection.get(wid);
       const tc = chat == null ? void 0 : chat.getTcToken();
       const bridge = d('WAWebContactPresenceBridge');
-      const method = getPresenceSubscriptionMethod(chatId);
       await bridge[method](wid, tc);
-    }, chatId);
+    }, chatId, method);
   }
 
   private async getCurrentPresence(chatId: string): Promise<WebJSPresence[]> {
