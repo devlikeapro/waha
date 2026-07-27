@@ -605,7 +605,7 @@ export class WebjsClientCore extends Client {
    */
   public async subscribePresence(chatId: string): Promise<void> {
     const method = getPresenceSubscriptionMethod(chatId);
-    await this.pupPage.evaluate(async (chatId) => {
+    await this.pupPage.evaluate(async (chatId, method) => {
       const d = require;
       const WidFactory = d('WAWebWidFactory');
 
