@@ -613,7 +613,11 @@ export class WebjsClientCore extends Client {
       const chat = d('WAWebChatCollection').ChatCollection.get(wid);
       const tc = chat == null ? void 0 : chat.getTcToken();
       const bridge = d('WAWebContactPresenceBridge');
-      await bridge[method](wid, tc);
+      const presenceWid =
+        method === 'subscribeUserPresence'
+          ? WidFactory.createUserLidOrThrow(wid)
+          : wid;
+      await bridge[method](presenceWid, tc);
     }, chatId, method);
   }
 
