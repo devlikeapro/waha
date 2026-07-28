@@ -2358,8 +2358,12 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       downloadMedia: false,
       merge,
     };
-    const messages = await this.getChatMessages(chat.id, lastMessageQuery, {});
-    const message = messages.length > 0 ? messages[0] : null;
+    const chatMessages = await this.getChatMessages(
+      chat.id,
+      lastMessageQuery,
+      {},
+    );
+    const message = chatMessages.length > 0 ? chatMessages[0] : null;
     return {
       id: id,
       name: name || null,

@@ -11,6 +11,8 @@ import {
 import {
   ReceiptEvent,
   TagReceiptNodeToReceiptEvent,
+  getWebjsAckReason,
+  getWebjsMessageAck,
 } from '@waha/core/engines/webjs/ack.webjs';
 import {
   getParticipants,
@@ -31,6 +33,7 @@ import {
   CallErrorEvent,
   PAGE_CALL_ERROR_EVENT,
 } from '@waha/core/engines/webjs/WPage';
+import { getWebjsMessageOptions } from '@waha/core/engines/webjs/message-options';
 import { WAMimeType } from '@waha/core/media/WAMimeType';
 import { detectMimetype } from '@waha/utils/files';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
@@ -1855,15 +1858,32 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   public async getPresence(id: string): Promise<WAHAChatPresences> {
-    const chatId = toCusFormat(id);
-    const presences = await this.whatsapp.getPresence(chatId);
+    const subscriptionChatId = toCusFormat(id);
+    let chatId = subscriptionChatId;
+    if (isLidUser(chatId)) {
+      const pn = await this.whatsapp.findPNByLid(chatId);
+      if (pn) {
+        chatId = toCusFormat(pn);
+      }
+    }
+    const presences = await this.whatsapp.getPresence(
+      chatId,
+      subscriptionChatId,
+    );
     return this.toWahaPresences(chatId, presences);
   }
 
   @Activity()
   public async subscribePresence(id: string): Promise<any> {
-    const chatId = toCusFormat(id);
-    await this.whatsapp.subscribePresence(chatId);
+    const subscriptionChatId = toCusFormat(id);
+    let chatId = subscriptionChatId;
+    if (isLidUser(chatId)) {
+      const pn = await this.whatsapp.findPNByLid(chatId);
+      if (pn) {
+        chatId = toCusFormat(pn);
+      }
+    }
+    await this.whatsapp.subscribePresence(chatId, subscriptionChatId);
   }
 
   private toWahaPresences(
@@ -2102,8 +2122,22 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       },
     );
     const messagesAckDM$ = messageAckWEBJS$.pipe(
-      map((event) => event.message),
-      map<any, WAMessage>(this.toWAMessage.bind(this)),
+      map((event) => {
+        const ack = this.toWAMessage(event.message, event.ack);
+        if (ack.ack === WAMessageAck.ERROR) {
+          this.logger.warn(
+            {
+              id: ack.id,
+              to: ack.to,
+              ack: ack.ack,
+              ackName: ack.ackName,
+              ackReason: ack.ackReason,
+            },
+            'WEBJS message send failed',
+          );
+        }
+        return ack;
+      }),
       filter((ack) => !isJidGroup(ack.to) && !isJidStatusBroadcast(ack.to)),
       filter((ack) => this.jids.include(ack.to)),
     );
@@ -2390,16 +2424,18 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         fromMe: !receipt.key.fromMe, // reverted, it's right
         ack: ack,
         ackName: WAMessageAck[ack] || ACK_UNKNOWN,
+        ackReason: getWebjsAckReason(receipt._node, ack),
         _data: receipt._node,
       });
     }
     return acks;
   }
 
-  protected toWAMessage(message: Message): WAMessage {
+  protected toWAMessage(message: Message, eventAck?: number): WAMessage {
     const replyTo = this.extractReplyTo(message);
     const source = this.getMessageSource(message.id.id);
     const key = parseMessageIdSerialized(GetSerialized(message.id));
+    const ack = getWebjsMessageAck(message, eventAck);
     // @ts-ignore
     return {
       id: GetSerialized(message.id),
@@ -2417,8 +2453,9 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       // @ts-ignore
       mediaUrl: message.media?.url,
       // @ts-ignore
-      ack: message.ack,
-      ackName: WAMessageAck[message.ack] || ACK_UNKNOWN,
+      ack: ack,
+      ackName: WAMessageAck[ack] || ACK_UNKNOWN,
+      ackReason: getWebjsAckReason(message, ack),
       location: this.extractLocation(message),
       vCards: message.vCards,
       replyTo: replyTo,
@@ -2502,16 +2539,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   protected getMessageOptions(request: any): any {
-    let mentions = request.mentions;
-    mentions = mentions ? mentions.map(this.ensureSuffix) : undefined;
-
-    const quotedMessageId = request.reply_to || request.replyTo;
-
-    return {
-      mentions: mentions,
-      quotedMessageId: quotedMessageId,
-      linkPreview: request.linkPreview,
-    };
+    return getWebjsMessageOptions(request, this.ensureSuffix);
   }
 }
 

@@ -119,7 +119,7 @@
     "undici": "^7.16.0",
     "uniqid": "^5.4.0",
     "user-agents": "^1.1.669",
-    "whatsapp-web.js": "github:devlikeapro/whatsapp-web.js#fork-main-2026-06-26",
+    "whatsapp-web.js": "github:shaqman/whatsapp-web.js#codex/pn-sender-for-lid-cold-contacts",
     "write-file-atomic": "^6.0.0",
     "yaml": "^2.7.1",
     "zod": "^4.3.6"

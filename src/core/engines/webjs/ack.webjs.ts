@@ -1,7 +1,56 @@
 import type { proto } from '@adiwajshing/baileys';
 import type { BinaryNode } from '@adiwajshing/baileys';
 import { isJidGroup, isJidStatusBroadcast } from '@waha/core/utils/jids';
+import { WAMessageAck } from '@waha/structures/enums.dto';
 import esm from '@waha/vendor/esm';
+
+const MAX_ACK_REASON_LENGTH = 256;
+
+function toAckReason(value: unknown): string | undefined {
+  if (typeof value === 'string' && value.trim()) {
+    return value.trim().slice(0, MAX_ACK_REASON_LENGTH);
+  }
+  if (value && typeof value === 'object') {
+    return toAckReason((value as { message?: unknown }).message);
+  }
+  return undefined;
+}
+
+/**
+ * WebJS exposes the useful send failure details on the raw message when they
+ * are available. Keep this extraction narrow because the raw object contains
+ * internal and potentially sensitive WhatsApp state.
+ */
+export function getWebjsAckReason(
+  message: any,
+  ack: number,
+): string | undefined {
+  if (ack !== WAMessageAck.ERROR) {
+    return undefined;
+  }
+
+  const data = message?.rawData ?? message?._data ?? message;
+  const candidates = [
+    data?.errorMessage,
+    data?.error,
+    data?.sendError,
+    data?.sendResult?.error,
+    data?.sendResult?.message,
+    data?.lastError,
+  ];
+  for (const candidate of candidates) {
+    const reason = toAckReason(candidate);
+    if (reason) {
+      return reason;
+    }
+  }
+
+  return 'WhatsApp returned ACK_ERROR before delivery';
+}
+
+export function getWebjsMessageAck(message: any, eventAck?: number): number {
+  return eventAck ?? message?.ack;
+}
 
 export interface ReceiptEvent {
   key: proto.IMessageKey;

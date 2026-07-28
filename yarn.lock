@@ -14037,7 +14037,7 @@ __metadata:
     undici: "npm:^7.16.0"
     uniqid: "npm:^5.4.0"
     user-agents: "npm:^1.1.669"
-    whatsapp-web.js: "github:devlikeapro/whatsapp-web.js#fork-main-2026-06-26"
+    whatsapp-web.js: "github:shaqman/whatsapp-web.js#codex/pn-sender-for-lid-cold-contacts"
     write-file-atomic: "npm:^6.0.0"
     yaml: "npm:^2.7.1"
     zod: "npm:^4.3.6"
@@ -14146,9 +14146,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-2026-06-26":
+"whatsapp-web.js@github:shaqman/whatsapp-web.js#codex/pn-sender-for-lid-cold-contacts":
   version: 1.34.7
-  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=2daac8c8f83ddd7d92983bff8803dde970002a79"
+  resolution: "whatsapp-web.js@https://github.com/shaqman/whatsapp-web.js.git#commit=b25cced0edcb66114118b89dda342f525d17db61"
   dependencies:
     archiver: "npm:7.0.1"
     fluent-ffmpeg: "npm:2.1.3"
@@ -14165,7 +14165,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 10/358d9c3e9da5f04d2db26706ba2cbf2a675efed47905d1b47319096b7739dd34e3ded8526ae5985da6b6fce9e9b931bc142a612db4af46b520bd9d55ad5ef6c9
+  checksum: 10/2991cc17e5320804a8dfe755f1243a1a30d33df098e3eb81eb65c37b2c51aff81ae4a75d39046866ba312b27eea741180c7c430e3027c45bb8ee1ab026b4cec6
   languageName: node
   linkType: hard
 

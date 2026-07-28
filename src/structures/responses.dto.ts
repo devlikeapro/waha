@@ -100,6 +100,11 @@ export class WAMessage extends WAMessageBase {
   })
   ackName: string;
 
+  /**
+   * Human-readable send failure detail when the engine reports ACK_ERROR.
+   */
+  ackReason?: string;
+
   @ApiProperty({
     description:
       'If the message was sent to a group, this field will contain the user that sent the message.',
