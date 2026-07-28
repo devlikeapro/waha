@@ -22,6 +22,7 @@ import { ApiKeyAuthMiddleware } from '@waha/core/auth/api-key-auth.middleware';
 import { BasicAuthFunction } from '@waha/core/auth/basicAuth';
 import { WebSocketAuth } from '@waha/core/auth/WebSocketAuth';
 import { GowsEngineConfigService } from '@waha/core/config/GowsEngineConfigService';
+import { NowebEngineConfigService } from '@waha/core/config/NowebEngineConfigService';
 import { WPPEngineConfigService } from '@waha/core/config/WPPEngineConfigService';
 import { WebJSEngineConfigService } from '@waha/core/config/WebJSEngineConfigService';
 import { MediaLocalStorageModule } from '@waha/core/media/local/media.local.storage.module';
@@ -205,6 +206,7 @@ export const PROVIDERS_BASE: Provider[] = [
   WebJSEngineConfigService,
   WPPEngineConfigService,
   GowsEngineConfigService,
+  NowebEngineConfigService,
   WhatsappConfigService,
   EngineConfigService,
   WebsocketGatewayCore,

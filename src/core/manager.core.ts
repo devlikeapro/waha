@@ -11,6 +11,7 @@ import {
 } from '@waha/apps/app_sdk/services/IAppsService';
 import { EngineBootstrap } from '@waha/core/abc/EngineBootstrap';
 import { GowsEngineConfigService } from '@waha/core/config/GowsEngineConfigService';
+import { NowebEngineConfigService } from '@waha/core/config/NowebEngineConfigService';
 import { WPPEngineConfigService } from '@waha/core/config/WPPEngineConfigService';
 import { WebJSEngineConfigService } from '@waha/core/config/WebJSEngineConfigService';
 import { WhatsappSessionGoWSCore } from '@waha/core/engines/gows/session.gows.core';
@@ -96,6 +97,7 @@ export class SessionManagerCore
     private engineConfigService: EngineConfigService,
     private webjsEngineConfigService: WebJSEngineConfigService,
     private wppEngineConfigService: WPPEngineConfigService,
+    private nowebEngineConfigService: NowebEngineConfigService,
     gowsConfigService: GowsEngineConfigService,
     log: PinoLogger,
     private mediaStorageFactory: MediaStorageFactory,
@@ -358,6 +360,8 @@ export class SessionManagerCore
       sessionConfig.engineConfig = this.wppEngineConfigService.getConfig();
     } else if (this.EngineClass === WhatsappSessionGoWSCore) {
       sessionConfig.engineConfig = this.gowsConfigService.getConfig();
+    } else if (this.EngineClass === WhatsappSessionNoWebCore) {
+      sessionConfig.engineConfig = this.nowebEngineConfigService.getConfig();
     }
     // @ts-ignore
     const session = new this.EngineClass(sessionConfig);

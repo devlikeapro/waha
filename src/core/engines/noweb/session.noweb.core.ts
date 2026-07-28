@@ -259,6 +259,10 @@ const PresenceStatuses = {
 };
 const ToEnginePresenceStatus = flipObject(PresenceStatuses);
 
+export interface NowebConfig {
+  waVersion?: [number, number, number];
+}
+
 export class WhatsappSessionNoWebCore extends WhatsappSession {
   private START_ATTEMPT_DELAY_SECONDS = 2;
   private AUTO_RESTART_AFTER_SECONDS = 28 * 60;
@@ -381,6 +385,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     if (markOnlineOnConnect == undefined) {
       markOnlineOnConnect = true;
     }
+    const waVersion = (this.engineConfig as NowebConfig)?.waVersion;
+    if (waVersion) {
+      this.logger.info(`Using WhatsApp version: '${waVersion.join('.')}'`);
+    }
     return {
       agent: agents?.socket,
       // Baileys media upload uses Node https.request in Node runtime.
@@ -390,6 +398,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       browser: browser,
       logger: this.engineLogger,
       mobile: false,
+      ...(waVersion ? { version: waVersion } : {}),
       defaultQueryTimeoutMs: 120_000,
       keepAliveIntervalMs: 30_000,
       getMessage: (key) => this.getMessage(key),
