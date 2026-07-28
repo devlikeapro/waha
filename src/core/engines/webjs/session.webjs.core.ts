@@ -11,6 +11,8 @@ import {
 import {
   ReceiptEvent,
   TagReceiptNodeToReceiptEvent,
+  getWebjsAckReason,
+  getWebjsMessageAck,
 } from '@waha/core/engines/webjs/ack.webjs';
 import {
   getParticipants,
@@ -2120,8 +2122,22 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       },
     );
     const messagesAckDM$ = messageAckWEBJS$.pipe(
-      map((event) => event.message),
-      map<any, WAMessage>(this.toWAMessage.bind(this)),
+      map((event) => {
+        const ack = this.toWAMessage(event.message, event.ack);
+        if (ack.ack === WAMessageAck.ERROR) {
+          this.logger.warn(
+            {
+              id: ack.id,
+              to: ack.to,
+              ack: ack.ack,
+              ackName: ack.ackName,
+              ackReason: ack.ackReason,
+            },
+            'WEBJS message send failed',
+          );
+        }
+        return ack;
+      }),
       filter((ack) => !isJidGroup(ack.to) && !isJidStatusBroadcast(ack.to)),
       filter((ack) => this.jids.include(ack.to)),
     );
@@ -2408,16 +2424,18 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         fromMe: !receipt.key.fromMe, // reverted, it's right
         ack: ack,
         ackName: WAMessageAck[ack] || ACK_UNKNOWN,
+        ackReason: getWebjsAckReason(receipt._node, ack),
         _data: receipt._node,
       });
     }
     return acks;
   }
 
-  protected toWAMessage(message: Message): WAMessage {
+  protected toWAMessage(message: Message, eventAck?: number): WAMessage {
     const replyTo = this.extractReplyTo(message);
     const source = this.getMessageSource(message.id.id);
     const key = parseMessageIdSerialized(GetSerialized(message.id));
+    const ack = getWebjsMessageAck(message, eventAck);
     // @ts-ignore
     return {
       id: GetSerialized(message.id),
@@ -2435,8 +2453,9 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       // @ts-ignore
       mediaUrl: message.media?.url,
       // @ts-ignore
-      ack: message.ack,
-      ackName: WAMessageAck[message.ack] || ACK_UNKNOWN,
+      ack: ack,
+      ackName: WAMessageAck[ack] || ACK_UNKNOWN,
+      ackReason: getWebjsAckReason(message, ack),
       location: this.extractLocation(message),
       vCards: message.vCards,
       replyTo: replyTo,

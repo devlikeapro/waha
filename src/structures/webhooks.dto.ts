@@ -33,6 +33,7 @@ export class WAMessageAckBody {
   fromMe: boolean;
   ack: WAMessageAck;
   ackName: string;
+  ackReason?: string;
 
   _data?: any;
 }
