@@ -62,6 +62,7 @@ import {
 } from '@waha/core/engines/noweb/noweb.newsletter';
 import { NowebAuthFactoryCore } from '@waha/core/engines/noweb/NowebAuthFactoryCore';
 import { NowebInMemoryStore } from '@waha/core/engines/noweb/store/NowebInMemoryStore';
+import { resolveWaVersion } from '@waha/core/engines/noweb/utils';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
 import { toVcardV3 } from '@waha/core/vcard';
 import { createAgentProxy } from '@waha/core/helpers.proxy';
@@ -355,7 +356,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     await this.sock?.logout();
   }
 
-  getSocketConfig(agents: Agents | undefined, state): Partial<SocketConfig> {
+  async getSocketConfig(
+    agents: Agents | undefined,
+    state,
+  ): Promise<Partial<SocketConfig>> {
     // Detect browser
     let browser = ['Ubuntu', 'Chrome', '22.04.4'] as WABrowserDescription;
     let deviceName =
@@ -391,6 +395,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     if (markOnlineOnConnect == undefined) {
       markOnlineOnConnect = true;
     }
+    const version = await resolveWaVersion(this.engineLogger);
     return {
       agent: agents?.socket,
       // Baileys media upload uses Node https.request in Node runtime.
@@ -407,6 +412,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       msgRetryCounterCache: this.msgRetryCounterCache,
       placeholderResendCache: this.placeholderResendCache,
       markOnlineOnConnect: markOnlineOnConnect,
+      ...(version ? { version } : {}),
     };
   }
 
@@ -425,10 +431,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     }
     const { state, saveCreds } = this.authNOWEBStore;
     const agents = this.makeProxyAgents();
-    const socketConfig: SocketConfig = this.getSocketConfig(
+    const socketConfig: SocketConfig = (await this.getSocketConfig(
       agents,
       state,
-    ) as SocketConfig;
+    )) as SocketConfig;
     const sock = makeWASocket(socketConfig);
     sock.ev.on('creds.update', saveCreds);
     return sock;
