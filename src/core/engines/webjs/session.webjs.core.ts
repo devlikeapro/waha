@@ -1,4 +1,7 @@
-import { UnprocessableEntityException } from '@nestjs/common';
+import {
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import {
   getChannelInviteLink,
   getPublicUrlFromDirectPath,
@@ -1080,25 +1083,37 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   async sendSeen(request: SendSeenRequest) {
-    const chat: Chat = await this.whatsapp.getChatById(
-      this.ensureSuffix(request.chatId),
-    );
+    const chatId = this.ensureSuffix(request.chatId);
+    const chat: Chat = await this.whatsapp.getChatById(chatId);
+    if (!chat) {
+      throw new NotFoundException(
+        `Chat '${request.chatId}' not found. The number may not have WhatsApp.`,
+      );
+    }
     await chat.sendSeen();
   }
 
   @Activity()
   async startTyping(request: ChatRequest): Promise<void> {
-    const chat: Chat = await this.whatsapp.getChatById(
-      this.ensureSuffix(request.chatId),
-    );
+    const chatId = this.ensureSuffix(request.chatId);
+    const chat: Chat = await this.whatsapp.getChatById(chatId);
+    if (!chat) {
+      throw new NotFoundException(
+        `Chat '${request.chatId}' not found. The number may not have WhatsApp.`,
+      );
+    }
     await chat.sendStateTyping();
   }
 
   @Activity()
   async stopTyping(request: ChatRequest) {
-    const chat: Chat = await this.whatsapp.getChatById(
-      this.ensureSuffix(request.chatId),
-    );
+    const chatId = this.ensureSuffix(request.chatId);
+    const chat: Chat = await this.whatsapp.getChatById(chatId);
+    if (!chat) {
+      throw new NotFoundException(
+        `Chat '${request.chatId}' not found. The number may not have WhatsApp.`,
+      );
+    }
     await chat.clearState();
   }
 
