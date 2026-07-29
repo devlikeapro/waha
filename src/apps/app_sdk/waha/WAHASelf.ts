@@ -7,6 +7,7 @@ import {
   ChatRequest,
   MessageFileRequest,
   MessageImageRequest,
+  MessageStickerRequest,
   MessageTextRequest,
   MessageVideoRequest,
   MessageVoiceRequest,
@@ -220,6 +221,16 @@ export class WAHASelf {
       .then((response) => response.data);
   }
 
+  async sendSticker(
+    body: MessageStickerRequest,
+    opts?: RequestOptions,
+  ): Promise<any> {
+    const url = `/api/sendSticker`;
+    return await this.client
+      .post(url, body, { signal: opts?.signal })
+      .then((response) => response.data);
+  }
+
   async sendFile(
     body: MessageFileRequest,
     opts?: RequestOptions,
@@ -416,6 +427,11 @@ export class WAHASessionAPI {
   sendVoice(body: MessageVoiceRequest, opts?: RequestOptions): Promise<any> {
     body.session = this.session;
     return this.api.sendVoice(body, opts);
+  }
+
+  sendSticker(body: MessageStickerRequest, opts?: RequestOptions): Promise<any> {
+    body.session = this.session;
+    return this.api.sendSticker(body, opts);
   }
 
   sendFile(body: MessageFileRequest, opts?: RequestOptions): Promise<any> {

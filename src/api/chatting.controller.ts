@@ -41,6 +41,7 @@ import {
   MessageTextRequest,
   MessageVideoRequest,
   MessageVoiceRequest,
+  MessageStickerRequest,
   NewMessageIDResponse,
   SendSeenRequest,
   WANumberExistResult,
@@ -127,6 +128,21 @@ export class ChattingController {
   async sendVoice(@Body() request: MessageVoiceRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.sendVoice(request);
+  }
+
+  @Post('/sendSticker')
+  @ApiOperation({
+    summary: 'Send a sticker',
+    description:
+      'Send a WhatsApp sticker as WebP (static or animated). ' +
+      'Either from an URL or base64 data. ' +
+      'The file must already be a valid sticker WebP (typically 512x512; ' +
+      'static ≤100KB, animated ≤500KB). No server-side conversion.',
+  })
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
+  async sendSticker(@Body() request: MessageStickerRequest) {
+    const whatsapp = await this.manager.getWorkingSession(request.session);
+    return whatsapp.sendSticker(request);
   }
 
   @Post('/sendVideo')

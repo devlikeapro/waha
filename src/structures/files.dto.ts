@@ -120,6 +120,43 @@ export class VideoRemoteFile {
   url: string;
 }
 
+export class StickerBinaryFile {
+  @ApiProperty({
+    description:
+      'MIME type of the sticker. Must be image/webp (static or animated).',
+    example: 'image/webp',
+  })
+  mimetype = 'image/webp';
+
+  @ApiProperty({
+    description: 'Document file name. Optional',
+    example: 'sticker.webp',
+  })
+  filename = 'sticker.webp';
+
+  @ApiProperty({
+    description: 'Base64-encoded WebP sticker data',
+  })
+  data: string;
+}
+
+export class StickerRemoteFile {
+  @ApiProperty({
+    description:
+      'MIME type of the sticker. Must be image/webp (static or animated).',
+    example: 'image/webp',
+  })
+  mimetype = 'image/webp';
+
+  @ApiProperty({
+    description: 'URL of a WhatsApp-valid WebP sticker (512x512).',
+    example:
+      process.env.WHATSAPP_SWAGGER_STICKER_EXAMPLE_URL ||
+      'https://github.com/devlikeapro/waha/raw/core/examples/sticker.webp',
+  })
+  url: string;
+}
+
 export class FileURL {
   @IsString()
   @IsNotEmpty()

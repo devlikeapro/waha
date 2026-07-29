@@ -1,8 +1,8 @@
 {
   "waha": {
     "gows": {
-      "repo": "devlikeapro/gows-plus",
-      "ref": "v1.0.43"
+      "repo": "SimStm/gows-plus",
+      "ref": "v1.0.45-send-sticker"
     },
     "dashboard": {
       "repo": "devlikeapro/dashboard",

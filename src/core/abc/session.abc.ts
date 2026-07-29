@@ -87,6 +87,7 @@ import {
   MessageTextRequest,
   MessageVideoRequest,
   MessageVoiceRequest,
+  MessageStickerRequest,
   SendSeenRequest,
 } from '../../structures/chatting.dto';
 import {
@@ -604,6 +605,10 @@ export abstract class WhatsappSession {
   abstract sendFile(request: MessageFileRequest);
 
   abstract sendVoice(request: MessageVoiceRequest);
+
+  sendSticker(request: MessageStickerRequest) {
+    throw new NotImplementedByEngineError();
+  }
 
   sendVideo(request: MessageVideoRequest) {
     throw new NotImplementedByEngineError();

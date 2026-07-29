@@ -29,6 +29,8 @@ import {
   FileType,
   FileURL,
   RemoteFile,
+  StickerBinaryFile,
+  StickerRemoteFile,
   VideoBinaryFile,
   VideoRemoteFile,
   VoiceBinaryFile,
@@ -347,6 +349,23 @@ export class MessageVoiceRequest extends ChatRequest {
 
   @ConvertApiProperty()
   convert: boolean;
+}
+
+@ApiExtraModels(StickerBinaryFile, StickerRemoteFile)
+export class MessageStickerRequest extends ChatRequest {
+  @ApiProperty({
+    description:
+      'WhatsApp-valid WebP sticker. Must be image/webp, typically 512x512. ' +
+      'Static ≤100KB, animated ≤500KB / ≤10s. Conversion is client-side.',
+    oneOf: [
+      { $ref: getSchemaPath(StickerRemoteFile) },
+      { $ref: getSchemaPath(StickerBinaryFile) },
+    ],
+  })
+  file: StickerBinaryFile | StickerRemoteFile;
+
+  @ReplyToProperty()
+  reply_to?: string;
 }
 
 @ApiExtraModels(VideoRemoteFile, VideoBinaryFile)

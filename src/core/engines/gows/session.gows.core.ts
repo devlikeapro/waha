@@ -94,6 +94,7 @@ import {
   MessageTextRequest,
   MessageVideoRequest,
   MessageVoiceRequest,
+  MessageStickerRequest,
   SendSeenRequest,
   WANumberExistResult,
 } from '@waha/structures/chatting.dto';
@@ -1294,6 +1295,14 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       type === messages.MediaType.PTV
     ) {
       media.mimetype = media.mimetype || WAMimeType.VIDEO;
+    } else if (type === messages.MediaType.STICKER) {
+      media.mimetype = media.mimetype || WAMimeType.STICKER;
+      if (!isWebPBuffer(Buffer.from(media.content as Uint8Array))) {
+        throw new UnprocessableEntityException(
+          `Sticker file must be a WebP image (RIFF/WEBP). ` +
+            'Convert jpg/png/gif/mp4 to WebP on the client before calling /api/sendSticker.',
+        );
+      }
     } else if (type === messages.MediaType.DOCUMENT) {
       if (!media.mimetype) {
         media.mimetype = await detectMimetype(media.content as Buffer);
@@ -1405,6 +1414,18 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   @Activity()
   async sendVoice(request: MessageVoiceRequest) {
     return await this.sendMedia(messages.MediaType.AUDIO, request);
+  }
+
+  @Activity()
+  async sendSticker(request: MessageStickerRequest) {
+    const mimetype = request.file?.mimetype;
+    if (mimetype && mimetype !== WAMimeType.STICKER) {
+      throw new UnprocessableEntityException(
+        `Sticker mimetype must be '${WAMimeType.STICKER}', got '${mimetype}'. ` +
+          'Provide a WhatsApp-valid WebP (typically 512x512; static ≤100KB, animated ≤500KB).',
+      );
+    }
+    return await this.sendMedia(messages.MediaType.STICKER, request);
   }
 
   @Activity()
@@ -3020,6 +3041,19 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     };
     return buildMessageId(info);
   }
+}
+
+/**
+ * True when buffer starts with RIFF....WEBP (WhatsApp sticker container).
+ */
+function isWebPBuffer(data: Buffer): boolean {
+  if (!data || data.length < 12) {
+    return false;
+  }
+  return (
+    data.subarray(0, 4).toString('ascii') === 'RIFF' &&
+    data.subarray(8, 12).toString('ascii') === 'WEBP'
+  );
 }
 
 /**
