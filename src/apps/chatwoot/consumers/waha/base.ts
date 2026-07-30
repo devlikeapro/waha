@@ -329,7 +329,22 @@ export abstract class MessageBaseHandler<
       `Created message as '${message.message_type}' from WhatsApp: ${response.id}`,
     );
     await this.saveMapping(response, payload);
-    return message;
+    const sanitizedAttachments = message.attachments
+      ? message.attachments.map((attachment) => {
+          return {
+            content: '',
+            filename: attachment.filename,
+            encoding: attachment.encoding,
+          };
+        })
+      : undefined;
+    return {
+      content: message.content,
+      message_type: message.message_type,
+      private: message.private,
+      attachments: sanitizedAttachments,
+      content_attributes: message.content_attributes,
+    };
   }
 
   private async saveMapping(
