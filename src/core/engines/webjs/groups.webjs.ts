@@ -2,6 +2,8 @@ import { WebjsClientCore } from '@waha/core/engines/webjs/WebjsClientCore';
 import {
   GroupId,
   GroupInfo,
+  GroupMembershipRequest,
+  GroupMembershipRequestActionResult,
   GroupParticipant,
   GroupParticipantRole,
 } from '@waha/structures/groups.dto';
@@ -9,14 +11,17 @@ import {
   GroupParticipantType,
   GroupV2JoinEvent,
   GroupV2LeaveEvent,
+  GroupV2MembershipRequestEvent,
   GroupV2ParticipantsEvent,
   GroupV2UpdateEvent,
 } from '@waha/structures/groups.events.dto';
 import {
   GroupChat,
+  GroupMembershipRequest as WEBJSGroupMembershipRequest,
   GroupNotification,
   GroupNotificationTypes,
   GroupParticipant as WEBJSGroupParticipant,
+  MembershipRequestActionResult as WEBJSMembershipRequestActionResult,
 } from 'whatsapp-web.js';
 import { isPnUser } from '@waha/core/utils/jids';
 import { GetSerialized } from '@waha/core/utils/serialized';
@@ -36,10 +41,58 @@ function ToGroupInfo(
     invite: invite,
     membersCanAddNewMember: groupMetadata.memberAddMode === 'all_member_add',
     membersCanSendMessages: groupMetadata.announce,
-    newMembersApprovalRequired: groupMetadata.membershipApprovalMode,
+    newMembersApprovalRequired: ToGroupMembershipApprovalRequired(
+      groupMetadata.membershipApprovalMode,
+    ),
     participants: participants,
   };
   return info;
+}
+
+export function ToGroupMembershipApprovalRequired(value: unknown): boolean {
+  return value === true || value === 1;
+}
+
+export function ToGroupMembershipRequest(
+  request: WEBJSGroupMembershipRequest,
+): GroupMembershipRequest {
+  const requesterId = GetSerialized(request.id);
+  if (!requesterId) {
+    throw new Error('Unable to serialize group membership requester ID');
+  }
+  return {
+    requesterId: requesterId,
+    addedById: GetSerialized(request.addedBy),
+    parentGroupId: GetSerialized(request.parentGroupId),
+    requestMethod: request.requestMethod ?? null,
+    timestamp: request.t,
+  };
+}
+
+export function ToGroupMembershipRequestActionResult(
+  result: WEBJSMembershipRequestActionResult,
+): GroupMembershipRequestActionResult {
+  return {
+    requesterId: result.requesterId,
+    error: result.error,
+    message: result.message,
+  };
+}
+
+export function ToGroupV2MembershipRequestEvent(
+  notification: GroupNotification,
+): GroupV2MembershipRequestEvent | null {
+  if (!notification.chatId || !notification.author) {
+    return null;
+  }
+  return {
+    group: {
+      id: notification.chatId,
+    },
+    requesterId: notification.author,
+    timestamp: notification.timestamp,
+    _data: notification,
+  };
 }
 
 export async function ToGroupV2JoinEvent(

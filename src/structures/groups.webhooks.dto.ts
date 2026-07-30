@@ -3,6 +3,7 @@ import { WAHAEvents } from '@waha/structures/enums.dto';
 import {
   GroupV2JoinEvent,
   GroupV2LeaveEvent,
+  GroupV2MembershipRequestEvent,
   GroupV2ParticipantsEvent,
   GroupV2UpdateEvent,
 } from '@waha/structures/groups.events.dto';
@@ -42,4 +43,13 @@ export class WebhookGroupV2Participants extends WAHAWebhook {
   event = WAHAEvents.GROUP_V2_PARTICIPANTS;
 
   payload: GroupV2ParticipantsEvent;
+}
+
+export class WebhookGroupV2MembershipRequest extends WAHAWebhook {
+  @ApiProperty({
+    description: 'When a user requests to join a group',
+  })
+  event = WAHAEvents.GROUP_V2_MEMBERSHIP_REQUEST;
+
+  payload: GroupV2MembershipRequestEvent;
 }

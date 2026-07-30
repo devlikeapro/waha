@@ -32,6 +32,9 @@ import {
   CreateGroupRequest,
   DescriptionRequest,
   GroupField,
+  GroupMembershipRequest,
+  GroupMembershipRequestActionRequest,
+  GroupMembershipRequestActionResult,
   GroupParticipant,
   GroupsListFields,
   GroupsPaginationParams,
@@ -39,6 +42,7 @@ import {
   JoinGroupResponse,
   ParticipantsRequest,
   SettingsMemberAddMode,
+  SettingsMembershipApproval,
   SettingsSecurityChangeInfo,
   SubjectRequest,
 } from '../structures/groups.dto';
@@ -341,6 +345,88 @@ export class GroupsController {
     @Param('id') id: string,
   ): Promise<SettingsMemberAddMode> {
     return session.getMemberAddMode(id);
+  }
+
+  @Put(':id/settings/security/membership-approval')
+  @SessionApiParam
+  @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
+  @ApiOperation({
+    summary: 'Update settings - approve new members',
+    description:
+      'Enables or disables admin approval for users requesting to join the group.',
+  })
+  setMembershipApprovalMode(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+    @Body() request: SettingsMembershipApproval,
+  ): Promise<boolean> {
+    return session.setMembershipApprovalMode(
+      id,
+      request.newMembersApprovalRequired,
+    );
+  }
+
+  @Get(':id/settings/security/membership-approval')
+  @SessionApiParam
+  @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
+  @ApiOperation({
+    summary: 'Get settings - approve new members',
+    description:
+      'Returns whether admin approval is required for users requesting to join the group.',
+  })
+  getMembershipApprovalMode(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+  ): Promise<SettingsMembershipApproval> {
+    return session.getMembershipApprovalMode(id);
+  }
+
+  @Get(':id/membership-requests')
+  @SessionApiParam
+  @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
+  @ApiOperation({
+    summary: 'Get pending group membership requests',
+  })
+  getGroupMembershipRequests(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+  ): Promise<GroupMembershipRequest[]> {
+    return session.getGroupMembershipRequests(id);
+  }
+
+  @Post(':id/membership-requests/approve')
+  @HttpCode(HttpStatus.OK)
+  @SessionApiParam
+  @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
+  @ApiOperation({
+    summary: 'Approve pending group membership requests',
+  })
+  approveGroupMembershipRequests(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+    @Body() request: GroupMembershipRequestActionRequest,
+  ): Promise<GroupMembershipRequestActionResult[]> {
+    return session.approveGroupMembershipRequests(id, request);
+  }
+
+  @Post(':id/membership-requests/reject')
+  @HttpCode(HttpStatus.OK)
+  @SessionApiParam
+  @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
+  @ApiOperation({
+    summary: 'Reject pending group membership requests',
+  })
+  rejectGroupMembershipRequests(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+    @Body() request: GroupMembershipRequestActionRequest,
+  ): Promise<GroupMembershipRequestActionResult[]> {
+    return session.rejectGroupMembershipRequests(id, request);
   }
 
   @Get(':id/invite-code')

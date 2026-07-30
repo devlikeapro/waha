@@ -2,9 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BooleanString } from '@waha/nestjs/validation/BooleanString';
 import { Transform } from 'class-transformer';
 import {
+  ArrayNotEmpty,
+  ArrayUnique,
   IsArray,
   IsBoolean,
   IsEnum,
+  IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -28,6 +31,84 @@ export class SettingsSecurityChangeInfo {
 
 export class SettingsMemberAddMode {
   membersCanAddNewMember: boolean = true;
+}
+
+export class SettingsMembershipApproval {
+  @IsBoolean()
+  newMembersApprovalRequired: boolean = false;
+}
+
+export class GroupMembershipRequest {
+  @ApiProperty({
+    description: 'ID of the user requesting to join the group',
+    example: '123456789@c.us',
+  })
+  requesterId: string;
+
+  @ApiProperty({
+    description: 'ID of the user who created the request',
+    example: '123456789@c.us',
+    nullable: true,
+  })
+  addedById: string | null;
+
+  @ApiProperty({
+    description: 'ID of the parent community group, if present',
+    example: '123456789@g.us',
+    nullable: true,
+  })
+  parentGroupId: string | null;
+
+  @ApiProperty({
+    description:
+      'How the request was created, for example NonAdminAdd, InviteLink, or LinkedGroupJoin',
+    example: 'InviteLink',
+    nullable: true,
+  })
+  requestMethod: string | null;
+
+  @ApiProperty({
+    description: 'Unix timestamp when the request was created',
+    example: 1666943582,
+  })
+  timestamp: number;
+}
+
+export class GroupMembershipRequestActionRequest {
+  @ApiProperty({
+    description:
+      'IDs of the users whose membership requests should be approved or rejected',
+    example: ['123456789@c.us'],
+  })
+  @IsArray()
+  @ArrayNotEmpty()
+  @ArrayUnique()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  requesterIds: string[];
+}
+
+export class GroupMembershipRequestActionResult {
+  @ApiProperty({
+    example: '123456789@c.us',
+    nullable: true,
+    oneOf: [
+      { type: 'string' },
+      { type: 'array', items: { type: 'string' } },
+    ],
+  })
+  requesterId: string[] | string | null;
+
+  @ApiProperty({
+    required: false,
+    example: 404,
+  })
+  error?: number;
+
+  @ApiProperty({
+    example: 'Approved successfully',
+  })
+  message: string;
 }
 
 /**

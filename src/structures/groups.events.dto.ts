@@ -69,3 +69,21 @@ export class GroupV2ParticipantsEvent {
 
   _data: any;
 }
+
+export class GroupV2MembershipRequestEvent {
+  group: GroupId;
+
+  @ApiProperty({
+    description: 'ID of the user requesting to join the group',
+    example: '123456789@c.us',
+  })
+  requesterId: string;
+
+  @ApiProperty({
+    description: 'Unix timestamp',
+    example: 1666943582,
+  })
+  timestamp: number;
+
+  _data: any;
+}

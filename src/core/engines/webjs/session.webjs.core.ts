@@ -15,8 +15,12 @@ import {
 } from '@waha/core/engines/webjs/ack.webjs';
 import {
   getParticipants,
+  ToGroupMembershipApprovalRequired,
+  ToGroupMembershipRequest,
+  ToGroupMembershipRequestActionResult,
   ToGroupV2JoinEvent,
   ToGroupV2LeaveEvent,
+  ToGroupV2MembershipRequestEvent,
   ToGroupV2ParticipantsEvent,
   ToGroupV2UpdateEvent,
 } from '@waha/core/engines/webjs/groups.webjs';
@@ -106,10 +110,14 @@ import {
 import { BinaryFile, RemoteFile } from '@waha/structures/files.dto';
 import {
   CreateGroupRequest,
+  GroupMembershipRequest,
+  GroupMembershipRequestActionRequest,
+  GroupMembershipRequestActionResult,
   GroupParticipant,
   GroupSortField,
   ParticipantsRequest,
   SettingsMemberAddMode,
+  SettingsMembershipApproval,
   SettingsSecurityChangeInfo,
 } from '@waha/structures/groups.dto';
 import { Label, LabelDTO, LabelID } from '@waha/structures/labels.dto';
@@ -1626,6 +1634,105 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     return groupChat.setAddMembersAdminsOnly(!value);
   }
 
+  @Activity()
+  public async getMembershipApprovalMode(
+    id: string,
+  ): Promise<SettingsMembershipApproval> {
+    const membershipApprovalMode = await this.whatsapp.pupPage.evaluate(
+      async (groupId) => {
+        await window
+          .require('WAWebGroupQueryJob')
+          .queryAndUpdateGroupMetadataById({ id: groupId });
+        const groupWid = window
+          .require('WAWebWidFactory')
+          .createWid(groupId);
+        const group = await window
+          .require('WAWebCollections')
+          .Chat.find(groupWid);
+        return group.groupMetadata.membershipApprovalMode;
+      },
+      id,
+    );
+    return {
+      newMembersApprovalRequired: ToGroupMembershipApprovalRequired(
+        membershipApprovalMode,
+      ),
+    };
+  }
+
+  @Activity()
+  public async setMembershipApprovalMode(
+    id: string,
+    value: boolean,
+  ): Promise<boolean> {
+    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const success = await this.whatsapp.pupPage.evaluate(
+      async (groupId, enabled) => {
+        // @ts-ignore
+        const chat = await window.WWebJS.getChat(groupId, {
+          getAsModel: false,
+        });
+        try {
+          await window
+            .require('WAWebSetPropertyGroupAction')
+            .setGroupProperty(
+              chat,
+              'membership_approval_mode',
+              enabled ? 1 : 0,
+            );
+          return true;
+        } catch (error) {
+          if (error.name === 'ServerStatusCodeError') {
+            return false;
+          }
+          throw error;
+        }
+      },
+      id,
+      value,
+    );
+
+    if (success) {
+      (groupChat as any).groupMetadata.membershipApprovalMode = value;
+    }
+    return success;
+  }
+
+  @Activity()
+  public async getGroupMembershipRequests(
+    id: string,
+  ): Promise<GroupMembershipRequest[]> {
+    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const requests = await groupChat.getGroupMembershipRequests();
+    return requests.map(ToGroupMembershipRequest);
+  }
+
+  @Activity()
+  public async approveGroupMembershipRequests(
+    id: string,
+    request: GroupMembershipRequestActionRequest,
+  ): Promise<GroupMembershipRequestActionResult[]> {
+    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const results = await groupChat.approveGroupMembershipRequests({
+      requesterIds: request.requesterIds,
+      sleep: [250, 500],
+    });
+    return results.map(ToGroupMembershipRequestActionResult);
+  }
+
+  @Activity()
+  public async rejectGroupMembershipRequests(
+    id: string,
+    request: GroupMembershipRequestActionRequest,
+  ): Promise<GroupMembershipRequestActionResult[]> {
+    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    const results = await groupChat.rejectGroupMembershipRequests({
+      requesterIds: request.requesterIds,
+      sleep: [250, 500],
+    });
+    return results.map(ToGroupMembershipRequestActionResult);
+  }
+
   public async getGroups(pagination: PaginationParams) {
     const chats = await this.whatsapp.getChats();
     const groups = lodash.filter(chats, (chat) => chat.isGroup);
@@ -2307,6 +2414,14 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     this.events2
       .get(WAHAEvents.GROUP_V2_PARTICIPANTS)
       .switch(groupV2Participants);
+
+    const groupMembershipRequest$ = fromEvent<GroupNotification>(
+      this.whatsapp,
+      Events.GROUP_MEMBERSHIP_REQUEST,
+    ).pipe(map(ToGroupV2MembershipRequestEvent), filter(Boolean));
+    this.events2
+      .get(WAHAEvents.GROUP_V2_MEMBERSHIP_REQUEST)
+      .switch(groupMembershipRequest$);
 
     const groupUpdate$ = fromEvent<GroupNotification>(
       this.whatsapp,
