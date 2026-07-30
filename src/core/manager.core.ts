@@ -520,6 +520,7 @@ export class SessionManagerCore
         status: status,
         config: sessionConfig,
         me: me,
+        restriction: this.sessions[sessionName].getRestriction(),
         presence: this.sessions[sessionName].presence,
         timestamps: {
           activity: this.sessions[sessionName].getLastActivityTimestamp(),
