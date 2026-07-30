@@ -345,6 +345,32 @@ export class MeInfo {
   pushName: string;
 }
 
+export class SessionRestriction {
+  @ApiProperty({
+    description:
+      'Whether the account is currently restricted (WhatsApp "reachout ' +
+      'timelock" - blocks starting new chats and outgoing messages).',
+    example: true,
+  })
+  active: boolean;
+
+  @ApiProperty({
+    description:
+      'ISO 8601 timestamp when the restriction window ends. null when not ' +
+      'restricted or the window is unknown.',
+    example: '2026-06-26T23:45:00.000Z',
+    nullable: true,
+  })
+  until: string | null;
+
+  @ApiProperty({
+    description: 'WhatsApp enforcement type for the restriction.',
+    example: 'DEFAULT',
+    required: false,
+  })
+  enforcementType?: string;
+}
+
 export class SessionInfo extends SessionDTO {
   me?: MeInfo;
   assignedWorker?: string;
@@ -353,6 +379,16 @@ export class SessionInfo extends SessionDTO {
   timestamps: {
     activity: number | null;
   };
+
+  @ApiProperty({
+    description:
+      'Account restriction info (NOWEB only). null when the account is not ' +
+      'restricted.',
+    required: false,
+    nullable: true,
+    type: SessionRestriction,
+  })
+  restriction?: SessionRestriction | null;
 
   @ApiProperty({
     description: 'Apps configured for the session.',

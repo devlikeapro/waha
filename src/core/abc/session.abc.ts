@@ -114,6 +114,7 @@ import {
   MeInfo,
   ProxyConfig,
   SessionConfig,
+  SessionRestriction,
 } from '../../structures/sessions.dto';
 import {
   DeleteStatusRequest,
@@ -510,6 +511,10 @@ export abstract class WhatsappSession {
   abstract getScreenshot(): Promise<Buffer>;
 
   public getSessionMeInfo(): MeInfo | null {
+    return null;
+  }
+
+  public getRestriction(): SessionRestriction | null {
     return null;
   }
 

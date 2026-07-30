@@ -61,6 +61,10 @@ import {
   toNewsletterMetadata,
 } from '@waha/core/engines/noweb/noweb.newsletter';
 import { NowebAuthFactoryCore } from '@waha/core/engines/noweb/NowebAuthFactoryCore';
+import {
+  buildAckError,
+  normalizeRestriction,
+} from '@waha/core/engines/noweb/restriction';
 import { NowebInMemoryStore } from '@waha/core/engines/noweb/store/NowebInMemoryStore';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
 import { toVcardV3 } from '@waha/core/vcard';
@@ -166,7 +170,7 @@ import {
   WAHAPresenceData,
 } from '@waha/structures/presence.dto';
 import { WAMessage, WAMessageReaction } from '@waha/structures/responses.dto';
-import { MeInfo } from '@waha/structures/sessions.dto';
+import { MeInfo, SessionRestriction } from '@waha/structures/sessions.dto';
 import {
   BROADCAST_ID,
   DeleteStatusRequest,
@@ -181,6 +185,7 @@ import {
   PollVote,
   PollVotePayload,
   WAMessageAckBody,
+  WAMessageAckError,
   WAMessageEditedBody,
   WAMessageRevokedBody,
 } from '@waha/structures/webhooks.dto';
@@ -285,6 +290,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   private qr: QR;
 
   private statusTracker = new StatusTracker();
+
+  // Account restriction ("reachout timelock") state, null when not restricted
+  private restriction: SessionRestriction | null = null;
+  // Shared in-flight window fetch, deduped across concurrent 463 acks
+  private restrictionFetch: Promise<SessionRestriction | null> | null = null;
 
   public constructor(config) {
     super(config);
@@ -551,6 +561,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     this.logger.debug(`Start listening ${BaileysEvents.CONNECTION_UPDATE}...`);
     this.sock.ev.on('connection.update', async (update) => {
       const { connection, lastDisconnect, qr, isNewLogin } = update;
+      if (update.reachoutTimeLock) {
+        this.updateRestriction(update.reachoutTimeLock);
+      }
       if (isNewLogin) {
         this.restartClient();
       } else if (connection === 'open') {
@@ -859,6 +872,56 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       pushName: me.name,
       lid: jidNormalizedUser(me.lid),
     };
+  }
+
+  getRestriction(): SessionRestriction | null {
+    return this.restriction;
+  }
+
+  // Update the cached account restriction ("reachout timelock") state.
+  // Emitted by Baileys on connection.update and fetchAccountReachoutTimelock().
+  private updateRestriction(state): void {
+    const next = normalizeRestriction(state);
+    if (!next) {
+      if (this.restriction) {
+        this.logger.info('account restriction lifted');
+      }
+      this.restriction = null;
+      return;
+    }
+    this.restriction = next;
+    this.logger.warn(
+      { restriction: next },
+      'account restricted (reachout timelock)',
+    );
+  }
+
+  // Fetch the restriction window from the server, updating the cache.
+  // Deduped: a burst of 463 acks shares a single in-flight query.
+  private fetchRestriction(): Promise<SessionRestriction | null> {
+    if (this.restrictionFetch) {
+      return this.restrictionFetch;
+    }
+    if (!this.sock?.fetchAccountReachoutTimelock) {
+      return Promise.resolve(this.restriction);
+    }
+    this.restrictionFetch = this.sock
+      .fetchAccountReachoutTimelock()
+      .then((state) => {
+        this.updateRestriction(state);
+        return this.restriction;
+      })
+      .catch((err) => {
+        this.logger.debug(
+          { err: err?.message },
+          'failed to fetch reachout timelock',
+        );
+        return this.restriction;
+      })
+      .finally(() => {
+        this.restrictionFetch = null;
+      });
+    return this.restrictionFetch;
   }
 
   /**
@@ -3102,7 +3165,24 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       ack: ack,
       ackName: WAMessageAck[ack] || ACK_UNKNOWN,
     };
+    const error = buildAckError(message.update, this.restriction);
+    if (error) {
+      if (error.blocked && !error.until) {
+        this.attachBlockWindow(error);
+      }
+      body.error = error;
+    }
     return body;
+  }
+
+  // Ensure a blocked (463) ack always reports a block window. Baileys fetches
+  // the restriction before emitting the ack, so the window is normally cached
+  // already; when it is not, fall back to now+60s (WA Web behavior) and refresh
+  // the cache in the background for the next acks - keeping this path in sync
+  // so the ack stream stays ordered.
+  private attachBlockWindow(error: WAMessageAckError): void {
+    error.until = new Date(Date.now() + 60 * SECOND).toISOString();
+    void this.fetchRestriction();
   }
 
   protected convertMessageReceiptUpdateToMessageAck(event): WAMessageAckBody {

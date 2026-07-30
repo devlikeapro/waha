@@ -17,6 +17,45 @@ import { ChatIdProperty, MessageIdProperty } from './properties.dto';
 import { WAMessage, WAMessageReaction } from './responses.dto';
 import { MeInfo } from './sessions.dto';
 
+export class WAMessageAckError {
+  @ApiProperty({
+    description: 'Server error code for the failed ack (e.g. "463").',
+    example: '463',
+    nullable: true,
+  })
+  code: string | null;
+
+  @ApiProperty({
+    description:
+      'True when the failure is an account restriction (code 463) - ' +
+      'WhatsApp blocked the outgoing message.',
+    example: true,
+  })
+  blocked: boolean;
+
+  @ApiProperty({
+    description: 'Machine-readable reason, when known.',
+    example: 'account_restricted',
+    required: false,
+  })
+  reason?: string;
+
+  @ApiProperty({
+    description:
+      'ISO 8601 timestamp when the restriction window ends, if known.',
+    example: '2026-06-26T23:45:00.000Z',
+    required: false,
+    nullable: true,
+  })
+  until?: string | null;
+
+  @ApiProperty({
+    description: 'WhatsApp enforcement type for the restriction, if known.',
+    required: false,
+  })
+  enforcementType?: string;
+}
+
 export class WAMessageAckBody {
   @MessageIdProperty()
   id: string;
@@ -33,6 +72,15 @@ export class WAMessageAckBody {
   fromMe: boolean;
   ack: WAMessageAck;
   ackName: string;
+
+  @ApiProperty({
+    description:
+      'Failure details, present only on error acks (ack=-1/ERROR). ' +
+      'Carries the account-restriction (463) feedback and block window.',
+    required: false,
+    type: WAMessageAckError,
+  })
+  error?: WAMessageAckError;
 
   _data?: any;
 }
