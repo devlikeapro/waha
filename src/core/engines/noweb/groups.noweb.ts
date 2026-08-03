@@ -17,8 +17,7 @@ import {
   GroupV2ParticipantsEvent,
   GroupV2UpdateEvent,
 } from '@waha/structures/groups.events.dto';
-import { toCusFormat } from '@waha/core/utils/jids';
-import esm from '@waha/vendor/esm';
+import { normalizeJid, toCusFormat } from '@waha/core/utils/jids';
 
 export function ToGroupInfo(group: Partial<GroupMetadata>): GroupInfo {
   let participants: GroupParticipant[] = undefined;
@@ -75,6 +74,23 @@ function getParticipantId(
     return participant;
   }
   return participant?.id;
+}
+
+function getParticipantIds(
+  participant: string | NOWEBGroupParticipant,
+): string[] {
+  if (typeof participant === 'string') {
+    return [participant];
+  }
+  return [participant?.id, participant?.phoneNumber].filter(
+    (id): id is string => Boolean(id),
+  );
+}
+
+function getMeIds(me: Contact): string[] {
+  return [me?.id, me?.lid]
+    .filter((id): id is string => Boolean(id))
+    .map(normalizeJid);
 }
 
 export function ToGroupV2Participants(
@@ -140,10 +156,10 @@ export function ToGroupV2LeaveEvent(
   if (!me) {
     return null;
   }
-  const meId = esm.b.jidNormalizedUser(me.id);
+  const meIds = getMeIds(me);
   const includesMe = update.participants.some((participant) => {
-    const id = getParticipantId(participant);
-    return id === meId;
+    const participantIds = getParticipantIds(participant).map(normalizeJid);
+    return participantIds.some((id) => meIds.includes(id));
   });
   if (!includesMe) {
     return null;
