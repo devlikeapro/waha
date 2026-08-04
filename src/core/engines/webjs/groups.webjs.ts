@@ -34,7 +34,7 @@ function ToGroupInfo(
     subject: group.name,
     description: group.description,
     invite: invite,
-    membersCanAddNewMember: groupMetadata.restrict,
+    membersCanAddNewMember: groupMetadata.memberAddMode === 'all_member_add',
     membersCanSendMessages: groupMetadata.announce,
     newMembersApprovalRequired: groupMetadata.membershipApprovalMode,
     participants: participants,

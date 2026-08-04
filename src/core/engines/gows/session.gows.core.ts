@@ -28,6 +28,7 @@ import {
   parseJsonList,
   statusToAck,
 } from '@waha/core/engines/gows/helpers';
+import { parseGowsReachoutTimelock } from '@waha/core/engines/gows/reachouttimelock';
 import { GowsAuthFactoryCore } from '@waha/core/engines/gows/store/GowsAuthFactoryCore';
 import {
   extractBody,
@@ -118,6 +119,7 @@ import {
   GroupSortField,
   Participant,
   ParticipantsRequest,
+  SettingsMemberAddMode,
   SettingsSecurityChangeInfo,
 } from '@waha/structures/groups.dto';
 import { ReplyToMessage } from '@waha/structures/message.dto';
@@ -235,6 +237,7 @@ enum WhatsMeowEvent {
   CHAT_PRESENCE = 'events.ChatPresence',
   PUSH_NAME_SETTING = 'events.PushNameSetting',
   LOGGED_OUT = 'events.LoggedOut',
+  NOTIFY_ACCOUNT_REACHOUT_TIMELOCK = 'events.NotifyAccountReachoutTimelock',
   // Groups
   GROUP_INFO = 'events.GroupInfo',
   JOINED_GROUP = 'events.JoinedGroup',
@@ -472,6 +475,9 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     events.on(WhatsMeowEvent.LOGGED_OUT, () => {
       this.logger.error('Logged out');
       this.status = WAHASessionStatus.FAILED;
+    });
+    events.on(WhatsMeowEvent.NOTIFY_ACCOUNT_REACHOUT_TIMELOCK, (data) => {
+      this.reachoutTimelock.update(parseGowsReachoutTimelock(data));
     });
     events.on(WhatsMeowEvent.PRESENCE, (event: gows.Presence) => {
       if (isJidGroup(event.From)) {
@@ -918,7 +924,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   public getSessionMeInfo(): MeInfo | null {
-    return this.me;
+    if (!this.me) {
+      return null;
+    }
+    return { ...this.me, reachoutTimelock: this.reachoutTimelock.value };
   }
 
   /**
@@ -1639,6 +1648,24 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       value: value,
     });
     await promisify(this.client.SetGroupAnnounce)(req);
+    return;
+  }
+
+  public async getMemberAddMode(id): Promise<SettingsMemberAddMode> {
+    const group = await this.getGroup(id);
+    return {
+      membersCanAddNewMember: group.MemberAddMode === 'all_member_add',
+    };
+  }
+
+  @Activity()
+  public async setMemberAddMode(id, value) {
+    const req = new messages.JidBoolRequest({
+      session: this.session,
+      jid: id,
+      value: value,
+    });
+    await promisify(this.client.SetGroupMemberAddMode)(req);
     return;
   }
 

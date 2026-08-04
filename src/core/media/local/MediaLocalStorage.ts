@@ -108,7 +108,7 @@ export class MediaLocalStorage implements IMediaStorage {
           this.log.debug(`File ${filepath} was removed`);
         }),
       delay,
-    );
+    ).unref();
   }
 
   async close() {

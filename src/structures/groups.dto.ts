@@ -26,6 +26,10 @@ export class SettingsSecurityChangeInfo {
   adminsOnly: boolean = true;
 }
 
+export class SettingsMemberAddMode {
+  membersCanAddNewMember: boolean = true;
+}
+
 /**
  * Queries
  */

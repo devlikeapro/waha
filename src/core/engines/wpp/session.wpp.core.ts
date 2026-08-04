@@ -165,6 +165,7 @@ import {
   GroupParticipantRole,
   GroupSortField,
   ParticipantsRequest,
+  SettingsMemberAddMode,
   SettingsSecurityChangeInfo,
 } from '@waha/structures/groups.dto';
 import { ContactQuery, ContactRequest } from '@waha/structures/contacts.dto';
@@ -1412,6 +1413,26 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     );
   }
 
+  public async getMemberAddMode(id): Promise<SettingsMemberAddMode> {
+    const group = await this.wpp!.getChatById(this.ensureSuffix(id));
+    // Undocumented property - 'all_member_add' or 'admin_add'
+    const memberAddMode = group?.groupMetadata?.memberAddMode;
+    return {
+      membersCanAddNewMember: memberAddMode === 'all_member_add',
+    };
+  }
+
+  @Activity()
+  public setMemberAddMode(id: string, value: boolean): Promise<boolean> {
+    // Not in the GroupProperty enum, but wa-js passes the property through
+    // to WhatsApp's setGroupProperty - 1 - all members, 0 - admins only
+    return this.wpp!.setGroupProperty(
+      this.ensureSuffix(id),
+      'member_add_mode' as GroupProperty,
+      value,
+    );
+  }
+
   @Activity()
   public deleteGroup(id: string): Promise<boolean> {
     return this.wpp!.deleteChat(this.ensureSuffix(id));
@@ -1874,7 +1895,8 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
           subject: group?.name || '',
           description: group?.groupMetadata?.desc || '',
           invite: null,
-          membersCanAddNewMember: !group?.groupMetadata?.restrict,
+          membersCanAddNewMember:
+            group?.groupMetadata?.memberAddMode === 'all_member_add',
           membersCanSendMessages: !group?.groupMetadata?.announce,
           newMembersApprovalRequired:
             !!group?.groupMetadata?.membershipApprovalMode,

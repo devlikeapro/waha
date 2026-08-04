@@ -57,12 +57,47 @@ export async function waitUntil(
 /**
  * Handle setTimeout 32-bit overflow
  */
-export function setLongTimeout(callback, delayMs) {
-  const MAX_DELAY = 2_147_483_647; // ~24.8 days
+export class LongTimeout {
+  private static readonly MAX_DELAY = 2_147_483_647; // ~24.8 days
 
-  if (delayMs > MAX_DELAY) {
-    setTimeout(() => setLongTimeout(callback, delayMs - MAX_DELAY), MAX_DELAY);
-  } else {
-    setTimeout(callback, delayMs);
+  private timeout?: ReturnType<typeof setTimeout>;
+  private unrefed: boolean = false;
+
+  constructor(
+    private callback: () => void,
+    delayMs: number,
+  ) {
+    this.schedule(delayMs);
   }
+
+  private schedule(delayMs: number) {
+    if (delayMs > LongTimeout.MAX_DELAY) {
+      this.timeout = setTimeout(
+        () => this.schedule(delayMs - LongTimeout.MAX_DELAY),
+        LongTimeout.MAX_DELAY,
+      );
+    } else {
+      this.timeout = setTimeout(this.callback, delayMs);
+    }
+    if (this.unrefed) {
+      this.timeout.unref?.();
+    }
+  }
+
+  /**
+   * Do not keep the process alive just for this timer
+   */
+  unref(): LongTimeout {
+    this.unrefed = true;
+    this.timeout?.unref?.();
+    return this;
+  }
+
+  clear() {
+    clearTimeout(this.timeout);
+  }
+}
+
+export function setLongTimeout(callback: () => void, delayMs: number) {
+  return new LongTimeout(callback, delayMs);
 }

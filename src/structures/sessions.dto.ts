@@ -1,8 +1,8 @@
-import { applyDecorators } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { App } from '@waha/apps/app_sdk/dto/app.dto';
 import { BooleanString } from '@waha/nestjs/validation/BooleanString';
 import { IsDynamicObject } from '@waha/nestjs/validation/IsDynamicObject';
+import { SessionName } from '@waha/nestjs/validation/SessionName';
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
@@ -10,8 +10,6 @@ import {
   IsEnum,
   IsOptional,
   IsString,
-  Matches,
-  MaxLength,
   ValidateNested,
 } from 'class-validator';
 
@@ -327,6 +325,56 @@ export class SessionDTO {
   config?: SessionConfig;
 }
 
+/**
+ * Enforcement types as listed in the WhatsApp Web app (WAWebUserPrefsTypes.ReachoutTimelockEnforcementType).
+ * WhatsApp may introduce new values at any time - treat it as an open set.
+ */
+export enum ReachoutTimelockEnforcementType {
+  // No restriction
+  DEFAULT = 'DEFAULT',
+  BIZ_QUALITY = 'BIZ_QUALITY',
+  BIZ_COMMERCE_VIOLATION_ADULT = 'BIZ_COMMERCE_VIOLATION_ADULT',
+  BIZ_COMMERCE_VIOLATION_ALCOHOL = 'BIZ_COMMERCE_VIOLATION_ALCOHOL',
+  BIZ_COMMERCE_VIOLATION_ANIMALS = 'BIZ_COMMERCE_VIOLATION_ANIMALS',
+  BIZ_COMMERCE_VIOLATION_BODY_PARTS_FLUIDS = 'BIZ_COMMERCE_VIOLATION_BODY_PARTS_FLUIDS',
+  BIZ_COMMERCE_VIOLATION_DATING = 'BIZ_COMMERCE_VIOLATION_DATING',
+  BIZ_COMMERCE_VIOLATION_DIGITAL_SERVICES_PRODUCTS = 'BIZ_COMMERCE_VIOLATION_DIGITAL_SERVICES_PRODUCTS',
+  BIZ_COMMERCE_VIOLATION_DRUGS = 'BIZ_COMMERCE_VIOLATION_DRUGS',
+  BIZ_COMMERCE_VIOLATION_DRUGS_ONLY_OTC = 'BIZ_COMMERCE_VIOLATION_DRUGS_ONLY_OTC',
+  BIZ_COMMERCE_VIOLATION_GAMBLING = 'BIZ_COMMERCE_VIOLATION_GAMBLING',
+  BIZ_COMMERCE_VIOLATION_HEALTHCARE = 'BIZ_COMMERCE_VIOLATION_HEALTHCARE',
+  BIZ_COMMERCE_VIOLATION_REAL_FAKE_CURRENCY = 'BIZ_COMMERCE_VIOLATION_REAL_FAKE_CURRENCY',
+  BIZ_COMMERCE_VIOLATION_SUPPLEMENTS = 'BIZ_COMMERCE_VIOLATION_SUPPLEMENTS',
+  BIZ_COMMERCE_VIOLATION_TOBACCO = 'BIZ_COMMERCE_VIOLATION_TOBACCO',
+  BIZ_COMMERCE_VIOLATION_VIOLENT_CONTENT = 'BIZ_COMMERCE_VIOLATION_VIOLENT_CONTENT',
+  BIZ_COMMERCE_VIOLATION_WEAPONS = 'BIZ_COMMERCE_VIOLATION_WEAPONS',
+  WEB_COMPANION_ONLY = 'WEB_COMPANION_ONLY',
+  RESTRICT_ALL_COMPANIONS = 'RESTRICT_ALL_COMPANIONS',
+}
+
+export class ReachoutTimelockData {
+  @ApiProperty({
+    example: ReachoutTimelockEnforcementType.RESTRICT_ALL_COMPANIONS,
+    enum: ReachoutTimelockEnforcementType,
+    description:
+      'Raw WhatsApp enforcement type. Informational only - it does not change what is blocked. ' +
+      'WhatsApp may introduce new values, so treat it as an open set.',
+  })
+  enforcementType: ReachoutTimelockEnforcementType;
+
+  @ApiProperty({
+    example: true,
+  })
+  isActive: boolean;
+
+  @ApiProperty({
+    example: 1784477333,
+    nullable: true,
+    description: 'Unix timestamp (seconds) when the enforcement ends.',
+  })
+  timeEnforcementEnds: number | null;
+}
+
 export class MeInfo {
   @ChatIdProperty()
   id: string;
@@ -343,6 +391,15 @@ export class MeInfo {
   jid?: string;
 
   pushName: string;
+
+  @ApiProperty({
+    required: false,
+    nullable: true,
+    description:
+      'WhatsApp reachout timelock (account restriction) info. ' +
+      'Null if no enforcement has been seen for the account.',
+  })
+  reachoutTimelock?: ReachoutTimelockData | null;
 }
 
 export class SessionRestriction {
@@ -404,20 +461,7 @@ export class SessionDetailedInfo extends SessionInfo {
   engine?: any;
 }
 
-// Affect almost all Databases - Sqlite, MongoDB, Postgres.
-const DB_NAME_LIMIT = 64;
-const DB_NAME_MAX_PREFIX_LEN = 'waha_noweb'.length;
-
-export function SessionName() {
-  return applyDecorators(
-    IsString(),
-    MaxLength(DB_NAME_LIMIT - DB_NAME_MAX_PREFIX_LEN),
-    Matches(/^[a-zA-Z0-9_-]*$/, {
-      message:
-        'Session name can only contain alphanumeric characters, hyphens, and underscores (a-z, A-Z, 0-9, -, _) or be empty',
-    }),
-  );
-}
+export { SessionName };
 
 export class SessionCreateRequest {
   @ApiProperty({

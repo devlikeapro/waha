@@ -23,6 +23,7 @@ import makeWASocket, {
   WAMessageContent,
   WAMessageKey,
   WAMessageUpdate,
+  WAVersion,
 } from '@adiwajshing/baileys';
 import { WACallEvent } from '@adiwajshing/baileys/lib/Types/Call';
 import { BaileysEventMap } from '@adiwajshing/baileys/lib/Types/Events';
@@ -77,7 +78,12 @@ import { AckToStatus, StatusToAck } from '@waha/core/utils/acks';
 import { pairs } from '@waha/utils/pairs';
 import { ExtractMessageKeysForRead } from '@waha/core/utils/convertors';
 import { parseMessageIdSerialized } from '@waha/core/utils/ids';
-import { isJidNewsletter, toCusFormat, toJID } from '@waha/core/utils/jids';
+import {
+  isJidNewsletter,
+  jidsFromKey,
+  toCusFormat,
+  toJID,
+} from '@waha/core/utils/jids';
 import { DistinctAck, DistinctMessages } from '@waha/core/utils/reactive';
 import {
   flipObject,
@@ -153,6 +159,7 @@ import {
   CreateGroupRequest,
   GroupParticipant,
   ParticipantsRequest,
+  SettingsMemberAddMode,
   SettingsSecurityChangeInfo,
 } from '@waha/structures/groups.dto';
 import {
@@ -170,7 +177,12 @@ import {
   WAHAPresenceData,
 } from '@waha/structures/presence.dto';
 import { WAMessage, WAMessageReaction } from '@waha/structures/responses.dto';
-import { MeInfo, SessionRestriction } from '@waha/structures/sessions.dto';
+import {
+  MeInfo,
+  ReachoutTimelockEnforcementType,
+  SessionRestriction,
+} from '@waha/structures/sessions.dto';
+import { EnsureSeconds } from '@waha/utils/timehelper';
 import {
   BROADCAST_ID,
   DeleteStatusRequest,
@@ -240,6 +252,7 @@ import { detectMimetype } from '@waha/utils/files';
 import esm from '@waha/vendor/esm';
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
+import { formatWaVersion } from '@waha/core/engines/noweb/waversion';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const promiseRetry = require('promise-retry');
 
@@ -265,7 +278,7 @@ const PresenceStatuses = {
 const ToEnginePresenceStatus = flipObject(PresenceStatuses);
 
 export interface NowebConfig {
-  waVersion?: [number, number, number];
+  waVersion: WAVersion;
 }
 
 export class WhatsappSessionNoWebCore extends WhatsappSession {
@@ -273,6 +286,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   private AUTO_RESTART_AFTER_SECONDS = 28 * 60;
 
   engine = WAHAEngine.NOWEB;
+  protected engineConfig: NowebConfig;
   authFactory = new NowebAuthFactoryCore();
   storageFactory = new NowebStorageFactoryCore();
   private startDelayedJob: SingleDelayedJobRunner;
@@ -395,11 +409,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     if (markOnlineOnConnect == undefined) {
       markOnlineOnConnect = true;
     }
-    const waVersion = (this.engineConfig as NowebConfig)?.waVersion;
-    if (waVersion) {
-      this.logger.info(`Using WhatsApp version: '${waVersion.join('.')}'`);
-    }
+    const version = this.engineConfig?.waVersion;
     return {
+      version: version,
       agent: agents?.socket,
       // Baileys media upload uses Node https.request in Node runtime.
       fetchAgent: agents?.fetch as Agent,
@@ -408,7 +420,6 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       browser: browser,
       logger: this.engineLogger,
       mobile: false,
-      ...(waVersion ? { version: waVersion } : {}),
       defaultQueryTimeoutMs: 120_000,
       keepAliveIntervalMs: 30_000,
       getMessage: (key) => this.getMessage(key),
@@ -438,6 +449,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       agents,
       state,
     ) as SocketConfig;
+    this.logger.info(
+      `Connecting using wa.version = ${formatWaVersion(socketConfig.version)}`,
+    );
     const sock = makeWASocket(socketConfig);
     sock.ev.on('creds.update', saveCreds);
     return sock;
@@ -563,12 +577,31 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       const { connection, lastDisconnect, qr, isNewLogin } = update;
       if (update.reachoutTimeLock) {
         this.updateRestriction(update.reachoutTimeLock);
+        const timelock = update.reachoutTimeLock;
+        const enforcementType =
+          timelock.enforcementType ?? ReachoutTimelockEnforcementType.DEFAULT;
+        let timeEnforcementEnds: number | null = null;
+        if (timelock.timeEnforcementEnds) {
+          timeEnforcementEnds = EnsureSeconds(
+            timelock.timeEnforcementEnds.getTime(),
+          );
+        }
+        this.reachoutTimelock.update({
+          enforcementType: enforcementType as ReachoutTimelockEnforcementType,
+          isActive: timelock.isActive === true,
+          timeEnforcementEnds: timeEnforcementEnds,
+        });
       }
       if (isNewLogin) {
         this.restartClient();
       } else if (connection === 'open') {
         this.qr.save('');
         this.status = WAHASessionStatus.WORKING;
+        // Ask WhatsApp for the current reachout timelock state, so a restarted session learns about
+        // an ongoing timelock without waiting for a push. The result arrives via 'connection.update'
+        this.sock?.fetchAccountReachoutTimelock?.().catch((error) => {
+          this.logger.warn(`Failed to fetch reachout timelock: ${error}`);
+        });
         // Do we need to resubscribe?
         // Ideally not, we need to explicitly call interesting
         // jids every 1 minute
@@ -871,6 +904,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       id: toCusFormat(meId),
       pushName: me.name,
       lid: jidNormalizedUser(me.lid),
+      reachoutTimelock: this.reachoutTimelock.value,
     };
   }
 
@@ -1277,12 +1311,20 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         urlInfo.jpegThumbnail = thumbnail.buffer;
       } else {
         // upload HQ thumbnail
+        // newsletters need the thumbnail uploaded unencrypted (plaintext path),
+        // otherwise clients can not render it (white/blurred preview image)
+        const uploadToServer = this.sock.waUploadToServer;
+        const uploadThumbnail = async (encFilePath, opts) => {
+          opts.newsletter = isJidNewsletter(chatId);
+          return await uploadToServer(encFilePath, opts);
+        };
         const { imageMessage } = await esm.b.prepareWAMessageMedia(
           { image: content },
           {
-            upload: this.sock.waUploadToServer,
+            upload: uploadThumbnail,
             mediaTypeOverride: 'thumbnail-link',
             options: { signal: AbortSignal.timeout(10_000) },
+            jid: chatId,
           },
         );
         urlInfo.jpegThumbnail = imageMessage?.jpegThumbnail
@@ -2006,6 +2048,17 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   public async setMessagesAdminsOnly(id, value) {
     const setting = value ? 'announcement' : 'not_announcement';
     return await this.sock.groupSettingUpdate(id, setting);
+  }
+
+  public async getMemberAddMode(id): Promise<SettingsMemberAddMode> {
+    const group = await this.getGroup(id);
+    return { membersCanAddNewMember: group.memberAddMode };
+  }
+
+  @Activity()
+  public async setMemberAddMode(id, value) {
+    const mode = value ? 'all_member_add' : 'admin_add';
+    return await this.sock.groupMemberAddMode(id, mode);
   }
 
   @Activity()
@@ -2954,9 +3007,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     if (!origMsgId) {
       return '';
     }
-    const jidsToTry = [targetKey.remoteJid, editMessage.key?.remoteJid].filter(
-      Boolean,
-    );
+    const editKey = editMessage.key as WAMessageKey | undefined;
+    const jidsToTry = [
+      targetKey.remoteJid,
+      editKey?.remoteJid,
+      editKey?.remoteJidAlt,
+    ].filter(Boolean);
     let stored: proto.IWebMessageInfo | undefined;
     for (const jid of jidsToTry) {
       stored = await this.store?.loadMessage(jid, origMsgId);
@@ -2987,40 +3043,75 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     if (!encPayload || !encIv) {
       return '';
     }
-    const editInfo = {
-      Chat: editMessage.key?.remoteJid,
-      Sender:
-        editMessage.key?.participant ||
-        (editMessage.key?.fromMe ? undefined : editMessage.key?.remoteJid),
-    };
-    const modificationSenderJid = jidToNonAD(editInfo.Sender || '');
-    const primaryOrig = getOrigSenderJidForMsgSecret(editInfo, {
-      fromMe: targetKey.fromMe,
-      remoteJID: targetKey.remoteJid,
-      participant: targetKey.participant,
-    });
-    const candidates: string[] = [primaryOrig];
+
+    // The editor ("modification sender").
+    let modificationSenderJids: Array<string | null | undefined>;
+    if (editKey?.fromMe) {
+      // Try both user lid and c.us
+      modificationSenderJids = [this.sock?.user?.lid, this.sock?.user?.id];
+    } else {
+      const editJids = editKey ? jidsFromKey(editKey) : null;
+      modificationSenderJids = [
+        editKey?.participant || editKey?.remoteJid,
+        editJids?.lid,
+        editJids?.pn,
+      ];
+    }
+    modificationSenderJids = lodash
+      .chain(modificationSenderJids)
+      .filter(Boolean)
+      .map(jidToNonAD)
+      .uniq()
+      .value();
+    if (modificationSenderJids.length === 0) {
+      modificationSenderJids.push('');
+    }
+
     const remoteNonAD = targetKey.remoteJid
       ? jidToNonAD(targetKey.remoteJid)
       : '';
-    if (remoteNonAD && !candidates.includes(remoteNonAD)) {
-      candidates.push(remoteNonAD);
-    }
     const participantNonAD = targetKey.participant
       ? jidToNonAD(targetKey.participant)
       : '';
-    if (participantNonAD && !candidates.includes(participantNonAD)) {
-      candidates.push(participantNonAD);
+
+    // Map dedupes by key and keeps the first-insertion order
+    const attempts = new Map<
+      string,
+      { origSenderJid: string; modificationSenderJid: string }
+    >();
+    for (const modificationSenderJid of modificationSenderJids) {
+      const primaryOrigSenderJid = getOrigSenderJidForMsgSecret(
+        { Chat: editKey?.remoteJid, Sender: modificationSenderJid },
+        {
+          fromMe: targetKey.fromMe,
+          remoteJID: targetKey.remoteJid,
+          participant: targetKey.participant,
+        },
+      );
+      const origSenderJids = [
+        primaryOrigSenderJid,
+        remoteNonAD,
+        participantNonAD,
+      ].filter(Boolean);
+      for (const origSenderJid of origSenderJids) {
+        // Avoid duplicates in attemps
+        const attemptKey = `${origSenderJid}|${modificationSenderJid}`;
+        attempts.set(attemptKey, {
+          origSenderJid: origSenderJid,
+          modificationSenderJid: modificationSenderJid,
+        });
+      }
     }
+
     let lastErr: unknown;
-    for (const origSenderJid of candidates) {
+    for (const attempt of attempts.values()) {
       try {
         const decoded = decryptSecretEncryptedMessageEditProto({
           encPayload: encPayload,
           encIv: encIv,
           origMsgId: origMsgId,
-          origSenderJid: origSenderJid,
-          modificationSenderJid: modificationSenderJid,
+          origSenderJid: attempt.origSenderJid,
+          modificationSenderJid: attempt.modificationSenderJid,
           origMsgSecret: origSecret,
         });
         const text = extractBody(decoded) || '';
@@ -3032,7 +3123,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       }
     }
     this.logger.debug(
-      { err: lastErr, origMsgId: origMsgId, candidates: candidates },
+      {
+        err: lastErr,
+        origMsgId: origMsgId,
+        attempts: Array.from(attempts.keys()),
+      },
       'NOWEB message edit decrypt: AES-GCM or protobuf decode failed',
     );
     return '';

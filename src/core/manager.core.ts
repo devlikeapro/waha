@@ -237,14 +237,20 @@ export class SessionManagerCore
     this.log.info(`Restarting sessions with delay of ${sleepS} seconds...`);
     const sleepMs = this.config.autoStartDelaySeconds * 1000;
     for (const sessionName of sessions) {
+      const log = this.log.logger.child({ session: sessionName });
       await this.withLock(sessionName, async () => {
-        const log = this.log.logger.child({ session: sessionName });
         log.info(`Restarting STOPPED session...`);
         await this.start(sessionName).catch((error) => {
           log.error(`Failed to start STOPPED session: ${error}`);
           log.error(error.stack);
         });
-      });
+      })
+        // withLock() itself can reject (e.g. "Maximum execution time is exceeded"),
+        // catch it so one stuck session doesn't abort restarting the rest
+        .catch((error) => {
+          log.error(`Failed to restart STOPPED session: ${error}`);
+          log.error(error.stack);
+        });
       await sleep(sleepMs);
     }
     this.log.info(`STOPPED sessions have been restarted.`);

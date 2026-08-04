@@ -221,10 +221,23 @@ export class MessageHandler {
       mentions: mentions,
     };
     const session = this.session;
-    await session.readMessages(chatId);
-    await session.startTyping({ chatId: chatId, session: '' });
+    // Best effort - do not block sending on read-receipt failure
+    await session.readMessages(chatId).catch((err) => {
+      this.logger.warn(
+        `ChatWoot => WhatsApp: error reading messages in chat '${chatId}': ${err}`,
+      );
+    });
+    await session.startTyping({ chatId: chatId, session: '' }).catch((err) => {
+      this.logger.warn(
+        `ChatWoot => WhatsApp: error starting typing in chat '${chatId}': ${err}`,
+      );
+    });
     await sleep(2000);
-    await session.stopTyping({ chatId: chatId, session: '' });
+    await session.stopTyping({ chatId: chatId, session: '' }).catch((err) => {
+      this.logger.warn(
+        `ChatWoot => WhatsApp: error stopping typing in chat '${chatId}': ${err}`,
+      );
+    });
     const msg = await session.sendText(request);
     return msg;
   }
