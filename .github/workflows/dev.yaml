@@ -5,6 +5,10 @@ on:
     - cron: '0 0 * * *'
   workflow_dispatch:
 
+env:
+  REGISTRY: ghcr.io
+  DOCKER_IMAGE: ghcr.io/${{ github.repository }}
+
 jobs:
   #  unit-tests:
   #    if: github.repository == 'devlikeapro/waha-plus'
@@ -35,9 +39,12 @@ jobs:
   #        run: yarn test:unit
 
   docker-build:
-    if: github.repository == 'devlikeapro/waha-plus'
+    if: github.repository == 'bellinatiperez/waha'
     #    needs: unit-tests
     runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
     name:
       ${{ matrix.engine }} - ${{ matrix.browser }} - ${{ matrix.platform }} -
       ${{ matrix.tag }}
@@ -100,7 +107,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ vars.DOCKER_IMAGE }}
+          images: ${{ env.DOCKER_IMAGE }}
           flavor: latest=false
           tags: |
             type=raw,value=${{ matrix.tag }}
@@ -109,8 +116,9 @@ jobs:
         if: ${{ steps.recent.outputs.has_recent == 'true' }}
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build (attempt 1)
         id: build1
@@ -197,7 +205,7 @@ jobs:
             --name smoke \
             --rm -p3000:3000 \
             -e WAHA_API_KEY=test \
-            ${{ vars.DOCKER_IMAGE }}:${{ matrix.tag }}
+            ${{ env.DOCKER_IMAGE }}:${{ matrix.tag }}
 
           sleep 3
           docker logs smoke
