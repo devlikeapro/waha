@@ -1148,7 +1148,13 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     if (!message) {
       return null;
     }
-    return this.processIncomingMessage(message, query.downloadMedia);
+    // An explicit downloadMedia=true forces the download even when media is
+    // globally disabled.
+    return this.processIncomingMessage(
+      message,
+      query.downloadMedia,
+      query.downloadMedia,
+    );
   }
 
   @Activity()
@@ -2346,25 +2352,38 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     };
   }
 
-  protected async processIncomingMessage(message: any, downloadMedia = true) {
+  // `force` comes from an explicit downloadMedia=true on the request and
+  // downloads the media even when media download is globally disabled
+  // (WHATSAPP_DOWNLOAD_MEDIA=false).
+  protected async processIncomingMessage(
+    message: any,
+    downloadMedia = true,
+    force = false,
+  ) {
     const wamessage = this.toWAMessage(message);
     if (downloadMedia) {
-      const media = await this.downloadMediaSafe(message);
+      const media = await this.downloadMediaSafe(message, force);
       wamessage.media = media;
     }
     if (downloadMedia && wamessage.replyTo?.hasMedia) {
       const quotedMessage = message?.quotedMsg || message?._data?.quotedMsg;
       if (quotedMessage) {
-        wamessage.replyTo.media = await this.downloadMediaSafe(quotedMessage);
+        wamessage.replyTo.media = await this.downloadMediaSafe(
+          quotedMessage,
+          force,
+        );
       }
     }
     return wamessage;
   }
 
-  protected async downloadMedia(message: any): Promise<WAMedia | null> {
+  protected async downloadMedia(
+    message: any,
+    force = false,
+  ): Promise<WAMedia | null> {
     let processor = new WPPEngineMediaProcessor(this.wpp);
     processor = new LottieMediaProcessorWrapper(processor, this.logger);
-    return this.mediaManager.processMedia(processor, message, this.name);
+    return this.mediaManager.processMedia(processor, message, this.name, force);
   }
 
   protected checkStatusRequest(request: { contacts?: any[] }) {
@@ -2375,9 +2394,12 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     }
   }
 
-  protected async downloadMediaSafe(message): Promise<WAMedia | null> {
+  protected async downloadMediaSafe(
+    message,
+    force = false,
+  ): Promise<WAMedia | null> {
     try {
-      return await this.downloadMedia(message);
+      return await this.downloadMedia(message, force);
     } catch (error) {
       this.logger.error('Failed when tried to download media for a message');
       this.logger.error(error, error.stack);

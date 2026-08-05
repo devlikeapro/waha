@@ -2110,7 +2110,13 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       },
       Message: channelMessage.Message,
     };
-    const message = await this.processIncomingMessage(msg, downloadMedia);
+    // An explicit downloadMedia=true forces the download even when media is
+    // globally disabled.
+    const message = await this.processIncomingMessage(
+      msg,
+      downloadMedia,
+      downloadMedia,
+    );
     const reactions: any =
       sortObjectByValues(channelMessage.ReactionCounts) || {};
     return {
@@ -2492,7 +2498,11 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     const msgs = parseJsonList(response);
     const promises = [];
     for (const msg of msgs) {
-      promises.push(this.processIncomingMessage(msg, downloadMedia));
+      // An explicit downloadMedia=true forces the download even when media is
+      // globally disabled.
+      promises.push(
+        this.processIncomingMessage(msg, downloadMedia, downloadMedia),
+      );
     }
     let result = await Promise.all(promises);
     result = result.filter(Boolean);
@@ -2519,7 +2529,13 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     });
     const response = await promisify(this.client.GetMessageById)(request);
     const msg = parseJson(response);
-    return this.processIncomingMessage(msg, query.downloadMedia);
+    // An explicit downloadMedia=true forces the download even when media is
+    // globally disabled.
+    return this.processIncomingMessage(
+      msg,
+      query.downloadMedia,
+      query.downloadMedia,
+    );
   }
 
   /**
@@ -2683,7 +2699,14 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     return true;
   }
 
-  protected async processIncomingMessage(message, downloadMedia = true) {
+  // `force` comes from an explicit downloadMedia=true on the request and
+  // downloads the media even when media download is globally disabled
+  // (WHATSAPP_DOWNLOAD_MEDIA=false).
+  protected async processIncomingMessage(
+    message,
+    downloadMedia = true,
+    force = false,
+  ) {
     // Filter
     if (!this.shouldProcessIncomingMessage(message)) {
       return null;
@@ -2692,7 +2715,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     const wamessage = this.toWAMessage(message);
     // Media
     if (downloadMedia) {
-      const media = await this.downloadMediaSafe(message);
+      const media = await this.downloadMediaSafe(message, force);
       wamessage.media = media;
     }
     if (downloadMedia && wamessage.replyTo?.hasMedia) {
@@ -2703,14 +2726,14 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
           ID: wamessage.replyTo.id || '',
         },
       };
-      wamessage.replyTo.media = await this.downloadMediaSafe(msg);
+      wamessage.replyTo.media = await this.downloadMediaSafe(msg, force);
     }
     return wamessage;
   }
 
-  protected async downloadMediaSafe(message) {
+  protected async downloadMediaSafe(message, force = false) {
     try {
-      return await this.downloadMedia(message);
+      return await this.downloadMedia(message, force);
     } catch (e) {
       this.logger.error('Failed when tried to download media for a message');
       this.logger.error(e, e.stack);
@@ -2718,7 +2741,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     }
   }
 
-  protected async downloadMedia(message) {
+  protected async downloadMedia(message, force = false) {
     let processor: IMediaEngineProcessor<any> = new GOWSEngineMediaProcessor(
       this,
     );
@@ -2727,6 +2750,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       processor,
       message,
       this.name,
+      force,
     );
     return media;
   }

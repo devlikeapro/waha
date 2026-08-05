@@ -1468,7 +1468,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
     const promises = [];
     for (const msg of messages) {
-      promises.push(this.processIncomingMessage(msg, downloadMedia));
+      // An explicit downloadMedia=true forces the download even when media is
+      // globally disabled.
+      promises.push(
+        this.processIncomingMessage(msg, downloadMedia, downloadMedia),
+      );
     }
     let result = await Promise.all(promises);
     result = result.filter(Boolean);
@@ -1496,7 +1500,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       merge,
     );
     if (!message) return null;
-    return await this.processIncomingMessage(message, query.downloadMedia);
+    // An explicit downloadMedia=true forces the download even when media is
+    // globally disabled.
+    return await this.processIncomingMessage(
+      message,
+      query.downloadMedia,
+      query.downloadMedia,
+    );
   }
 
   @Activity()
@@ -3071,9 +3081,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return '';
   }
 
+  // `force` comes from an explicit downloadMedia=true on the request and
+  // downloads the media even when media download is globally disabled
+  // (WHATSAPP_DOWNLOAD_MEDIA=false).
   protected async processIncomingMessage(
     message,
     downloadMedia: boolean,
+    force = false,
   ): Promise<WAMessage | null> {
     // Filter
     if (!this.shouldProcessIncomingMessage(message)) {
@@ -3086,7 +3100,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     }
     // Media
     if (downloadMedia && wamessage.hasMedia) {
-      wamessage.media = await this.downloadMediaSafe(message);
+      wamessage.media = await this.downloadMediaSafe(message, force);
     }
 
     if (downloadMedia && wamessage.replyTo?.hasMedia) {
@@ -3102,7 +3116,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
           remoteJid: message.key.remoteJid,
         },
       };
-      wamessage.replyTo.media = await this.downloadMediaSafe(m);
+      wamessage.replyTo.media = await this.downloadMediaSafe(m, force);
     }
     return wamessage;
   }
@@ -3357,9 +3371,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return { id: chatId, presences: presences };
   }
 
-  protected async downloadMediaSafe(message): Promise<WAMedia | null> {
+  protected async downloadMediaSafe(
+    message,
+    force = false,
+  ): Promise<WAMedia | null> {
     try {
-      return await this.downloadMedia(message);
+      return await this.downloadMedia(message, force);
     } catch (e) {
       this.logger.error('Failed when tried to download media for a message');
       this.logger.error(e, e.stack);
@@ -3367,13 +3384,16 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return null;
   }
 
-  protected async downloadMedia(message): Promise<WAMedia | null> {
+  protected async downloadMedia(
+    message,
+    force = false,
+  ): Promise<WAMedia | null> {
     let processor: IMediaEngineProcessor<any> = new NOWEBEngineMediaProcessor(
       this,
       this.loggerBuilder,
     );
     processor = new LottieMediaProcessorWrapper(processor, this.logger);
-    return this.mediaManager.processMedia(processor, message, this.name);
+    return this.mediaManager.processMedia(processor, message, this.name, force);
   }
 
   protected async getMessageOptions(request: {

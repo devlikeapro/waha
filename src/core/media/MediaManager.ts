@@ -13,6 +13,11 @@ const mime = require('mime-types');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const promiseRetry = require('promise-retry');
 
+// Sentinel used as the only allowed mimetype when media download is globally
+// disabled (WHATSAPP_DOWNLOAD_MEDIA=false). It matches no real mimetype, so
+// nothing is downloaded - unless a request explicitly forces it.
+export const IGNORE_ALL_MEDIA_MIMETYPE = 'mimetype/ignore-all-media';
+
 export class MediaManager implements IMediaManager {
   // https://github.com/IndigoUnited/node-promise-retry
   RETRY_OPTIONS = {
@@ -35,12 +40,23 @@ export class MediaManager implements IMediaManager {
   }
 
   /**
-   *  Check that we need to download files with the mimetype
+   *  Check that we need to download files with the mimetype.
+   *  `force` comes from an explicit downloadMedia=true on the request. It
+   *  overrides only the global "download disabled" sentinel, never a real
+   *  mimetype allow list.
    */
-  private shouldProcessMimetype(mimetype: string) {
+  private shouldProcessMimetype(mimetype: string, force = false) {
     // No specific mimetypes provided - always download
     if (!this.mimetypes || this.mimetypes.length === 0) {
       return true;
+    }
+    // Media download is globally disabled. An explicit downloadMedia=true on a
+    // single request can still ask for this one file.
+    if (
+      this.mimetypes.length === 1 &&
+      this.mimetypes[0] === IGNORE_ALL_MEDIA_MIMETYPE
+    ) {
+      return force;
     }
     // Found "right" mimetype in the list of allowed mimetypes - download it
     return this.mimetypes.some((type) => mimetype.startsWith(type));
@@ -50,12 +66,13 @@ export class MediaManager implements IMediaManager {
     processor: IMediaEngineProcessor<Message>,
     message: Message,
     session: string,
+    force = false,
   ): Promise<WAMedia | null> {
     const messageId = processor.getMessageId(message);
     const chatId = processor.getChatId(message);
     const mimetype = processor.getMimetype(message);
     const filename = processor.getFilename(message);
-    if (!this.shouldProcessMimetype(mimetype)) {
+    if (!this.shouldProcessMimetype(mimetype, force)) {
       this.log.info(
         `The message '${messageId}' has '${mimetype}' mimetype media, skip it.`,
       );
@@ -105,6 +122,7 @@ export class MediaManager implements IMediaManager {
     processor: IMediaEngineProcessor<Message>,
     message: Message,
     session: string,
+    force = false,
   ): Promise<WAMedia | null> {
     let messageId: string;
     try {
@@ -128,7 +146,12 @@ export class MediaManager implements IMediaManager {
     try {
       media.filename = processor.getFilename(message);
       media.mimetype = processor.getMimetype(message);
-      const data = await this.processMediaInternal(processor, message, session);
+      const data = await this.processMediaInternal(
+        processor,
+        message,
+        session,
+        force,
+      );
       media = { ...media, ...data };
     } catch (err) {
       this.log.error(err, `Error processing media for message '${messageId}'`);

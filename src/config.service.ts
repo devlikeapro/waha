@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GlobalWebhookConfigConfig } from '@waha/core/config/GlobalWebhookConfig';
+import { IGNORE_ALL_MEDIA_MIMETYPE } from '@waha/core/media/MediaManager';
 import { IgnoreJidConfig } from '@waha/core/utils/jids';
 
 import { parseBool } from './helpers';
@@ -65,7 +66,7 @@ export class WhatsappConfigService implements OnApplicationBootstrap {
 
   get mimetypes(): string[] {
     if (!this.shouldDownloadMedia) {
-      return ['mimetype/ignore-all-media'];
+      return [IGNORE_ALL_MEDIA_MIMETYPE];
     }
     const types = this.configService.get('WHATSAPP_FILES_MIMETYPES', '');
     return types ? types.split(',') : [];

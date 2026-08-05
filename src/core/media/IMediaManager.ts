@@ -10,6 +10,7 @@ interface IMediaManager {
     processor: IMediaEngineProcessor<Message>,
     message: Message,
     session: string,
+    force?: boolean,
   ): Promise<WAMedia | null>;
   close(): void;
 }
