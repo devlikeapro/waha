@@ -75,6 +75,7 @@ export class MediaManager implements IMediaManager {
       file: {
         extension: extension,
         filename: filename,
+        mimetype: mimetype,
       },
     };
 
