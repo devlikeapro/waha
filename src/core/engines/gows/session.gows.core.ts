@@ -151,6 +151,7 @@ import {
   EnginePayload,
   PollVotePayload,
   WAMessageAckBody,
+  WAMessageAckError,
   WAMessageEditedBody,
   WAMessageRevokedBody,
 } from '@waha/structures/webhooks.dto';
@@ -280,6 +281,16 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   protected presences: any;
 
   private local$ = new Subject<EnginePayload>();
+
+  // Synthetic ACKs (account-restriction errors detected at send time, with no
+  // real WhatsApp receipt behind them) get merged into the real MESSAGE_ACK
+  // stream in listenEngineEvents, so they reach webhooks through the exact
+  // same path as a real ack - callers (e.g. the Hub) need zero changes.
+  // Single item, not an array: messageAckContacts$ looks like it emits
+  // arrays (receiptToMessageAck returns one), but mergeMap flattens each
+  // array item into its own emission - the real stream never emits arrays,
+  // only individual WAMessageAckBody objects. Must stay consistent.
+  private manualAckEvents$ = new Subject<WAMessageAckBody>();
 
   public constructor(config) {
     super(config);
@@ -648,7 +659,9 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       DistinctAck(),
     );
     this.events2.get(WAHAEvents.MESSAGE_ACK_GROUP).switch(messageAckGroups$);
-    this.events2.get(WAHAEvents.MESSAGE_ACK).switch(messageAckContacts$);
+    this.events2
+      .get(WAHAEvents.MESSAGE_ACK)
+      .switch(merge(messageAckContacts$, this.manualAckEvents$));
 
     const messageReactions$ = messages$.pipe(
       filter((msg) => !!msg?.Message?.reactionMessage),
@@ -1060,9 +1073,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         normalizeJid(toJID(mention)),
       ),
     });
-    const response = await promisify(this.client.SendMessage)(message);
-    const data = response.toObject();
-    return this.messageResponse(jid, data);
+    return this.sendGrpcMessage(message, jid);
   }
 
   @Activity()
@@ -1101,9 +1112,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       replyTo: getMessageIdFromSerialized(request.reply_to),
       contacts: contacts.map((contact) => new messages.vCardContact(contact)),
     });
-    const response = await promisify(this.client.SendMessage)(message);
-    const data = response.toObject();
-    return this.messageResponse(jid, data);
+    return this.sendGrpcMessage(message, jid);
   }
 
   @Activity()
@@ -1120,9 +1129,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         multipleAnswers: request.poll.multipleAnswers,
       }),
     });
-    const response = await promisify(this.client.SendMessage)(message);
-    const data = response.toObject();
-    return this.messageResponse(jid, data);
+    return this.sendGrpcMessage(message, jid);
   }
 
   @Activity()
@@ -1142,9 +1149,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       session: this.session,
       pollVote: pollVote,
     });
-    const response = await promisify(this.client.SendMessage)(message);
-    const data = response.toObject();
-    return this.messageResponse(jid, data);
+    return this.sendGrpcMessage(message, jid);
   }
 
   @Activity()
@@ -1169,9 +1174,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       replyTo: getMessageIdFromSerialized(request.reply_to),
       list: list,
     });
-    const response = await promisify(this.client.SendMessage)(message);
-    const data = response.toObject();
-    return this.messageResponse(jid, data);
+    return this.sendGrpcMessage(message, jid);
   }
 
   @Activity()
@@ -1214,9 +1217,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       linkPreview: status.linkPreview ?? true,
       linkPreviewHighQuality: status.linkPreviewHighQuality,
     });
-    const response = await promisify(this.client.SendMessage)(message);
-    const data = response.toObject();
-    return this.messageResponse(Jid.BROADCAST, data);
+    return this.sendGrpcMessage(message, Jid.BROADCAST);
   }
 
   public async deleteStatus(request: DeleteStatusRequest) {
@@ -1247,6 +1248,75 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       id: id,
       _data: message,
     };
+  }
+
+  /**
+   * Sends via SendMessage. If the call fails with a confirmed account
+   * restriction (463 + an active `reachoutTimelock` - deliberately
+   * conservative: 463 also happens for other reasons, e.g. a contact with no
+   * tctoken, and the account is NOT restricted in that case, so it falls
+   * through to a normal error), the error is not propagated: this returns an
+   * "accepted" response (same shape as a real send, same id) and emits an
+   * async error ACK right after - mirrors the NOWEB pattern (the error
+   * arrives via message.ack, not as a synchronous send failure), so callers
+   * (e.g. the Hub) need zero changes.
+   */
+  private async sendGrpcMessage(message: messages.MessageRequest, jid) {
+    try {
+      const response = await promisify(this.client.SendMessage)(message);
+      return this.messageResponse(jid, response.toObject());
+    } catch (error: any) {
+      if (this.isAccountRestrictedError(error)) {
+        // Most callers (e.g. the Hub) don't send their own `id` - they let
+        // the server generate one. Since the send never actually happened
+        // here, there's no id from a real response either: ask GOWS for one
+        // through the same RPC generateNewMessageId() already uses, lazily
+        // (only on this error path, no extra cost on the normal success path).
+        const requestId = message.id || (await this.generateNewMessageId());
+        this.emitRestrictedAck(requestId, jid);
+        return this.messageResponse(jid, { id: requestId });
+      }
+      throw error;
+    }
+  }
+
+  private isAccountRestrictedError(error: any): boolean {
+    return (
+      error?.code === grpc.status.UNKNOWN &&
+      /\b463\b/.test(error?.details ?? '') &&
+      this.reachoutTimelock.value?.isActive === true
+    );
+  }
+
+  private emitRestrictedAck(requestId: string, jid: string) {
+    const timelock = this.reachoutTimelock.value;
+    const id = buildMessageId({
+      ID: requestId,
+      IsFromMe: true,
+      IsGroup: isJidGroup(jid) || isJidBroadcast(jid),
+      Chat: jid,
+      Sender: this.me.id,
+    });
+    const error: WAMessageAckError = {
+      code: '463',
+      blocked: true,
+      reason: 'account_restricted',
+      until: timelock?.timeEnforcementEnds
+        ? new Date(timelock.timeEnforcementEnds * 1000).toISOString()
+        : null,
+      enforcementType: timelock?.enforcementType,
+    };
+    const ack: WAMessageAckBody = {
+      id: id,
+      from: toCusFormat(this.me.id),
+      to: toCusFormat(jid),
+      participant: '',
+      fromMe: true,
+      ack: WAMessageAck.ERROR,
+      ackName: WAMessageAck[WAMessageAck.ERROR],
+      error: error,
+    };
+    this.manualAckEvents$.next(ack);
   }
 
   @Activity()
@@ -1281,9 +1351,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         degreesLongitude: request.longitude,
       }),
     });
-    const response = await promisify(this.client.SendMessage)(message);
-    const data = response.toObject();
-    return this.messageResponse(jid, data);
+    return this.sendGrpcMessage(message, jid);
   }
 
   forwardMessage(request: MessageForwardRequest): Promise<WAMessage> {
@@ -1395,9 +1463,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       } catch (e) {
         this.logger.error(`Failed to write media to temp file: ${e.message}`);
       }
-      const response = await promisify(this.client.SendMessage)(message);
-      const data = response.toObject();
-      return this.messageResponse(jid, data);
+      return this.sendGrpcMessage(message, jid);
     });
   }
 
@@ -1445,9 +1511,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       replyTo: getMessageIdFromSerialized(request.reply_to),
       preview: preview,
     });
-    const response = await promisify(this.client.SendMessage)(message);
-    const data = response.toObject();
-    return this.messageResponse(jid, data);
+    return this.sendGrpcMessage(message, jid);
   }
 
   @Activity()
@@ -1846,9 +1910,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       replyTo: getMessageIdFromSerialized(request.reply_to),
     });
 
-    const response = await promisify(this.client.SendMessage)(message);
-    const data = response.toObject();
-    return this.messageResponse(jid, data) as any;
+    return this.sendGrpcMessage(message, jid) as any;
   }
 
   @Activity()
