@@ -18,9 +18,20 @@ import { SwaggerConfiguratorCore } from './core/SwaggerConfiguratorCore';
 import { AllExceptionsFilter } from './nestjs/AllExceptionsFilter';
 import { getWAHAVersion, VERSION, WAHAVersion } from './version';
 import { loadESMModules } from '@waha/vendor/esm';
-import { setGlobalDispatcher, Agent } from 'undici';
+import { setGlobalDispatcher, Agent, EnvHttpProxyAgent } from 'undici';
 
-setGlobalDispatcher(new Agent({ connect: { family: 4 } }));
+// fetch (media download) ignores HTTP(S)_PROXY unless the dispatcher handles it
+const proxyUrl =
+  process.env.https_proxy ||
+  process.env.HTTPS_PROXY ||
+  process.env.http_proxy ||
+  process.env.HTTP_PROXY;
+
+setGlobalDispatcher(
+  proxyUrl
+    ? new EnvHttpProxyAgent({ connect: { family: 4 } })
+    : new Agent({ connect: { family: 4 } }),
+);
 
 const logger: Logger = pino({
   level: getPinoLogLevel(),
