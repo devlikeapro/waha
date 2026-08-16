@@ -990,9 +990,9 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   @Activity()
-  public deleteMessage(chatId: string, messageId: string) {
+  public deleteMessage(chatId: string, messageId: string, forMe?: boolean) {
     const message = this.recreateMessage(messageId);
-    return message.delete(true);
+    return message.delete(!forMe);
   }
 
   @Activity()

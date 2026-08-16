@@ -1188,7 +1188,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   @Activity()
-  public async deleteMessage(chatId: string, messageId: string) {
+  public async deleteMessage(chatId: string, messageId: string, forMe?: boolean) {
     const jid = normalizeJid(toJID(this.ensureSuffix(chatId)));
     const key = parseMessageIdSerialized(messageId);
     const message = new messages.RevokeMessageRequest({
