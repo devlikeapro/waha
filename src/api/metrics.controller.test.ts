@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 import { MetricsController } from '@waha/api/metrics.controller';
 import { WhatsappConfigService } from '@waha/config.service';
+import { SessionMetricsCollector } from '@waha/core/metrics/session.metrics';
 import { WahaMetrics } from '@waha/core/metrics/waha.metrics';
 
 describe('MetricsController', () => {
@@ -13,6 +14,10 @@ describe('MetricsController', () => {
         {
           provide: WahaMetrics,
           useValue: new WahaMetrics(enabled),
+        },
+        {
+          provide: SessionMetricsCollector,
+          useValue: { collect: async () => undefined },
         },
         {
           provide: WhatsappConfigService,

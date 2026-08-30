@@ -1,12 +1,16 @@
 import { Controller, Get, Header, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { SessionMetricsCollector } from '@waha/core/metrics/session.metrics';
 import { WahaMetrics } from '@waha/core/metrics/waha.metrics';
 
 @Controller('metrics')
 @ApiTags('🔍 Observability')
 export class MetricsController {
-  constructor(private readonly metrics: WahaMetrics) {}
+  constructor(
+    private readonly metrics: WahaMetrics,
+    private readonly sessions: SessionMetricsCollector,
+  ) {}
 
   @Get()
   @Header('Cache-Control', 'no-store')
@@ -20,6 +24,7 @@ export class MetricsController {
       response.status(404).send();
       return;
     }
+    await this.sessions.collect();
     const body = await this.metrics.render();
     response
       .status(200)

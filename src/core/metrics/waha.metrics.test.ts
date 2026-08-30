@@ -34,4 +34,20 @@ describe('WahaMetrics', () => {
     const body = await metrics.render();
     expect(body).not.toContain('waha_http_requests_total');
   });
+
+  test('setSessionCounts writes status and engine labels and resets', async () => {
+    const metrics = new WahaMetrics(true);
+    metrics.setSessionCounts([
+      { status: 'WORKING', engine: 'GOWS' },
+      { status: 'WORKING', engine: 'GOWS' },
+      { status: 'FAILED', engine: 'WEBJS' },
+    ]);
+    let body = await metrics.render();
+    expect(body).toContain('waha_sessions{status="WORKING",engine="GOWS"} 2');
+    expect(body).toContain('waha_sessions{status="FAILED",engine="WEBJS"} 1');
+    metrics.setSessionCounts([{ status: 'WORKING', engine: 'GOWS' }]);
+    body = await metrics.render();
+    expect(body).toContain('waha_sessions{status="WORKING",engine="GOWS"} 1');
+    expect(body).not.toContain('waha_sessions{status="FAILED",engine="WEBJS"}');
+  });
 });
