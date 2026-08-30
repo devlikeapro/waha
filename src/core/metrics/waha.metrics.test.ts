@@ -50,4 +50,15 @@ describe('WahaMetrics', () => {
     expect(body).toContain('waha_sessions{status="WORKING",engine="GOWS"} 1');
     expect(body).not.toContain('waha_sessions{status="FAILED",engine="WEBJS"}');
   });
+
+  test('observeMessage counts in and out only', async () => {
+    const metrics = new WahaMetrics(true);
+    metrics.observeMessage('in');
+    metrics.observeMessage('in');
+    metrics.observeMessage('out');
+    const body = await metrics.render();
+    expect(body).toContain('waha_messages_total{direction="in"} 2');
+    expect(body).toContain('waha_messages_total{direction="out"} 1');
+    expect(body).not.toContain('chatId');
+  });
 });

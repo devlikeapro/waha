@@ -61,6 +61,7 @@ import { MediaController } from '../api/media.controller';
 import { MetricsController } from '../api/metrics.controller';
 import { PingController } from '../api/ping.controller';
 import { HttpMetricsMiddleware } from '@waha/core/metrics/http.metrics.middleware';
+import { MessageMetricsSubscriber } from '@waha/core/metrics/message.metrics';
 import { SessionMetricsCollector } from '@waha/core/metrics/session.metrics';
 import { WahaMetrics } from '@waha/core/metrics/waha.metrics';
 import { PresenceController } from '../api/presence.controller';
@@ -233,6 +234,7 @@ export const PROVIDERS_BASE: Provider[] = [
     inject: [WhatsappConfigService],
   },
   HttpMetricsMiddleware,
+  MessageMetricsSubscriber,
   SessionMetricsCollector,
   {
     provide: IApiKeyAuth,
