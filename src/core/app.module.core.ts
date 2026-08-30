@@ -60,6 +60,7 @@ import { LabelsController } from '../api/labels.controller';
 import { MediaController } from '../api/media.controller';
 import { MetricsController } from '../api/metrics.controller';
 import { PingController } from '../api/ping.controller';
+import { HttpMetricsMiddleware } from '@waha/core/metrics/http.metrics.middleware';
 import { WahaMetrics } from '@waha/core/metrics/waha.metrics';
 import { PresenceController } from '../api/presence.controller';
 import { ScreenshotController } from '../api/screenshot.controller';
@@ -230,6 +231,7 @@ export const PROVIDERS_BASE: Provider[] = [
     },
     inject: [WhatsappConfigService],
   },
+  HttpMetricsMiddleware,
   {
     provide: IApiKeyAuth,
     useFactory: ApiKeyAuthFactory,
@@ -286,6 +288,8 @@ export class AppModuleCore {
   }
 
   configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HttpMetricsMiddleware).forRoutes('*');
+
     // Because we use ServeStaticModule, we need to inject a middleware
     // ServeStaticModule does not support @UseGuards
     const exclude = this.config.getExcludedPaths();

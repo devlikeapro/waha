@@ -15,4 +15,23 @@ describe('WahaMetrics', () => {
     const body = await metrics.render();
     expect(body).not.toMatch(/waha_up(?:\{[^}]*\})? 1/);
   });
+
+  test('observeHttpRequest increments counter and histogram without path labels', async () => {
+    const metrics = new WahaMetrics(true);
+    metrics.observeHttpRequest('get', 200, 0.02);
+    metrics.observeHttpRequest('POST', 500, 0.4);
+    const body = await metrics.render();
+    expect(body).toContain('waha_http_requests_total{method="GET",status="200"} 1');
+    expect(body).toContain('waha_http_requests_total{method="POST",status="500"} 1');
+    expect(body).toContain('waha_http_request_duration_seconds_bucket');
+    expect(body).not.toContain('chatId');
+    expect(body).not.toContain('path=');
+  });
+
+  test('observeHttpRequest is a no-op when disabled', async () => {
+    const metrics = new WahaMetrics(false);
+    metrics.observeHttpRequest('GET', 200, 0.01);
+    const body = await metrics.render();
+    expect(body).not.toContain('waha_http_requests_total');
+  });
 });
