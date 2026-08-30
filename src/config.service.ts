@@ -182,6 +182,11 @@ export class WhatsappConfigService implements OnApplicationBootstrap {
     return parseBool(value);
   }
 
+  get prometheusEnabled(): boolean {
+    const value = this.configService.get('WAHA_PROMETHEUS_ENABLED', 'false');
+    return parseBool(value);
+  }
+
   /**
    * Global default "ignore settings" for chats.
    * If not defined, defaults to false (do not ignore anything).

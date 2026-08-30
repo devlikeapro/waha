@@ -1,36 +1,16 @@
-import { Gauge, Registry, collectDefaultMetrics } from 'prom-client';
+export const WAHA_METRICS_PATH = '/metrics';
+export const WAHA_METRICS_PREFIX = 'waha_';
+export const WAHA_HTTP_DURATION_BUCKETS = [
+  0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30,
+];
 
-export const WAHA_METRICS_REGISTRY = 'WAHA_METRICS_REGISTRY';
-
-export function prometheusEnabled(): boolean {
-  return parsePrometheusFlag(process.env.WAHA_PROMETHEUS_ENABLED);
-}
-
-export function parsePrometheusFlag(value: string | undefined): boolean {
-  if (value === undefined || value === '') {
+export function isMetricsPath(path: string): boolean {
+  if (!path) {
     return false;
   }
-  const lowered = value.toLowerCase();
-  if (lowered === 'true' || lowered === '1') {
-    return true;
-  }
-  if (lowered === 'false' || lowered === '0') {
-    return false;
-  }
-  return false;
-}
-
-export function createWahaMetricsRegistry(): Registry {
-  const register = new Registry();
-  collectDefaultMetrics({
-    register: register,
-    prefix: 'waha_',
-  });
-  const up = new Gauge({
-    name: 'waha_up',
-    help: '1 if the WAHA process is serving Prometheus metrics',
-    registers: [register],
-  });
-  up.set(1);
-  return register;
+  const pathname = path.split('?')[0];
+  return (
+    pathname === WAHA_METRICS_PATH ||
+    pathname.startsWith(`${WAHA_METRICS_PATH}/`)
+  );
 }

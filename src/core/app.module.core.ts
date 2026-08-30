@@ -60,10 +60,7 @@ import { LabelsController } from '../api/labels.controller';
 import { MediaController } from '../api/media.controller';
 import { MetricsController } from '../api/metrics.controller';
 import { PingController } from '../api/ping.controller';
-import {
-  createWahaMetricsRegistry,
-  WAHA_METRICS_REGISTRY,
-} from '@waha/core/metrics/prometheus.registry';
+import { WahaMetrics } from '@waha/core/metrics/waha.metrics';
 import { PresenceController } from '../api/presence.controller';
 import { ScreenshotController } from '../api/screenshot.controller';
 import { SessionsController } from '../api/sessions.controller';
@@ -227,8 +224,11 @@ export const PROVIDERS_BASE: Provider[] = [
   PoliciesGuard,
   SessionService,
   {
-    provide: WAHA_METRICS_REGISTRY,
-    useFactory: createWahaMetricsRegistry,
+    provide: WahaMetrics,
+    useFactory: (config: WhatsappConfigService) => {
+      return new WahaMetrics(config.prometheusEnabled);
+    },
+    inject: [WhatsappConfigService],
   },
   {
     provide: IApiKeyAuth,

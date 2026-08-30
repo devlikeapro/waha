@@ -2,46 +2,42 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 import { MetricsController } from '@waha/api/metrics.controller';
-import {
-  createWahaMetricsRegistry,
-  WAHA_METRICS_REGISTRY,
-} from '@waha/core/metrics/prometheus.registry';
+import { WhatsappConfigService } from '@waha/config.service';
+import { WahaMetrics } from '@waha/core/metrics/waha.metrics';
 
 describe('MetricsController', () => {
-  let app: INestApplication;
-
-  beforeAll(async () => {
+  async function buildApp(enabled: boolean): Promise<INestApplication> {
     const moduleRef = await Test.createTestingModule({
       controllers: [MetricsController],
       providers: [
         {
-          provide: WAHA_METRICS_REGISTRY,
-          useFactory: createWahaMetricsRegistry,
+          provide: WahaMetrics,
+          useValue: new WahaMetrics(enabled),
+        },
+        {
+          provide: WhatsappConfigService,
+          useValue: { prometheusEnabled: enabled },
         },
       ],
     }).compile();
-    app = moduleRef.createNestApplication();
+    const app = moduleRef.createNestApplication();
     await app.init();
-  });
+    return app;
+  }
 
-  afterAll(async () => {
+  test('returns 404 when disabled', async () => {
+    const app = await buildApp(false);
+    const response = await request(app.getHttpServer()).get('/metrics');
+    expect(response.status).toBe(404);
     await app.close();
   });
 
-  afterEach(() => {
-    delete process.env.WAHA_PROMETHEUS_ENABLED;
-  });
-
-  test('returns 404 when disabled', async () => {
-    const response = await request(app.getHttpServer()).get('/metrics');
-    expect(response.status).toBe(404);
-  });
-
   test('returns prometheus text when enabled', async () => {
-    process.env.WAHA_PROMETHEUS_ENABLED = 'true';
+    const app = await buildApp(true);
     const response = await request(app.getHttpServer()).get('/metrics');
     expect(response.status).toBe(200);
     expect(response.header['content-type']).toMatch(/text\/plain/);
     expect(response.text).toMatch(/waha_up(?:\{[^}]*\})? 1/);
+    await app.close();
   });
 });

@@ -1,32 +1,16 @@
 import {
-  createWahaMetricsRegistry,
-  parsePrometheusFlag,
+  isMetricsPath,
+  WAHA_METRICS_PATH,
+  WAHA_METRICS_PREFIX,
 } from '@waha/core/metrics/prometheus.registry';
 
-describe('parsePrometheusFlag', () => {
-  test('defaults to false', () => {
-    expect(parsePrometheusFlag(undefined)).toBe(false);
-    expect(parsePrometheusFlag('')).toBe(false);
-  });
-
-  test('accepts true and 1', () => {
-    expect(parsePrometheusFlag('true')).toBe(true);
-    expect(parsePrometheusFlag('1')).toBe(true);
-    expect(parsePrometheusFlag('TRUE')).toBe(true);
-  });
-
-  test('rejects other values', () => {
-    expect(parsePrometheusFlag('false')).toBe(false);
-    expect(parsePrometheusFlag('0')).toBe(false);
-    expect(parsePrometheusFlag('yes')).toBe(false);
-  });
-});
-
-describe('createWahaMetricsRegistry', () => {
-  test('exposes waha_up and default process metrics', async () => {
-    const register = createWahaMetricsRegistry();
-    const body = await register.metrics();
-    expect(body).toMatch(/waha_up(?:\{[^}]*\})? 1/);
-    expect(body).toContain('waha_process_cpu_user_seconds_total');
+describe('isMetricsPath', () => {
+  test('matches the scrape path', () => {
+    expect(WAHA_METRICS_PATH).toBe('/metrics');
+    expect(WAHA_METRICS_PREFIX).toBe('waha_');
+    expect(isMetricsPath('/metrics')).toBe(true);
+    expect(isMetricsPath('/metrics?foo=1')).toBe(true);
+    expect(isMetricsPath('/ping')).toBe(false);
+    expect(isMetricsPath('/api/sessions')).toBe(false);
   });
 });

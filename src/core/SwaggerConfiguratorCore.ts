@@ -1,9 +1,9 @@
 import { INestApplication } from '@nestjs/common';
-import * as lodash from 'lodash';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { DECORATORS } from '@nestjs/swagger/dist/constants';
 import { BasicAuthFunction } from '@waha/core/auth/basicAuth';
 import { DashboardConfigServiceCore } from '@waha/core/config/DashboardConfigServiceCore';
+import { swaggerBasicAuthExcludePaths } from '@waha/core/metrics/swagger-auth.exclude';
 import { Logger } from 'nestjs-pino';
 
 import { WhatsappConfigService } from '../config.service';
@@ -188,18 +188,10 @@ export class SwaggerConfiguratorCore {
     const [username, password] = credentials;
     const dashboardConfig = this.app.get(DashboardConfigServiceCore);
     const config = this.app.get(WhatsappConfigService);
-    const exclude = lodash.uniq([
-      '/api/',
-      '/mcp',
+    const exclude = swaggerBasicAuthExcludePaths(
       dashboardConfig.dashboardUri,
-      '/health',
-      '/ping',
-      '/ws',
-      '/webhooks/',
-      '/jobs',
-      '/jobs/',
-      ...config.getExcludedFullPaths(),
-    ]);
+      config.getExcludedFullPaths(),
+    );
 
     const authFunction = BasicAuthFunction(username, password, exclude);
     this.app.use(authFunction);
