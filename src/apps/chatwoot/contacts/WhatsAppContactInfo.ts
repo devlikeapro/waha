@@ -40,6 +40,30 @@ abstract class ChatContactInfo implements ContactInfo {
 }
 
 /**
+ * The display name for a chat, in the order that degrades best for an agent:
+ * the saved contact name, then the push name WhatsApp sends with every message,
+ * and only then the raw chat id.
+ *
+ * Shared by JID and LID contacts on purpose. It used to live inline in
+ * `JidContactInfo` only, so a LID with no phone number behind it — the normal
+ * case for anyone not in the address book — was named after its own id.
+ */
+async function resolveContactName(
+  session: WAHASessionAPI,
+  chatId: string,
+): Promise<string> {
+  let contact: any = null;
+  try {
+    contact = await session.getContact(chatId);
+  } catch (error) {
+    // A contact that cannot be read is no reason to fail creating it: the
+    // conversation is already arriving and it has to land somewhere.
+    contact = null;
+  }
+  return contact?.name || contact?.pushName || contact?.pushname || chatId;
+}
+
+/**
  * Regular JID contact info
  */
 class JidContactInfo extends ChatContactInfo {
@@ -67,9 +91,7 @@ class JidContactInfo extends ChatContactInfo {
   }
 
   async PublicContactCreate(): Promise<Contact> {
-    const contact: any = await this.session.getContact(this.chatId);
-    const name =
-      contact?.name || contact?.pushName || contact?.pushname || this.chatId;
+    const name = await resolveContactName(this.session, this.chatId);
     const phoneNumberE164 = E164Parser.fromJid(this.chatId);
 
     const result: Contact = {
@@ -135,10 +157,19 @@ class LidContactInfo extends ChatContactInfo {
     if (jid) {
       result = await jid.PublicContactCreate();
     } else {
+      // No phone number for this LID: WhatsApp only maps a LID to a phone number
+      // for contacts already in the address book, so `findPNByLid` returns null
+      // for anyone else — and that is by design, not a failure.
+      //
+      // The push name, however, IS available. It travels on every incoming
+      // message (`_data.Info.PushName`) and WAHA already exposes it through
+      // `getContact`. Falling straight through to the raw chat id made every
+      // unknown sender arrive in Chatwoot named `1234567890@lid`, with no name
+      // and no number — unusable for an agent answering the conversation.
       result = {
         inbox_id: 0,
         identifier: this.chatId,
-        name: this.chatId,
+        name: await resolveContactName(this.session, this.chatId),
       };
     }
     result.custom_attributes = await this.Attributes();
