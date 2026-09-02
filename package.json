@@ -141,7 +141,8 @@
     "puppeteer": "^24.31.0",
     "whatwg-url": "13.0.0",
     "axios": "^1.19.0",
-    "whatsapp-rust-bridge": "npm:@devlikeapro/whatsapp-rust-bridge@0.5.2"
+    "whatsapp-rust-bridge": "npm:@devlikeapro/whatsapp-rust-bridge@0.5.2",
+    "sharp": "0.35.3"
   },
   "devDependencies": {
     "@grpc/grpc-js": "^1.14.1",
