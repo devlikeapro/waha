@@ -216,6 +216,11 @@ export enum ChatSortField {
 }
 
 export class ChatsPaginationParams extends PaginationParams {
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  limit?: number = 20;
+
   @ApiProperty({
     description: 'Sort by field',
     enum: ChatSortField,
