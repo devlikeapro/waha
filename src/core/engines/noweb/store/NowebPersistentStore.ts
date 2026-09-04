@@ -11,6 +11,7 @@ import type {
 import type { GroupMetadata } from '@adiwajshing/baileys/lib/Types/GroupMetadata';
 import type { Label } from '@adiwajshing/baileys/lib/Types/Label';
 import type { LabelAssociation } from '@adiwajshing/baileys/lib/Types/LabelAssociation';
+import type { MinimalMessage } from '@adiwajshing/baileys/lib/Types/Message';
 import { IGroupRepository } from '@waha/core/engines/noweb/store/IGroupRepository';
 import { ILabelAssociationRepository } from '@waha/core/engines/noweb/store/ILabelAssociationsRepository';
 import { ILabelsRepository } from '@waha/core/engines/noweb/store/ILabelsRepository';
@@ -604,6 +605,11 @@ export class NowebPersistentStore implements INowebStore {
       return null;
     }
     return esm.b.proto.WebMessageInfo.create(data);
+  }
+
+  async getMessageForChatModify(jid: string): Promise<MinimalMessage | null> {
+    const messages = await this.getMessagesByJid(jid, {}, { limit: 1 });
+    return messages[0] || null;
   }
 
   getMessagesByJid(

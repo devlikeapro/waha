@@ -37,6 +37,7 @@ import {
   LabelAssociationType,
 } from '@adiwajshing/baileys/lib/Types/LabelAssociation';
 import { MessageUserReceiptUpdate } from '@adiwajshing/baileys/lib/Types/Message';
+import type { MinimalMessage } from '@adiwajshing/baileys/lib/Types/Message';
 import type {
   MediaGenerationOptions,
   NewsletterFetchedUpdate,
@@ -1654,9 +1655,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     archive: boolean,
   ): Promise<any> {
     const jid = toJID(chatId);
-    const messages = await this.store.getMessagesByJid(jid, {}, { limit: 1 });
+    const message = await this.getMessageForChatModify(jid);
     return await this.sock.chatModify(
-      { archive: archive, lastMessages: messages },
+      { archive: archive, lastMessages: [message] },
       jid,
     );
   }
@@ -1674,13 +1675,23 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   @Activity()
   public async chatsUnreadChat(chatId: string): Promise<any> {
     const jid = toJID(chatId);
-    const messages = await this.store.getMessagesByJid(jid, {}, { limit: 1 });
+    const message = await this.getMessageForChatModify(jid);
     return await this.sock.chatModify(
-      { markRead: false, lastMessages: messages },
+      { markRead: false, lastMessages: [message] },
       jid,
     );
   }
 
+  private async getMessageForChatModify(jid: string): Promise<MinimalMessage> {
+    const message = await this.store.getMessageForChatModify(jid);
+    if (!message) {
+      throw new UnprocessableEntityException(
+        'Cannot modify chat without a recent message. Enable NOWEB store with full_sync when starting a new session, or wait for a message in the chat and try again.',
+      );
+    }
+    return message;
+  }
+  
   /**
    * Labels methods
    */

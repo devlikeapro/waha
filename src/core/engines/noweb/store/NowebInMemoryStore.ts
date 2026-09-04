@@ -1,6 +1,12 @@
-import type { Chat, Contact, GroupMetadata, proto } from '@adiwajshing/baileys';
+import type {
+  Chat,
+  Contact,
+  GroupMetadata,
+  proto,
+} from '@adiwajshing/baileys';
 import type makeWASocket from '@adiwajshing/baileys';
 import type { Label } from '@adiwajshing/baileys/lib/Types/Label';
+import type { MinimalMessage } from '@adiwajshing/baileys/lib/Types/Message';
 import { BadRequestException } from '@nestjs/common';
 import {
   GetChatMessagesFilter,
@@ -54,6 +60,11 @@ export class NowebInMemoryStore implements INowebStore {
 
   loadMessage(jid: string, id: string): Promise<proto.IWebMessageInfo> {
     return this.store.loadMessage(jid, id);
+  }
+
+  async getMessageForChatModify(jid: string): Promise<MinimalMessage | null> {
+    const messages = await this.store.loadMessages(jid, 1, undefined);
+    return messages[0] || null;
   }
 
   getMessagesByJid(

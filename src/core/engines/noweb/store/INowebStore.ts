@@ -6,6 +6,7 @@ import type {
 } from '@adiwajshing/baileys';
 import type { GroupMetadata } from '@adiwajshing/baileys/lib/Types/GroupMetadata';
 import type { Label } from '@adiwajshing/baileys/lib/Types/Label';
+import type { MinimalMessage } from '@adiwajshing/baileys/lib/Types/Message';
 import {
   GetChatMessagesFilter,
   OverviewFilter,
@@ -26,6 +27,8 @@ export interface INowebStore {
   bind(ev: BaileysEventEmitter, socket: any): void;
 
   loadMessage(jid: string, id: string): Promise<proto.IWebMessageInfo>;
+
+  getMessageForChatModify(jid: string): Promise<MinimalMessage | null>;
 
   getMessagesByJid(
     chatId: string,
