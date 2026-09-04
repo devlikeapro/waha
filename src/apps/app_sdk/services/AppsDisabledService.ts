@@ -41,6 +41,14 @@ export class AppsDisabledService implements IAppsService {
     throw new AppsIsDisabledError();
   }
 
+  async purge(manager: SessionManager, appId: string): Promise<App> {
+    throw new AppsIsDisabledError();
+  }
+
+  async purgeBySession(manager: SessionManager, session: string) {
+    return;
+  }
+
   async removeBySession(manager: SessionManager, session: string) {
     return;
   }

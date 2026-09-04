@@ -30,6 +30,102 @@ export class SettingsMemberAddMode {
   membersCanAddNewMember: boolean = true;
 }
 
+export class SettingsMembershipApproval {
+  @IsBoolean()
+  newMembersApprovalRequired: boolean = false;
+}
+
+export enum GroupJoinRequestMethod {
+  INVITE_LINK = 'invite_link',
+  LINKED_GROUP_JOIN = 'linked_group_join',
+  NON_ADMIN_ADD = 'non_admin_add',
+}
+
+export function NormalizeJoinRequestMethod(
+  value: string | null | undefined,
+): GroupJoinRequestMethod | null {
+  // Engines report the method in different formats
+  // NOWEB/GOWS use 'invite_link'
+  // WEBJS/WPP use 'InviteLink'
+  switch (value) {
+    case 'InviteLink':
+    case GroupJoinRequestMethod.INVITE_LINK:
+      return GroupJoinRequestMethod.INVITE_LINK;
+    case 'LinkedGroupJoin':
+    case GroupJoinRequestMethod.LINKED_GROUP_JOIN:
+      return GroupJoinRequestMethod.LINKED_GROUP_JOIN;
+    case 'NonAdminAdd':
+    case GroupJoinRequestMethod.NON_ADMIN_ADD:
+      return GroupJoinRequestMethod.NON_ADMIN_ADD;
+    default:
+      return null;
+  }
+}
+
+export class GroupJoinRequest {
+  @ApiProperty({
+    description: 'ID of the user requesting to join the group',
+    example: '123456789@c.us',
+  })
+  requesterId: string;
+
+  @ApiProperty({
+    description: 'Phone number ID of the requester, if known',
+    example: '123456789@c.us',
+    nullable: true,
+    required: false,
+  })
+  requesterPn?: string | null;
+
+  @ApiProperty({
+    description: 'ID of the user who created the request',
+    example: '123456789@c.us',
+    nullable: true,
+  })
+  addedById: string | null;
+
+  @ApiProperty({
+    description: 'ID of the parent community group, if present',
+    example: '123456789@g.us',
+    nullable: true,
+  })
+  parentGroupId: string | null;
+
+  @ApiProperty({
+    description:
+      'How the request was created, for example non_admin_add, invite_link, or linked_group_join',
+    example: 'invite_link',
+    nullable: true,
+  })
+  requestMethod: string | null;
+
+  @ApiProperty({
+    description: 'Unix timestamp when the request was created',
+    example: 1666943582,
+  })
+  timestamp: number;
+}
+
+export class GroupJoinRequestResult {
+  @ApiProperty({
+    description: 'ID of the participant the action was applied to',
+    example: '123456789@c.us',
+    nullable: true,
+  })
+  requesterId: string | null;
+
+  @ApiProperty({
+    example: true,
+  })
+  success: boolean;
+
+  @ApiProperty({
+    required: false,
+    example: 404,
+  })
+  error?: number;
+}
+
 /**
  * Queries
  */

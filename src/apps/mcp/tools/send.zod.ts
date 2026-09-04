@@ -13,6 +13,7 @@ import {
   MessagePollVoteRequest,
   MessageReactionRequest,
   MessageStarRequest,
+  MessageStickerRequest,
   MessageTextRequest,
   MessageVideoRequest,
   MessageVoiceRequest,
@@ -27,6 +28,7 @@ export const SendImageInput = DtoToZod(MessageImageRequest);
 export const SendFileInput = DtoToZod(MessageFileRequest);
 export const SendVoiceInput = DtoToZod(MessageVoiceRequest);
 export const SendVideoInput = DtoToZod(MessageVideoRequest);
+export const SendStickerInput = DtoToZod(MessageStickerRequest);
 export const SendLinkCustomPreviewInput = DtoToZod(
   MessageLinkCustomPreviewRequest,
 );

@@ -1,9 +1,9 @@
 import { parseBool } from '@waha/helpers';
-import { APPS } from '@waha/apps/app_sdk/apps/definition';
+import { GetApps } from '@waha/apps/app_sdk/apps/registry';
 
 // Apps that don't require queue (Redis) - derived from AppDefinition
-const IN_MEMORY_APPS = Object.values(APPS)
-  .filter((app) => !app.queue)
+const IN_MEMORY_APPS = GetApps()
+  .filter((app) => !app.definition.queue)
   .map((app) => app.name);
 
 function parseCommaSeparatedList(value: string | undefined): string[] {

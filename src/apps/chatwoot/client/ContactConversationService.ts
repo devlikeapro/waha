@@ -24,6 +24,21 @@ import { AttributeKey } from '@waha/apps/chatwoot/const';
 export interface ContactInfo {
   ChatId(): string;
 
+  /**
+   * Linked id - @lid, null when unknown
+   */
+  LidId(): Promise<string | null>;
+
+  /**
+   * Phone number jid - @c.us, null when unknown
+   */
+  JidId(): Promise<string | null>;
+
+  /**
+   * Resolved E.164 phone number, null when not applicable
+   */
+  PhoneNumberE164(): Promise<string | null>;
+
   AvatarUrl(): Promise<string | null>;
 
   Attributes(): Promise<any>;

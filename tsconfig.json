@@ -16,5 +16,10 @@
     "incremental": true,
     "resolveJsonModule": true,
     "skipLibCheck": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "src/dashboard"],
+  "watchOptions": {
+    "excludeDirectories": ["**/node_modules", "src/dashboard"]
   }
 }

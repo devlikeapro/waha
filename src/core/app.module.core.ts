@@ -5,7 +5,6 @@ import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { ConditionalModule, ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { PassportModule } from '@nestjs/passport';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { TerminusModule } from '@nestjs/terminus';
 import { ChannelsController } from '@waha/api/channels.controller';
 import { LidsController } from '@waha/api/lids.controller';
@@ -19,7 +18,6 @@ import { ContactsSessionController } from '@waha/api/contacts.session.controller
 import { ApiKeyStrategy } from '@waha/core/auth/apiKey.strategy';
 import { IApiKeyAuth } from '@waha/core/auth/auth';
 import { ApiKeyAuthMiddleware } from '@waha/core/auth/api-key-auth.middleware';
-import { BasicAuthFunction } from '@waha/core/auth/basicAuth';
 import { WebSocketAuth } from '@waha/core/auth/WebSocketAuth';
 import { GowsEngineConfigService } from '@waha/core/config/GowsEngineConfigService';
 import { NowebEngineConfigService } from '@waha/core/config/NowebEngineConfigService';
@@ -29,6 +27,24 @@ import { MediaLocalStorageModule } from '@waha/core/media/local/media.local.stor
 import { MediaLocalStorageConfig } from '@waha/core/media/local/MediaLocalStorageConfig';
 import { MediaPsqlStorageModule } from '@waha/core/media/psql/media.psql.storage.module';
 import { MediaS3StorageModule } from '@waha/core/media/s3/media.s3.storage.module';
+import { HttpPathsModule } from '@waha/plugins/http.paths.module';
+import { HttpPathsService } from '@waha/plugins/HttpPathsService';
+import { AppBootstrapModule } from '@waha/plugins/app.bootstrap.module';
+import { SessionPluginsModule } from '@waha/plugins/session.plugins.module';
+import { isDashboardEnabled } from '@waha/modules/waha-dashboard/dashboard.config';
+import { DashboardModule } from '@waha/modules/waha-dashboard/dashboard.module';
+import { isSwaggerEnabled } from '@waha/modules/waha-swagger/swagger.config';
+import { SwaggerEnabledModule } from '@waha/modules/waha-swagger/swagger.module.enabled';
+import { isPresenceAutoOnlineEnabled } from '@waha/modules/waha-maintain-online-status/maintain-online-status.config';
+import { MaintainOnlineStatusModule } from '@waha/modules/waha-maintain-online-status/maintain-online-status.module';
+import { isJidEngine } from '@waha/modules/waha-wid-jid/wid-jid.plugins';
+import { MessageSourceModule } from '@waha/modules/waha-message-source/message-source.module';
+import { isPrometheusEnabled } from '@waha/modules/waha-prometheus/prometheus.config';
+import { PrometheusModule } from '@waha/modules/waha-prometheus/prometheus.module';
+import { WebhookModule } from '@waha/modules/waha-webhook/webhook.module';
+import { SessionRuntimeInfoModule } from '@waha/modules/waha-session-runtime-info/session-runtime-info.module';
+import { WidJIDModule } from '@waha/modules/waha-wid-jid/wid-jid.module';
+import { WidSuffixModule } from '@waha/modules/waha-wid-suffix/wid-suffix.module';
 import { CheckFreeDiskSpaceIndicator } from '@waha/core/health/CheckFreeDiskSpaceIndicator';
 import { MongoStoreHealthIndicator } from '@waha/core/health/MongoStoreHealthIndicator';
 import { ChannelsInfoServiceCore } from '@waha/core/services/ChannelsInfoServiceCore';
@@ -45,7 +61,6 @@ import {
 import * as Joi from 'joi';
 import { LoggerModule } from 'nestjs-pino';
 import { Logger as NestJSPinoLogger } from 'nestjs-pino';
-import { join } from 'path';
 import { Logger } from 'pino';
 
 import { AuthController } from '../api/auth.controller';
@@ -68,9 +83,7 @@ import { WhatsappConfigService } from '../config.service';
 import { SessionManager } from './abc/manager.abc';
 import { WAHAHealthCheckService } from './abc/WAHAHealthCheckService';
 import { ApiKeyAuthFactory } from './auth/ApiKeyAuthFactory';
-import { DashboardConfigServiceCore } from './config/DashboardConfigServiceCore';
 import { EngineConfigService } from './config/EngineConfigService';
-import { SwaggerConfigServiceCore } from './config/SwaggerConfigServiceCore';
 import { WAHAHealthCheckServiceCore } from './health/WAHAHealthCheckServiceCore';
 import { SessionManagerCore } from './manager.core';
 import { CaslAbilityFactory } from '@waha/core/auth/casl.ability';
@@ -80,40 +93,37 @@ import { SessionService } from '@waha/core/services/SessionService';
 
 export const IMPORTS_CORE = [
   ...AppsModuleExports.imports,
-  LoggerModule.forRoot({
-    renameContext: 'name',
-    pinoHttp: {
-      quietReqLogger: true,
-      level: getPinoLogLevel(),
-      useLevel: getPinoHttpUseLevel(),
-      transport: getPinoTransport(),
-      autoLogging: {
-        ignore: (req) => {
-          return (
-            req.url.startsWith('/ping') ||
-            req.url.startsWith('/dashboard/') ||
-            req.url.startsWith('/api/files/') ||
-            req.url.startsWith('/api/s3/') ||
-            req.url.startsWith('/jobs/')
-          );
+  LoggerModule.forRootAsync({
+    imports: [HttpPathsModule],
+    inject: [HttpPathsService],
+    useFactory: (httpPaths: HttpPathsService) => {
+      return {
+        renameContext: 'name',
+        pinoHttp: {
+          level: getPinoLogLevel(),
+          useLevel: getPinoHttpUseLevel(),
+          transport: getPinoTransport(),
+          autoLogging: {
+            ignore: (req) => httpPaths.isAccessLogIgnored(req.url),
+          },
+          redact: {
+            paths: ['req.query["x-api-key"]'],
+            censor: '[REDACTED]',
+          },
+          customAttributeKeys: { req: 'req', res: 'res' },
+          serializers: {
+            req: (req) => ({
+              method: req.method,
+              url: redactUrlParams('x-api-key', req.url, req.query),
+              query: req.query,
+              params: req.params,
+            }),
+            res: (res) => ({
+              statusCode: res.statusCode,
+            }),
+          },
         },
-      },
-      redact: {
-        paths: ['req.query["x-api-key"]'],
-        censor: '[REDACTED]',
-      },
-      serializers: {
-        req: (req) => ({
-          id: req.id,
-          method: req.method,
-          url: redactUrlParams('x-api-key', req.url, req.query),
-          query: req.query,
-          params: req.params,
-        }),
-        res: (res) => ({
-          statusCode: res.statusCode,
-        }),
-      },
+      };
     },
   }),
   ConfigModule.forRoot({
@@ -122,24 +132,32 @@ export const IMPORTS_CORE = [
       WHATSAPP_API_SCHEMA: Joi.string().valid('http', 'https').default('http'),
     }),
   }),
-  ServeStaticModule.forRootAsync({
-    imports: [],
-    extraProviders: [DashboardConfigServiceCore],
-    inject: [DashboardConfigServiceCore],
-    useFactory: (dashboardConfig: DashboardConfigServiceCore) => {
-      if (!dashboardConfig.enabled) {
-        return [];
-      }
-      return [
-        {
-          rootPath: join(__dirname, '..', 'dashboard'),
-          serveRoot: dashboardConfig.dashboardUri,
-        },
-      ];
-    },
-  }),
   PassportModule,
   TerminusModule,
+  AppBootstrapModule,
+  HttpPathsModule,
+  SessionPluginsModule,
+  SessionRuntimeInfoModule,
+  WebhookModule,
+  MessageSourceModule,
+  WidSuffixModule,
+  ConditionalModule.registerWhen(WidJIDModule, isJidEngine, {
+    debug: isDebugEnabled(),
+  }),
+  ConditionalModule.registerWhen(
+    MaintainOnlineStatusModule,
+    isPresenceAutoOnlineEnabled,
+    { debug: isDebugEnabled() },
+  ),
+  ConditionalModule.registerWhen(PrometheusModule, isPrometheusEnabled, {
+    debug: isDebugEnabled(),
+  }),
+  ConditionalModule.registerWhen(DashboardModule, isDashboardEnabled, {
+    debug: isDebugEnabled(),
+  }),
+  ConditionalModule.registerWhen(SwaggerEnabledModule, isSwaggerEnabled, {
+    debug: isDebugEnabled(),
+  }),
 ];
 
 const IMPORTS_MEDIA = [
@@ -201,8 +219,6 @@ export const PROVIDERS_BASE: Provider[] = [
     provide: APP_INTERCEPTOR,
     useClass: BufferJsonReplacerInterceptor,
   },
-  DashboardConfigServiceCore,
-  SwaggerConfigServiceCore,
   WebJSEngineConfigService,
   WPPEngineConfigService,
   GowsEngineConfigService,
@@ -250,9 +266,21 @@ export class AppModuleCore {
 
   constructor(
     protected config: WhatsappConfigService,
-    private dashboardConfig: DashboardConfigServiceCore,
+    private httpPaths: HttpPathsService,
   ) {
     this.startTimestamp = Date.now();
+    this.httpPaths.register(
+      { prefix: '/ping', include: { accessLog: false, authBasic: false } },
+      { prefix: '/api/', include: { authBasic: false } },
+      { prefix: 'api', include: { authApiKey: true } },
+      { prefix: '/health', include: { authBasic: false } },
+      { prefix: 'health', include: { authApiKey: true } },
+      { prefix: '/ws', include: { authBasic: false } },
+    );
+    // WHATSAPP_API_KEY_EXCLUDE_PATH - env-driven auth exclusions
+    for (const path of this.config.getExcludedFullPaths()) {
+      this.httpPaths.register({ prefix: path, include: { authBasic: false } });
+    }
   }
 
   static getHttpsOptions(logger: Logger) {
@@ -281,16 +309,6 @@ export class AppModuleCore {
     consumer
       .apply(ApiKeyAuthMiddleware)
       .exclude(...exclude)
-      .forRoutes('api', 'health', 'mcp');
-
-    // Dashboard
-    const dashboardCredentials = this.dashboardConfig.credentials;
-    if (dashboardCredentials) {
-      const username = dashboardCredentials[0];
-      const password = dashboardCredentials[1];
-      consumer
-        .apply(BasicAuthFunction(username, password))
-        .forRoutes('dashboard');
-    }
+      .forRoutes(...this.httpPaths.apiKeyRoutes());
   }
 }

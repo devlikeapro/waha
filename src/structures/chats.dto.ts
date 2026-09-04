@@ -1,6 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { BooleanString } from '@waha/nestjs/validation/BooleanString';
+import { CommaSeparatedStrings } from '@waha/nestjs/validation/CommaSeparatedStrings';
 import { WAMessageAck, WAMessageAckName } from '@waha/structures/enums.dto';
 import {
   LimitOffsetParams,
@@ -113,14 +114,25 @@ export class GetChatMessagesQuery extends PaginationParams {
   sortBy?: string = MessageSortField.TIMESTAMP;
 
   @ApiProperty({
-    example: false,
     required: false,
     description: 'Download media for messages',
   })
   @Transform(BooleanString)
   @IsBoolean()
   @IsOptional()
-  downloadMedia: boolean = true;
+  downloadMedia?: boolean;
+
+  @ApiProperty({
+    type: String,
+    isArray: true,
+    required: false,
+    description: 'Download only media with these mimetypes (prefix match)',
+  })
+  @Transform(CommaSeparatedStrings)
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  downloadMediaMimetypes?: string[];
 
   @ApiProperty({
     example: true,
@@ -165,14 +177,25 @@ export class ReadChatMessagesResponse {
 
 export class GetChatMessageQuery {
   @ApiProperty({
-    example: true,
     required: false,
     description: 'Download media for messages',
   })
   @Transform(BooleanString)
   @IsBoolean()
   @IsOptional()
-  downloadMedia: boolean = true;
+  downloadMedia?: boolean;
+
+  @ApiProperty({
+    type: String,
+    isArray: true,
+    required: false,
+    description: 'Download only media with these mimetypes (prefix match)',
+  })
+  @Transform(CommaSeparatedStrings)
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  downloadMediaMimetypes?: string[];
 
   @ApiProperty({
     example: true,
@@ -256,7 +279,7 @@ export class OverviewFilter {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @Transform(CommaSeparatedStrings)
   @ApiProperty({
     description: 'Filter by chat ids',
     required: false,

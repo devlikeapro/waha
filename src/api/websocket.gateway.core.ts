@@ -97,7 +97,7 @@ export class WebsocketGatewayCore
     }
 
     this.logger.debug(`New client connected: ${request.url} - ${socket.id}`);
-    const events: WAHAEvents[] = params.events;
+    const events = params.events as WAHAEvents[];
     this.logger.debug(
       `Client connected to session: '${session}', events: ${events}, ${socket.id}`,
     );
@@ -131,8 +131,13 @@ export class WebsocketGatewayCore
     const paramsEvents = query.getAll('events');
     const eventsRaw = paramsEvents.length > 0 ? paramsEvents : ['*'];
     const eventsList = eventsRaw.flatMap((value) => value.split(','));
-    const events = this.eventUnmask.unmask(eventsList);
-    return { session, events };
+    const result = this.eventUnmask.unmask(eventsList);
+    if (result.unknown.length > 0) {
+      this.logger.warn(
+        `Ignoring unknown websocket events: ${result.unknown.join(', ')}`,
+      );
+    }
+    return { session, events: result.events };
   }
 
   handleDisconnect(socket: WebSocket): any {

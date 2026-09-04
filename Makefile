@@ -44,8 +44,8 @@ up-webjs:
 	yarn up whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-2026-06-26
 
 up-wpp:
-	yarn up @wppconnect-team/wppconnect@github:wppconnect-team/wppconnect#master
-	yarn up @wppconnect/wa-js@github:wppconnect-team/wa-js#main
+	SHARP_IGNORE_GLOBAL_LIBVIPS=1 yarn up @wppconnect-team/wppconnect@github:wppconnect-team/wppconnect#master
+	SHARP_IGNORE_GLOBAL_LIBVIPS=1 yarn up @wppconnect/wa-js@github:wppconnect-team/wa-js#main
 
 up-rust-bridge:
 	yarn up -R whatsapp-rust-bridge

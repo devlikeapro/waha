@@ -1,11 +1,13 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { IAppService } from '@waha/apps/app_sdk/services/IAppService';
+import { PluginOptions } from '@waha/core/abc/session.plugin';
 import { CacheForConfig } from '@waha/apps/chatwoot/cache/ConversationCache';
 import { CHATWOOT_CUSTOM_ATTRIBUTES } from '@waha/apps/chatwoot/const';
 import { ChatWootAppConfig } from '@waha/apps/chatwoot/dto/config.dto';
 import { ChatWootScheduleService } from '@waha/apps/chatwoot/services/ChatWootScheduleService';
 import { ChatWootWAHAQueueService } from '@waha/apps/chatwoot/services/ChatWootWAHAQueueService';
 import { App } from '@waha/apps/chatwoot/storage';
+import { AppDB } from '@waha/apps/app_sdk/storage/types';
 import { SessionManager } from '@waha/core/abc/manager.abc';
 import { WhatsappSession } from '@waha/core/abc/session.abc';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
@@ -111,6 +113,17 @@ export class ChatWootAppService implements IAppService {
     void app;
   }
 
+  async purge(
+    manager: SessionManager,
+    app: App<ChatWootAppConfig>,
+  ): Promise<void> {
+    const appDb = app as unknown as AppDB;
+    const knex = manager.store.getWAHADatabase();
+    const di = new DIContainer(appDb.pk, app.config, this.logger, knex);
+    await di.MessageMappingService().purge();
+    this.cleanCache(app);
+  }
+
   async enrich(
     manager: SessionManager,
     app: App<ChatWootAppConfig>,
@@ -150,6 +163,15 @@ export class ChatWootAppService implements IAppService {
       .key(TKey.APP_UPDATED_MESSAGE)
       .r({ name: app.session });
     await conversation.incoming(updated);
+  }
+
+  plugins(
+    app: App<ChatWootAppConfig>,
+    session: WhatsappSession,
+  ): PluginOptions[] {
+    void app;
+    void session;
+    return [];
   }
 
   beforeSessionStart(app: App<ChatWootAppConfig>, session: WhatsappSession) {

@@ -90,4 +90,11 @@ export class MessageMappingRepository {
       .orderBy('id', 'desc')
       .first();
   }
+
+  /**
+   * Deletes all rows for the app.
+   */
+  async deleteAllWithTrx(trx: Knex.Transaction): Promise<number> {
+    return await trx(this.tableName).where({ app_pk: this.appPk }).delete();
+  }
 }

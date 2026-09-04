@@ -89,6 +89,7 @@ export interface GOWSGroupParticipant {
   PhoneNumber: JID;
   IsAdmin: boolean;
   IsSuperAdmin: boolean;
+  Error?: number; // set when the participant action failed
 }
 
 export interface GroupInfoFull {
@@ -106,4 +107,25 @@ export interface GroupInfoFull {
 export interface JoinedGroupEvent extends GroupInfoFull {
   Reason: string;
   Type: string;
+}
+
+export interface GOWSGroupJoinRequest {
+  JID: JID;
+  PhoneNumber: JID; // empty string if not provided
+  RequestMethod: string; // invite_link | linked_group_join | non_admin_add
+}
+
+export interface GroupJoinRequestEvent {
+  JID: JID;
+  Sender?: JID;
+  SenderPN?: JID;
+  Timestamp: string;
+  Action: string; // created | revoked
+  Requests: GOWSGroupJoinRequest[];
+}
+
+// GetGroupRequestParticipants RPC result item
+export interface GOWSGroupParticipantRequest {
+  JID: JID;
+  RequestedAt: string;
 }

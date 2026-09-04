@@ -17,6 +17,10 @@ export interface IAppsService {
 
   delete(manager: SessionManager, appId: string): Promise<App>;
 
+  purge(manager: SessionManager, appId: string): Promise<App>;
+
+  purgeBySession(manager: SessionManager, session: string): Promise<void>;
+
   removeBySession(manager: SessionManager, session: string): Promise<void>;
 
   beforeSessionStart(session: WhatsappSession, store: DataStore): Promise<void>;

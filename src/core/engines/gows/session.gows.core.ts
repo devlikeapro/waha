@@ -15,12 +15,19 @@ import { Jid } from '@waha/core/engines/const';
 import { EventsFromObservable } from '@waha/core/engines/gows/EventsFromObservable';
 import { GowsEventStreamObservable } from '@waha/core/engines/gows/GowsEventStreamObservable';
 import {
+  ToGroupJoinRequest,
+  ToGroupJoinRequestResult,
   ToGroupParticipants,
   ToGroupV2JoinEvent,
   ToGroupV2LeaveEvent,
+  ToGroupV2ParticipantsJoinRequestEvents,
   ToGroupV2ParticipantsEvents,
   ToGroupV2UpdateEvent,
 } from '@waha/core/engines/gows/groups.gows';
+import {
+  GOWSGroupParticipant,
+  GOWSGroupParticipantRequest,
+} from '@waha/core/engines/gows/types.group';
 import { messages } from '@waha/core/engines/gows/grpc/gows';
 import {
   optional,
@@ -28,6 +35,7 @@ import {
   parseJsonList,
   statusToAck,
 } from '@waha/core/engines/gows/helpers';
+import { parseMessageCapping } from '@waha/core/abc/capping';
 import { parseGowsReachoutTimelock } from '@waha/core/engines/gows/reachouttimelock';
 import { GowsAuthFactoryCore } from '@waha/core/engines/gows/store/GowsAuthFactoryCore';
 import {
@@ -36,7 +44,10 @@ import {
 } from '@waha/core/engines/noweb/session.noweb.core';
 import { extractMediaContent } from '@waha/core/engines/noweb/utils';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
-import { IMediaEngineProcessor } from '@waha/core/media/IMediaEngineProcessor';
+import {
+  IMediaEngineProcessor,
+  MediaContent,
+} from '@waha/core/media/IMediaEngineProcessor';
 import { LottieMediaProcessorWrapper } from '@waha/core/media/LottieMediaProcessorWrapper';
 import { QR } from '@waha/core/QR';
 import { ExtractMessageKeysForRead } from '@waha/core/utils/convertors';
@@ -45,9 +56,7 @@ import {
   isJidBroadcast,
   isJidGroup,
   isJidNewsletter,
-  normalizeJid,
   toCusFormat,
-  toJID,
 } from '@waha/core/utils/jids';
 import {
   PasskeyChallenge,
@@ -93,6 +102,7 @@ import {
   MessageReactionRequest,
   MessageReplyRequest,
   MessageTextRequest,
+  MessageStickerRequest,
   MessageVideoRequest,
   MessageVoiceRequest,
   SendSeenRequest,
@@ -102,6 +112,7 @@ import { SendListRequest } from '@waha/structures/chatting.list.dto';
 import { ContactQuery, ContactUpdateBody } from '@waha/structures/contacts.dto';
 import {
   ACK_UNKNOWN,
+  WAHAEngine,
   WAHAEvents,
   WAHAPresenceStatus,
   WAHASessionStatus,
@@ -115,11 +126,14 @@ import {
 import { BinaryFile, RemoteFile } from '@waha/structures/files.dto';
 import {
   CreateGroupRequest,
+  GroupJoinRequest,
+  GroupJoinRequestResult,
   GroupParticipant,
   GroupSortField,
   Participant,
   ParticipantsRequest,
   SettingsMemberAddMode,
+  SettingsMembershipApproval,
   SettingsSecurityChangeInfo,
 } from '@waha/structures/groups.dto';
 import { ReplyToMessage } from '@waha/structures/message.dto';
@@ -136,7 +150,9 @@ import {
 import { CallData } from '@waha/structures/calls.dto';
 import {
   MeInfo,
+  MessageCappingData,
   ProxyConfig,
+  ReachoutTimelockData,
   SessionConfig,
 } from '@waha/structures/sessions.dto';
 import {
@@ -199,7 +215,6 @@ import { IsEditedMessage } from '@waha/core/utils/pwa';
 import { GoToJSWAProto } from '@waha/core/engines/gows/waproto';
 import { extractWALocation } from '@waha/core/engines/waproto/locaiton';
 import { extractVCards } from '@waha/core/engines/waproto/vcards';
-import { Activity } from '@waha/core/abc/activity';
 import { TmpDir } from '@waha/utils/tmpdir';
 import { detectMimetype } from '@waha/utils/files';
 import { WAMimeType } from '@waha/core/media/WAMimeType';
@@ -209,6 +224,9 @@ import axiosRetry from 'axios-retry';
 import * as path from 'path';
 import MessageServiceClient = messages.MessageServiceClient;
 import * as fsp from 'fs/promises';
+import { MediaDownloadOptions } from '@waha/core/media/IMediaManager';
+
+import { Activity } from '@waha/core/abc/session.hooks.activity';
 
 axiosRetry(axios, { retries: 3 });
 
@@ -222,6 +240,8 @@ function getGowsStorageConfig(
     groups: storeConfig?.groups !== false,
     chats: storeConfig?.chats !== false,
     labels: storeConfig?.labels !== false,
+    contacts: storeConfig?.contacts !== false,
+    message_secrets: storeConfig?.messageSecrets !== false,
   });
 }
 
@@ -232,15 +252,18 @@ enum WhatsMeowEvent {
   KEEP_ALIVE_RESTORED = 'events.KeepAliveRestored',
   QR_CHANNEL_ITEM = 'whatsmeow.QRChannelItem',
   MESSAGE = 'events.Message',
+  UNDECRYPTABLE_MESSAGE = 'events.UndecryptableMessage',
   RECEIPT = 'events.Receipt',
   PRESENCE = 'events.Presence',
   CHAT_PRESENCE = 'events.ChatPresence',
   PUSH_NAME_SETTING = 'events.PushNameSetting',
   LOGGED_OUT = 'events.LoggedOut',
   NOTIFY_ACCOUNT_REACHOUT_TIMELOCK = 'events.NotifyAccountReachoutTimelock',
+  MESSAGE_CAPPING = 'gows.MessageCapping',
   // Groups
   GROUP_INFO = 'events.GroupInfo',
   JOINED_GROUP = 'events.JoinedGroup',
+  GROUP_JOIN_REQUEST = 'gows.GroupJoinRequestEvent',
   // Labels
   LABEL_EDIT = 'events.LabelEdit',
   LABEL_ASSOCIATION_CHAT = 'events.LabelAssociationChat',
@@ -267,6 +290,8 @@ export interface GowsConfig {
 }
 
 export class WhatsappSessionGoWSCore extends WhatsappSession {
+  engine = WAHAEngine.GOWS;
+
   protected authFactory = new GowsAuthFactoryCore();
 
   protected qr: QR;
@@ -402,14 +427,12 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
     events.on(WhatsMeowEvent.DISCONNECTED, () => {
       if (this.status != WAHASessionStatus.STARTING) {
-        this.cleanupPresenceTimeout();
         this.presence = null;
         this.status = WAHASessionStatus.STARTING;
       }
     });
     events.on(WhatsMeowEvent.KEEP_ALIVE_TIMEOUT, () => {
       if (this.status != WAHASessionStatus.STARTING) {
-        this.cleanupPresenceTimeout();
         this.presence = null;
         this.status = WAHASessionStatus.STARTING;
       }
@@ -478,6 +501,14 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     });
     events.on(WhatsMeowEvent.NOTIFY_ACCOUNT_REACHOUT_TIMELOCK, (data) => {
       this.reachoutTimelock.update(parseGowsReachoutTimelock(data));
+    });
+    events.on(WhatsMeowEvent.MESSAGE_CAPPING, (data) => {
+      this.messageCapping.update(parseMessageCapping(data));
+    });
+    events.on(WhatsMeowEvent.UNDECRYPTABLE_MESSAGE, (data) => {
+      this.logger.error(
+        `Undecryptable message in '${data?.Info?.Chat}' from '${data?.Info?.Sender}', id '${data?.Info?.ID}' - content lost unless the sender answers the retry receipt`,
+      );
     });
     events.on(WhatsMeowEvent.PRESENCE, (event: gows.Presence) => {
       if (isJidGroup(event.From)) {
@@ -566,7 +597,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         msg.Status = MessageStatus.ServerAck;
         return msg;
       }),
-      mergeMap((msg) => this.processIncomingMessage(msg, true)),
+      mergeMap((msg) => this.processIncomingMessage(msg, this.media.events)),
       filter(Boolean),
       // Deduplicate messages by ID to prevent duplicate webhooks
       // @see https://github.com/devlikeapro/waha/issues/1564
@@ -578,7 +609,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         msg.Status = MessageStatus.DeliveryAck;
         return msg;
       }),
-      mergeMap((msg) => this.processIncomingMessage(msg, true)),
+      mergeMap((msg) => this.processIncomingMessage(msg, this.media.events)),
       filter(Boolean),
       // Deduplicate messages by ID to prevent duplicate webhooks
       // @see https://github.com/devlikeapro/waha/issues/1564
@@ -744,6 +775,15 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     );
     this.events2.get(WAHAEvents.GROUP_V2_UPDATE).switch(groupV2Update$);
 
+    const groupV2ParticipantsJoinRequest$ = all$.pipe(
+      onlyEvent(WhatsMeowEvent.GROUP_JOIN_REQUEST),
+      map(ToGroupV2ParticipantsJoinRequestEvents),
+      mergeMap((events) => events),
+    );
+    this.events2
+      .get(WAHAEvents.GROUP_V2_PARTICIPANTS_JOIN_REQUEST)
+      .switch(groupV2ParticipantsJoinRequest$);
+
     // Label Events
     // First, create streams for the raw label events
     const labelEditEvents$ = all$.pipe(
@@ -836,7 +876,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   @Activity()
   async fetchContactProfilePicture(id: string): Promise<string> {
-    const jid = normalizeJid(toJID(this.ensureSuffix(id)));
+    const jid = await this.hooks.wid.chat.promise(
+      id,
+      'fetchContactProfilePicture',
+    );
     const request = new messages.ProfilePictureRequest({
       jid: jid,
       session: this.session,
@@ -853,7 +896,6 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   async stop(): Promise<void> {
-    this.cleanupPresenceTimeout();
     this.status = WAHASessionStatus.STOPPED;
     this.events?.stop();
     this.stopEvents();
@@ -927,7 +969,11 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     if (!this.me) {
       return null;
     }
-    return { ...this.me, reachoutTimelock: this.reachoutTimelock.value };
+    return {
+      ...this.me,
+      reachoutTimelock: this.reachoutTimelock.value,
+      messageCapping: this.messageCapping.value,
+    };
   }
 
   /**
@@ -1015,6 +1061,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     return true;
   }
 
+  @Activity()
   protected async deleteProfilePicture(): Promise<boolean> {
     const request = new messages.SetProfilePictureRequest({
       session: this.session,
@@ -1037,9 +1084,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   @Activity()
   async rejectCall(from: string, id: string): Promise<void> {
+    const jid = await this.hooks.wid.chat.promise(from, 'rejectCall');
     const request = new messages.RejectCallRequest({
       session: this.session,
-      from: normalizeJid(toJID(this.ensureSuffix(from))),
+      from: jid,
       id: id,
     });
     await promisify(this.client.RejectCall)(request);
@@ -1047,7 +1095,15 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   @Activity()
   async sendText(request: MessageTextRequest) {
-    const jid = normalizeJid(toJID(this.ensureSuffix(request.chatId)));
+    const jid = await this.hooks.wid.chat.promise(request.chatId, 'sendText');
+    let mentions: string[] | undefined;
+    if (request.mentions) {
+      mentions = await Promise.all(
+        request.mentions.map((mention) =>
+          this.hooks.wid.mention.promise(mention, 'sendText'),
+        ),
+      );
+    }
     const message = new messages.MessageRequest({
       id: request.id,
       jid: jid,
@@ -1056,9 +1112,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       linkPreview: request.linkPreview ?? true,
       linkPreviewHighQuality: request.linkPreviewHighQuality,
       replyTo: getMessageIdFromSerialized(request.reply_to),
-      mentions: request.mentions?.map((mention) =>
-        normalizeJid(toJID(mention)),
-      ),
+      mentions: mentions,
     });
     const response = await promisify(this.client.SendMessage)(message);
     const data = response.toObject();
@@ -1071,7 +1125,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     messageId: string,
     request: EditMessageRequest,
   ) {
-    const jid = normalizeJid(toJID(this.ensureSuffix(chatId)));
+    const jid = await this.hooks.wid.chat.promise(chatId, 'editMessage');
     const key = parseMessageIdSerialized(messageId, true);
     const message = new messages.EditMessageRequest({
       session: this.session,
@@ -1088,7 +1142,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   @Activity()
   async sendContactVCard(request: MessageContactVcardRequest) {
-    const jid = normalizeJid(toJID(this.ensureSuffix(request.chatId)));
+    const jid = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'sendContactVCard',
+    );
     const contacts = request.contacts.map((el) => ({
       displayName:
         (el as any).fullName || parseVCardV3(el.vcard || '').fullName,
@@ -1108,7 +1165,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   @Activity()
   async sendPoll(request: MessagePollRequest) {
-    const jid = normalizeJid(toJID(request.chatId));
+    const jid = await this.hooks.wid.chat.promise(request.chatId, 'sendPoll');
     const message = new messages.MessageRequest({
       id: request.id,
       jid: jid,
@@ -1127,7 +1184,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   @Activity()
   async sendPollVote(request: MessagePollVoteRequest) {
-    const jid = normalizeJid(toJID(this.ensureSuffix(request.chatId)));
+    const jid = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'sendPollVote',
+    );
     const key = parseMessageIdSerialized(request.pollMessageId, true);
     const pollVote = new messages.PollVoteMessage({
       pollMessageId: key.id,
@@ -1149,7 +1209,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   @Activity()
   async sendList(request: SendListRequest): Promise<any> {
-    const jid = normalizeJid(toJID(this.ensureSuffix(request.chatId)));
+    const jid = await this.hooks.wid.chat.promise(request.chatId, 'sendList');
     if (isJidGroup(jid) || isJidBroadcast(jid) || isJidNewsletter(jid)) {
       throw new UnprocessableEntityException(
         `List message can only be sent to a direct message chat.`,
@@ -1176,7 +1236,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   @Activity()
   public async deleteMessage(chatId: string, messageId: string) {
-    const jid = normalizeJid(toJID(this.ensureSuffix(chatId)));
+    const jid = await this.hooks.wid.chat.promise(chatId, 'deleteMessage');
     const key = parseMessageIdSerialized(messageId);
     const message = new messages.RevokeMessageRequest({
       session: this.session,
@@ -1193,7 +1253,11 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     if (!contacts || contacts.length == 0) {
       return [];
     }
-    return contacts.map((c) => normalizeJid(toJID(c)));
+    return await Promise.all(
+      contacts.map((c) =>
+        this.hooks.wid.chat.promise(c, 'prepareJidsForStatus'),
+      ),
+    );
   }
 
   @Activity()
@@ -1219,6 +1283,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     return this.messageResponse(Jid.BROADCAST, data);
   }
 
+  @Activity()
   public async deleteStatus(request: DeleteStatusRequest) {
     const participants = await this.prepareJidsForStatus(request.contacts);
     const key = parseMessageIdSerialized(request.id, true);
@@ -1264,12 +1329,16 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     return {
       numberExists: info?.registered || false,
       chatId: toCusFormat(info?.jid || null),
+      pn: toCusFormat(info?.pn || null),
     };
   }
 
   @Activity()
   async sendLocation(request: MessageLocationRequest) {
-    const jid = normalizeJid(toJID(this.ensureSuffix(request.chatId)));
+    const jid = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'sendLocation',
+    );
     const message = new messages.MessageRequest({
       id: request.id,
       jid: jid,
@@ -1291,7 +1360,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   private async sendMedia(type: messages.MediaType, request: any) {
-    const jid = normalizeJid(toJID(this.ensureSuffix(request.chatId)));
+    const jid = await this.hooks.wid.chat.promise(request.chatId, 'sendMedia');
     const media = await this.fileToMedia(request.file);
     media.type = type;
     if (type === messages.MediaType.IMAGE) {
@@ -1307,6 +1376,8 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       if (!media.mimetype) {
         media.mimetype = await detectMimetype(media.content as Buffer);
       }
+    } else if (type === messages.MediaType.STICKER) {
+      media.mimetype = media.mimetype || WAMimeType.STICKER;
     }
 
     if (request.convert) {
@@ -1343,6 +1414,14 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       });
     }
     const participants = await this.prepareJidsForStatus(request.contacts);
+    let mentions: string[] | undefined;
+    if (request.mentions) {
+      mentions = await Promise.all(
+        request.mentions.map((mention) =>
+          this.hooks.wid.mention.promise(mention, 'sendMedia'),
+        ),
+      );
+    }
     const message = new messages.MessageRequest({
       id: request.id,
       jid: jid,
@@ -1350,9 +1429,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       session: this.session,
       media: media,
       backgroundColor: backgroundColor,
-      mentions: request.mentions?.map((mention) =>
-        normalizeJid(toJID(mention)),
-      ),
+      mentions: mentions,
       participants: participants,
     });
 
@@ -1425,10 +1502,18 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   @Activity()
+  async sendSticker(request: MessageStickerRequest) {
+    return await this.sendMedia(messages.MediaType.STICKER, request);
+  }
+
+  @Activity()
   async sendLinkCustomPreview(
     request: MessageLinkCustomPreviewRequest,
   ): Promise<any> {
-    const jid = normalizeJid(toJID(this.ensureSuffix(request.chatId)));
+    const jid = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'sendLinkCustomPreview',
+    );
     const media = await this.fileToMedia(request.preview.image as RemoteFile);
     const preview = new messages.LinkPreview({
       url: request.preview.url,
@@ -1455,7 +1540,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     throw new NotImplementedByEngineError();
 
     // Doesn't work yet
-    const jid = normalizeJid(toJID(this.ensureSuffix(request.chatId)));
+    const jid = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'sendButtonsReply',
+    );
     const message = new messages.ButtonReplyRequest({
       jid: jid,
       session: this.session,
@@ -1538,10 +1626,15 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
    */
   @Activity()
   public async createGroup(request: CreateGroupRequest) {
+    const participants = await Promise.all(
+      request.participants.map((p) =>
+        this.hooks.wid.chat.promise(p.id, 'createGroup'),
+      ),
+    );
     const req = new messages.CreateGroupRequest({
       session: this.session,
       name: request.name,
-      participants: request.participants.map((p) => normalizeJid(toJID(p.id))),
+      participants: participants,
     });
     const response = await promisify(this.client.CreateGroup)(req);
     const data = parseJson(response);
@@ -1669,6 +1762,83 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     return;
   }
 
+  public async getMembershipApprovalMode(
+    id: string,
+  ): Promise<SettingsMembershipApproval> {
+    const group = await this.getGroup(id);
+    return {
+      newMembersApprovalRequired: !!group.IsJoinApprovalRequired,
+    };
+  }
+
+  @Activity()
+  public async setMembershipApprovalMode(
+    id: string,
+    value: boolean,
+  ): Promise<boolean> {
+    const req = new messages.JidBoolRequest({
+      session: this.session,
+      jid: id,
+      value: value,
+    });
+    await promisify(this.client.SetGroupJoinApprovalMode)(req);
+    return true;
+  }
+
+  @Activity()
+  public async getGroupJoinRequests(id: string): Promise<GroupJoinRequest[]> {
+    const req = new messages.JidRequest({
+      session: this.session,
+      jid: id,
+    });
+    const response = await promisify(this.client.GetGroupRequestParticipants)(
+      req,
+    );
+    const requests: GOWSGroupParticipantRequest[] = parseJsonList(response);
+    return requests.map(ToGroupJoinRequest);
+  }
+
+  @Activity()
+  public approveGroupJoinRequests(
+    id: string,
+    request: ParticipantsRequest,
+  ): Promise<GroupJoinRequestResult[]> {
+    const action = messages.ParticipantRequestAction.APPROVE;
+    return this.updateRequestParticipants(id, request.participants, action);
+  }
+
+  @Activity()
+  public rejectGroupJoinRequests(
+    id: string,
+    request: ParticipantsRequest,
+  ): Promise<GroupJoinRequestResult[]> {
+    const action = messages.ParticipantRequestAction.REJECT;
+    return this.updateRequestParticipants(id, request.participants, action);
+  }
+
+  private async updateRequestParticipants(
+    id: string,
+    participants: Array<Participant>,
+    action: messages.ParticipantRequestAction,
+  ): Promise<GroupJoinRequestResult[]> {
+    const jids = await Promise.all(
+      participants.map((p) =>
+        this.hooks.wid.chat.promise(p.id, 'updateRequestParticipants'),
+      ),
+    );
+    const req = new messages.UpdateRequestParticipantsRequest({
+      session: this.session,
+      jid: id,
+      participants: jids,
+      action: action,
+    });
+    const response = await promisify(
+      this.client.UpdateGroupRequestParticipants,
+    )(req);
+    const results: GOWSGroupParticipant[] = parseJsonList(response);
+    return results.map(ToGroupJoinRequestResult);
+  }
+
   public deleteGroup(id) {
     throw new NotImplementedByEngineError();
   }
@@ -1761,7 +1931,11 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     participants: Array<Participant>,
     action: messages.ParticipantAction,
   ): Promise<any> {
-    const jids = participants.map((p) => normalizeJid(toJID(p.id)));
+    const jids = await Promise.all(
+      participants.map((p) =>
+        this.hooks.wid.chat.promise(p.id, 'updateParticipants'),
+      ),
+    );
     const req = new messages.UpdateParticipantsRequest({
       session: this.session,
       jid: id,
@@ -1814,7 +1988,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   @Activity()
   async sendEvent(request: EventMessageRequest): Promise<WAMessage> {
-    const jid = normalizeJid(toJID(this.ensureSuffix(request.chatId)));
+    const jid = await this.hooks.wid.chat.promise(request.chatId, 'sendEvent');
     const event = request.event;
 
     // Create EventLocation if provided
@@ -1870,7 +2044,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   public async setPresence(presence: WAHAPresenceStatus, chatId?: string) {
     let request: any;
     let method: any;
-    const jid = chatId ? normalizeJid(toJID(this.ensureSuffix(chatId))) : null;
+    let jid: string | null = null;
+    if (chatId) {
+      jid = await this.hooks.wid.chat.promise(chatId, 'setPresence');
+    }
     switch (presence) {
       case WAHAPresenceStatus.ONLINE:
         request = new messages.PresenceRequest({
@@ -1887,7 +2064,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         method = this.client.SendPresence;
         break;
       case WAHAPresenceStatus.TYPING:
-        await this.maintainPresenceOnline();
+        await this.hooks.activity.promise('setPresence');
         request = new messages.ChatPresenceRequest({
           session: this.session,
           jid: jid,
@@ -1896,7 +2073,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         method = this.client.SendChatPresence;
         break;
       case WAHAPresenceStatus.RECORDING:
-        await this.maintainPresenceOnline();
+        await this.hooks.activity.promise('setPresence');
         request = new messages.ChatPresenceRequest({
           session: this.session,
           jid: jid,
@@ -1905,7 +2082,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         method = this.client.SendChatPresence;
         break;
       case WAHAPresenceStatus.PAUSED:
-        await this.maintainPresenceOnline();
+        await this.hooks.activity.promise('setPresence');
         request = new messages.ChatPresenceRequest({
           session: this.session,
           jid: jid,
@@ -1931,7 +2108,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   public async getPresence(chatId: string): Promise<WAHAChatPresences> {
-    const jid = normalizeJid(toJID(chatId));
+    const jid = await this.hooks.wid.chat.promise(chatId, 'getPresence');
     await this.subscribePresence(jid);
     if (!(jid in this.presences.keys())) {
       await sleep(1000);
@@ -1942,7 +2119,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   @Activity()
   async subscribePresence(chatId: string) {
-    const jid = normalizeJid(toJID(chatId));
+    const jid = await this.hooks.wid.chat.promise(chatId, 'subscribePresence');
     const req = new messages.SubscribePresenceRequest({
       session: this.session,
       jid: jid,
@@ -2066,7 +2243,6 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     inviteCode: string,
     query: PreviewChannelMessages,
   ): Promise<ChannelMessage[]> {
-    const downloadMedia = query.downloadMedia;
     const request = new messages.GetNewsletterMessagesByInviteRequest({
       session: this.session,
       invite: inviteCode,
@@ -2080,12 +2256,17 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     if (!resp.Messages) {
       return [];
     }
+    const params = {
+      download: query.downloadMedia,
+      mimetypes: query.downloadMediaMimetypes,
+    };
+    const options = lodash.defaults({}, params, this.media.api);
     for (const msg of resp.Messages) {
       promises.push(
         this.GowsChannelMessageToChannelMessage(
           resp.NewsletterJID,
           msg,
-          downloadMedia,
+          options,
         ),
       );
     }
@@ -2097,7 +2278,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   private async GowsChannelMessageToChannelMessage(
     jid: string,
     channelMessage: any,
-    downloadMedia: boolean,
+    options: MediaDownloadOptions,
   ): Promise<ChannelMessage> {
     const msg = {
       Info: {
@@ -2110,7 +2291,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       },
       Message: channelMessage.Message,
     };
-    const message = await this.processIncomingMessage(msg, downloadMedia);
+    const message = await this.processIncomingMessage(msg, options);
     const reactions: any =
       sortObjectByValues(channelMessage.ReactionCounts) || {};
     return {
@@ -2144,6 +2325,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     };
   }
 
+  @Activity()
   public async channelsList(query: ListChannelsQuery): Promise<Channel[]> {
     const request = new messages.NewsletterListRequest({
       session: this.session,
@@ -2245,7 +2427,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
    */
   @Activity()
   public async upsertContact(chatId: string, body: ContactUpdateBody) {
-    const jid = normalizeJid(toJID(chatId));
+    const jid = await this.hooks.wid.chat.promise(chatId, 'upsertContact');
     const request = new messages.UpdateContactRequest({
       session: this.session,
       jid: jid,
@@ -2265,7 +2447,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   public async getContact(query: ContactQuery) {
-    const jid = normalizeJid(toJID(query.contactId));
+    const jid = await this.hooks.wid.chat.promise(
+      query.contactId,
+      'getContact',
+    );
     const request = new messages.EntityByIdRequest({
       session: this.session,
       id: jid,
@@ -2273,6 +2458,28 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     const response = await promisify(this.client.GetContactById)(request);
     const data = parseJson(response);
     return this.toWAContact(data);
+  }
+
+  @Activity()
+  public async fetchMessageCapping(): Promise<MessageCappingData> {
+    const response = await promisify(this.client.FetchMessageCapping)(
+      this.session,
+    );
+    const capping = parseMessageCapping(parseJson(response));
+    // Keep the tracker in sync so MeInfo and 'session.status' reflect the fetch
+    this.messageCapping.update(capping);
+    return capping;
+  }
+
+  @Activity()
+  public async fetchReachoutTimelock(): Promise<ReachoutTimelockData> {
+    const response = await promisify(this.client.FetchReachoutTimelock)(
+      this.session,
+    );
+    const timelock = parseGowsReachoutTimelock(parseJson(response));
+    // Keep the tracker in sync so MeInfo and 'session.status' reflect the fetch
+    this.reachoutTimelock.update(timelock);
+    return timelock;
   }
 
   public async getContacts(pagination: PaginationParams) {
@@ -2338,7 +2545,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   public async findLIDByPhoneNumber(
     phoneNumber: string,
   ): Promise<LidToPhoneNumber> {
-    const pn = normalizeJid(toJID(phoneNumber));
+    const pn = await this.hooks.wid.chat.promise(
+      phoneNumber,
+      'findLIDByPhoneNumber',
+    );
     const request = new messages.EntityByIdRequest({
       session: this.session,
       id: pn,
@@ -2417,7 +2627,9 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     }
     let jids = [];
     if (filter?.ids && filter.ids.length > 0) {
-      jids = filter.ids.map((id) => normalizeJid(toJID(id)));
+      jids = await Promise.all(
+        filter.ids.map((id) => this.hooks.wid.chat.promise(id, 'getChats')),
+      );
     }
     const request = new messages.GetChatsRequest({
       session: this.session,
@@ -2447,14 +2659,17 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     query: GetChatMessagesQuery,
     filter: GetChatMessagesFilter,
   ) {
-    const downloadMedia = query.downloadMedia;
     const merge = query.merge ?? true;
     let jid: messages.OptionalString;
     if (chatId === 'all') {
       jid = null;
     } else {
+      const value = await this.hooks.wid.chat.promise(
+        chatId,
+        'getChatMessages',
+      );
       jid = new messages.OptionalString({
-        value: normalizeJid(toJID(this.ensureSuffix(chatId))),
+        value: value,
       });
     }
 
@@ -2491,8 +2706,13 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     const response = await promisify(this.client.GetMessages)(request);
     const msgs = parseJsonList(response);
     const promises = [];
+    const params = {
+      download: query.downloadMedia,
+      mimetypes: query.downloadMediaMimetypes,
+    };
+    const options = lodash.defaults({}, params, this.media.api);
     for (const msg of msgs) {
-      promises.push(this.processIncomingMessage(msg, downloadMedia));
+      promises.push(this.processIncomingMessage(msg, options));
     }
     let result = await Promise.all(promises);
     result = result.filter(Boolean);
@@ -2519,7 +2739,12 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     });
     const response = await promisify(this.client.GetMessageById)(request);
     const msg = parseJson(response);
-    return this.processIncomingMessage(msg, query.downloadMedia);
+    const params = {
+      download: query.downloadMedia,
+      mimetypes: query.downloadMediaMimetypes,
+    };
+    const options = lodash.defaults({}, params, this.media.api);
+    return this.processIncomingMessage(msg, options);
   }
 
   /**
@@ -2603,7 +2828,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   }
 
   public async getChatLabels(chatId: string): Promise<Label[]> {
-    const jid = normalizeJid(toJID(chatId));
+    const jid = await this.hooks.wid.chat.promise(chatId, 'getChatLabels');
     const request = new messages.EntityByIdRequest({
       session: this.session,
       id: jid,
@@ -2615,7 +2840,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   @Activity()
   public async chatsUnreadChat(chatId: string): Promise<any> {
-    const jid = normalizeJid(toJID(this.ensureSuffix(chatId)));
+    const jid = await this.hooks.wid.chat.promise(chatId, 'chatsUnreadChat');
     const request = new messages.ChatUnreadRequest({
       session: this.session,
       jid: jid,
@@ -2627,7 +2852,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   @Activity()
   public async putLabelsToChat(chatId: string, labels: LabelID[]) {
-    const jid = normalizeJid(toJID(chatId));
+    const jid = await this.hooks.wid.chat.promise(chatId, 'putLabelsToChat');
     const labelsIds = labels.map((label) => label.id);
     const currentLabels = await this.getChatLabels(jid);
     const currentLabelsIds = currentLabels.map((label) => label.id);
@@ -2683,19 +2908,19 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     return true;
   }
 
-  protected async processIncomingMessage(message, downloadMedia = true) {
+  protected async processIncomingMessage(
+    message,
+    options: MediaDownloadOptions,
+  ) {
     // Filter
     if (!this.shouldProcessIncomingMessage(message)) {
       return null;
     }
     // Convert
     const wamessage = this.toWAMessage(message);
-    // Media
-    if (downloadMedia) {
-      const media = await this.downloadMediaSafe(message);
-      wamessage.media = media;
-    }
-    if (downloadMedia && wamessage.replyTo?.hasMedia) {
+    const media = await this.downloadMediaSafe(message, options);
+    wamessage.media = media;
+    if (wamessage.replyTo?.hasMedia) {
       const msg = {
         Message: wamessage.replyTo._data,
         Info: {
@@ -2703,32 +2928,28 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
           ID: wamessage.replyTo.id || '',
         },
       };
-      wamessage.replyTo.media = await this.downloadMediaSafe(msg);
+      wamessage.replyTo.media = await this.downloadMediaSafe(msg, options);
     }
     return wamessage;
   }
 
-  protected async downloadMediaSafe(message) {
+  protected async downloadMediaSafe(message, options: MediaDownloadOptions) {
     try {
-      return await this.downloadMedia(message);
+      let processor: IMediaEngineProcessor<any> = new GOWSEngineMediaProcessor(
+        this,
+      );
+      processor = new LottieMediaProcessorWrapper(processor, this.logger);
+      const media = await this.mediaManager.processMedia(
+        processor,
+        message,
+        options,
+      );
+      return media;
     } catch (e) {
       this.logger.error('Failed when tried to download media for a message');
       this.logger.error(e, e.stack);
       return null;
     }
-  }
-
-  protected async downloadMedia(message) {
-    let processor: IMediaEngineProcessor<any> = new GOWSEngineMediaProcessor(
-      this,
-    );
-    processor = new LottieMediaProcessorWrapper(processor, this.logger);
-    const media = await this.mediaManager.processMedia(
-      processor,
-      message,
-      this.name,
-    );
-    return media;
   }
 
   protected toWAMessage(message): WAMessage {
@@ -3126,7 +3347,15 @@ export class GOWSEngineMediaProcessor implements IMediaEngineProcessor<any> {
     return content.mimetype;
   }
 
-  async getMediaBuffer(message: any): Promise<Buffer | null> {
+  async getMediaContent(message: any): Promise<MediaContent | null> {
+    const buffer = await this.getMediaBuffer(message);
+    if (!buffer) {
+      return null;
+    }
+    return { buffer: buffer };
+  }
+
+  private async getMediaBuffer(message: any): Promise<Buffer | null> {
     const mediaDownloadTimeoutMs = 600_000; // 10 minutes
 
     message = normalizeGowsStickerUrlForDownload(message);

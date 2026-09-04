@@ -381,6 +381,11 @@ export class MessageVideoRequest extends ChatRequest {
   convert: boolean;
 }
 
+export class MessageStickerRequest extends FileRequest {
+  @ReplyToProperty()
+  reply_to?: string;
+}
+
 export class MessageLinkPreviewRequest extends ChatRequest {
   @GeneratedMessageIdProperty()
   id?: string;
@@ -422,6 +427,14 @@ export class WANumberExistResult {
       'Chat id for the phone number. Undefined if the number does not exist',
   })
   chatId?: string;
+
+  @ApiProperty({
+    description:
+      'Phone number id (@c.us). Can be null when only a @lid chatId is known',
+    example: '11111111111@c.us',
+    required: false,
+  })
+  pn?: string;
 }
 
 export class MessagePoll {

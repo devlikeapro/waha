@@ -1,4 +1,4 @@
-import { toCusFormat } from '@waha/core/utils/jids';
+import { isPnUser, toCusFormat } from '@waha/core/utils/jids';
 import { SerializeMsgKey } from '@waha/core/utils/ids';
 import { WAMessageReaction } from '@waha/structures/responses.dto';
 import { WAHAPresenceStatus } from '@waha/structures/enums.dto';
@@ -8,8 +8,10 @@ import {
   GroupParticipantRole,
 } from '@waha/structures/groups.dto';
 import {
+  GroupParticipantsJoinRequestAction,
   GroupParticipantType,
   GroupV2LeaveEvent,
+  GroupV2ParticipantsJoinRequestEvent,
   GroupV2ParticipantsEvent,
   GroupV2UpdateEvent,
 } from '@waha/structures/groups.events.dto';
@@ -109,7 +111,7 @@ export function WppParticipantsToGroupV2Participants(
   const group: GroupId = { id: toCusFormat(data.groupId) };
   const participants: GroupParticipant[] = data.who.map((id) => ({
     id: id,
-    pn: null,
+    pn: isPnUser(id) ? id : null,
     role: role,
   }));
 
@@ -199,6 +201,27 @@ export function WppGp2ToGroupV2Update(msg: any): GroupV2UpdateEvent {
   return {
     timestamp: msg.timestamp,
     group: group as any,
+    _data: msg,
+  };
+}
+
+export function WppGp2ToGroupV2ParticipantsJoinRequest(
+  msg: any,
+): GroupV2ParticipantsJoinRequestEvent | null {
+  // Same subtype whatsapp-web.js emits 'group_membership_request' for
+  if (msg.subtype !== 'membership_approval_request') {
+    return null;
+  }
+  if (!msg.chatId || !msg.author) {
+    return null;
+  }
+  return {
+    group: {
+      id: toCusFormat(msg.chatId),
+    },
+    action: GroupParticipantsJoinRequestAction.CREATED,
+    requesterId: toCusFormat(msg.author),
+    timestamp: msg.timestamp,
     _data: msg,
   };
 }

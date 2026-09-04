@@ -1,4 +1,7 @@
-import { IMediaEngineProcessor } from '@waha/core/media/IMediaEngineProcessor';
+import {
+  IMediaEngineProcessor,
+  MediaContent,
+} from '@waha/core/media/IMediaEngineProcessor';
 import { convertLottieZipToWebp } from '@waha/core/utils/lottie-converter';
 
 const LOTTIE_MIMETYPE = 'application/was';
@@ -8,6 +11,7 @@ const LOTTIE_MIMETYPE = 'application/was';
  * (mimetype `application/was`, delivered as a ZIP archive) into animated WebP.
  * The inner processor downloads the raw ZIP; this wrapper converts it before
  * the result reaches the media storage layer, so callers see `image/webp`.
+ * If the conversion fails, the original ZIP is kept as `application/was`.
  */
 export class LottieMediaProcessorWrapper implements IMediaEngineProcessor<any> {
   constructor(
@@ -39,15 +43,16 @@ export class LottieMediaProcessorWrapper implements IMediaEngineProcessor<any> {
     return `${this.inner.getMessageId(msg)}.webp`;
   }
 
-  async getMediaBuffer(msg: any): Promise<Buffer | null> {
-    const buffer = await this.inner.getMediaBuffer(msg);
-    if (!buffer || !buffer.length) {
+  async getMediaContent(msg: any): Promise<MediaContent | null> {
+    const content = await this.inner.getMediaContent(msg);
+    if (!content?.buffer?.length) {
       return null;
     }
     if (this.inner.getMimetype(msg) !== LOTTIE_MIMETYPE) {
-      return buffer;
+      return content;
     }
 
+    const buffer = content.buffer;
     const id = this.inner.getMessageId(msg);
     this.logger.info(
       `Converting Lottie sticker '${id}' to WebP (input ${buffer.length} bytes)...`,
@@ -57,13 +62,17 @@ export class LottieMediaProcessorWrapper implements IMediaEngineProcessor<any> {
       this.logger.info(
         `Lottie sticker '${id}' converted to WebP (${webp.byteLength} bytes)`,
       );
-      return webp;
+      return { buffer: webp };
     } catch (err) {
-      this.logger.warn(
+      this.logger.error(
         { err: err },
-        `Lottie conversion failed for '${id}', returning original buffer`,
+        `Lottie conversion failed for '${id}', saving the original archive instead`,
       );
-      return buffer;
+      return {
+        buffer: buffer,
+        mimetype: LOTTIE_MIMETYPE,
+        filename: `${id}.zip`,
+      };
     }
   }
 }

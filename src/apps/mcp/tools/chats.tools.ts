@@ -145,7 +145,8 @@ export class ChatTools extends McpController {
     description:
       'Get messages in a chat. ' +
       'To retrieve all messages, paginate by incrementing the offset by limit until the returned array is empty or shorter than the limit. ' +
-      'To fetch media for a specific message, use chats-get-message with that message id and downloadMedia=true instead of fetching it here.',
+      'To fetch media for a specific message, use chats-get-message with that message id and downloadMedia=true instead of fetching it here. ' +
+      'Use downloadMediaMimetypes to download only media with the given mimetypes (prefix match).',
     inputSchema: ChatMessagesInput,
     annotations: {
       readOnlyHint: true,
@@ -162,7 +163,10 @@ export class ChatTools extends McpController {
     const response = await this.request({
       method: 'GET',
       url: `/api/${session}/chats/${chatId}/messages`,
-      params: query,
+      params: {
+        ...query,
+        downloadMediaMimetypes: query.downloadMediaMimetypes?.join(','),
+      },
     });
     let messages = response.data;
     if (!_data && Array.isArray(messages)) {
@@ -229,7 +233,10 @@ export class ChatTools extends McpController {
     const result = await this.textRequest({
       method: 'GET',
       url: `/api/${session}/chats/${chatId}/messages/${messageId}`,
-      params: query,
+      params: {
+        ...query,
+        downloadMediaMimetypes: query.downloadMediaMimetypes?.join(','),
+      },
     });
     if (query.downloadMedia) {
       const mediaKey = await this.mediaApiKey(session);

@@ -1,6 +1,7 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { App } from '@waha/apps/app_sdk/dto/app.dto';
 import { IAppService } from '@waha/apps/app_sdk/services/IAppService';
+import { PluginOptions } from '@waha/core/abc/session.plugin';
 import { AppRepository } from '@waha/apps/app_sdk/storage/AppRepository';
 import { McpAppConfig } from '@waha/apps/mcp/dto/config.dto';
 import { SessionManager } from '@waha/core/abc/manager.abc';
@@ -102,6 +103,11 @@ export class McpAppService implements IAppService {
     await this.deleteKey(manager, app);
   }
 
+  async purge(manager: SessionManager, app: App<McpAppConfig>): Promise<void> {
+    void manager;
+    void app;
+  }
+
   async enrich(manager: SessionManager, app: App<McpAppConfig>): Promise<void> {
     const keyId = app.config?.key_id;
     if (!keyId) {
@@ -112,6 +118,12 @@ export class McpAppService implements IAppService {
       return;
     }
     app.config = { ...(app.config ?? {}), key: keyDto.key } as McpAppConfig;
+  }
+
+  plugins(app: App<McpAppConfig>, session: WhatsappSession): PluginOptions[] {
+    void app;
+    void session;
+    return [];
   }
 
   beforeSessionStart(app: App<McpAppConfig>, session: WhatsappSession): void {

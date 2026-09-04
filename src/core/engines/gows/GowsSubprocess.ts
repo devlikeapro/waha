@@ -1,10 +1,11 @@
-import { sleep, waitUntil } from '@waha/utils/promiseTimeout';
+import { promiseTimeout, sleep, waitUntil } from '@waha/utils/promiseTimeout';
 import { spawn } from 'child_process';
 import { Logger } from 'pino';
 
 export class GowsSubprocess {
   private checkIntervalMs: number = 100;
   private readyDelayMs: number = 1_000;
+  private stopTimeoutMs: number = 3_000;
   private readyText = 'gRPC server started!';
 
   private child: any;
@@ -96,7 +97,19 @@ export class GowsSubprocess {
 
   async stop() {
     this.logger.info('Stopping GOWS subprocess...');
-    this.child?.kill('SIGTERM');
+    const child = this.child;
+    if (!child || child.exitCode !== null || child.signalCode !== null) {
+      return;
+    }
+    const exited = new Promise<void>((resolve) => child.once('exit', resolve));
+    child.kill('SIGTERM');
+    // the process is detached, so if it ignores SIGTERM nothing else kills it - escalate to SIGKILL
+    await promiseTimeout(this.stopTimeoutMs, exited).catch(() => {
+      this.logger.warn(
+        `GOWS did not exit in ${this.stopTimeoutMs}ms, sending SIGKILL`,
+      );
+      child.kill('SIGKILL');
+    });
     this.logger.info('GOWS subprocess stopped');
   }
 

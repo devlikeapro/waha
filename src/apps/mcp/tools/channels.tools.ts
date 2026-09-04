@@ -107,7 +107,10 @@ export class ChannelTools extends McpController {
     return this.textRequest({
       method: 'GET',
       url: `/api/${session}/channels/${id}/messages/preview`,
-      params: query,
+      params: {
+        ...query,
+        downloadMediaMimetypes: query.downloadMediaMimetypes?.join(','),
+      },
     });
   }
 

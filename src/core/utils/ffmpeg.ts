@@ -3,7 +3,7 @@ import { spawn } from 'child_process';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Logger } from 'pino';
-import { IMediaConverter } from '@waha/core/media/IConverter';
+import { IMediaConverter } from '@waha/core/media/IMediaConverter';
 
 function IsMP3(buffer) {
   if (!Buffer.isBuffer(buffer) || buffer.length < 3) return false;

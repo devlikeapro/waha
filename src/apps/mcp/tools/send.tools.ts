@@ -17,6 +17,7 @@ import {
   SendPollInput,
   SendPollVoteInput,
   SendSeenInput,
+  SendStickerInput,
   SendTextInput,
   SendVideoInput,
   SendVoiceInput,
@@ -122,6 +123,26 @@ export class SendTools extends McpController {
     return this.textRequest({
       method: 'POST',
       url: '/api/sendVideo',
+      data: data,
+    });
+  }
+
+  @Tool('send-sticker', {
+    title: 'Send a sticker',
+    description:
+      'Send a sticker to a chat. The file must already be in WebP format. ' +
+      FileNote,
+    inputSchema: SendStickerInput,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+    },
+  })
+  async sendSticker(data: z.infer<typeof SendStickerInput>) {
+    return this.textRequest({
+      method: 'POST',
+      url: '/api/sendSticker',
       data: data,
     });
   }

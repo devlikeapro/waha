@@ -5,6 +5,7 @@ import { Tool } from '@waha/apps/mcp/decorators/tool';
 import {
   SessionCreateInput,
   SessionListInput,
+  SessionLogoutInput,
   SessionNameInput,
   SessionUpdateInput,
 } from '@waha/apps/mcp/tools/sessions.zod';
@@ -140,18 +141,20 @@ export class SessionTools extends McpController {
 
   @Tool('sessions-logout', {
     title: 'Logout session',
-    description: 'Logout from a WhatsApp session',
-    inputSchema: SessionNameInput,
+    description:
+      'Logout from a WhatsApp session. Optionally purge app storage via apps.purge.',
+    inputSchema: SessionLogoutInput,
     annotations: {
       readOnlyHint: false,
       destructiveHint: true,
       idempotentHint: false,
     },
   })
-  async logout({ session }: z.infer<typeof SessionNameInput>) {
+  async logout({ session, ...body }: z.infer<typeof SessionLogoutInput>) {
     return this.textRequest({
       method: 'POST',
       url: `/api/sessions/${session}/logout`,
+      data: body,
     });
   }
 
@@ -169,6 +172,43 @@ export class SessionTools extends McpController {
     return this.textRequest({
       method: 'POST',
       url: `/api/sessions/${session}/restart`,
+    });
+  }
+
+  @Tool('sessions-capping', {
+    title: 'Get message capping',
+    description:
+      'Fetch the account new-chat message capping (per-cycle quota).',
+    inputSchema: SessionNameInput,
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+    },
+  })
+  async capping({ session }: z.infer<typeof SessionNameInput>) {
+    return this.textRequest({
+      method: 'GET',
+      url: `/api/sessions/${session}/capping`,
+    });
+  }
+
+  @Tool('sessions-timelock', {
+    title: 'Get reachout timelock',
+    description:
+      'Fetch the account reachout timelock state ' +
+      '(the restriction behind error 463 when messaging new contacts).',
+    inputSchema: SessionNameInput,
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+    },
+  })
+  async timelock({ session }: z.infer<typeof SessionNameInput>) {
+    return this.textRequest({
+      method: 'GET',
+      url: `/api/sessions/${session}/timelock`,
     });
   }
 }
