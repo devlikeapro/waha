@@ -21,6 +21,7 @@ import {
   ToGroupV2ParticipantsEvents,
   ToGroupV2UpdateEvent,
 } from '@waha/core/engines/gows/groups.gows';
+import { assertGowsGroupTextIsNotEmpty } from '@waha/core/engines/gows/groups.validation';
 import { messages } from '@waha/core/engines/gows/grpc/gows';
 import {
   optional,
@@ -1684,6 +1685,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   @Activity()
   public async setDescription(id, description) {
+    assertGowsGroupTextIsNotEmpty(description, 'description');
     const req = new messages.JidStringRequest({
       session: this.session,
       jid: id,
@@ -1694,6 +1696,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
   @Activity()
   public async setSubject(id, description) {
+    assertGowsGroupTextIsNotEmpty(description, 'subject');
     const req = new messages.JidStringRequest({
       session: this.session,
       jid: id,
