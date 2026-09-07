@@ -1,3 +1,4 @@
+import { WidToJIDPlugin } from '@waha/modules/waha-wid-jid/WidToJIDPlugin';
 import { ArgentinePhonePlugin } from './ArgentinePhonePlugin';
 import { ArgentinePhoneNumbersAppConfig } from '../dto/config.dto';
 import { SessionHooks } from '@waha/core/abc/session.hooks';
@@ -191,5 +192,59 @@ describe('Argentine phone resolution hooks', () => {
     const session = build({ lookup: false, strict: true });
     expect(await resolve(session)).toBe(original);
     expect(session.checkNumberStatus).not.toHaveBeenCalled();
+  });
+});
+
+describe('engine hook integration', () => {
+  it('resolves before GOWS/NOWEB native JID conversion', async () => {
+    const session = build();
+    RegisterPluginHooks(new WidToJIDPlugin(session, logger, null, null));
+    session.checkNumberStatus
+      .mockResolvedValueOnce({ numberExists: false })
+      .mockResolvedValueOnce({
+        numberExists: true,
+        chatId: `${alternate}@c.us`,
+      });
+    expect(await resolve(session)).toBe(`${alternate}@s.whatsapp.net`);
+  });
+
+  it('does not recurse when the engine invokes the chat hook inside a lookup', async () => {
+    const session = build();
+    session.checkNumberStatus.mockImplementation(async ({ phone }) => {
+      const queried = await resolve(session, phone, 'checkNumberStatus');
+      return { numberExists: true, chatId: `${queried}@c.us` };
+    });
+    expect(await resolve(session)).toBe(`${original}@c.us`);
+    expect(session.checkNumberStatus).toHaveBeenCalledTimes(1);
+  });
+
+  it('supports removal of the mobile prefix as a fallback', async () => {
+    const session = build();
+    session.checkNumberStatus
+      .mockResolvedValueOnce({ numberExists: false })
+      .mockResolvedValueOnce({
+        numberExists: true,
+        chatId: `${original}@c.us`,
+      });
+    expect(await resolve(session, alternate)).toBe(`${original}@c.us`);
+    expect(session.checkNumberStatus).toHaveBeenLastCalledWith({
+      phone: original,
+      session: 'test',
+    });
+  });
+
+  it('does not share cached resolutions between sessions', async () => {
+    const first = build();
+    const second = build();
+    first.checkNumberStatus.mockResolvedValue({
+      numberExists: true,
+      chatId: '123@lid',
+    });
+    second.checkNumberStatus.mockResolvedValue({
+      numberExists: true,
+      chatId: '456@lid',
+    });
+    expect(await resolve(first)).toBe('123@lid');
+    expect(await resolve(second)).toBe('456@lid');
   });
 });
