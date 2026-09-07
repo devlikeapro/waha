@@ -248,3 +248,34 @@ describe('engine hook integration', () => {
     expect(await resolve(second)).toBe('456@lid');
   });
 });
+
+describe('cache lifecycle', () => {
+  it('removes expired destinations on subsequent activity without background timers', async () => {
+    jest.useFakeTimers();
+    try {
+      const session: any = {
+        name: 'test',
+        hooks: new SessionHooks(),
+        checkNumberStatus: jest.fn(),
+      };
+      session.checkNumberStatus.mockResolvedValue({
+        numberExists: true,
+        chatId: '123@lid',
+      });
+      const plugin = new ArgentinePhonePlugin(
+        session,
+        logger,
+        { memoryTtl: '1s' },
+        null,
+      );
+      RegisterPluginHooks(plugin);
+      await resolve(session);
+      jest.advanceTimersByTime(61000);
+      await resolve(session, alternate);
+      expect((plugin as any).memory.keys()).toEqual([alternate]);
+      expect(jest.getTimerCount()).toBe(0);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+});

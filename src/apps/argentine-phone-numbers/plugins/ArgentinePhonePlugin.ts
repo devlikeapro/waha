@@ -36,6 +36,7 @@ export class ArgentinePhonePlugin extends SessionPlugin<
   ArgentinePhoneNumbersAppConfig
 > {
   private memory: NodeCache;
+  private lastSweep = 0;
   private inflight = new Map<string, Promise<string | null>>();
 
   constructor(
@@ -71,6 +72,15 @@ export class ArgentinePhonePlugin extends SessionPlugin<
     // Key by the supplied phone, not by the pair: both variants may resolve
     // independently. Never overwrite the alternate's cache entry.
     const key = candidates[0];
+    // Sweep on activity instead of creating a timer that outlives the plugin.
+    // Expired destinations that are never queried again must also be removed.
+    const now = Date.now();
+    if (now - this.lastSweep >= 60000) {
+      for (const cachedKey of this.memory.keys()) {
+        this.memory.get(cachedKey);
+      }
+      this.lastSweep = now;
+    }
     const cached = this.memory.get<string>(key);
     if (cached !== undefined) {
       return this.fromCache(cached, wid);
