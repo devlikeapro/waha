@@ -1,5 +1,11 @@
-import { IMediaEngineProcessor } from '@waha/core/media/IMediaEngineProcessor';
-import { IMediaManager } from '@waha/core/media/IMediaManager';
+import {
+  IMediaEngineProcessor,
+  MediaContent,
+} from '@waha/core/media/IMediaEngineProcessor';
+import {
+  IMediaManager,
+  MediaDownloadOptions,
+} from '@waha/core/media/IMediaManager';
 import {
   IMediaStorage,
   MediaData,
@@ -13,6 +19,14 @@ const mime = require('mime-types');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const promiseRetry = require('promise-retry');
 
+function ext(mimetype: string): string {
+  const extension = mime.extension(mimetype);
+  if (mimetype == 'application/was' && !extension) {
+    return 'zip';
+  }
+  return extension;
+}
+
 export class MediaManager implements IMediaManager {
   // https://github.com/IndigoUnited/node-promise-retry
   RETRY_OPTIONS = {
@@ -22,59 +36,42 @@ export class MediaManager implements IMediaManager {
   };
 
   constructor(
+    private sessionName: string,
     private storage: IMediaStorage,
-    private mimetypes: string[],
     protected log: Logger,
-  ) {
-    // Log mimetypes
-    if (this.mimetypes && this.mimetypes.length > 0) {
-      const mimetypes = this.mimetypes.join(',');
-      const msg = `Only '${mimetypes}' mimetypes will be downloaded for the session`;
-      this.log.info(msg);
-    }
-  }
+  ) {}
 
   /**
    *  Check that we need to download files with the mimetype
    */
-  private shouldProcessMimetype(mimetype: string) {
+  private shouldProcessMimetype(mimetypes: string[], mimetype: string) {
     // No specific mimetypes provided - always download
-    if (!this.mimetypes || this.mimetypes.length === 0) {
+    if (!mimetypes || mimetypes.length === 0) {
       return true;
     }
     // Found "right" mimetype in the list of allowed mimetypes - download it
-    return this.mimetypes.some((type) => mimetype.startsWith(type));
+    return mimetypes.some((type) => mimetype.startsWith(type));
   }
 
   private async processMediaInternal<Message>(
     processor: IMediaEngineProcessor<Message>,
     message: Message,
-    session: string,
   ): Promise<WAMedia | null> {
     const messageId = processor.getMessageId(message);
     const chatId = processor.getChatId(message);
-    const mimetype = processor.getMimetype(message);
-    const filename = processor.getFilename(message);
-    if (!this.shouldProcessMimetype(mimetype)) {
-      this.log.info(
-        `The message '${messageId}' has '${mimetype}' mimetype media, skip it.`,
-      );
-      return null;
-    }
+    let mimetype = processor.getMimetype(message);
+    let filename = processor.getFilename(message);
 
-    let extension = mime.extension(mimetype);
-    if (mimetype == 'application/was' && !extension) {
-      extension = 'zip';
-    }
     const mediaData: MediaData = {
-      session: session,
+      session: this.sessionName,
       message: {
         id: messageId,
         chatId: chatId,
       },
       file: {
-        extension: extension,
+        extension: ext(mimetype),
         filename: filename,
+        mimetype: mimetype,
       },
     };
 
@@ -85,12 +82,23 @@ export class MediaManager implements IMediaManager {
     if (!exists) {
       this.log.info(`The message ${messageId} has media, downloading it...`);
       // Fetching media
-      const buffer = await this.withRetry('Fetching media', () =>
+      const content = await this.withRetry('Fetching media', () =>
         this.fetchMedia(message, processor),
       );
+      if (content.mimetype) {
+        mimetype = content.mimetype;
+      }
+      if (content.filename) {
+        filename = content.filename;
+      }
+      mediaData.file = {
+        extension: ext(mimetype),
+        filename: filename,
+        mimetype: mimetype,
+      };
       // Saving media
       await this.withRetry('Saving media', () =>
-        this.saveMedia(buffer, mediaData),
+        this.saveMedia(content.buffer, mediaData),
       );
       this.log.info(`The media from '${messageId}' has been saved.`);
     }
@@ -98,13 +106,13 @@ export class MediaManager implements IMediaManager {
     const data = await this.withRetry('Getting media URL', () =>
       this.getStorageData(mediaData),
     );
-    return data;
+    return { ...data, mimetype: mimetype, filename: filename };
   }
 
   async processMedia<Message>(
     processor: IMediaEngineProcessor<Message>,
     message: Message,
-    session: string,
+    options: MediaDownloadOptions,
   ): Promise<WAMedia | null> {
     let messageId: string;
     try {
@@ -128,7 +136,16 @@ export class MediaManager implements IMediaManager {
     try {
       media.filename = processor.getFilename(message);
       media.mimetype = processor.getMimetype(message);
-      const data = await this.processMediaInternal(processor, message, session);
+      if (!options.download) {
+        return media;
+      }
+      if (!this.shouldProcessMimetype(options.mimetypes, media.mimetype)) {
+        this.log.info(
+          `The message '${messageId}' has '${media.mimetype}' mimetype media, skip it.`,
+        );
+        return media;
+      }
+      const data = await this.processMediaInternal(processor, message);
       media = { ...media, ...data };
     } catch (err) {
       this.log.error(err, `Error processing media for message '${messageId}'`);
@@ -142,16 +159,16 @@ export class MediaManager implements IMediaManager {
   private async fetchMedia(
     message: any,
     processor: IMediaEngineProcessor<any>,
-  ): Promise<Buffer> {
+  ): Promise<MediaContent> {
     const messageId = processor.getMessageId(message);
     this.log.debug(`Fetching media from WhatsApp message '${messageId}'...`);
-    const buffer = await processor.getMediaBuffer(message);
-    if (!buffer) {
+    const content = await processor.getMediaContent(message);
+    if (!content?.buffer) {
       throw new Error(
         `Message '${messageId}' has no media, but it has media flag in the engine`,
       );
     }
-    return buffer;
+    return content;
   }
 
   private async saveMedia(

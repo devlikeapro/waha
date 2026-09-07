@@ -19,12 +19,17 @@ export namespace messages {
         PROMOTE = 2,
         DEMOTE = 3
     }
+    export enum ParticipantRequestAction {
+        APPROVE = 0,
+        REJECT = 1
+    }
     export enum MediaType {
         IMAGE = 0,
         AUDIO = 1,
         VIDEO = 2,
         DOCUMENT = 3,
-        PTV = 4
+        PTV = 4,
+        STICKER = 5
     }
     export enum Presence {
         AVAILABLE = 0,
@@ -1423,7 +1428,7 @@ export namespace messages {
         }
     }
     export class SessionStorageConfig extends pb_1.Message {
-        #one_of_decls: number[][] = [[1], [2], [3], [4]];
+        #one_of_decls: number[][] = [[1], [2], [3], [4], [5], [6]];
         constructor(data?: any[] | ({} & (({
             messages?: boolean;
         }) | ({
@@ -1432,6 +1437,10 @@ export namespace messages {
             chats?: boolean;
         }) | ({
             labels?: boolean;
+        }) | ({
+            contacts?: boolean;
+        }) | ({
+            message_secrets?: boolean;
         })))) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -1447,6 +1456,12 @@ export namespace messages {
                 }
                 if ("labels" in data && data.labels != undefined) {
                     this.labels = data.labels;
+                }
+                if ("contacts" in data && data.contacts != undefined) {
+                    this.contacts = data.contacts;
+                }
+                if ("message_secrets" in data && data.message_secrets != undefined) {
+                    this.message_secrets = data.message_secrets;
                 }
             }
         }
@@ -1486,6 +1501,24 @@ export namespace messages {
         get has_labels() {
             return pb_1.Message.getField(this, 4) != null;
         }
+        get contacts() {
+            return pb_1.Message.getFieldWithDefault(this, 5, false) as boolean;
+        }
+        set contacts(value: boolean) {
+            pb_1.Message.setOneofField(this, 5, this.#one_of_decls[4], value);
+        }
+        get has_contacts() {
+            return pb_1.Message.getField(this, 5) != null;
+        }
+        get message_secrets() {
+            return pb_1.Message.getFieldWithDefault(this, 6, false) as boolean;
+        }
+        set message_secrets(value: boolean) {
+            pb_1.Message.setOneofField(this, 6, this.#one_of_decls[5], value);
+        }
+        get has_message_secrets() {
+            return pb_1.Message.getField(this, 6) != null;
+        }
         get _messages() {
             const cases: {
                 [index: number]: "none" | "messages";
@@ -1522,11 +1555,31 @@ export namespace messages {
             };
             return cases[pb_1.Message.computeOneofCase(this, [4])];
         }
+        get _contacts() {
+            const cases: {
+                [index: number]: "none" | "contacts";
+            } = {
+                0: "none",
+                5: "contacts"
+            };
+            return cases[pb_1.Message.computeOneofCase(this, [5])];
+        }
+        get _message_secrets() {
+            const cases: {
+                [index: number]: "none" | "message_secrets";
+            } = {
+                0: "none",
+                6: "message_secrets"
+            };
+            return cases[pb_1.Message.computeOneofCase(this, [6])];
+        }
         static fromObject(data: {
             messages?: boolean;
             groups?: boolean;
             chats?: boolean;
             labels?: boolean;
+            contacts?: boolean;
+            message_secrets?: boolean;
         }): SessionStorageConfig {
             const message = new SessionStorageConfig({});
             if (data.messages != null) {
@@ -1541,6 +1594,12 @@ export namespace messages {
             if (data.labels != null) {
                 message.labels = data.labels;
             }
+            if (data.contacts != null) {
+                message.contacts = data.contacts;
+            }
+            if (data.message_secrets != null) {
+                message.message_secrets = data.message_secrets;
+            }
             return message;
         }
         toObject() {
@@ -1549,6 +1608,8 @@ export namespace messages {
                 groups?: boolean;
                 chats?: boolean;
                 labels?: boolean;
+                contacts?: boolean;
+                message_secrets?: boolean;
             } = {};
             if (this.messages != null) {
                 data.messages = this.messages;
@@ -1561,6 +1622,12 @@ export namespace messages {
             }
             if (this.labels != null) {
                 data.labels = this.labels;
+            }
+            if (this.contacts != null) {
+                data.contacts = this.contacts;
+            }
+            if (this.message_secrets != null) {
+                data.message_secrets = this.message_secrets;
             }
             return data;
         }
@@ -1576,6 +1643,10 @@ export namespace messages {
                 writer.writeBool(3, this.chats);
             if (this.has_labels)
                 writer.writeBool(4, this.labels);
+            if (this.has_contacts)
+                writer.writeBool(5, this.contacts);
+            if (this.has_message_secrets)
+                writer.writeBool(6, this.message_secrets);
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -1596,6 +1667,12 @@ export namespace messages {
                         break;
                     case 4:
                         message.labels = reader.readBool();
+                        break;
+                    case 5:
+                        message.contacts = reader.readBool();
+                        break;
+                    case 6:
+                        message.message_secrets = reader.readBool();
                         break;
                     default: reader.skipField();
                 }
@@ -2904,6 +2981,145 @@ export namespace messages {
         }
         static deserializeBinary(bytes: Uint8Array): UpdateParticipantsRequest {
             return UpdateParticipantsRequest.deserialize(bytes);
+        }
+    }
+    export class UpdateRequestParticipantsRequest extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            session?: Session;
+            jid?: string;
+            participants?: string[];
+            action?: ParticipantRequestAction;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("session" in data && data.session != undefined) {
+                    this.session = data.session;
+                }
+                if ("jid" in data && data.jid != undefined) {
+                    this.jid = data.jid;
+                }
+                if ("participants" in data && data.participants != undefined) {
+                    this.participants = data.participants;
+                }
+                if ("action" in data && data.action != undefined) {
+                    this.action = data.action;
+                }
+            }
+        }
+        get session() {
+            return pb_1.Message.getWrapperField(this, Session, 1) as Session;
+        }
+        set session(value: Session) {
+            pb_1.Message.setWrapperField(this, 1, value);
+        }
+        get has_session() {
+            return pb_1.Message.getField(this, 1) != null;
+        }
+        get jid() {
+            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+        }
+        set jid(value: string) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        get participants() {
+            return pb_1.Message.getFieldWithDefault(this, 3, []) as string[];
+        }
+        set participants(value: string[]) {
+            pb_1.Message.setField(this, 3, value);
+        }
+        get action() {
+            return pb_1.Message.getFieldWithDefault(this, 4, ParticipantRequestAction.APPROVE) as ParticipantRequestAction;
+        }
+        set action(value: ParticipantRequestAction) {
+            pb_1.Message.setField(this, 4, value);
+        }
+        static fromObject(data: {
+            session?: ReturnType<typeof Session.prototype.toObject>;
+            jid?: string;
+            participants?: string[];
+            action?: ParticipantRequestAction;
+        }): UpdateRequestParticipantsRequest {
+            const message = new UpdateRequestParticipantsRequest({});
+            if (data.session != null) {
+                message.session = Session.fromObject(data.session);
+            }
+            if (data.jid != null) {
+                message.jid = data.jid;
+            }
+            if (data.participants != null) {
+                message.participants = data.participants;
+            }
+            if (data.action != null) {
+                message.action = data.action;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                session?: ReturnType<typeof Session.prototype.toObject>;
+                jid?: string;
+                participants?: string[];
+                action?: ParticipantRequestAction;
+            } = {};
+            if (this.session != null) {
+                data.session = this.session.toObject();
+            }
+            if (this.jid != null) {
+                data.jid = this.jid;
+            }
+            if (this.participants != null) {
+                data.participants = this.participants;
+            }
+            if (this.action != null) {
+                data.action = this.action;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.has_session)
+                writer.writeMessage(1, this.session, () => this.session.serialize(writer));
+            if (this.jid.length)
+                writer.writeString(2, this.jid);
+            if (this.participants.length)
+                writer.writeRepeatedString(3, this.participants);
+            if (this.action != ParticipantRequestAction.APPROVE)
+                writer.writeEnum(4, this.action);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateRequestParticipantsRequest {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateRequestParticipantsRequest();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        reader.readMessage(message.session, () => message.session = Session.deserialize(reader));
+                        break;
+                    case 2:
+                        message.jid = reader.readString();
+                        break;
+                    case 3:
+                        pb_1.Message.addToRepeatedField(message, 3, reader.readString());
+                        break;
+                    case 4:
+                        message.action = reader.readEnum();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): UpdateRequestParticipantsRequest {
+            return UpdateRequestParticipantsRequest.deserialize(bytes);
         }
     }
     export class GroupCodeRequest extends pb_1.Message {
@@ -6396,6 +6612,7 @@ export namespace messages {
             phone?: string;
             jid?: string;
             registered?: boolean;
+            pn?: string;
         }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -6408,6 +6625,9 @@ export namespace messages {
                 }
                 if ("registered" in data && data.registered != undefined) {
                     this.registered = data.registered;
+                }
+                if ("pn" in data && data.pn != undefined) {
+                    this.pn = data.pn;
                 }
             }
         }
@@ -6429,10 +6649,17 @@ export namespace messages {
         set registered(value: boolean) {
             pb_1.Message.setField(this, 3, value);
         }
+        get pn() {
+            return pb_1.Message.getFieldWithDefault(this, 4, "") as string;
+        }
+        set pn(value: string) {
+            pb_1.Message.setField(this, 4, value);
+        }
         static fromObject(data: {
             phone?: string;
             jid?: string;
             registered?: boolean;
+            pn?: string;
         }): PhoneInfo {
             const message = new PhoneInfo({});
             if (data.phone != null) {
@@ -6444,6 +6671,9 @@ export namespace messages {
             if (data.registered != null) {
                 message.registered = data.registered;
             }
+            if (data.pn != null) {
+                message.pn = data.pn;
+            }
             return message;
         }
         toObject() {
@@ -6451,6 +6681,7 @@ export namespace messages {
                 phone?: string;
                 jid?: string;
                 registered?: boolean;
+                pn?: string;
             } = {};
             if (this.phone != null) {
                 data.phone = this.phone;
@@ -6460,6 +6691,9 @@ export namespace messages {
             }
             if (this.registered != null) {
                 data.registered = this.registered;
+            }
+            if (this.pn != null) {
+                data.pn = this.pn;
             }
             return data;
         }
@@ -6473,6 +6707,8 @@ export namespace messages {
                 writer.writeString(2, this.jid);
             if (this.registered != false)
                 writer.writeBool(3, this.registered);
+            if (this.pn.length)
+                writer.writeString(4, this.pn);
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -6490,6 +6726,9 @@ export namespace messages {
                         break;
                     case 3:
                         message.registered = reader.readBool();
+                        break;
+                    case 4:
+                        message.pn = reader.readString();
                         break;
                     default: reader.skipField();
                 }
@@ -11380,6 +11619,33 @@ export namespace messages {
                 responseSerialize: (message: JsonList) => Buffer.from(message.serialize()),
                 responseDeserialize: (bytes: Buffer) => JsonList.deserialize(new Uint8Array(bytes))
             },
+            SetGroupJoinApprovalMode: {
+                path: "/messages.MessageService/SetGroupJoinApprovalMode",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: JidBoolRequest) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => JidBoolRequest.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: Empty) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => Empty.deserialize(new Uint8Array(bytes))
+            },
+            GetGroupRequestParticipants: {
+                path: "/messages.MessageService/GetGroupRequestParticipants",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: JidRequest) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => JidRequest.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: JsonList) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => JsonList.deserialize(new Uint8Array(bytes))
+            },
+            UpdateGroupRequestParticipants: {
+                path: "/messages.MessageService/UpdateGroupRequestParticipants",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: UpdateRequestParticipantsRequest) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => UpdateRequestParticipantsRequest.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: JsonList) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => JsonList.deserialize(new Uint8Array(bytes))
+            },
             GetProfilePicture: {
                 path: "/messages.MessageService/GetProfilePicture",
                 requestStream: false,
@@ -11433,6 +11699,24 @@ export namespace messages {
                 requestDeserialize: (bytes: Buffer) => ChatUnreadRequest.deserialize(new Uint8Array(bytes)),
                 responseSerialize: (message: Empty) => Buffer.from(message.serialize()),
                 responseDeserialize: (bytes: Buffer) => Empty.deserialize(new Uint8Array(bytes))
+            },
+            FetchReachoutTimelock: {
+                path: "/messages.MessageService/FetchReachoutTimelock",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: Session) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => Session.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: Json) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => Json.deserialize(new Uint8Array(bytes))
+            },
+            FetchMessageCapping: {
+                path: "/messages.MessageService/FetchMessageCapping",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: Session) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => Session.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: Json) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => Json.deserialize(new Uint8Array(bytes))
             },
             GenerateNewMessageID: {
                 path: "/messages.MessageService/GenerateNewMessageID",
@@ -11745,12 +12029,17 @@ export namespace messages {
         abstract SetGroupAnnounce(call: grpc_1.ServerUnaryCall<JidBoolRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
         abstract SetGroupMemberAddMode(call: grpc_1.ServerUnaryCall<JidBoolRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
         abstract UpdateGroupParticipants(call: grpc_1.ServerUnaryCall<UpdateParticipantsRequest, JsonList>, callback: grpc_1.sendUnaryData<JsonList>): void;
+        abstract SetGroupJoinApprovalMode(call: grpc_1.ServerUnaryCall<JidBoolRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
+        abstract GetGroupRequestParticipants(call: grpc_1.ServerUnaryCall<JidRequest, JsonList>, callback: grpc_1.sendUnaryData<JsonList>): void;
+        abstract UpdateGroupRequestParticipants(call: grpc_1.ServerUnaryCall<UpdateRequestParticipantsRequest, JsonList>, callback: grpc_1.sendUnaryData<JsonList>): void;
         abstract GetProfilePicture(call: grpc_1.ServerUnaryCall<ProfilePictureRequest, ProfilePictureResponse>, callback: grpc_1.sendUnaryData<ProfilePictureResponse>): void;
         abstract SendPresence(call: grpc_1.ServerUnaryCall<PresenceRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
         abstract SendChatPresence(call: grpc_1.ServerUnaryCall<ChatPresenceRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
         abstract SubscribePresence(call: grpc_1.ServerUnaryCall<SubscribePresenceRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
         abstract CheckPhones(call: grpc_1.ServerUnaryCall<CheckPhonesRequest, CheckPhonesResponse>, callback: grpc_1.sendUnaryData<CheckPhonesResponse>): void;
         abstract MarkChatUnread(call: grpc_1.ServerUnaryCall<ChatUnreadRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
+        abstract FetchReachoutTimelock(call: grpc_1.ServerUnaryCall<Session, Json>, callback: grpc_1.sendUnaryData<Json>): void;
+        abstract FetchMessageCapping(call: grpc_1.ServerUnaryCall<Session, Json>, callback: grpc_1.sendUnaryData<Json>): void;
         abstract GenerateNewMessageID(call: grpc_1.ServerUnaryCall<Session, NewMessageIDResponse>, callback: grpc_1.sendUnaryData<NewMessageIDResponse>): void;
         abstract SendMessage(call: grpc_1.ServerUnaryCall<MessageRequest, MessageResponse>, callback: grpc_1.sendUnaryData<MessageResponse>): void;
         abstract SendReaction(call: grpc_1.ServerUnaryCall<MessageReaction, MessageResponse>, callback: grpc_1.sendUnaryData<MessageResponse>): void;
@@ -11877,6 +12166,15 @@ export namespace messages {
         UpdateGroupParticipants: GrpcUnaryServiceInterface<UpdateParticipantsRequest, JsonList> = (message: UpdateParticipantsRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<JsonList>, options?: grpc_1.CallOptions | grpc_1.requestCallback<JsonList>, callback?: grpc_1.requestCallback<JsonList>): grpc_1.ClientUnaryCall => {
             return super.UpdateGroupParticipants(message, metadata, options, callback);
         };
+        SetGroupJoinApprovalMode: GrpcUnaryServiceInterface<JidBoolRequest, Empty> = (message: JidBoolRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<Empty>, options?: grpc_1.CallOptions | grpc_1.requestCallback<Empty>, callback?: grpc_1.requestCallback<Empty>): grpc_1.ClientUnaryCall => {
+            return super.SetGroupJoinApprovalMode(message, metadata, options, callback);
+        };
+        GetGroupRequestParticipants: GrpcUnaryServiceInterface<JidRequest, JsonList> = (message: JidRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<JsonList>, options?: grpc_1.CallOptions | grpc_1.requestCallback<JsonList>, callback?: grpc_1.requestCallback<JsonList>): grpc_1.ClientUnaryCall => {
+            return super.GetGroupRequestParticipants(message, metadata, options, callback);
+        };
+        UpdateGroupRequestParticipants: GrpcUnaryServiceInterface<UpdateRequestParticipantsRequest, JsonList> = (message: UpdateRequestParticipantsRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<JsonList>, options?: grpc_1.CallOptions | grpc_1.requestCallback<JsonList>, callback?: grpc_1.requestCallback<JsonList>): grpc_1.ClientUnaryCall => {
+            return super.UpdateGroupRequestParticipants(message, metadata, options, callback);
+        };
         GetProfilePicture: GrpcUnaryServiceInterface<ProfilePictureRequest, ProfilePictureResponse> = (message: ProfilePictureRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<ProfilePictureResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<ProfilePictureResponse>, callback?: grpc_1.requestCallback<ProfilePictureResponse>): grpc_1.ClientUnaryCall => {
             return super.GetProfilePicture(message, metadata, options, callback);
         };
@@ -11894,6 +12192,12 @@ export namespace messages {
         };
         MarkChatUnread: GrpcUnaryServiceInterface<ChatUnreadRequest, Empty> = (message: ChatUnreadRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<Empty>, options?: grpc_1.CallOptions | grpc_1.requestCallback<Empty>, callback?: grpc_1.requestCallback<Empty>): grpc_1.ClientUnaryCall => {
             return super.MarkChatUnread(message, metadata, options, callback);
+        };
+        FetchReachoutTimelock: GrpcUnaryServiceInterface<Session, Json> = (message: Session, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<Json>, options?: grpc_1.CallOptions | grpc_1.requestCallback<Json>, callback?: grpc_1.requestCallback<Json>): grpc_1.ClientUnaryCall => {
+            return super.FetchReachoutTimelock(message, metadata, options, callback);
+        };
+        FetchMessageCapping: GrpcUnaryServiceInterface<Session, Json> = (message: Session, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<Json>, options?: grpc_1.CallOptions | grpc_1.requestCallback<Json>, callback?: grpc_1.requestCallback<Json>): grpc_1.ClientUnaryCall => {
+            return super.FetchMessageCapping(message, metadata, options, callback);
         };
         GenerateNewMessageID: GrpcUnaryServiceInterface<Session, NewMessageIDResponse> = (message: Session, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<NewMessageIDResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<NewMessageIDResponse>, callback?: grpc_1.requestCallback<NewMessageIDResponse>): grpc_1.ClientUnaryCall => {
             return super.GenerateNewMessageID(message, metadata, options, callback);

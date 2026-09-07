@@ -2,8 +2,8 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { Activity } from '@waha/core/abc/activity';
 import {
+  ensureSuffix,
   getChannelInviteLink,
   getPublicUrlFromDirectPath,
   parseGroupInviteLink,
@@ -46,6 +46,7 @@ import {
   MessageReplyRequest,
   MessageFileRequest,
   MessageStarRequest,
+  MessageStickerRequest,
   MessageTextRequest,
   MessageVideoRequest,
   MessageVoiceRequest,
@@ -70,6 +71,7 @@ import { CallData } from '@waha/structures/calls.dto';
 import {
   GroupV2JoinEvent,
   GroupV2LeaveEvent,
+  GroupV2ParticipantsJoinRequestEvent,
   GroupV2ParticipantsEvent,
   GroupV2UpdateEvent,
 } from '@waha/structures/groups.events.dto';
@@ -80,7 +82,7 @@ import {
   LabelID,
 } from '@waha/structures/labels.dto';
 import { WAHAChatPresences } from '@waha/structures/presence.dto';
-import { WAMessage } from '@waha/structures/responses.dto';
+import { MessageSource, WAMessage } from '@waha/structures/responses.dto';
 import { MeInfo } from '@waha/structures/sessions.dto';
 import {
   BROADCAST_ID,
@@ -110,6 +112,7 @@ import {
 } from '@wppconnect-team/wppconnect';
 import type { Logger as WinstonLogger } from 'winston';
 import {
+  WppGp2ToGroupV2ParticipantsJoinRequest,
   WppGp2ToGroupV2Update,
   WppParticipantsIsMyJoin,
   WppParticipantsIsMyLeave,
@@ -129,7 +132,11 @@ import {
   WppSendTextStatusOptions,
 } from '@waha/core/engines/wpp/WppTypes';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
-import { IMediaEngineProcessor } from '@waha/core/media/IMediaEngineProcessor';
+import {
+  IMediaEngineProcessor,
+  MediaContent,
+} from '@waha/core/media/IMediaEngineProcessor';
+import { MediaDownloadOptions } from '@waha/core/media/IMediaManager';
 import { LottieMediaProcessorWrapper } from '@waha/core/media/LottieMediaProcessorWrapper';
 import { IWPPAuthManager } from '@waha/core/engines/wpp/IWPPAuthManager';
 import { QR } from '@waha/core/QR';
@@ -138,9 +145,11 @@ import { getSessionNamespace } from '@waha/config';
 import { killProcessesByPatterns } from '@waha/core/utils/processes';
 import { DistinctAck } from '@waha/core/utils/reactive';
 import { isJidGroup, toCusFormat } from '@waha/core/utils/jids';
+import { GetSerialized } from '@waha/core/utils/serialized';
 import { WAMedia } from '@waha/structures/media.dto';
 import * as lodash from 'lodash';
 import {
+  concatMap,
   distinct,
   from,
   interval,
@@ -161,11 +170,15 @@ import { BinaryFile, RemoteFile } from '@waha/structures/files.dto';
 import {
   CreateGroupRequest,
   GroupInfo,
+  GroupJoinRequest,
+  GroupJoinRequestResult,
   GroupParticipant,
   GroupParticipantRole,
   GroupSortField,
+  NormalizeJoinRequestMethod,
   ParticipantsRequest,
   SettingsMemberAddMode,
+  SettingsMembershipApproval,
   SettingsSecurityChangeInfo,
 } from '@waha/structures/groups.dto';
 import { ContactQuery, ContactRequest } from '@waha/structures/contacts.dto';
@@ -181,8 +194,11 @@ import type {
   DocumentMessageOptions,
   FileMessageOptions,
   ImageMessageOptions,
+  StickerMessageOptions,
   VideoMessageOptions,
 } from '@wppconnect/wa-js/dist/chat';
+
+import { Activity } from '@waha/core/abc/session.hooks.activity';
 
 declare global {
   interface Window {
@@ -366,7 +382,7 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
 
   private async end() {
     ++this.startAttemptId;
-    this.cleanupPresenceTimeout();
+    this.presence = null;
     this.meInfo = null;
     this.presencesByChatId.clear();
     this.qr.save('');
@@ -495,7 +511,11 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
   ): Promise<WANumberExistResult> {
     let phone = request.phone.split('@')[0];
     phone = phone.replace(/\+/g, '');
-    const profile = await this.wpp!.checkNumberStatus(this.ensureSuffix(phone));
+    const number = await this.hooks.wid.chat.promise(
+      phone,
+      'checkNumberStatus',
+    );
+    const profile = await this.wpp!.checkNumberStatus(number);
     const chatId = Deserialized(profile?.id);
     if (!chatId) {
       return {
@@ -555,19 +575,24 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     if (quotedMessageId) {
       options.quotedMsg = quotedMessageId;
     }
-    const sent = await this.wpp!.sendLocation(
-      this.ensureSuffix(request.chatId),
-      options,
+    const chatId = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'sendLocation',
     );
-    return this.toWAMessage(sent);
+    const sent = await this.wpp!.sendLocation(chatId, options);
+    return await this.toWAMessage(sent);
   }
 
   @Activity()
   public async forwardMessage(
     request: MessageForwardRequest,
   ): Promise<WAMessage> {
+    const chatId = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'forwardMessage',
+    );
     const sentMessages = await this.wpp!.forwardMessagesV2(
-      this.ensureSuffix(request.chatId),
+      chatId,
       request.messageId,
     );
     const sent = Array.isArray(sentMessages) && sentMessages.length > 0;
@@ -587,16 +612,19 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     if (quotedMessageId) {
       options.quotedMsg = quotedMessageId;
     }
+    const chatId = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'sendPoll',
+    );
     const sent = await this.wpp!.sendPollMessage(
-      this.ensureSuffix(request.chatId),
+      chatId,
       request.poll.name,
       request.poll.options,
       options,
     );
-    const message = this.toWAMessage(sent);
-    const messageIdPart = this.getMessageIdPart(message.id);
-    this.saveSentMessageId(messageIdPart);
-    message.source = this.getMessageSource(messageIdPart);
+    const messageIdPart = this.getMessageIdPart(Deserialized(sent?.id));
+    this.hooks.message.sent.call(messageIdPart);
+    const message = await this.toWAMessage(sent);
     return message;
   }
 
@@ -604,7 +632,10 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
   public async sendContactVCard(
     request: MessageContactVcardRequest,
   ): Promise<WAMessage> {
-    const chatId = this.ensureSuffix(request.chatId);
+    const chatId = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'sendContactVCard',
+    );
     const contacts: Array<{ id: string; name: string }> = [];
 
     // Raw vcard
@@ -616,8 +647,12 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
       if (!id) {
         continue;
       }
+      const contactId = await this.hooks.wid.chat.promise(
+        id,
+        'sendContactVCard',
+      );
       contacts.push({
-        id: this.ensureSuffix(id),
+        id: contactId,
         name: contact.fullName || null,
       });
     }
@@ -627,8 +662,12 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     ) as any;
     for (const contact of contactsData) {
       const id = contact.whatsappId || normalizePN(contact.phoneNumber);
+      const contactId = await this.hooks.wid.chat.promise(
+        id,
+        'sendContactVCard',
+      );
       contacts.push({
-        id: this.ensureSuffix(id),
+        id: contactId,
         name: contact.fullName || null,
       });
     }
@@ -640,11 +679,11 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
         single.id,
         single.name || undefined,
       );
-      return this.toWAMessage(sent);
+      return await this.toWAMessage(sent);
     }
 
     const sent = await this.wpp!.sendContactVcardList(chatId, contacts);
-    return this.toWAMessage(sent);
+    return await this.toWAMessage(sent);
   }
 
   @Activity()
@@ -653,20 +692,28 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     const content = await this.fileToBuffer(request.file);
     const mimetype = request.file.mimetype || WAMimeType.IMAGE;
     const media = WPPMedia(content, mimetype);
+    let mentions: string[] | undefined;
+    if (request.mentions) {
+      mentions = await Promise.all(
+        request.mentions.map((mention) =>
+          this.hooks.wid.mention.promise(mention, 'sendImage'),
+        ),
+      );
+    }
     const options: ImageMessageOptions = {
       type: 'image',
       caption: request.caption,
       filename: request.file.filename,
       mimetype: mimetype,
       quotedMsg: quotedMessageId,
-      mentionedList: request.mentions?.map((id) => this.ensureSuffix(id)),
+      mentionedList: mentions,
       waitForAck: false,
     };
-    return await this.sendMedia(
-      this.ensureSuffix(request.chatId),
-      media,
-      options,
+    const chatId = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'sendImage',
     );
+    return await this.sendMedia(chatId, media, options);
   }
 
   @Activity()
@@ -675,20 +722,28 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     const content = await this.fileToBuffer(request.file);
     const mimetype = request.file.mimetype || (await detectMimetype(content));
     const media = WPPMedia(content, mimetype);
+    let mentions: string[] | undefined;
+    if (request.mentions) {
+      mentions = await Promise.all(
+        request.mentions.map((mention) =>
+          this.hooks.wid.mention.promise(mention, 'sendFile'),
+        ),
+      );
+    }
     const options: DocumentMessageOptions = {
       type: 'document',
       caption: request.caption,
       filename: request.file.filename,
       mimetype: mimetype,
       quotedMsg: quotedMessageId,
-      mentionedList: request.mentions?.map((id) => this.ensureSuffix(id)),
+      mentionedList: mentions,
       waitForAck: false,
     };
-    return await this.sendMedia(
-      this.ensureSuffix(request.chatId),
-      media,
-      options,
+    const chatId = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'sendFile',
     );
+    return await this.sendMedia(chatId, media, options);
   }
 
   @Activity()
@@ -708,11 +763,11 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
       quotedMsg: quotedMessageId,
       waitForAck: false,
     };
-    return await this.sendMedia(
-      this.ensureSuffix(request.chatId),
-      media,
-      options,
+    const chatId = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'sendVoice',
     );
+    return await this.sendMedia(chatId, media, options);
   }
 
   @Activity()
@@ -725,6 +780,14 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
       mimetype = WAMimeType.VIDEO;
     }
     const media = WPPMedia(content, mimetype);
+    let mentions: string[] | undefined;
+    if (request.mentions) {
+      mentions = await Promise.all(
+        request.mentions.map((mention) =>
+          this.hooks.wid.mention.promise(mention, 'sendVideo'),
+        ),
+      );
+    }
     const options: VideoMessageOptions = {
       type: 'video',
       isPtv: request.asNote,
@@ -732,14 +795,34 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
       filename: request.file.filename,
       mimetype: mimetype,
       quotedMsg: quotedMessageId,
-      mentionedList: request.mentions?.map((id) => this.ensureSuffix(id)),
+      mentionedList: mentions,
       waitForAck: false,
     };
-    return await this.sendMedia(
-      this.ensureSuffix(request.chatId),
-      media,
-      options,
+    const chatId = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'sendVideo',
     );
+    return await this.sendMedia(chatId, media, options);
+  }
+
+  @Activity()
+  async sendSticker(request: MessageStickerRequest) {
+    const quotedMessageId = this.getReplyToMessageId(request as any);
+    const content = await this.fileToBuffer(request.file);
+    const mimetype = request.file.mimetype || WAMimeType.STICKER;
+    const media = WPPMedia(content, mimetype);
+    const options: StickerMessageOptions = {
+      type: 'sticker',
+      filename: request.file.filename,
+      mimetype: mimetype,
+      quotedMsg: quotedMessageId,
+      waitForAck: false,
+    };
+    const chatId = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'sendSticker',
+    );
+    return await this.sendMedia(chatId, media, options);
   }
 
   @Activity()
@@ -812,7 +895,7 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
         _data: sent,
       };
     }
-    this.saveSentMessageId(this.extractMessageIdPart(sentId));
+    this.hooks.message.sent.call(this.extractMessageIdPart(sentId));
     const sentMessage = await this.wpp.getMessageById(sentId).catch(() => null);
     if (!sentMessage) {
       return {
@@ -820,7 +903,7 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
         _data: sent,
       };
     }
-    return this.toWAMessage(sentMessage);
+    return await this.toWAMessage(sentMessage);
   }
 
   private async convertVideo(content: Buffer): Promise<Buffer> {
@@ -850,7 +933,7 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
         _data: sent,
       };
     }
-    this.saveSentMessageId(this.extractMessageIdPart(sentId));
+    this.hooks.message.sent.call(this.extractMessageIdPart(sentId));
     const sentMessage = await this.wpp.getMessageById(sentId).catch(() => null);
     if (!sentMessage) {
       return {
@@ -858,33 +941,45 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
         _data: sent,
       };
     }
-    return this.toWAMessage(sentMessage);
+    return await this.toWAMessage(sentMessage);
   }
 
   @Activity()
   public async reply(request: MessageReplyRequest) {
     const quotedMessageId = this.getReplyToMessageId(request as any);
+    let mentions: string[] | undefined;
+    if (request.mentions) {
+      mentions = await Promise.all(
+        request.mentions.map((mention) =>
+          this.hooks.wid.mention.promise(mention, 'reply'),
+        ),
+      );
+    }
     const options: WppSendTextOptions = {
-      mentionedList: request.mentions?.map((id) => this.ensureSuffix(id)),
+      mentionedList: mentions,
       quotedMsg: quotedMessageId,
       waitForAck: false,
     };
-    const sent = await this.wpp!.sendText(
-      this.ensureSuffix(request.chatId),
-      request.text,
-      options,
-    );
-    return this.toWAMessage(sent);
+    const chatId = await this.hooks.wid.chat.promise(request.chatId, 'reply');
+    const sent = await this.wpp!.sendText(chatId, request.text, options);
+    return await this.toWAMessage(sent);
   }
 
   @Activity()
   public async startTyping(request: ChatRequest): Promise<void> {
-    await this.wpp!.startTyping(this.ensureSuffix(request.chatId));
+    const chatId = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'startTyping',
+    );
+    await this.wpp!.startTyping(chatId);
   }
 
   @Activity()
   public async stopTyping(request: ChatRequest) {
-    const chatId = this.ensureSuffix(request.chatId);
+    const chatId = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'stopTyping',
+    );
     await Promise.all([
       this.wpp!.stopTyping(chatId),
       this.wpp!.stopRecording(chatId),
@@ -905,29 +1000,39 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
   @Activity()
   async sendText(request: MessageTextRequest) {
     const quotedMessageId = this.getReplyToMessageId(request as any);
+    let mentions: string[] | undefined;
+    if (request.mentions) {
+      mentions = await Promise.all(
+        request.mentions.map((mention) =>
+          this.hooks.wid.mention.promise(mention, 'sendText'),
+        ),
+      );
+    }
     const options: WppSendTextOptions = {
-      mentionedList: request.mentions?.map((id) => this.ensureSuffix(id)),
+      mentionedList: mentions,
       quotedMsg: quotedMessageId,
       waitForAck: false,
     };
-    const sent = await this.wpp!.sendText(
-      this.ensureSuffix(request.chatId),
-      request.text,
-      options,
+    const chatId = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'sendText',
     );
-    const message = this.toWAMessage(sent);
-    const messageIdPart = this.getMessageIdPart(message.id);
-    this.saveSentMessageId(messageIdPart);
-    message.source = this.getMessageSource(messageIdPart);
+    const sent = await this.wpp!.sendText(chatId, request.text, options);
+    const messageIdPart = this.getMessageIdPart(Deserialized(sent?.id));
+    this.hooks.message.sent.call(messageIdPart);
+    const message = await this.toWAMessage(sent);
     return message as any;
   }
 
   @Activity()
   async sendSeen(request: SendSeenRequest) {
-    await this.wpp!.sendSeen(this.ensureSuffix(request.chatId));
+    const chatId = await this.hooks.wid.chat.promise(
+      request.chatId,
+      'sendSeen',
+    );
+    await this.wpp!.sendSeen(chatId);
   }
 
-  @Activity()
   public async setPresence(presence: WAHAPresenceStatus, chatId?: string) {
     switch (presence) {
       case WAHAPresenceStatus.ONLINE:
@@ -937,20 +1042,29 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
         await this.wpp!.setOnlinePresence(false);
         break;
       case WAHAPresenceStatus.TYPING: {
-        await this.maintainPresenceOnline();
-        const normalizedChatId = this.ensureSuffix(chatId);
+        await this.hooks.activity.promise('setPresence');
+        const normalizedChatId = await this.hooks.wid.chat.promise(
+          chatId,
+          'setPresence',
+        );
         await this.wpp!.startTyping(normalizedChatId);
         break;
       }
       case WAHAPresenceStatus.RECORDING: {
-        await this.maintainPresenceOnline();
-        const normalizedChatId = this.ensureSuffix(chatId);
+        await this.hooks.activity.promise('setPresence');
+        const normalizedChatId = await this.hooks.wid.chat.promise(
+          chatId,
+          'setPresence',
+        );
         await this.wpp!.startRecording(normalizedChatId);
         break;
       }
       case WAHAPresenceStatus.PAUSED: {
-        await this.maintainPresenceOnline();
-        const normalizedChatId = this.ensureSuffix(chatId);
+        await this.hooks.activity.promise('setPresence');
+        const normalizedChatId = await this.hooks.wid.chat.promise(
+          chatId,
+          'setPresence',
+        );
         await Promise.all([
           this.wpp!.stopTyping(normalizedChatId),
           this.wpp!.stopRecording(normalizedChatId),
@@ -971,7 +1085,7 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
 
   @Activity()
   public async getPresence(id: string): Promise<WAHAChatPresences> {
-    const chatId = this.ensureSuffix(id);
+    const chatId = await this.hooks.wid.chat.promise(id, 'getPresence');
     await this.subscribePresence(chatId);
     const presence = this.presencesByChatId.get(chatId);
     if (presence) {
@@ -985,7 +1099,7 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
 
   @Activity()
   public async subscribePresence(id: string): Promise<any> {
-    const chatId = this.ensureSuffix(id);
+    const chatId = await this.hooks.wid.chat.promise(id, 'subscribePresence');
     await this.wpp!.subscribePresence(chatId);
     return null;
   }
@@ -1014,7 +1128,7 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
         _data: sent,
       };
     }
-    this.saveSentMessageId(this.getMessageIdPart(sentId));
+    this.hooks.message.sent.call(this.getMessageIdPart(sentId));
     const sentMessage = await this.wpp!.getMessageById(sentId).catch(
       () => null,
     );
@@ -1024,7 +1138,7 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
         _data: sent,
       };
     }
-    return this.toWAMessage(sentMessage);
+    return await this.toWAMessage(sentMessage);
   }
 
   async getChats(pagination, filter: OverviewFilter | null = null) {
@@ -1036,7 +1150,10 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
       };
     });
     if (filter?.ids?.length) {
-      const ids = new Set(filter.ids.map((id) => this.ensureSuffix(id)));
+      const normalizedIds = await Promise.all(
+        filter.ids.map((id) => this.hooks.wid.chat.promise(id, 'getChats')),
+      );
+      const ids = new Set(normalizedIds);
       rows = rows.filter((chat) => ids.has(chat.id));
     }
 
@@ -1091,12 +1208,11 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
         "Can not get messages from 'all' in WPP",
       );
     }
-    const id = this.ensureSuffix(chatId);
+    const id = await this.hooks.wid.chat.promise(chatId, 'getChatMessages');
 
     const offset = query?.offset || 0;
     const limit = query?.limit || 10;
     const fetchCount = offset + limit;
-    const downloadMedia = query.downloadMedia;
     const rawMessages = await this.wpp!.getMessages(id, {
       count: fetchCount,
       direction: 'before',
@@ -1111,7 +1227,9 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
       messagesById.set(rawMessageId, rawMessage);
     }
 
-    let messages = rawMessages.map((message) => this.toWAMessage(message));
+    let messages = await Promise.all(
+      rawMessages.map((message) => this.toWAMessage(message)),
+    );
     messages = this.filterMessages(messages, filter);
     messages = new PaginatorInMemory({
       limit: limit,
@@ -1120,10 +1238,11 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
       sortOrder: query?.sortOrder || SortOrder.DESC,
     }).apply(messages);
 
-    if (!downloadMedia) {
-      return messages;
-    }
-
+    const params = {
+      download: query.downloadMedia,
+      mimetypes: query.downloadMediaMimetypes,
+    };
+    const options = lodash.defaults({}, params, this.media.api);
     const promises = [];
     for (const message of messages) {
       const rawMessage = messagesById.get(message.id);
@@ -1131,7 +1250,7 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
         promises.push(Promise.resolve(message));
         continue;
       }
-      promises.push(this.processIncomingMessage(rawMessage, true));
+      promises.push(this.processIncomingMessage(rawMessage, options));
     }
     let result = await Promise.all(promises);
     result = result.filter(Boolean);
@@ -1148,7 +1267,12 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     if (!message) {
       return null;
     }
-    return this.processIncomingMessage(message, query.downloadMedia);
+    const params = {
+      download: query.downloadMedia,
+      mimetypes: query.downloadMediaMimetypes,
+    };
+    const options = lodash.defaults({}, params, this.media.api);
+    return this.processIncomingMessage(message, options);
   }
 
   @Activity()
@@ -1156,7 +1280,10 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     chatId: string,
     messageId: string,
   ): Promise<boolean> {
-    const normalizedChatId = this.ensureSuffix(chatId);
+    const normalizedChatId = await this.hooks.wid.chat.promise(
+      chatId,
+      'deleteMessage',
+    );
     await this.wpp!.deleteMessage(normalizedChatId, messageId);
     return true;
   }
@@ -1170,38 +1297,62 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     void chatId;
     const options: WppEditMessageOptions = {};
     if (request.mentions?.length) {
-      options.mentions = request.mentions.map((id) => this.ensureSuffix(id));
+      options.mentions = await Promise.all(
+        request.mentions.map((mention) =>
+          this.hooks.wid.mention.promise(mention, 'editMessage'),
+        ),
+      );
     }
     if (request.linkPreview != null) {
       options.linkPreview = request.linkPreview;
     }
     const sent = await this.wpp!.editMessage(messageId, request.text, options);
-    return this.toWAMessage(sent);
+    return await this.toWAMessage(sent);
   }
 
   @Activity()
-  public deleteChat(chatId: string): Promise<boolean> {
-    return this.wpp!.deleteChat(this.ensureSuffix(chatId));
+  public async deleteChat(chatId: string): Promise<boolean> {
+    const normalizedChatId = await this.hooks.wid.chat.promise(
+      chatId,
+      'deleteChat',
+    );
+    return this.wpp!.deleteChat(normalizedChatId);
   }
 
   @Activity()
-  public clearMessages(chatId: string): Promise<boolean> {
-    return this.wpp!.clearChat(this.ensureSuffix(chatId), true);
+  public async clearMessages(chatId: string): Promise<boolean> {
+    const normalizedChatId = await this.hooks.wid.chat.promise(
+      chatId,
+      'clearMessages',
+    );
+    return this.wpp!.clearChat(normalizedChatId, true);
   }
 
   @Activity()
-  public chatsArchiveChat(chatId: string): Promise<any> {
-    return this.wpp!.archiveChat(this.ensureSuffix(chatId), true);
+  public async chatsArchiveChat(chatId: string): Promise<any> {
+    const normalizedChatId = await this.hooks.wid.chat.promise(
+      chatId,
+      'chatsArchiveChat',
+    );
+    return this.wpp!.archiveChat(normalizedChatId, true);
   }
 
   @Activity()
-  public chatsUnarchiveChat(chatId: string): Promise<any> {
-    return this.wpp!.archiveChat(this.ensureSuffix(chatId), false);
+  public async chatsUnarchiveChat(chatId: string): Promise<any> {
+    const normalizedChatId = await this.hooks.wid.chat.promise(
+      chatId,
+      'chatsUnarchiveChat',
+    );
+    return this.wpp!.archiveChat(normalizedChatId, false);
   }
 
   @Activity()
-  public chatsUnreadChat(chatId: string): Promise<boolean> {
-    return this.wpp!.markUnseenMessage(this.ensureSuffix(chatId));
+  public async chatsUnreadChat(chatId: string): Promise<boolean> {
+    const normalizedChatId = await this.hooks.wid.chat.promise(
+      chatId,
+      'chatsUnreadChat',
+    );
+    return this.wpp!.markUnseenMessage(normalizedChatId);
   }
 
   @Activity()
@@ -1210,13 +1361,20 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     request: ReadChatMessagesQuery,
   ): Promise<ReadChatMessagesResponse> {
     void request;
-    await this.wpp!.sendSeen(this.ensureSuffix(chatId));
+    const normalizedChatId = await this.hooks.wid.chat.promise(
+      chatId,
+      'readChatMessages',
+    );
+    await this.wpp!.sendSeen(normalizedChatId);
     return { ids: null };
   }
 
   @Activity()
   public async fetchContactProfilePicture(id: string): Promise<string | null> {
-    const contactId = this.ensureSuffix(id);
+    const contactId = await this.hooks.wid.chat.promise(
+      id,
+      'fetchContactProfilePicture',
+    );
     const profilePicture = await this.wpp!.getProfilePicFromServer(contactId);
     return (
       profilePicture?.eurl ||
@@ -1231,9 +1389,11 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
   //
 
   public async getContact(query: ContactQuery) {
-    const contact = await this.wpp!.getContact(
-      this.ensureSuffix(query.contactId),
+    const contactId = await this.hooks.wid.chat.promise(
+      query.contactId,
+      'getContact',
     );
+    const contact = await this.wpp!.getContact(contactId);
     return this.toWAContact(contact);
   }
 
@@ -1246,9 +1406,11 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
   public async getContactAbout(
     query: ContactQuery,
   ): Promise<{ about: string }> {
-    const result = await this.wpp!.getStatus(
-      this.ensureSuffix(query.contactId),
-    ).catch(() => null);
+    const contactId = await this.hooks.wid.chat.promise(
+      query.contactId,
+      'getContactAbout',
+    );
+    const result = await this.wpp!.getStatus(contactId).catch(() => null);
     if (!result) {
       return {
         about: null,
@@ -1266,12 +1428,20 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
 
   @Activity()
   public async blockContact(request: ContactRequest): Promise<void> {
-    await this.wpp!.blockContact(this.ensureSuffix(request.contactId));
+    const contactId = await this.hooks.wid.chat.promise(
+      request.contactId,
+      'blockContact',
+    );
+    await this.wpp!.blockContact(contactId);
   }
 
   @Activity()
   public async unblockContact(request: ContactRequest): Promise<void> {
-    await this.wpp!.unblockContact(this.ensureSuffix(request.contactId));
+    const contactId = await this.hooks.wid.chat.promise(
+      request.contactId,
+      'unblockContact',
+    );
+    await this.wpp!.unblockContact(contactId);
   }
 
   //
@@ -1302,7 +1472,10 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
   public async findLIDByPhoneNumber(
     phoneNumber: string,
   ): Promise<LidToPhoneNumber> {
-    const normalizedPhoneNumber = this.ensureSuffix(phoneNumber);
+    const normalizedPhoneNumber = await this.hooks.wid.chat.promise(
+      phoneNumber,
+      'findLIDByPhoneNumber',
+    );
     const entry = await this.wpp!.getPnLidEntry(normalizedPhoneNumber).catch(
       () => null,
     );
@@ -1314,9 +1487,11 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
   //
 
   @Activity()
-  public createGroup(request: CreateGroupRequest): Promise<any> {
-    const participants = request.participants.map((participant) =>
-      this.ensureSuffix(participant.id),
+  public async createGroup(request: CreateGroupRequest): Promise<any> {
+    const participants = await Promise.all(
+      request.participants.map((participant) =>
+        this.hooks.wid.chat.promise(participant.id, 'createGroup'),
+      ),
     );
     return this.wpp!.createGroup(request.name, participants);
   }
@@ -1367,18 +1542,24 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     return true;
   }
 
-  public getGroup(id: string): Promise<any> {
-    return this.wpp!.getChatById(this.ensureSuffix(id));
+  public async getGroup(id: string): Promise<any> {
+    const groupId = await this.hooks.wid.chat.promise(id, 'getGroup');
+    return this.wpp!.getChatById(groupId);
   }
 
   public async getGroupParticipants(id: string): Promise<GroupParticipant[]> {
-    const group = await this.wpp!.getChatById(this.ensureSuffix(id));
+    const groupId = await this.hooks.wid.chat.promise(
+      id,
+      'getGroupParticipants',
+    );
+    const group = await this.wpp!.getChatById(groupId);
     const participants = group?.groupMetadata?.participants || [];
     return this.toGroupParticipants(participants);
   }
 
   public async getInfoAdminsOnly(id): Promise<SettingsSecurityChangeInfo> {
-    const group = await this.wpp!.getChatById(this.ensureSuffix(id));
+    const groupId = await this.hooks.wid.chat.promise(id, 'getInfoAdminsOnly');
+    const group = await this.wpp!.getChatById(groupId);
     const adminsOnly = Boolean(group?.groupMetadata?.restrict);
     return {
       adminsOnly: adminsOnly,
@@ -1386,18 +1567,19 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
   }
 
   @Activity()
-  public setInfoAdminsOnly(id: string, value: boolean): Promise<boolean> {
-    return this.wpp!.setGroupProperty(
-      this.ensureSuffix(id),
-      GroupProperty.RESTRICT,
-      value,
-    );
+  public async setInfoAdminsOnly(id: string, value: boolean): Promise<boolean> {
+    const groupId = await this.hooks.wid.chat.promise(id, 'setInfoAdminsOnly');
+    return this.wpp!.setGroupProperty(groupId, GroupProperty.RESTRICT, value);
   }
 
   public async getMessagesAdminsOnly(
     id: string,
   ): Promise<SettingsSecurityChangeInfo> {
-    const group = await this.wpp!.getChatById(this.ensureSuffix(id));
+    const groupId = await this.hooks.wid.chat.promise(
+      id,
+      'getMessagesAdminsOnly',
+    );
+    const group = await this.wpp!.getChatById(groupId);
     const adminsOnly = Boolean(group?.groupMetadata?.announce);
     return {
       adminsOnly: adminsOnly,
@@ -1405,16 +1587,24 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
   }
 
   @Activity()
-  public setMessagesAdminsOnly(id: string, value: boolean): Promise<boolean> {
+  public async setMessagesAdminsOnly(
+    id: string,
+    value: boolean,
+  ): Promise<boolean> {
+    const groupId = await this.hooks.wid.chat.promise(
+      id,
+      'setMessagesAdminsOnly',
+    );
     return this.wpp!.setGroupProperty(
-      this.ensureSuffix(id),
+      groupId,
       GroupProperty.ANNOUNCEMENT,
       value,
     );
   }
 
   public async getMemberAddMode(id): Promise<SettingsMemberAddMode> {
-    const group = await this.wpp!.getChatById(this.ensureSuffix(id));
+    const groupId = await this.hooks.wid.chat.promise(id, 'getMemberAddMode');
+    const group = await this.wpp!.getChatById(groupId);
     // Undocumented property - 'all_member_add' or 'admin_add'
     const memberAddMode = group?.groupMetadata?.memberAddMode;
     return {
@@ -1423,31 +1613,118 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
   }
 
   @Activity()
-  public setMemberAddMode(id: string, value: boolean): Promise<boolean> {
+  public async setMemberAddMode(id: string, value: boolean): Promise<boolean> {
+    const groupId = await this.hooks.wid.chat.promise(id, 'setMemberAddMode');
     // Not in the GroupProperty enum, but wa-js passes the property through
     // to WhatsApp's setGroupProperty - 1 - all members, 0 - admins only
     return this.wpp!.setGroupProperty(
-      this.ensureSuffix(id),
+      groupId,
       'member_add_mode' as GroupProperty,
       value,
     );
   }
 
-  @Activity()
-  public deleteGroup(id: string): Promise<boolean> {
-    return this.wpp!.deleteChat(this.ensureSuffix(id));
+  public async getMembershipApprovalMode(
+    id: string,
+  ): Promise<SettingsMembershipApproval> {
+    const groupId = await this.hooks.wid.chat.promise(
+      id,
+      'getMembershipApprovalMode',
+    );
+    const group = await this.wpp!.getChatById(groupId);
+    return {
+      newMembersApprovalRequired:
+        !!group?.groupMetadata?.membershipApprovalMode,
+    };
   }
 
   @Activity()
-  public leaveGroup(id: string): Promise<void> {
-    return this.wpp!.leaveGroup(this.ensureSuffix(id));
+  public async setMembershipApprovalMode(
+    id: string,
+    value: boolean,
+  ): Promise<boolean> {
+    const groupId = await this.hooks.wid.chat.promise(
+      id,
+      'setMembershipApprovalMode',
+    );
+    // Not in the GroupProperty enum, but wa-js passes the property through
+    return this.wpp!.setGroupProperty(
+      groupId,
+      'membership_approval_mode' as GroupProperty,
+      value,
+    );
   }
 
   @Activity()
-  public setDescription(id: string, description: string): Promise<boolean> {
-    return this.wpp!.setGroupDescription(this.ensureSuffix(id), description);
+  public async getGroupJoinRequests(id: string): Promise<GroupJoinRequest[]> {
+    const groupId = await this.hooks.wid.chat.promise(
+      id,
+      'getGroupJoinRequests',
+    );
+    const requests = await this.wpp!.getGroupMembershipRequests(groupId);
+    return requests.map((request) => ({
+      requesterId: GetSerialized(request.id),
+      addedById: GetSerialized(request.addedBy),
+      parentGroupId: GetSerialized(request.parentGroupId),
+      requestMethod: NormalizeJoinRequestMethod(request.requestMethod),
+      timestamp: request.t,
+    }));
   }
 
+  @Activity()
+  public async approveGroupJoinRequests(
+    id: string,
+    request: ParticipantsRequest,
+  ): Promise<GroupJoinRequestResult[]> {
+    const groupId = await this.hooks.wid.chat.promise(
+      id,
+      'approveGroupJoinRequests',
+    );
+    const results = await this.wpp!.approveGroupMembershipRequest(
+      groupId,
+      request.participants.map((participant) => participant.id),
+    );
+    return results.map(WppToGroupJoinRequestResult);
+  }
+
+  @Activity()
+  public async rejectGroupJoinRequests(
+    id: string,
+    request: ParticipantsRequest,
+  ): Promise<GroupJoinRequestResult[]> {
+    const groupId = await this.hooks.wid.chat.promise(
+      id,
+      'rejectGroupJoinRequests',
+    );
+    const results = await this.wpp!.rejectGroupMembershipRequest(
+      groupId,
+      request.participants.map((participant) => participant.id),
+    );
+    return results.map(WppToGroupJoinRequestResult);
+  }
+
+  @Activity()
+  public async deleteGroup(id: string): Promise<boolean> {
+    const groupId = await this.hooks.wid.chat.promise(id, 'deleteGroup');
+    return this.wpp!.deleteChat(groupId);
+  }
+
+  @Activity()
+  public async leaveGroup(id: string): Promise<void> {
+    const groupId = await this.hooks.wid.chat.promise(id, 'leaveGroup');
+    return this.wpp!.leaveGroup(groupId);
+  }
+
+  @Activity()
+  public async setDescription(
+    id: string,
+    description: string,
+  ): Promise<boolean> {
+    const groupId = await this.hooks.wid.chat.promise(id, 'setDescription');
+    return this.wpp!.setGroupDescription(groupId, description);
+  }
+
+  @Activity()
   protected async setGroupPicture(
     id: string,
     file: BinaryFile | RemoteFile,
@@ -1456,82 +1733,107 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     const mimetype = MimetypeForDataUrl(file.mimetype || 'image/jpeg');
     const base64 = content.toString('base64');
     const media = `data:${mimetype};base64,${base64}`;
-    await this.wpp!.setGroupIcon(this.ensureSuffix(id), media);
+    const groupId = await this.hooks.wid.chat.promise(id, 'setGroupPicture');
+    await this.wpp!.setGroupIcon(groupId, media);
     return true;
   }
 
-  protected deleteGroupPicture(id: string): Promise<boolean> {
-    return this.wpp!.removeGroupIcon(this.ensureSuffix(id));
+  @Activity()
+  protected async deleteGroupPicture(id: string): Promise<boolean> {
+    const groupId = await this.hooks.wid.chat.promise(id, 'deleteGroupPicture');
+    return this.wpp!.removeGroupIcon(groupId);
   }
 
   @Activity()
-  public setSubject(id: string, subject: string): Promise<boolean> {
-    return this.wpp!.setGroupSubject(this.ensureSuffix(id), subject);
+  public async setSubject(id: string, subject: string): Promise<boolean> {
+    const groupId = await this.hooks.wid.chat.promise(id, 'setSubject');
+    return this.wpp!.setGroupSubject(groupId, subject);
   }
 
   @Activity()
   public async getInviteCode(id: string): Promise<string> {
-    const inviteLink = await this.wpp!.getGroupInviteLink(
-      this.ensureSuffix(id),
-    );
+    const groupId = await this.hooks.wid.chat.promise(id, 'getInviteCode');
+    const inviteLink = await this.wpp!.getGroupInviteLink(groupId);
     return this.unwrapGroupInviteCode(inviteLink);
   }
 
   @Activity()
   public async revokeInviteCode(id: string): Promise<string> {
-    const inviteLink = await this.wpp!.revokeGroupInviteLink(
-      this.ensureSuffix(id),
-    );
+    const groupId = await this.hooks.wid.chat.promise(id, 'revokeInviteCode');
+    const inviteLink = await this.wpp!.revokeGroupInviteLink(groupId);
     return this.unwrapGroupInviteCode(inviteLink);
   }
 
   public async getParticipants(id: string): Promise<any[]> {
-    const group = await this.wpp!.getChatById(this.ensureSuffix(id));
+    const groupId = await this.hooks.wid.chat.promise(id, 'getParticipants');
+    const group = await this.wpp!.getChatById(groupId);
     return group?.groupMetadata?.participants || [];
   }
 
   @Activity()
-  public addParticipants(
+  public async addParticipants(
     id: string,
     request: ParticipantsRequest,
   ): Promise<any> {
-    const participants = request.participants.map((participant) =>
-      this.ensureSuffix(participant.id),
+    const participants = await Promise.all(
+      request.participants.map((participant) =>
+        this.hooks.wid.chat.promise(participant.id, 'addParticipants'),
+      ),
     );
-    return this.wpp!.addParticipant(this.ensureSuffix(id), participants);
+    const groupId = await this.hooks.wid.chat.promise(id, 'addParticipants');
+    return this.wpp!.addParticipant(groupId, participants);
   }
 
   @Activity()
-  public removeParticipants(
+  public async removeParticipants(
     id: string,
     request: ParticipantsRequest,
   ): Promise<any> {
-    const participants = request.participants.map((participant) =>
-      this.ensureSuffix(participant.id),
+    const participants = await Promise.all(
+      request.participants.map((participant) =>
+        this.hooks.wid.chat.promise(participant.id, 'removeParticipants'),
+      ),
     );
-    return this.wpp!.removeParticipant(this.ensureSuffix(id), participants);
+    const groupId = await this.hooks.wid.chat.promise(id, 'removeParticipants');
+    return this.wpp!.removeParticipant(groupId, participants);
   }
 
   @Activity()
-  public promoteParticipantsToAdmin(
+  public async promoteParticipantsToAdmin(
     id: string,
     request: ParticipantsRequest,
   ): Promise<boolean> {
-    const participants = request.participants.map((participant) =>
-      this.ensureSuffix(participant.id),
+    const participants = await Promise.all(
+      request.participants.map((participant) =>
+        this.hooks.wid.chat.promise(
+          participant.id,
+          'promoteParticipantsToAdmin',
+        ),
+      ),
     );
-    return this.wpp!.promoteParticipant(this.ensureSuffix(id), participants);
+    const groupId = await this.hooks.wid.chat.promise(
+      id,
+      'promoteParticipantsToAdmin',
+    );
+    await this.wpp!.promoteParticipant(groupId, participants);
+    return true;
   }
 
   @Activity()
-  public demoteParticipantsToUser(
+  public async demoteParticipantsToUser(
     id: string,
     request: ParticipantsRequest,
   ): Promise<true | void> {
-    const participants = request.participants.map((participant) =>
-      this.ensureSuffix(participant.id),
+    const participants = await Promise.all(
+      request.participants.map((participant) =>
+        this.hooks.wid.chat.promise(participant.id, 'demoteParticipantsToUser'),
+      ),
     );
-    return this.wpp!.demoteParticipant(this.ensureSuffix(id), participants);
+    const groupId = await this.hooks.wid.chat.promise(
+      id,
+      'demoteParticipantsToUser',
+    );
+    return this.wpp!.demoteParticipant(groupId, participants);
   }
 
   //
@@ -1594,7 +1896,10 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
   }
 
   public async getChatLabels(chatId: string): Promise<Label[]> {
-    const normalizedChatId = this.ensureSuffix(chatId);
+    const normalizedChatId = await this.hooks.wid.chat.promise(
+      chatId,
+      'getChatLabels',
+    );
     const labels = await this.getLabels();
     const checks = labels.map(async (label) => {
       const chats = await this.wpp!.listChats({
@@ -1614,7 +1919,10 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
 
   @Activity()
   public async putLabelsToChat(chatId: string, labels: LabelID[]) {
-    const normalizedChatId = this.ensureSuffix(chatId);
+    const normalizedChatId = await this.hooks.wid.chat.promise(
+      chatId,
+      'putLabelsToChat',
+    );
     const targetLabelIds = labels.map((label) => label.id);
     const currentLabels = await this.getChatLabels(normalizedChatId);
     const currentLabelIds = currentLabels.map((label) => label.id);
@@ -1823,8 +2131,8 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
       filter((payload) => {
         return this.jids.include(payload.chatId);
       }),
-      map((payload): WAMessageEditedBody => {
-        const message = this.toWAMessage(payload.message);
+      concatMap(async (payload): Promise<WAMessageEditedBody> => {
+        const message = await this.toWAMessage(payload.message);
         const serializedOriginalId = payload.editedMessageId || message.id;
         // Short ID for DB lookup (matches how WEBJS uses message._data?.id?.id)
         const editedMessageId =
@@ -1925,6 +2233,20 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
       filter(Boolean),
     );
     this.events2.get(WAHAEvents.GROUP_V2_UPDATE).switch(groupV2Update$);
+
+    const groupV2ParticipantsJoinRequest$ = streams.onAnyMessage.pipe(
+      map((p) => p.data),
+      filter((msg) => msg?.type === MessageType.GP2),
+      distinct((msg) => msg?.id, interval(60_000)),
+      map(
+        (msg): GroupV2ParticipantsJoinRequestEvent =>
+          WppGp2ToGroupV2ParticipantsJoinRequest(msg),
+      ),
+      filter(Boolean),
+    );
+    this.events2
+      .get(WAHAEvents.GROUP_V2_PARTICIPANTS_JOIN_REQUEST)
+      .switch(groupV2ParticipantsJoinRequest$);
 
     //
     // Calls
@@ -2051,7 +2373,7 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
   private toChatId(chat: any): string {
     const id = chat?.id;
     if (typeof id === 'string') {
-      return this.ensureSuffix(id);
+      return ensureSuffix(id);
     }
     return Deserialized(id);
   }
@@ -2216,19 +2538,21 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     }
   }
 
-  protected toWAMessage(message: any): WAMessage {
+  protected async toWAMessage(message: any): Promise<WAMessage> {
     const serializedId = Deserialized(message?.id);
     const messageIdPart = this.getMessageIdPart(serializedId);
     const timestamp = message?.timestamp || message?.t || null;
     const ack = message?.ack ?? WAMessageAck.PENDING;
     const hasMedia = getHasMedia(message);
     const replyTo = this.extractReplyTo(message);
+    let source = await this.hooks.message.source.promise(messageIdPart);
+    source = source ?? MessageSource.APP;
     return {
       id: serializedId,
       timestamp: timestamp,
       from: message?.from || null,
       fromMe: Boolean(message?.fromMe),
-      source: this.getMessageSource(messageIdPart),
+      source: source,
       to: message?.to || null,
       participant: message?.author || null,
       body: getMessageBody(message),
@@ -2346,25 +2670,23 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     };
   }
 
-  protected async processIncomingMessage(message: any, downloadMedia = true) {
-    const wamessage = this.toWAMessage(message);
-    if (downloadMedia) {
-      const media = await this.downloadMediaSafe(message);
-      wamessage.media = media;
-    }
-    if (downloadMedia && wamessage.replyTo?.hasMedia) {
+  protected async processIncomingMessage(
+    message: any,
+    options: MediaDownloadOptions,
+  ) {
+    const wamessage = await this.toWAMessage(message);
+    const media = await this.downloadMediaSafe(message, options);
+    wamessage.media = media;
+    if (wamessage.replyTo?.hasMedia) {
       const quotedMessage = message?.quotedMsg || message?._data?.quotedMsg;
       if (quotedMessage) {
-        wamessage.replyTo.media = await this.downloadMediaSafe(quotedMessage);
+        wamessage.replyTo.media = await this.downloadMediaSafe(
+          quotedMessage,
+          options,
+        );
       }
     }
     return wamessage;
-  }
-
-  protected async downloadMedia(message: any): Promise<WAMedia | null> {
-    let processor = new WPPEngineMediaProcessor(this.wpp);
-    processor = new LottieMediaProcessorWrapper(processor, this.logger);
-    return this.mediaManager.processMedia(processor, message, this.name);
   }
 
   protected checkStatusRequest(request: { contacts?: any[] }) {
@@ -2375,9 +2697,16 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     }
   }
 
-  protected async downloadMediaSafe(message): Promise<WAMedia | null> {
+  protected async downloadMediaSafe(
+    message: any,
+    options: MediaDownloadOptions,
+  ): Promise<WAMedia | null> {
     try {
-      return await this.downloadMedia(message);
+      let processor: IMediaEngineProcessor<any> = new WPPEngineMediaProcessor(
+        this.wpp,
+      );
+      processor = new LottieMediaProcessorWrapper(processor, this.logger);
+      return await this.mediaManager.processMedia(processor, message, options);
     } catch (error) {
       this.logger.error('Failed when tried to download media for a message');
       this.logger.error(error, error.stack);
@@ -2433,14 +2762,14 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
     if (!last) {
       return null;
     }
-    return this.toWAMessage(last);
+    return await this.toWAMessage(last);
   }
 
   private async processIncomingWPPMessage(msg: any) {
     if (msg?.fromMe) {
       await sleep(3_000);
     }
-    return this.processIncomingMessage(msg, true);
+    return this.processIncomingMessage(msg, this.media.events);
   }
 
   private async refreshMeInfo() {
@@ -2737,6 +3066,17 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
   }
 }
 
+function WppToGroupJoinRequestResult(result: {
+  error: any;
+  wid: any;
+}): GroupJoinRequestResult {
+  return {
+    requesterId: GetSerialized(result.wid),
+    success: !result.error,
+    error: Number(result.error) || undefined,
+  };
+}
+
 function extractWppMessageId(response: unknown): string | null {
   if (!response || typeof response !== 'object') {
     return null;
@@ -2800,7 +3140,15 @@ export class WPPEngineMediaProcessor implements IMediaEngineProcessor<any> {
     return toCusFormat(chatId) ?? toCusFormat(message?.from ?? '') ?? null;
   }
 
-  async getMediaBuffer(message: any): Promise<Buffer | null> {
+  async getMediaContent(message: any): Promise<MediaContent | null> {
+    const buffer = await this.getMediaBuffer(message);
+    if (!buffer) {
+      return null;
+    }
+    return { buffer: buffer };
+  }
+
+  private async getMediaBuffer(message: any): Promise<Buffer | null> {
     const base64OrDataUri = await this.wpp.downloadMedia(message);
     if (!base64OrDataUri || typeof base64OrDataUri !== 'string') {
       return null;

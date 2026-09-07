@@ -1,6 +1,3 @@
-import { ChatWootAppConfig } from '@waha/apps/chatwoot/dto/config.dto';
-import { CallsAppConfig } from '@waha/apps/calls/dto/config.dto';
-import { McpAppConfig } from '@waha/apps/mcp/dto/config.dto';
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
@@ -10,15 +7,13 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ApiExtraModels, ApiProperty } from '@nestjs/swagger';
-import { AppName } from '@waha/apps/app_sdk/apps/name';
+import {
+  AppConfigClasses,
+  AppName,
+  GetAppConfigClass,
+} from '@waha/apps/app_sdk/apps/apps';
 
-export type AllowedAppConfig =
-  | ChatWootAppConfig
-  | CallsAppConfig
-  | McpAppConfig;
-
-@ApiExtraModels(ChatWootAppConfig, CallsAppConfig, McpAppConfig)
-export class App<T extends AllowedAppConfig = any> {
+export class App<T = any> {
   @IsString()
   id: string;
 
@@ -41,36 +36,14 @@ export class App<T extends AllowedAppConfig = any> {
 
   @ValidateNested()
   @Type((options) => {
-    if (options && options.object && options.object.app) {
-      switch (options.object.app) {
-        case AppName.chatwoot:
-          return ChatWootAppConfig;
-        case AppName.calls:
-          return CallsAppConfig;
-        case AppName.mcp:
-          return McpAppConfig;
-        default:
-          return Object;
-      }
+    const name = options?.object?.app;
+    if (!name) {
+      return Object;
     }
-    return Object;
+    return GetAppConfigClass(name);
   })
   config: T;
 }
 
-export class ChatWootAppDto extends App<ChatWootAppConfig> {
-  @Type(() => ChatWootAppConfig)
-  config: ChatWootAppConfig;
-}
-
-export class CallsAppDto extends App<CallsAppConfig> {
-  @Type(() => CallsAppConfig)
-  config: CallsAppConfig;
-}
-
-export class McpAppDto extends App<McpAppConfig> {
-  @Type(() => McpAppConfig)
-  config: McpAppConfig;
-}
-
-export type AppDto = ChatWootAppDto | CallsAppDto | McpAppDto;
+// Swagger models for app configs
+ApiExtraModels(...Object.values(AppConfigClasses))(App);

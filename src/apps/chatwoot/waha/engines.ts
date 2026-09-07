@@ -5,7 +5,12 @@ import { WAHAEngine } from '@waha/structures/enums.dto';
 import { getEngineName } from '@waha/version';
 import { Message as MessageInstance } from 'whatsapp-web.js/src/structures';
 import { Jid } from '@waha/core/engines/const';
-import { isLidUser, isPnUser, toCusFormat } from '@waha/core/utils/jids';
+import {
+  isLidUser,
+  isPnUser,
+  jidsFromKey,
+  toCusFormat,
+} from '@waha/core/utils/jids';
 import { parseMessageIdSerialized } from '@waha/core/utils/ids';
 import { WAMessage } from '@waha/structures/responses.dto';
 import { CallData } from '@waha/structures/calls.dto';
@@ -21,6 +26,12 @@ export interface QuotedMedia {
 
 interface IEngineHelper {
   ChatID(message: WAMessage | any): string;
+
+  /**
+   * Phone number chat id (@c.us) of the DM contact extracted from the message payload
+   * (alt jid fields), when the engine provides it. Null otherwise.
+   */
+  PhoneNumber(message: WAMessage | any): string | null;
 
   CallChatID(call: CallData | any): string;
 
@@ -47,6 +58,15 @@ interface IEngineHelper {
 class NOWEBHelper implements IEngineHelper {
   ChatID(message: WAMessage): string {
     return message.from;
+  }
+
+  PhoneNumber(message: WAMessage | any): string | null {
+    const key = message._data?.key;
+    if (!key) {
+      return null;
+    }
+    const jids = jidsFromKey(key);
+    return pnChatIdOrNull(jids?.pn);
   }
 
   CallChatID(call: CallData): string {
@@ -98,6 +118,21 @@ class NOWEBHelper implements IEngineHelper {
 class GOWSHelper implements IEngineHelper {
   ChatID(message: WAMessage): string {
     return message.from;
+  }
+
+  PhoneNumber(message: WAMessage | any): string | null {
+    const info = message._data?.Info;
+    if (!info) {
+      return null;
+    }
+    // SenderAlt / RecipientAlt carry the phone number for @lid-addressed chats
+    let pn: string | null;
+    if (info.IsFromMe) {
+      pn = info.RecipientAlt || null;
+    } else {
+      pn = info.SenderAlt || null;
+    }
+    return pnChatIdOrNull(pn);
   }
 
   CallChatID(call: CallData): string {
@@ -154,6 +189,11 @@ class GOWSHelper implements IEngineHelper {
 class WEBJSHelper implements IEngineHelper {
   ChatID(message: WAMessage): string {
     return message._data?.id?.remote || message.from;
+  }
+
+  PhoneNumber(message: WAMessage | any): string | null {
+    void message;
+    return null;
   }
 
   CallChatID(call: CallData): string {
@@ -220,6 +260,11 @@ class WEBJSHelper implements IEngineHelper {
 class WPPHelper implements IEngineHelper {
   ChatID(message: WAMessage): string {
     return toCusFormat(parseMessageIdSerialized(message.id as any).remoteJid);
+  }
+
+  PhoneNumber(message: WAMessage | any): string | null {
+    void message;
+    return null;
   }
 
   CallChatID(call: CallData): string {
@@ -365,6 +410,17 @@ function extractBrowserQuotedMedia(replyData: any): QuotedMedia | null {
     mimetype: mimetype,
     mediaType: kind,
   };
+}
+
+function pnChatIdOrNull(pn: string | null | undefined): string | null {
+  if (!pn) {
+    return null;
+  }
+  const chatId = toCusFormat(pn);
+  if (isPnUser(chatId)) {
+    return chatId;
+  }
+  return null;
 }
 
 function preferPnChats(chats: string[]): string[] {

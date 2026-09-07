@@ -5,7 +5,7 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation } from '@nestjs/swagger';
 import { IsCommandsChat } from '@waha/apps/chatwoot/client/ids';
 import { EventName, MessageType } from '@waha/apps/chatwoot/client/types';
 import { InboxData } from '@waha/apps/chatwoot/consumers/types';
@@ -15,7 +15,6 @@ import { AppRepository } from '@waha/apps/app_sdk/storage/AppRepository';
 import { CommandPrefix } from '@waha/apps/chatwoot/cli';
 
 @Controller('webhooks/chatwoot/')
-@ApiTags('🧩 Apps')
 export class ChatwootWebhookController {
   constructor(
     private readonly chatWootQueueService: ChatWootQueueService,

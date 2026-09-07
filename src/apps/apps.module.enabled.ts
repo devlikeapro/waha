@@ -4,17 +4,20 @@ import { RMutexModule } from '@waha/modules/rmutex';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
 import { BullAuthMiddleware } from '@waha/apps/app_sdk/auth';
-import { ChatWootExports } from '@waha/apps/chatwoot/chatwoot.module';
-import { McpModuleExports } from '@waha/apps/mcp/mcp.module';
 import { AppsController } from '@waha/apps/app_sdk/api/apps.controller';
-import { CallsAppExports } from '@waha/apps/calls/calls.module';
 import { AppsService } from '@waha/apps/app_sdk/services/IAppsService';
 import { AppsEnabledService } from '@waha/apps/app_sdk/services/AppsEnabledService';
+import { UniqueAppResolver } from '@waha/apps/app_sdk/services/UniqueAppResolver';
 import { Auth } from '@waha/core/auth/config';
 import { AppRuntimeConfig } from '@waha/apps/app_sdk/apps/AppRuntime';
-import { AppName } from '@waha/apps/app_sdk/apps/name';
+import { GetApps } from '@waha/apps/app_sdk/apps/registry';
+import { HttpPathsRegistration } from '@waha/plugins/http.paths.module';
 
 const QUEUES_IMPORTS_REQUIRED = [
+  HttpPathsRegistration(
+    { prefix: '/jobs', include: { authBasic: false } },
+    { prefix: '/jobs/', include: { authBasic: false, accessLog: false } },
+  ),
   BullModule.forRoot({
     connection: {
       url: process.env.REDIS_URL || 'redis://:redis@localhost:6379',
@@ -71,47 +74,27 @@ const QUEUES_IMPORTS = AppRuntimeConfig.HasAppsRequiringQueue()
   ? QUEUES_IMPORTS_REQUIRED
   : [];
 
-function getAppModule(name: AppName) {
-  if (!AppRuntimeConfig.HasApp(name)) {
-    return {
-      imports: [],
-      controllers: [],
-      providers: [],
-    };
-  }
-  switch (name) {
-    case AppName.calls:
-      return CallsAppExports;
-    case AppName.chatwoot:
-      return ChatWootExports;
-    case AppName.mcp:
-      return McpModuleExports;
-    default:
-      throw Error(`App module not found for ${name}`);
-  }
-}
+// Apps enabled in the runtime configuration (WAHA_APPS_ON / WAHA_APPS_OFF)
+const ENABLED_APPS = GetApps().filter((app) =>
+  AppRuntimeConfig.HasApp(app.name),
+);
 
 export const AppsEnabled = {
   imports: [
     ...QUEUES_IMPORTS,
-    ...getAppModule(AppName.mcp).imports,
-    ...getAppModule(AppName.chatwoot).imports,
-    ...getAppModule(AppName.calls).imports,
+    ...ENABLED_APPS.flatMap((app) => app.nestjs.imports),
   ],
   controllers: [
     AppsController,
-    ...getAppModule(AppName.mcp).controllers,
-    ...getAppModule(AppName.chatwoot).controllers,
-    ...getAppModule(AppName.calls).controllers,
+    ...ENABLED_APPS.flatMap((app) => app.nestjs.controllers),
   ],
   providers: [
     {
       provide: AppsService,
       useClass: AppsEnabledService,
     },
-    ...getAppModule(AppName.mcp).providers,
-    ...getAppModule(AppName.calls).providers,
-    ...getAppModule(AppName.chatwoot).providers,
+    UniqueAppResolver,
+    ...ENABLED_APPS.flatMap((app) => app.nestjs.providers),
   ],
 };
 

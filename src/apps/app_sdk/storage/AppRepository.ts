@@ -84,6 +84,25 @@ export class AppRepository {
   }
 
   /**
+   * Gets the enabled app of the given type for a session.
+   * Intended for unique-per-session apps - returns the first match.
+   */
+  async getEnabledBySessionAndApp(
+    session: string,
+    appName: string,
+  ): Promise<AppDB | null> {
+    const app = await this.knex(this.tableName)
+      .where('session', session)
+      .andWhere('app', appName)
+      .andWhere('enabled', true)
+      .first();
+    if (!app) {
+      return null;
+    }
+    return this.deserialize(app);
+  }
+
+  /**
    * Gets all apps
    */
   async getAllBySession(session: string): Promise<AppDB[]> {

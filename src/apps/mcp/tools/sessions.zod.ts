@@ -4,6 +4,7 @@ import { DtoToZod } from '@waha/apps/mcp/schemas/DtoToZod';
 import {
   ListSessionsQuery,
   SessionCreateRequest,
+  SessionLogoutRequest,
   SessionUpdateRequest,
 } from '@waha/structures/sessions.dto';
 
@@ -16,5 +17,9 @@ export const SessionListInput = DtoToZod(ListSessionsQuery);
 export const SessionCreateInput = DtoToZod(SessionCreateRequest);
 
 export const SessionUpdateInput = DtoToZod(SessionUpdateRequest).extend({
+  session: z.string().describe('Session name'),
+});
+
+export const SessionLogoutInput = DtoToZod(SessionLogoutRequest).extend({
   session: z.string().describe('Session name'),
 });

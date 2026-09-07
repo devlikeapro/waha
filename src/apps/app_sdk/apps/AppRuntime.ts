@@ -1,15 +1,15 @@
 import { AppEnv } from '@waha/apps/app_sdk/env';
-import { AppDefinition, APPS } from '@waha/apps/app_sdk/apps/definition';
-import { AppName } from '@waha/apps/app_sdk/apps/name';
+import { AppModule } from '@waha/apps/app_sdk/apps/definition';
+import { GetApps } from '@waha/apps/app_sdk/apps/registry';
 
 class AppRuntimeConfigC {
-  private constructor(private apps: AppDefinition[] | null) {}
+  private constructor(private apps: AppModule[] | null) {}
 
   static FromEnv(env: typeof AppEnv) {
     if (!env.enabled) {
       return new AppRuntimeConfigC(null);
     }
-    let apps = Object.values(APPS);
+    let apps: AppModule[] = GetApps();
     // Include
     if (env.on && env.on.length > 0) {
       apps = apps.filter((app) => env.on!.includes(app.name));
@@ -30,18 +30,18 @@ class AppRuntimeConfigC {
   }
 
   GetAppsWithMigration() {
-    return this.GetApps().filter((app) => app.migrations);
+    return this.GetApps().filter((app) => app.definition.migrations);
   }
 
   GetAppsRequiringPlainKey() {
-    return this.GetApps().filter((app) => app.plainkey);
+    return this.GetApps().filter((app) => app.definition.plainkey);
   }
 
   GetAppsRequiringQueue() {
-    return this.GetApps().filter((app) => app.queue);
+    return this.GetApps().filter((app) => app.definition.queue);
   }
 
-  HasApp(name: AppName) {
+  HasApp(name: string) {
     return this.GetApps().some((app) => app.name === name);
   }
 

@@ -20,6 +20,8 @@ export const promiseTimeout = function (
   ms: number,
   promise: Promise<any>,
 ): Promise<any> {
+  // the promise may reject after the timeout already won the race - do not treat it as unhandled
+  promise?.catch?.(() => undefined);
   let timer: NodeJS.Timeout;
   return Promise.race([
     promise,

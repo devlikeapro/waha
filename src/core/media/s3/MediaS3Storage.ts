@@ -40,6 +40,7 @@ export class MediaS3Storage implements IMediaStorage {
       Bucket: this.bucket,
       Key: key,
       Body: buffer,
+      ContentType: data.file.mimetype,
       Metadata: metadata,
     });
     await this.client.send(command);

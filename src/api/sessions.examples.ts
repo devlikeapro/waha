@@ -1,4 +1,4 @@
-import { AppName } from '@waha/apps/app_sdk/apps/name';
+import { AppName } from '@waha/apps/app_sdk/apps/apps';
 
 export const SessionExamples = {
   basic: {

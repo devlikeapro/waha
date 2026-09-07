@@ -44,6 +44,26 @@ export class MessageMappingService {
     }
   }
 
+  /**
+   * Deletes all stored messages and mappings for the app.
+   */
+  async purge(): Promise<number> {
+    const trx = await this.knex.transaction();
+    try {
+      const mappings =
+        await this.messageMappingRepository.deleteAllWithTrx(trx);
+      const chatwoot =
+        await this.chatwootMessageRepository.deleteAllWithTrx(trx);
+      const whatsapp =
+        await this.whatsAppMessageRepository.deleteAllWithTrx(trx);
+      await trx.commit();
+      return mappings + chatwoot + whatsapp;
+    } catch (e) {
+      await trx.rollback();
+      throw e;
+    }
+  }
+
   async map(
     chatwoot: ChatwootMessage,
     whatsapp: WhatsAppMessage,

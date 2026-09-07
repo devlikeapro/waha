@@ -1,7 +1,7 @@
 import { AttributeKey, INBOX_CONTACT_CHAT_ID } from '@waha/apps/chatwoot/const';
 import * as lodash from 'lodash';
 import { WhatsAppMessage } from '@waha/apps/chatwoot/storage';
-import { buildMessageId } from '@waha/core/engines/noweb/session.noweb.core';
+import { buildMessageId } from '@waha/core/engines/noweb/utils';
 import { isLidUser, normalizeJid } from '@waha/core/utils/jids';
 
 export function GetJID(contact: any): string | null {

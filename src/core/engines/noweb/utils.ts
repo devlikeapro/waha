@@ -1,5 +1,25 @@
-import type { proto } from '@adiwajshing/baileys';
+import type { proto, WAMessageKey } from '@adiwajshing/baileys';
+import { toCusFormat } from '@waha/core/utils/jids';
 import esm from '@waha/vendor/esm';
+
+/**
+ * Build WAHA message id from engine one
+ * {id: "AAA", remoteJid: "11111111111@s.whatsapp.net", "fromMe": false}
+ * false_11111111111@c.us_AA
+ */
+export function buildMessageId({
+  id,
+  remoteJid,
+  fromMe,
+  participant,
+}: WAMessageKey) {
+  const chatId = toCusFormat(remoteJid);
+  const parts = [fromMe || false, chatId, id];
+  if (participant) {
+    parts.push(toCusFormat(participant));
+  }
+  return parts.join('_');
+}
 
 export function extractMediaContent(
   content: any | proto.IMessage | null | undefined,

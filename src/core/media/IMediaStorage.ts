@@ -14,6 +14,7 @@ interface Message {
 interface File {
   extension: string;
   filename?: string;
+  mimetype?: string;
 }
 
 export interface MediaData {

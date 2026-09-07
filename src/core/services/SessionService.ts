@@ -12,6 +12,7 @@ import {
   SessionCreateRequest,
   SessionDTO,
   SessionInfo,
+  SessionLogoutRequest,
   SessionUpdateRequest,
 } from '@waha/structures/sessions.dto';
 
@@ -130,7 +131,10 @@ export class SessionService {
     return this.manager.getSessionInfo(name);
   }
 
-  async logoutSession(name: string): Promise<SessionDTO> {
+  async logoutSession(
+    name: string,
+    request?: SessionLogoutRequest,
+  ): Promise<SessionDTO> {
     await this.manager.withLock(name, async () => {
       if (!(await this.manager.exists(name))) {
         throw new NotFoundException('Session not found');
@@ -139,6 +143,9 @@ export class SessionService {
       await this.manager.unpair(name);
       await this.manager.stop(name, true);
       await this.manager.logout(name);
+      if (request?.apps?.purge === true) {
+        await this.appsService.purgeBySession(this.manager, name);
+      }
       if (isRunning) {
         await this.manager.start(name);
       }

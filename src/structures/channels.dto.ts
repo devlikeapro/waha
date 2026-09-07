@@ -1,5 +1,6 @@
 import { ApiParam, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { BooleanString } from '@waha/nestjs/validation/BooleanString';
+import { CommaSeparatedStrings } from '@waha/nestjs/validation/CommaSeparatedStrings';
 import { BinaryFile, RemoteFile } from '@waha/structures/files.dto';
 import { WAMessage } from '@waha/structures/responses.dto';
 import { Transform, Type } from 'class-transformer';
@@ -192,6 +193,18 @@ export class PreviewChannelMessages {
   @Transform(BooleanString)
   @IsBoolean()
   downloadMedia: boolean = false;
+
+  @ApiProperty({
+    type: String,
+    isArray: true,
+    required: false,
+    description: 'Download only media with these mimetypes (prefix match)',
+  })
+  @Transform(CommaSeparatedStrings)
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  downloadMediaMimetypes?: string[];
 
   @IsNumber()
   @Type(() => Number)

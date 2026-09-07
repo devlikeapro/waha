@@ -34,11 +34,14 @@ import { WhatsappSession } from '../core/abc/session.abc';
 import {
   ListSessionsQuery,
   MeInfo,
+  MessageCappingData,
+  ReachoutTimelockData,
   SessionCreateRequest,
   SessionDTO,
   SessionExpand,
   SessionInfo,
   SessionInfoQuery,
+  SessionLogoutRequest,
   SessionUpdateRequest,
 } from '../structures/sessions.dto';
 import { SessionExamples } from './sessions.examples';
@@ -96,6 +99,39 @@ class SessionsController {
   @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   getMe(@SessionParam session: WhatsappSession): MeInfo | null {
     return this.sessionService.getSessionMe(session);
+  }
+
+  @Get(':session/capping')
+  @SessionApiParam
+  @ApiOperation({
+    summary: 'Fetch the account new-chat message capping (per-cycle quota)',
+    description:
+      'Fetch a fresh new-chat message capping (quota) state from WhatsApp. ' +
+      'The same value is also available under me.messageCapping in the session ' +
+      'info, and changes are pushed through the session.status event.',
+  })
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
+  fetchMessageCapping(
+    @SessionParam session: WhatsappSession,
+  ): Promise<MessageCappingData> {
+    return session.fetchMessageCapping();
+  }
+
+  @Get(':session/timelock')
+  @SessionApiParam
+  @ApiOperation({
+    summary: 'Fetch the account reachout timelock state',
+    description:
+      'Fetch a fresh reachout timelock state from WhatsApp - the restriction ' +
+      'behind "server returned error 463" when messaging new contacts. ' +
+      'The same value is also available under me.reachoutTimelock in the session ' +
+      'info, and changes are pushed through the session.status event.',
+  })
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
+  fetchReachoutTimelock(
+    @SessionParam session: WhatsappSession,
+  ): Promise<ReachoutTimelockData> {
+    return session.fetchReachoutTimelock();
   }
 
   @Post('')
@@ -168,10 +204,14 @@ class SessionsController {
     summary: 'Logout from the session',
     description: 'Logout the session, restart a session if it was not STOPPED',
   })
+  @ApiBody({ type: SessionLogoutRequest, required: false })
   @CheckPolicies(CanSession(Action.Control, FromParam('session')))
   @UsePipes(new WAHAValidationPipe())
-  async logout(@Param('session') name: string): Promise<SessionDTO> {
-    return this.sessionService.logoutSession(name);
+  async logout(
+    @Param('session') name: string,
+    @Body() request?: SessionLogoutRequest,
+  ): Promise<SessionDTO> {
+    return this.sessionService.logoutSession(name, request);
   }
 
   @Post(':session/restart')

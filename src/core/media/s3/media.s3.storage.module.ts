@@ -10,8 +10,11 @@ import {
   S3ProxyUrl,
   S3Url,
 } from '@waha/core/media/s3/MediaS3UrlResolver';
+import { HttpPathsModule } from '@waha/plugins/http.paths.module';
+import { HttpPathsService } from '@waha/plugins/HttpPathsService';
 
 @Module({
+  imports: [HttpPathsModule],
   providers: [
     {
       provide: S3Client,
@@ -44,4 +47,11 @@ import {
   exports: [MediaStorageFactory],
   controllers: [S3ProxyController],
 })
-export class MediaS3StorageModule {}
+export class MediaS3StorageModule {
+  constructor(httpPaths: HttpPathsService) {
+    httpPaths.register({
+      prefix: '/api/s3/',
+      include: { accessLog: false, metrics: false },
+    });
+  }
+}

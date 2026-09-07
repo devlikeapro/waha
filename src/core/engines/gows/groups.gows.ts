@@ -1,20 +1,28 @@
 import {
+  GOWSGroupJoinRequest,
   GOWSGroupParticipant,
+  GOWSGroupParticipantRequest,
   GroupInfoEvent,
   GroupInfoFull,
+  GroupJoinRequestEvent,
   JoinedGroupEvent,
 } from '@waha/core/engines/gows/types.group';
-import { toCusFormat, toJID } from '@waha/core/utils/jids';
+import { isPnUser, toCusFormat, toJID } from '@waha/core/utils/jids';
 import {
   GroupId,
   GroupInfo,
+  GroupJoinRequest,
+  GroupJoinRequestResult,
   GroupParticipant,
   GroupParticipantRole,
+  NormalizeJoinRequestMethod,
 } from '@waha/structures/groups.dto';
 import {
+  GroupParticipantsJoinRequestAction,
   GroupParticipantType,
   GroupV2JoinEvent,
   GroupV2LeaveEvent,
+  GroupV2ParticipantsJoinRequestEvent,
   GroupV2ParticipantsEvent,
   GroupV2UpdateEvent,
 } from '@waha/structures/groups.events.dto';
@@ -115,8 +123,10 @@ function getParticipants(jids: string[] | null, type: GroupParticipantType) {
   }
   const participants: GroupParticipant[] = [];
   for (const jid of jids) {
+    const id = toCusFormat(jid);
     participants.push({
-      id: toCusFormat(jid),
+      id: id,
+      pn: isPnUser(id) ? id : null,
       role: role,
     });
   }
@@ -167,6 +177,74 @@ function ToGroupInfoPartial(group: GroupInfoEvent): GroupInfo | null {
     }
   }
   return null;
+}
+
+export function ToGroupJoinRequest(
+  request: GOWSGroupParticipantRequest,
+): GroupJoinRequest {
+  const requestedAt = Date.parse(request.RequestedAt);
+  return {
+    requesterId: toCusFormat(request.JID),
+    addedById: null,
+    parentGroupId: null,
+    requestMethod: null,
+    timestamp: requestedAt ? Math.floor(requestedAt / 1000) : 0,
+  };
+}
+
+export function ToGroupJoinRequestResult(
+  participant: GOWSGroupParticipant,
+): GroupJoinRequestResult {
+  return {
+    requesterId: toCusFormat(participant.JID),
+    success: !participant.Error,
+    error: participant.Error || undefined,
+  };
+}
+
+function ToGroupParticipantsJoinRequestAction(
+  event: GroupJoinRequestEvent,
+  request: GOWSGroupJoinRequest,
+): GroupParticipantsJoinRequestAction | null {
+  if (event.Action === 'created') {
+    return GroupParticipantsJoinRequestAction.CREATED;
+  }
+  if (event.Action !== 'revoked') {
+    return null;
+  }
+  // The wire has one 'revoked' change for both cases - tell them apart by who sent it:
+  // the requester cancelled their own request, anyone else (an admin) rejected it
+  const self =
+    event.Sender === request.JID ||
+    (!!event.SenderPN && event.SenderPN === request.PhoneNumber);
+  if (self) {
+    return GroupParticipantsJoinRequestAction.REVOKED;
+  }
+  return GroupParticipantsJoinRequestAction.REJECTED;
+}
+
+export function ToGroupV2ParticipantsJoinRequestEvents(
+  event: GroupJoinRequestEvent,
+): GroupV2ParticipantsJoinRequestEvent[] {
+  const events: GroupV2ParticipantsJoinRequestEvent[] = [];
+  for (const request of event.Requests || []) {
+    const action = ToGroupParticipantsJoinRequestAction(event, request);
+    if (!action) {
+      continue;
+    }
+    events.push({
+      group: {
+        id: event.JID,
+      },
+      action: action,
+      requesterId: toCusFormat(request.JID),
+      requesterPn: toCusFormat(request.PhoneNumber) || null,
+      requestMethod: NormalizeJoinRequestMethod(request.RequestMethod),
+      timestamp: Date.now(),
+      _data: event,
+    });
+  }
+  return events;
 }
 
 export function ToGroupParticipants(

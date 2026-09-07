@@ -11,6 +11,10 @@ import type {
 import type { GroupMetadata } from '@adiwajshing/baileys/lib/Types/GroupMetadata';
 import type { Label } from '@adiwajshing/baileys/lib/Types/Label';
 import type { LabelAssociation } from '@adiwajshing/baileys/lib/Types/LabelAssociation';
+import {
+  getParticipantId,
+  participantsIncludeMe,
+} from '@waha/core/engines/noweb/groups.noweb';
 import { IGroupRepository } from '@waha/core/engines/noweb/store/IGroupRepository';
 import { ILabelAssociationRepository } from '@waha/core/engines/noweb/store/ILabelAssociationsRepository';
 import { ILabelsRepository } from '@waha/core/engines/noweb/store/ILabelsRepository';
@@ -380,16 +384,13 @@ export class NowebPersistentStore implements INowebStore {
     if (!this.jids.include(id)) {
       return;
     }
-    const participants: string[] = data.participants;
+    const participants: Array<string | GroupParticipant> = data.participants;
     const action: ParticipantAction = data.action;
 
     if (action == 'remove') {
       // Remove the group if the current user is removed
-      const myJid = this.socket?.authState?.creds?.me?.id;
-      const participantsIncludesMe = lodash.find(participants, (p) =>
-        esm.b.areJidsSameUser(p, myJid),
-      );
-      if (participantsIncludesMe) {
+      const me = this.socket?.authState?.creds?.me;
+      if (me && participantsIncludeMe(me, participants)) {
         await this.groupRepo.deleteById(id);
         return;
       }
@@ -419,24 +420,33 @@ export class NowebPersistentStore implements INowebStore {
 
   private participantUpdate(
     participantsById: DefaultMap<string, GroupParticipant>,
-    participant: string,
+    participant: string | GroupParticipant,
     action: ParticipantAction,
   ) {
+    const participantId = getParticipantId(participant);
+    if (!participantId) {
+      return;
+    }
     switch (action) {
       case 'add':
-        // if there's no participant - add it (by id)
-        participantsById.get(participant);
+        if (typeof participant === 'string') {
+          // if there's no participant - add it (by id)
+          participantsById.get(participantId);
+        } else {
+          // keep the full object - it carries 'phoneNumber' and 'admin' fields
+          participantsById.set(participantId, participant);
+        }
         break;
       case 'remove':
         // remove the participant (by id)
-        participantsById.delete(participant);
+        participantsById.delete(participantId);
         break;
       case 'promote':
         // set admin: admin
-        participantsById.get(participant).admin = 'admin';
+        participantsById.get(participantId).admin = 'admin';
         break;
       case 'demote':
-        participantsById.get(participant).admin = null;
+        participantsById.get(participantId).admin = null;
         break;
     }
   }

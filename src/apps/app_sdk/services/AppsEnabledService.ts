@@ -1,15 +1,12 @@
 import {
   Injectable,
   NotFoundException,
-  Optional,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { migrate } from '@waha/apps/app_sdk/migrations';
 import { IAppService } from '@waha/apps/app_sdk/services/IAppService';
 import { IAppsService } from '@waha/apps/app_sdk/services/IAppsService';
-import { ChatWootAppService } from '@waha/apps/chatwoot/services/ChatWootAppService';
-import { CallsAppService } from '@waha/apps/calls/services/CallsAppService';
-import { McpAppService } from '@waha/apps/mcp/services/McpAppService';
 import { DataStore } from '@waha/core/abc/DataStore';
 import { SessionManager } from '@waha/core/abc/manager.abc';
 import { WhatsappSession } from '@waha/core/abc/session.abc';
@@ -19,8 +16,12 @@ import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 import { App } from '../dto/app.dto';
 import { AppRepository } from '../storage/AppRepository';
-import { AppName } from '@waha/apps/app_sdk/apps/name';
 import { AppRuntimeConfig } from '@waha/apps/app_sdk/apps/AppRuntime';
+import {
+  findDuplicateUniqueApp,
+  isUniqueApp,
+} from '@waha/apps/app_sdk/apps/definition';
+import { GetApp } from '@waha/apps/app_sdk/apps/registry';
 
 export class AppDisableError extends UnprocessableEntityException {
   constructor(app: string) {
@@ -30,14 +31,21 @@ export class AppDisableError extends UnprocessableEntityException {
   }
 }
 
+export class AppUniquePerSessionError extends UnprocessableEntityException {
+  constructor(app: string, session: string, existingAppId: string) {
+    super(
+      `Only one '${app}' app is allowed per session. ` +
+        `Session '${session}' already has a '${app}' app with ID '${existingAppId}'.`,
+    );
+  }
+}
+
 @Injectable()
 export class AppsEnabledService implements IAppsService {
   constructor(
     @InjectPinoLogger('AppsService')
     protected logger: PinoLogger,
-    @Optional() protected readonly chatwootService: ChatWootAppService,
-    @Optional() protected readonly callsAppService: CallsAppService,
-    @Optional() protected readonly mcpAppService: McpAppService,
+    private readonly moduleRef: ModuleRef,
   ) {}
 
   async list(manager: SessionManager, session: string): Promise<App[]> {
@@ -64,31 +72,17 @@ export class AppsEnabledService implements IAppsService {
       throw new Error(`App with ID '${app.id}' already exists.`);
     }
 
-    let existingApps: App[] = [];
-    if (app.app === AppName.chatwoot || app.app === AppName.calls) {
-      existingApps = await repo.getAllBySession(app.session);
-    }
-    // Validate only one Chatwoot app per session
-    if (app.app === AppName.chatwoot) {
-      const existingChatwootApp = existingApps.find(
-        (existingApp) => existingApp.app === AppName.chatwoot,
+    // Validate only one instance of a unique app per session
+    if (isUniqueApp(app.app)) {
+      const existingApps = await repo.getAllBySession(app.session);
+      const duplicateApp = existingApps.find(
+        (existingApp) => existingApp.app === app.app,
       );
-
-      if (existingChatwootApp) {
-        throw new Error(
-          `Only one Chatwoot app is allowed per session. Session '${app.session}' already has a Chatwoot app with ID '${existingChatwootApp.id}'.`,
-        );
-      }
-    }
-    // Validate only one Calls app per session
-    if (app.app === AppName.calls) {
-      const existingCallsApp = existingApps.find(
-        (existingApp) => existingApp.app === AppName.calls,
-      );
-
-      if (existingCallsApp) {
-        throw new Error(
-          `Only one Calls app is allowed per session. Session '${app.session}' already has a Calls app with ID '${existingCallsApp.id}'.`,
+      if (duplicateApp) {
+        throw new AppUniquePerSessionError(
+          app.app,
+          app.session,
+          duplicateApp.id,
         );
       }
     }
@@ -192,6 +186,35 @@ export class AppsEnabledService implements IAppsService {
     return app;
   }
 
+  async purge(manager: SessionManager, appId: string): Promise<App> {
+    const knex = manager.store.getWAHADatabase();
+    const repo = new AppRepository(knex);
+    const app = await repo.getById(appId);
+    if (!app) {
+      throw new NotFoundException(`App '${appId}' not found`);
+    }
+    const service = this.getAppService(app);
+    if (!service) {
+      throw new AppDisableError(app.app);
+    }
+    await service.purge(manager, app);
+    delete app.pk;
+    return app;
+  }
+
+  async purgeBySession(manager: SessionManager, session: string) {
+    const knex = manager.store.getWAHADatabase();
+    const repo = new AppRepository(knex);
+    const apps = await repo.getAllBySession(session);
+    for (const app of apps) {
+      const service = this.getAppService(app);
+      if (!service) {
+        continue;
+      }
+      await service.purge(manager, app);
+    }
+  }
+
   async removeBySession(manager: SessionManager, session: string) {
     const knex = manager.store.getWAHADatabase();
     const repo = new AppRepository(knex);
@@ -211,6 +234,10 @@ export class AppsEnabledService implements IAppsService {
       const service = this.getAppService(app);
       if (!service && !AppRuntimeConfig.HasApp(app.app)) {
         throw new AppDisableError(app.app);
+      }
+      const plugins = service.plugins(app, session, store);
+      for (const options of plugins) {
+        session.plugins.add(options, app.id);
       }
       service.beforeSessionStart(app, session);
     }
@@ -234,6 +261,15 @@ export class AppsEnabledService implements IAppsService {
     session: string,
     apps: App[],
   ): Promise<void> {
+    // Reject duplicate unique apps in the payload before any writes,
+    // otherwise the by-type matching below binds them to the same app
+    const duplicateUniqueApp = findDuplicateUniqueApp(apps);
+    if (duplicateUniqueApp !== null) {
+      throw new UnprocessableEntityException(
+        `Only one '${duplicateUniqueApp}' app is allowed per session - remove duplicate entries from 'apps'.`,
+      );
+    }
+
     const existing = await this.list(manager, session);
     const ids = new Set<string>();
 
@@ -266,15 +302,15 @@ export class AppsEnabledService implements IAppsService {
   }
 
   private getAppService(app: App): IAppService | null {
-    switch (app.app) {
-      case AppName.chatwoot:
-        return this.chatwootService;
-      case AppName.calls:
-        return this.callsAppService;
-      case AppName.mcp:
-        return this.mcpAppService;
-      default:
-        throw new Error(`App '${app.app}' not supported`);
+    const appModule = GetApp(app.app);
+    if (!appModule) {
+      throw new Error(`App '${app.app}' not supported`);
+    }
+    try {
+      return this.moduleRef.get(appModule.Service, { strict: false });
+    } catch {
+      // Provider is not registered - app is disabled via WAHA_APPS_ON / WAHA_APPS_OFF
+      return null;
     }
   }
 

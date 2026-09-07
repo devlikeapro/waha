@@ -4,9 +4,12 @@ import { WhatsappConfigService } from '@waha/config.service';
 import { MediaLocalStorageConfig } from '@waha/core/media/local/MediaLocalStorageConfig';
 import { MediaLocalStorageFactory } from '@waha/core/media/local/MediaLocalStorageFactory';
 import { MediaStorageFactory } from '@waha/core/media/MediaStorageFactory';
+import { HttpPathsModule } from '@waha/plugins/http.paths.module';
+import { HttpPathsService } from '@waha/plugins/HttpPathsService';
 
 @Module({
   imports: [
+    HttpPathsModule,
     ServeStaticModule.forRootAsync({
       imports: [],
       extraProviders: [MediaLocalStorageConfig, WhatsappConfigService],
@@ -31,4 +34,11 @@ import { MediaStorageFactory } from '@waha/core/media/MediaStorageFactory';
   ],
   exports: [MediaStorageFactory],
 })
-export class MediaLocalStorageModule {}
+export class MediaLocalStorageModule {
+  constructor(config: MediaLocalStorageConfig, httpPaths: HttpPathsService) {
+    httpPaths.register({
+      prefix: config.filesUri + '/',
+      include: { accessLog: false, metrics: false },
+    });
+  }
+}

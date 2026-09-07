@@ -7,6 +7,7 @@ import {
   GroupsPaginationParams,
   JoinGroupRequest,
   ParticipantsRequest,
+  SettingsMembershipApproval,
   SettingsSecurityChangeInfo,
   SubjectRequest,
 } from '@waha/structures/groups.dto';
@@ -61,6 +62,13 @@ export const GroupAdminOnlyInput = DtoToZod(SettingsSecurityChangeInfo).extend({
 });
 
 export const GroupParticipantsInput = DtoToZod(ParticipantsRequest).extend({
+  session: SessionField,
+  id: GroupIdField,
+});
+
+export const GroupMembershipApprovalInput = DtoToZod(
+  SettingsMembershipApproval,
+).extend({
   session: SessionField,
   id: GroupIdField,
 });
