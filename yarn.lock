@@ -1624,9 +1624,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@img/sharp-win32-x64@npm:0.35.3, @img/sharp-win32-x64@npm:^0.35.3":
+"@img/sharp-win32-x64@npm:0.35.3":
   version: 0.35.3
   resolution: "@img/sharp-win32-x64@npm:0.35.3"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@img/sharp-win32-x64@npm:^0.35.4":
+  version: 0.35.4
+  resolution: "@img/sharp-win32-x64@npm:0.35.4"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -3447,33 +3454,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pnpm/config.env-replace@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@pnpm/config.env-replace@npm:1.1.0"
-  checksum: 10/fabe35cede1b72ad12877b8bed32f7c2fcd89e94408792c4d69009b886671db7988a2132bc18b7157489d2d0fd4266a06c9583be3d2e10c847bf06687420cb2a
-  languageName: node
-  linkType: hard
-
-"@pnpm/network.ca-file@npm:^1.0.1":
-  version: 1.0.2
-  resolution: "@pnpm/network.ca-file@npm:1.0.2"
-  dependencies:
-    graceful-fs: "npm:4.2.10"
-  checksum: 10/d8d0884646500576bd5390464d13db1bb9a62e32a1069293e5bddb2ad8354b354b7e2d2a35e12850025651e795e6a80ce9e601c66312504667b7e3ee7b52becc
-  languageName: node
-  linkType: hard
-
-"@pnpm/npm-conf@npm:^3.0.2":
-  version: 3.0.3
-  resolution: "@pnpm/npm-conf@npm:3.0.3"
-  dependencies:
-    "@pnpm/config.env-replace": "npm:^1.1.0"
-    "@pnpm/network.ca-file": "npm:^1.0.1"
-    config-chain: "npm:^1.1.11"
-  checksum: 10/222f45ef1ec398caf694a3df65d0b74de55d8291468100043140cbf65ee0a16560cdac41f5d6e95c3ab17c16a2a59eef9121c7aaccc093e68952e0bdda9df578
-  languageName: node
-  linkType: hard
-
 "@prometheus-io/client@npm:^0.16.1":
   version: 0.16.1
   resolution: "@prometheus-io/client@npm:0.16.1"
@@ -5073,14 +5053,14 @@ __metadata:
   linkType: hard
 
 "@wppconnect-team/wppconnect@github:wppconnect-team/wppconnect#master":
-  version: 2.3.1
-  resolution: "@wppconnect-team/wppconnect@https://github.com/wppconnect-team/wppconnect.git#commit=550622bcffa1cbcd219fcd2f0caaa5bc04ed53fe"
+  version: 2.3.3
+  resolution: "@wppconnect-team/wppconnect@https://github.com/wppconnect-team/wppconnect.git#commit=d7c82aaba16c549f556aae2841197cd4e11c77c3"
   dependencies:
-    "@img/sharp-win32-x64": "npm:^0.35.3"
+    "@img/sharp-win32-x64": "npm:^0.35.4"
     "@wppconnect/wa-js": "npm:^4.6.0"
     "@wppconnect/wa-version": "npm:^1.5.4472"
     atob: "npm:^2.1.2"
-    axios: "npm:^1.19.0"
+    axios: "npm:^1.20.0"
     boxen: "npm:^5.1.2"
     catch-exit: "npm:^2.0.0"
     chalk: "npm:~4.1.2"
@@ -5088,7 +5068,6 @@ __metadata:
     execa: "npm:^5.1.1"
     fsevents: "npm:^2.3.3"
     futoin-hkdf: "npm:^1.5.3"
-    latest-version: "npm:^9.0.0"
     logform: "npm:^2.7.0"
     lookpath: "npm:^1.2.3"
     mime-types: "npm:^3.0.2"
@@ -5101,7 +5080,7 @@ __metadata:
     reflect-metadata: "npm:^0.2.1"
     rimraf: "npm:^3.0.2"
     sanitize-filename: "npm:^1.6.4"
-    sharp: "npm:0.35.3"
+    sharp: "npm:0.35.4"
     tmp: "npm:^0.2.7"
     tree-kill: "npm:^1.2.2"
     winston: "npm:^3.19.0"
@@ -5111,14 +5090,14 @@ __metadata:
       optional: true
     fsevents:
       optional: true
-  checksum: 10/102e27a016f4e523088296ae6cb2f944f0e0f6de3195639fd91b9bb901ae6594cd45e9bf46619f15db21c7c5a76c747a1b15f8c5a687b37942c7ece0a25d5aea
+  checksum: 10/da8c2ca3be46104fd004a87df87587cfc38cefe0230b2b07ddf4dd64957fc030c3b904371ce5f9f3178501254136d11f3ec84468ac4d7c4feae6d0e6f16d1c20
   languageName: node
   linkType: hard
 
 "@wppconnect/wa-js@github:wppconnect-team/wa-js#main":
   version: 4.6.0
-  resolution: "@wppconnect/wa-js@https://github.com/wppconnect-team/wa-js.git#commit=27ab2c72286267897440628feb71d06879ac82a5"
-  checksum: 10/d39316b911a150033872e2e5ed54a61e2a0d6e281fbb15a40687a5a0b4e1c3cc3f327fad00c277a3bd3cd1af492179a8a76c83ad976fbd311b6349d197dac1bf
+  resolution: "@wppconnect/wa-js@https://github.com/wppconnect-team/wa-js.git#commit=b9b8a2f126425cfde3a80bdd62f53cc5bc77dda8"
+  checksum: 10/461c051774e2419687733bb38ae1c01167231d735195449c8848bde3a9e46531a4b740b3c51b2d92691a7d957145c68a98382203456bcae7e5b3abd7b55b6530
   languageName: node
   linkType: hard
 
@@ -6724,16 +6703,6 @@ __metadata:
     readable-stream: "npm:^3.0.2"
     typedarray: "npm:^0.0.6"
   checksum: 10/250e576d0617e7c58e1c4b2dd6fe69560f316d2c962a409f9f3aac794018499ddb31948b1e4296f217008e124cd5d526432097745157fe504b5d9f3dc469eadb
-  languageName: node
-  linkType: hard
-
-"config-chain@npm:^1.1.11":
-  version: 1.1.13
-  resolution: "config-chain@npm:1.1.13"
-  dependencies:
-    ini: "npm:^1.3.4"
-    proto-list: "npm:~1.2.1"
-  checksum: 10/83d22cabf709e7669f6870021c4d552e4fc02e9682702b726be94295f42ce76cfed00f70b2910ce3d6c9465d9758e191e28ad2e72ff4e3331768a90da6c1ef03
   languageName: node
   linkType: hard
 
@@ -8520,13 +8489,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graceful-fs@npm:4.2.10":
-  version: 4.2.10
-  resolution: "graceful-fs@npm:4.2.10"
-  checksum: 10/0c83c52b62c68a944dcfb9d66b0f9f10f7d6e3d081e8067b9bfdc9e5f3a8896584d576036f82915773189eec1eba599397fc620e75c03c0610fb3d67c6713c1a
-  languageName: node
-  linkType: hard
-
 "graceful-fs@npm:^4.1.2, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.11, graceful-fs@npm:^4.2.2, graceful-fs@npm:^4.2.4, graceful-fs@npm:^4.2.6, graceful-fs@npm:^4.2.9":
   version: 4.2.11
   resolution: "graceful-fs@npm:4.2.11"
@@ -8864,7 +8826,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ini@npm:^1.3.4, ini@npm:~1.3.0":
+"ini@npm:~1.3.0":
   version: 1.3.8
   resolution: "ini@npm:1.3.8"
   checksum: 10/314ae176e8d4deb3def56106da8002b462221c174ddb7ce0c49ee72c8cd1f9044f7b10cc555a7d8850982c3b9ca96fc212122749f5234bc2b6fb05fb942ed566
@@ -9901,22 +9863,6 @@ __metadata:
   version: 2.0.0
   resolution: "kuler@npm:2.0.0"
   checksum: 10/9e10b5a1659f9ed8761d38df3c35effabffbd19fc6107324095238e4ef0ff044392cae9ac64a1c2dda26e532426485342226b93806bd97504b174b0dcf04ed81
-  languageName: node
-  linkType: hard
-
-"ky@npm:^1.2.0":
-  version: 1.14.3
-  resolution: "ky@npm:1.14.3"
-  checksum: 10/afd6a6ff10e33138d5338c014a051ca920c6ced7f8452748dfe960c26fb5456f36e103cd8b5868ebf2a38bf13c2b3f53b74cbea44a1b53923e1921bb9a6447b1
-  languageName: node
-  linkType: hard
-
-"latest-version@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "latest-version@npm:9.0.0"
-  dependencies:
-    package-json: "npm:^10.0.0"
-  checksum: 10/ffebfbe1907d7a34c728cbe5aaec35fc14e48377d9094c604d7cd6119f301a3b6120c36736fa3d276462db5b5b578c2eb88ea96ed374d37c07c027bac9b3210f
   languageName: node
   linkType: hard
 
@@ -11375,18 +11321,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"package-json@npm:^10.0.0":
-  version: 10.0.1
-  resolution: "package-json@npm:10.0.1"
-  dependencies:
-    ky: "npm:^1.2.0"
-    registry-auth-token: "npm:^5.0.2"
-    registry-url: "npm:^6.0.1"
-    semver: "npm:^7.6.0"
-  checksum: 10/09e2e11c6c2b17738764ac55e9686f37395ca4b6bcac5ae5d625dfb9ae5a247c405915b314170921902c9bffb44e834acbd765dd5cebfaed5553c2fdce091985
-  languageName: node
-  linkType: hard
-
 "parent-module@npm:^1.0.0":
   version: 1.0.1
   resolution: "parent-module@npm:1.0.1"
@@ -11940,13 +11874,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"proto-list@npm:~1.2.1":
-  version: 1.2.4
-  resolution: "proto-list@npm:1.2.4"
-  checksum: 10/9cc3b46d613fa0d637033b225db1bc98e914c3c05864f7adc9bee728192e353125ef2e49f71129a413f6333951756000b0e54f299d921f02d3e9e370cc994100
-  languageName: node
-  linkType: hard
-
 "protobufjs@npm:6.8.8":
   version: 6.8.8
   resolution: "protobufjs@npm:6.8.8"
@@ -12359,7 +12286,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rc@npm:1.2.8, rc@npm:^1.2.7":
+"rc@npm:^1.2.7":
   version: 1.2.8
   resolution: "rc@npm:1.2.8"
   dependencies:
@@ -12512,24 +12439,6 @@ __metadata:
   version: 0.2.2
   resolution: "reflect-metadata@npm:0.2.2"
   checksum: 10/1c93f9ac790fea1c852fde80c91b2760420069f4862f28e6fae0c00c6937a56508716b0ed2419ab02869dd488d123c4ab92d062ae84e8739ea7417fae10c4745
-  languageName: node
-  linkType: hard
-
-"registry-auth-token@npm:^5.0.2":
-  version: 5.1.1
-  resolution: "registry-auth-token@npm:5.1.1"
-  dependencies:
-    "@pnpm/npm-conf": "npm:^3.0.2"
-  checksum: 10/36cf27fca6419e4d92c27419c5a333aea1d9dec62f7fb812fa8d8d95dcfa4124e57f22bb944512f5f97ae0e0cda90c28b3a5f0e7ace0b5620d84a8b6b2cab862
-  languageName: node
-  linkType: hard
-
-"registry-url@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "registry-url@npm:6.0.1"
-  dependencies:
-    rc: "npm:1.2.8"
-  checksum: 10/33712aa1b489aab7aba2191c1cdadfdd71f5bf166d4792d81744a6be332c160bd7d9273af8269d8a01284b9562f14a5b31b7abcf7ad9306c44887ecff51c89ab
   languageName: node
   linkType: hard
 
@@ -12798,21 +12707,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.6.0, semver@npm:^7.8.5":
-  version: 7.8.5
-  resolution: "semver@npm:7.8.5"
-  bin:
-    semver: bin/semver.js
-  checksum: 10/9b01d2ff11e6e4a4539b7ca3c5f280c8704cb397a28504469f2ed4f00ad2194748d756647362a9712fff30984d15772ab7f083108c2fb508e2096ae9e708f22c
-  languageName: node
-  linkType: hard
-
 "semver@npm:^7.7.3":
   version: 7.7.3
   resolution: "semver@npm:7.7.3"
   bin:
     semver: bin/semver.js
   checksum: 10/8dbc3168e057a38fc322af909c7f5617483c50caddba135439ff09a754b20bdd6482a5123ff543dad4affa488ecf46ec5fb56d61312ad20bb140199b88dfaea9
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.8.5":
+  version: 7.8.5
+  resolution: "semver@npm:7.8.5"
+  bin:
+    semver: bin/semver.js
+  checksum: 10/9b01d2ff11e6e4a4539b7ca3c5f280c8704cb397a28504469f2ed4f00ad2194748d756647362a9712fff30984d15772ab7f083108c2fb508e2096ae9e708f22c
   languageName: node
   linkType: hard
 
