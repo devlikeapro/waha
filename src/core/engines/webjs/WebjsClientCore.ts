@@ -645,9 +645,20 @@ export class WebjsClientCore extends Client {
       const WidFactory = d('WAWebWidFactory');
 
       const wid = WidFactory.createWidFromWidLike(chatId);
+      const bridge = d('WAWebContactPresenceBridge');
+      if (chatId.endsWith('@g.us')) {
+        if (typeof bridge.subscribeGroupPresence === 'function') {
+          await bridge.subscribeGroupPresence(wid);
+          return;
+        }
+      } else if (typeof bridge.subscribeUserPresence === 'function') {
+        await bridge.subscribeUserPresence(wid);
+        return;
+      }
+
       const chat = d('WAWebChatCollection').ChatCollection.get(wid);
-      const tc = chat == null ? void 0 : chat.getTcToken();
-      await d('WAWebContactPresenceBridge').subscribePresence(wid, tc);
+      const tc = chat?.getTcToken();
+      await bridge.subscribePresence(wid, tc);
     }, chatId);
   }
 
@@ -664,7 +675,7 @@ export class WebjsClientCore extends Client {
         return [];
       }
       let chatstates = [];
-      if (chatId.endsWith('@c.us')) {
+      if (chatId.endsWith('@c.us') || chatId.endsWith('@lid')) {
         chatstates = [presence.chatstate];
       } else {
         chatstates = presence.chatstates.getModelsArray();
