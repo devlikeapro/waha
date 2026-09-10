@@ -74,3 +74,29 @@ compare the returned identifiers. Then test one controlled send with the app
 disabled and enabled, checking recipient delivery (not just HTTP success).
 Repeat for GOWS, NOWEB, WEBJS and WPP as available. Keep personal numbers and
 session credentials out of fixtures and public logs.
+
+### Live GOWS validation — 2026-09-10
+
+Validated the compiled plugin from commit `51c0039` against a real paired
+WAHA `2026.8.2` Core / GOWS session on Linux x64, using an authorized Argentine
+test recipient. The plugin ran in a local harness with real `SessionHooks` and
+`RegisterPluginHooks`; its `checkNumberStatus` adapter called the remote WAHA
+API, and the resolved target was passed to that same session's `sendText` API.
+The app was not installed into the running worker. This verifies the resolver
+with real GOWS lookups and delivery, not the deployed app's lifecycle wiring.
+
+| Case | Result |
+| --- | --- |
+| Lookup with `54911…` | Exists; returns a LID and canonical `54911…@c.us` PN |
+| Lookup with `5411…` | Exists; returns the same LID and canonical PN |
+| Direct send to `5411…@c.us`, without plugin | HTTP 500: `no LID found for 5411…@s.whatsapp.net from server` |
+| Plugin resolves `5411…`, then send | HTTP 201; message subsequently has `ack=2`, `ackName=DEVICE` |
+| Plugin resolves `54911…`, then send | HTTP 201; message subsequently has `ack=2`, `ackName=DEVICE` |
+| Repeat resolution of the same input | Cache hit; zero additional lookup calls |
+
+The real failure was not a negative existence lookup: GOWS could resolve the
+phone through `checkNumberStatus` but could not send to the original noncanonical
+JID directly. Using the returned PN corrected the destination. The alternate
+candidate fallback remains covered by unit tests, not this real recipient.
+No live WEBJS, NOWEB or WPP coverage is claimed. Personal identifiers and raw
+responses are intentionally omitted.
