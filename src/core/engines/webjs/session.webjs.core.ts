@@ -2202,14 +2202,26 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   public async getPresence(id: string): Promise<WAHAChatPresences> {
-    const chatId = toCusFormat(id);
+    let chatId = toCusFormat(id);
+    if (isLidUser(chatId)) {
+      const pn = await this.whatsapp.findPNByLid(chatId);
+      if (pn) {
+        chatId = toCusFormat(pn);
+      }
+    }
     const presences = await this.whatsapp.getPresence(chatId);
     return this.toWahaPresences(chatId, presences);
   }
 
   @Activity()
   public async subscribePresence(id: string): Promise<any> {
-    const chatId = toCusFormat(id);
+    let chatId = toCusFormat(id);
+    if (isLidUser(chatId)) {
+      const pn = await this.whatsapp.findPNByLid(chatId);
+      if (pn) {
+        chatId = toCusFormat(pn);
+      }
+    }
     await this.whatsapp.subscribePresence(chatId);
   }
 
