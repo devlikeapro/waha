@@ -4331,6 +4331,96 @@ export namespace messages {
             return EventMessage.deserialize(bytes);
         }
     }
+    export class ForwardOptions extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            messageId?: string;
+            force?: boolean;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("messageId" in data && data.messageId != undefined) {
+                    this.messageId = data.messageId;
+                }
+                if ("force" in data && data.force != undefined) {
+                    this.force = data.force;
+                }
+            }
+        }
+        get messageId() {
+            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        }
+        set messageId(value: string) {
+            pb_1.Message.setField(this, 1, value);
+        }
+        get force() {
+            return pb_1.Message.getFieldWithDefault(this, 2, false) as boolean;
+        }
+        set force(value: boolean) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        static fromObject(data: {
+            messageId?: string;
+            force?: boolean;
+        }): ForwardOptions {
+            const message = new ForwardOptions({});
+            if (data.messageId != null) {
+                message.messageId = data.messageId;
+            }
+            if (data.force != null) {
+                message.force = data.force;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                messageId?: string;
+                force?: boolean;
+            } = {};
+            if (this.messageId != null) {
+                data.messageId = this.messageId;
+            }
+            if (this.force != null) {
+                data.force = this.force;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.messageId.length)
+                writer.writeString(1, this.messageId);
+            if (this.force != false)
+                writer.writeBool(2, this.force);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ForwardOptions {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ForwardOptions();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        message.messageId = reader.readString();
+                        break;
+                    case 2:
+                        message.force = reader.readBool();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): ForwardOptions {
+            return ForwardOptions.deserialize(bytes);
+        }
+    }
     export class MessageRequest extends pb_1.Message {
         #one_of_decls: number[][] = [];
         constructor(data?: any[] | {
@@ -4353,6 +4443,7 @@ export namespace messages {
             location?: Location;
             pollVote?: PollVoteMessage;
             mentions?: string[];
+            forward?: ForwardOptions;
         }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [11, 13, 19], this.#one_of_decls);
@@ -4413,6 +4504,9 @@ export namespace messages {
                 }
                 if ("mentions" in data && data.mentions != undefined) {
                     this.mentions = data.mentions;
+                }
+                if ("forward" in data && data.forward != undefined) {
+                    this.forward = data.forward;
                 }
             }
         }
@@ -4560,6 +4654,15 @@ export namespace messages {
         set mentions(value: string[]) {
             pb_1.Message.setField(this, 19, value);
         }
+        get forward() {
+            return pb_1.Message.getWrapperField(this, ForwardOptions, 20) as ForwardOptions;
+        }
+        set forward(value: ForwardOptions) {
+            pb_1.Message.setWrapperField(this, 20, value);
+        }
+        get has_forward() {
+            return pb_1.Message.getField(this, 20) != null;
+        }
         static fromObject(data: {
             session?: ReturnType<typeof Session.prototype.toObject>;
             jid?: string;
@@ -4580,6 +4683,7 @@ export namespace messages {
             location?: ReturnType<typeof Location.prototype.toObject>;
             pollVote?: ReturnType<typeof PollVoteMessage.prototype.toObject>;
             mentions?: string[];
+            forward?: ReturnType<typeof ForwardOptions.prototype.toObject>;
         }): MessageRequest {
             const message = new MessageRequest({});
             if (data.session != null) {
@@ -4639,6 +4743,9 @@ export namespace messages {
             if (data.mentions != null) {
                 message.mentions = data.mentions;
             }
+            if (data.forward != null) {
+                message.forward = ForwardOptions.fromObject(data.forward);
+            }
             return message;
         }
         toObject() {
@@ -4662,6 +4769,7 @@ export namespace messages {
                 location?: ReturnType<typeof Location.prototype.toObject>;
                 pollVote?: ReturnType<typeof PollVoteMessage.prototype.toObject>;
                 mentions?: string[];
+                forward?: ReturnType<typeof ForwardOptions.prototype.toObject>;
             } = {};
             if (this.session != null) {
                 data.session = this.session.toObject();
@@ -4720,6 +4828,9 @@ export namespace messages {
             if (this.mentions != null) {
                 data.mentions = this.mentions;
             }
+            if (this.forward != null) {
+                data.forward = this.forward.toObject();
+            }
             return data;
         }
         serialize(): Uint8Array;
@@ -4764,6 +4875,8 @@ export namespace messages {
                 writer.writeMessage(18, this.pollVote, () => this.pollVote.serialize(writer));
             if (this.mentions.length)
                 writer.writeRepeatedString(19, this.mentions);
+            if (this.has_forward)
+                writer.writeMessage(20, this.forward, () => this.forward.serialize(writer));
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -4829,6 +4942,9 @@ export namespace messages {
                         break;
                     case 19:
                         pb_1.Message.addToRepeatedField(message, 19, reader.readString());
+                        break;
+                    case 20:
+                        reader.readMessage(message.forward, () => message.forward = ForwardOptions.deserialize(reader));
                         break;
                     default: reader.skipField();
                 }
