@@ -38,9 +38,9 @@ import {
 } from '@waha/apps/chatwoot/dto/config.dto';
 import { Locale } from '@waha/apps/chatwoot/i18n/locale';
 import { isJidGroup } from '@waha/core/utils/jids';
+import { MessageStatusService } from '@waha/apps/chatwoot/services/MessageStatusService';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const mime = require('mime-types');
+import * as mime from 'mime-types';
 
 @Processor(QueueName.INBOX_MESSAGE_CREATED, { concurrency: JOB_CONCURRENCY })
 export class ChatWootInboxMessageCreatedConsumer extends ChatWootInboxMessageConsumer {
@@ -65,6 +65,7 @@ export class ChatWootInboxMessageCreatedConsumer extends ChatWootInboxMessageCon
       session,
       container.ChatWootConfig(),
       container.Locale(),
+      container.MessageStatusService(),
     );
     return await handler.handle(body);
   }
@@ -77,6 +78,7 @@ export class MessageHandler {
     private session: WAHASessionAPI,
     private config: ChatWootConfig,
     private l: Locale,
+    private statusService: MessageStatusService,
   ) {}
 
   async handle(body: any) {
@@ -114,6 +116,7 @@ export class MessageHandler {
     // Send text (Part 1 if present)
     const attachments = message.attachments || [];
     const sendText = content && attachments.length !== 1;
+    const expectedParts = attachments.length + (sendText ? 1 : 0);
     if (sendText) {
       part += 1; // Text is the first possible part
       const exists = await this.getMapping(message, part);
@@ -129,7 +132,7 @@ export class MessageHandler {
         });
         const msg = await this.sendTextMessage(chatId, text, replyTo, mentions);
         results.push(msg);
-        await this.saveMapping(message, msg, part);
+        await this.saveMapping(message, msg, part, expectedParts);
         this.logger.info(`Text message sent: ${msg.id}`);
       }
     }
@@ -155,8 +158,14 @@ export class MessageHandler {
         `File message sent: ${msg.id} - ${file.data_url} - ${file.file_type}`,
       );
       results.push(msg);
-      await this.saveMapping(message, msg, part);
+      await this.saveMapping(message, msg, part, expectedParts);
     }
+    // Reconcile ACKs that arrived before the last mapping was committed.
+    await this.statusService.sync({
+      conversation_id: message.conversation.id,
+      message_id: message.id,
+      expected_parts: expectedParts,
+    });
     return results;
   }
 
@@ -164,11 +173,13 @@ export class MessageHandler {
     chatwootMessage: any,
     whatsappMessage: any,
     part: number,
+    expectedParts: number,
   ): Promise<void> {
     const chatwoot: Omit<ChatwootMessage, 'id'> = {
       timestamp: new Date(chatwootMessage.created_at),
       conversation_id: chatwootMessage.conversation.id,
       message_id: chatwootMessage.id,
+      expected_parts: expectedParts,
     };
     const whatsapp = EngineHelper.WhatsAppMessageKeys(whatsappMessage);
     await this.mappingService.map(chatwoot, whatsapp, part);
@@ -258,7 +269,7 @@ export class MessageHandler {
     const session = this.session;
 
     switch (file.file_type) {
-      case 'image':
+      case 'image': {
         if (mimetype != 'image/jpeg' && mimetype != 'image/png') {
           // Send it as a file
           break;
@@ -275,7 +286,8 @@ export class MessageHandler {
           mentions: mentions,
         };
         return session.sendImage(imageRequest);
-      case 'video':
+      }
+      case 'video': {
         if (mimetype != 'video/mp4') {
           break;
         }
@@ -293,7 +305,8 @@ export class MessageHandler {
           mentions: mentions,
         };
         return session.sendVideo(videoRequest);
-      case 'audio':
+      }
+      case 'audio': {
         const voiceRequest: MessageVoiceRequest = {
           session: '',
           chatId: chatId,
@@ -305,6 +318,7 @@ export class MessageHandler {
           convert: true,
         };
         return session.sendVoice(voiceRequest);
+      }
     }
     // Fallback and send as file (attachment)
     const fileRequest: MessageFileRequest = {

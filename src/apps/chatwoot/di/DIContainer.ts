@@ -31,6 +31,8 @@ import {
   ConversationSort,
 } from '@waha/apps/chatwoot/services/ConversationSelector';
 import { Auth } from '@waha/core/auth/config';
+import { MessageAckRepository } from '@waha/apps/chatwoot/storage/MessageAckRepository';
+import { MessageStatusService } from '@waha/apps/chatwoot/services/MessageStatusService';
 
 /**
  * Dependency Injection Container for ChatWoot
@@ -187,6 +189,20 @@ export class DIContainer {
 
   public ChatWootErrorReporter(job: Job): ChatWootErrorReporter {
     return new ChatWootErrorReporter(this.Logger(), job, this.Locale());
+  }
+
+  @CacheSync()
+  public MessageAckRepository(): MessageAckRepository {
+    return new MessageAckRepository(this.Knex(), this.AppPk());
+  }
+
+  @CacheSync()
+  public MessageStatusService(): MessageStatusService {
+    return new MessageStatusService(
+      this.MessageMappingService(),
+      this.MessageAckRepository(),
+      this.ContactConversationService(),
+    );
   }
 
   /**

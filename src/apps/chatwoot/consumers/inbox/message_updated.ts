@@ -35,6 +35,7 @@ export class ChatWootInboxMessageUpdatedConsumer extends ChatWootInboxMessageCon
       session,
       container.ChatWootConfig(),
       container.Locale(),
+      container.MessageStatusService(),
     );
     return await handler.handle(body);
   }
