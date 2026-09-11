@@ -547,6 +547,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   Choose how to pull avatars for contacts.
 
+cli.cmd.contacts.pull.option.update-names: |-
+  How to update names of existing contacts: `no` - do not touch names, only new contacts get one (phone book, push name or phone number). `if-raw` - keep names set by hand, replace raw names (phone number, push name) from the phone book. `always` - the phone book is the source of truth, replace any name.
+
 cli.cmd.contacts.pull.option.groups: |-
   Include WhatsApp group contacts in the sync.
 
@@ -604,15 +607,16 @@ task.contacts.started: |-
   👤⏳ Pulling contacts... Send "contacts status" for more details.
 
 task.contacts.progress: |-
-  👤⏳ Contacts: 🆕 {{progress.created}}, 🔄 {{progress.updated}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
+  👤⏳ Contacts: 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 
 task.contacts.completed: |-
-  👤✅ Contacts Completed → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
+  👤✅ Contacts Completed → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 
 task.contacts.status: |-
   👤 Contacts: **{{state}}**
   - 🆕 Created: {{{progress.created}}} contacts
   - 🔄 Updated: {{{progress.updated}}} contacts
+  - 🏷️ Renamed: {{{progress.renamed}}} contacts
   - ⚪ Skipped: {{{progress.skipped}}} contacts
   - 🔴 Errors: {{{progress.errors}}} contacts
   - 🖼️ Avatar Updated: {{{progress.avatar.updated}}} contacts

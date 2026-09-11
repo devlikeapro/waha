@@ -194,6 +194,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   选择如何拉取联系人头像：`skip`、`if-missing` 或 `update`。
 
+cli.cmd.contacts.pull.option.update-names: |-
+  如何更新已有联系人的名称：`no` - 不改动名称，只有新联系人会获得名称（通讯录、push name 或电话号码）。`if-raw` - 保留手动设置的名称，占位名称（电话号码、push name）从通讯录解析。`always` - 以通讯录为准，替换任何名称。
+
 cli.cmd.contacts.pull.option.groups: |-
   在同步中包含 WhatsApp 群组联系人。
 
@@ -245,32 +248,22 @@ cli.help.globalOptions.title: |-
   **全局选项：**
 
 task.contacts.status: |-
-  👤 联系人拉取：**{{state}}**
-  - ✅ 成功：{{{progress.ok}}} 位联系人
-  - ⚪ 跳过：{{{progress.skipped}}} 位联系人
-  - ⚠️ 错误：{{{progress.errors}}} 位联系人
+  👤 联系人：**{{state}}**
+  - 🆕 已创建：{{{progress.created}}} 位联系人
+  - 🔄 已更新：{{{progress.updated}}} 位联系人
+  - 🏷️ 已重命名：{{{progress.renamed}}} 位联系人
+  - ⚪ 已跳过：{{{progress.skipped}}} 位联系人
+  - 🔴 错误：{{{progress.errors}}} 位联系人
+  - 🖼️ 头像已更新：{{{progress.avatar.updated}}} 位联系人
 
-  {{#job}}
-  ⌛ 时间线：
-  - 排队：{{{timestamp}}}
-  {{#processedOn}}
-  - 开始：{{{processedOn}}}
-  {{/processedOn}}
-  {{#finishedOn}}
-  - 完成：{{{finishedOn}}}
-  {{/finishedOn}}
-  {{/job}}
-
-  {{#error}}
   详情：
   [{{{details.text}}}]({{{details.url}}})
-  {{/error}}
 
 task.contacts.started: |-
   正在拉取联系人...
 
 task.contacts.progress: |-
-  联系人拉取：✅ {{progress.ok}}，⚪ {{progress.skipped}}，⚠️ {{progress.errors}}
+  👤⏳ 联系人：🆕 {{progress.created}}，🔄 {{progress.updated}}，🏷️ {{progress.renamed}}，⚪ {{progress.skipped}}，🔴 {{progress.errors}}，🖼️ {{progress.avatar.updated}}
 
 app.help.reminder: |-
   发送 **help** 获取可用命令列表。
@@ -623,9 +616,8 @@ cli.cmd.messages.pull.no-chats-found: 在该时间段内未找到可拉取的 Wh
 cli.cmd.contacts.pull.option.progress:
   每隔 N 个联系人报告进度。设置为 0 关闭报告。
 cli.cmd.contacts.pull.option.lids: 在同步中包含 WhatsApp LID（匿名）联系人。
-task.contacts.completed:
-  👤✅ 联系人同步完成 → 🆕 {{progress.created}}，🔄 {{progress.updated}}，⚪
-  {{progress.skipped}}，🔴 {{progress.errors}}，🖼️ {{progress.avatar.updated}}
+task.contacts.completed: |-
+  👤✅ 联系人已完成 → 🆕 {{progress.created}}，🔄 {{progress.updated}}，🏷️ {{progress.renamed}}，⚪ {{progress.skipped}}，🔴 {{progress.errors}}，🖼️ {{progress.avatar.updated}}
 task.messages.started: ⏳ 正在拉取消息 💬 {{{chat}}} ⏱️ {{{period}}}...
 task.messages.details: 发送 "{{{prefix}}}messages status" 查看更多详情。
 task.messages.progress:

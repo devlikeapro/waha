@@ -194,6 +194,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   نحوه دریافت آواتار مخاطبان را انتخاب کنید: `skip`، `if-missing` یا `update`.
 
+cli.cmd.contacts.pull.option.update-names: |-
+  نحوه به‌روزرسانی نام مخاطبان موجود: `no` - نام‌ها دست نخورده بمانند، فقط مخاطبان جدید نام می‌گیرند (دفترچه تلفن، push name یا شماره تلفن). `if-raw` - نام‌های دستی حفظ شوند، نام‌های جایگزین (شماره تلفن، push name) از دفترچه تلفن تعیین شوند. `always` - دفترچه تلفن منبع اصلی است، هر نامی جایگزین شود.
+
 cli.cmd.contacts.pull.option.groups: |-
   مخاطبان گروه‌های واتساپ را در همگام‌سازی قرار دهید.
 
@@ -245,32 +248,22 @@ cli.help.globalOptions.title: |-
   **گزینه‌های عمومی:**
 
 task.contacts.status: |-
-  👤 دریافت مخاطبان: **{{state}}**
-  - ✅ موفق: {{{progress.ok}}} مخاطب
-  - ⚪ نادیده‌گرفته‌شده: {{{progress.skipped}}} مخاطب
-  - ⚠️ خطا: {{{progress.errors}}} مخاطب
+  👤 مخاطبان: **{{state}}**
+  - 🆕 ایجاد شده: {{{progress.created}}} مخاطب
+  - 🔄 به‌روزرسانی شده: {{{progress.updated}}} مخاطب
+  - 🏷️ تغییر نام داده شده: {{{progress.renamed}}} مخاطب
+  - ⚪ رد شده: {{{progress.skipped}}} مخاطب
+  - 🔴 خطاها: {{{progress.errors}}} مخاطب
+  - 🖼️ آواتار به‌روزرسانی شده: {{{progress.avatar.updated}}} مخاطب
 
-  {{#job}}
-  ⌛ جدول زمانی:
-  - در صف: {{{timestamp}}}
-  {{#processedOn}}
-  - زمان شروع: {{{processedOn}}}
-  {{/processedOn}}
-  {{#finishedOn}}
-  - زمان پایان: {{{finishedOn}}}
-  {{/finishedOn}}
-  {{/job}}
-
-  {{#error}}
   جزئیات:
   [{{{details.text}}}]({{{details.url}}})
-  {{/error}}
 
 task.contacts.started: |-
   در حال دریافت مخاطبان...
 
 task.contacts.progress: |-
-  دریافت مخاطبان: ✅ {{progress.ok}}، ⚪ {{progress.skipped}}، ⚠️ {{progress.errors}}
+  👤⏳ مخاطبان: 🆕 {{progress.created}}، 🔄 {{progress.updated}}، 🏷️ {{progress.renamed}}، ⚪ {{progress.skipped}}، 🔴 {{progress.errors}}، 🖼️ {{progress.avatar.updated}}
 
 app.help.reminder: |-
   برای دریافت لیست دستورات موجود، **help** را ارسال کنید.
@@ -648,9 +641,8 @@ cli.cmd.contacts.pull.option.progress:
   پیشرفت را هر N مخاطب اعلام می‌کند. مقدار 0 گزارش‌ها را غیرفعال می‌کند.
 cli.cmd.contacts.pull.option.lids:
   مخاطبین ناشناس واتساپ (LID) را در همگام‌سازی وارد می‌کند.
-task.contacts.completed:
-  👤✅ مخاطبین تکمیل شدند → 🆕 {{progress.created}}، 🔄 {{progress.updated}}، ⚪
-  {{progress.skipped}}، 🔴 {{progress.errors}}، 🖼️ {{progress.avatar.updated}}
+task.contacts.completed: |-
+  👤✅ مخاطبین تکمیل شدند → 🆕 {{progress.created}}، 🔄 {{progress.updated}}، 🏷️ {{progress.renamed}}، ⚪ {{progress.skipped}}، 🔴 {{progress.errors}}، 🖼️ {{progress.avatar.updated}}
 task.messages.started: ⏳ در حال دریافت پیام‌ها 💬 {{{chat}}} ⏱️ {{{period}}}...
 task.messages.details:
   برای جزئیات بیشتر "{{{prefix}}}messages status" را ارسال کنید.

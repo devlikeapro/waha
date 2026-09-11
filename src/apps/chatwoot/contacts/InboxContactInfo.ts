@@ -14,6 +14,10 @@ export class InboxContactInfo implements ContactInfo {
     return INBOX_CONTACT_CHAT_ID;
   }
 
+  SetFetchedContact(): void {
+    return;
+  }
+
   async LidId(): Promise<string | null> {
     return null;
   }
@@ -23,6 +27,14 @@ export class InboxContactInfo implements ContactInfo {
   }
 
   async PhoneNumberE164(): Promise<string | null> {
+    return null;
+  }
+
+  async SavedName(): Promise<string | null> {
+    return null;
+  }
+
+  async PushName(): Promise<string | null> {
     return null;
   }
 

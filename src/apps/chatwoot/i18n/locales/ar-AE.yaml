@@ -194,6 +194,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   اختر كيفية سحب الصور الرمزية: `skip` أو `if-missing` أو `update`.
 
+cli.cmd.contacts.pull.option.update-names: |-
+  كيفية تحديث أسماء جهات الاتصال الموجودة: `no` - عدم تغيير الأسماء، جهات الاتصال الجديدة فقط تحصل على اسم (دفتر الهاتف أو push name أو رقم الهاتف). `if-raw` - الاحتفاظ بالأسماء المدخلة يدويًا، واستبدال الأسماء المؤقتة (رقم الهاتف، push name) من دفتر الهاتف. `always` - دفتر الهاتف هو المصدر الموثوق، استبدال أي اسم.
+
 cli.cmd.contacts.pull.option.groups: |-
   قم بتضمين جهات اتصال مجموعات واتساب في المزامنة.
 
@@ -245,32 +248,22 @@ cli.help.globalOptions.title: |-
   **الخيارات العامة:**
 
 task.contacts.status: |-
-  👤 سحب جهات الاتصال: **{{state}}**
-  - ✅ الناجحة: {{{progress.ok}}} جهة اتصال
-  - ⚪ تم تخطيها: {{{progress.skipped}}} جهة اتصال
-  - ⚠️ الأخطاء: {{{progress.errors}}} جهة اتصال
+  👤 جهات الاتصال: **{{state}}**
+  - 🆕 تم الإنشاء: {{{progress.created}}} جهة اتصال
+  - 🔄 تم التحديث: {{{progress.updated}}} جهة اتصال
+  - 🏷️ تمت إعادة التسمية: {{{progress.renamed}}} جهة اتصال
+  - ⚪ تم التخطي: {{{progress.skipped}}} جهة اتصال
+  - 🔴 أخطاء: {{{progress.errors}}} جهة اتصال
+  - 🖼️ تم تحديث الصورة الرمزية: {{{progress.avatar.updated}}} جهة اتصال
 
-  {{#job}}
-  ⌛ الجدول الزمني:
-  - في قائمة الانتظار: {{{timestamp}}}
-  {{#processedOn}}
-  - وقت البدء: {{{processedOn}}}
-  {{/processedOn}}
-  {{#finishedOn}}
-  - وقت الانتهاء: {{{finishedOn}}}
-  {{/finishedOn}}
-  {{/job}}
-
-  {{#error}}
   التفاصيل:
   [{{{details.text}}}]({{{details.url}}})
-  {{/error}}
 
 task.contacts.started: |-
   جارٍ سحب جهات الاتصال...
 
 task.contacts.progress: |-
-  سحب جهات الاتصال: ✅ {{progress.ok}}، ⚪ {{progress.skipped}}، ⚠️ {{progress.errors}}
+  👤⏳ جهات الاتصال: 🆕 {{progress.created}}، 🔄 {{progress.updated}}، 🏷️ {{progress.renamed}}، ⚪ {{progress.skipped}}، 🔴 {{progress.errors}}، 🖼️ {{progress.avatar.updated}}
 
 app.help.reminder: |-
   أرسل **help** للحصول على قائمة الأوامر المتاحة.
@@ -638,10 +631,8 @@ cli.cmd.contacts.pull.option.progress:
   الإبلاغ عن التقدم كل عدد N من جهات الاتصال. القيمة 0 لتعطيل التقارير.
 cli.cmd.contacts.pull.option.lids:
   تضمين جهات اتصال واتساب LID (مجهولة) في المزامنة.
-task.contacts.completed:
-  👤✅ تم إنهاء جهات الاتصال → 🆕 {{progress.created}}، 🔄 {{progress.updated}}،
-  ⚪ {{progress.skipped}}، 🔴 {{progress.errors}}، 🖼️
-  {{progress.avatar.updated}}
+task.contacts.completed: |-
+  👤✅ تم إنهاء جهات الاتصال → 🆕 {{progress.created}}، 🔄 {{progress.updated}}، 🏷️ {{progress.renamed}}، ⚪ {{progress.skipped}}، 🔴 {{progress.errors}}، 🖼️ {{progress.avatar.updated}}
 task.messages.started: ⏳ جارٍ سحب الرسائل 💬 {{{chat}}} ⏱️ {{{period}}}...
 task.messages.details:
   أرسل "{{{prefix}}}messages status" للاطلاع على المزيد من التفاصيل.

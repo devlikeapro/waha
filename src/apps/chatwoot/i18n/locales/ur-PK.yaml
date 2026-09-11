@@ -194,6 +194,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   یہ منتخب کریں کہ رابطوں کے اوتار کس طرح نکالے جائیں: `skip`, `if-missing`, یا `update`.
 
+cli.cmd.contacts.pull.option.update-names: |-
+  موجودہ رابطوں کے نام کیسے اپ ڈیٹ کیے جائیں: `no` - ناموں کو نہ چھیڑیں، صرف نئے رابطوں کو نام ملتا ہے (فون بک، push name یا فون نمبر)۔ `if-raw` - ہاتھ سے رکھے نام برقرار رکھیں، عارضی نام (فون نمبر، push name) فون بک سے حل کریں۔ `always` - فون بک ہی معتبر ذریعہ ہے، کوئی بھی نام بدل دیں۔
+
 cli.cmd.contacts.pull.option.groups: |-
   واٹس ایپ گروپ روابط کو ہم وقت سازی میں شامل کریں۔
 
@@ -245,32 +248,22 @@ cli.help.globalOptions.title: |-
   **عالمی اختیارات:**
 
 task.contacts.status: |-
-  👤 رابطے نکالنا: **{{state}}**
-  - ✅ کامیابی: {{{progress.ok}}} روابط
-  - ⚪ چھوڑے گئے: {{{progress.skipped}}} روابط
-  - ⚠️ غلطیاں: {{{progress.errors}}} روابط
+  👤 رابطے: **{{state}}**
+  - 🆕 بنائے گئے: {{{progress.created}}} رابطے
+  - 🔄 اپ ڈیٹ: {{{progress.updated}}} رابطے
+  - 🏷️ نام تبدیل: {{{progress.renamed}}} رابطے
+  - ⚪ چھوڑے گئے: {{{progress.skipped}}} رابطے
+  - 🔴 خرابیاں: {{{progress.errors}}} رابطے
+  - 🖼️ اوتار اپ ڈیٹ: {{{progress.avatar.updated}}} رابطے
 
-  {{#job}}
-  ⌛ ٹائم لائن:
-  - قطار میں: {{{timestamp}}}
-  {{#processedOn}}
-  - آغاز: {{{processedOn}}}
-  {{/processedOn}}
-  {{#finishedOn}}
-  - اختتام: {{{finishedOn}}}
-  {{/finishedOn}}
-  {{/job}}
-
-  {{#error}}
   تفصیلات:
   [{{{details.text}}}]({{{details.url}}})
-  {{/error}}
 
 task.contacts.started: |-
   روابط نکالے جا رہے ہیں...
 
 task.contacts.progress: |-
-  رابطے نکالنا: ✅ {{progress.ok}}، ⚪ {{progress.skipped}}، ⚠️ {{progress.errors}}
+  👤⏳ رابطے: 🆕 {{progress.created}}، 🔄 {{progress.updated}}، 🏷️ {{progress.renamed}}، ⚪ {{progress.skipped}}، 🔴 {{progress.errors}}، 🖼️ {{progress.avatar.updated}}
 
 app.help.reminder: |-
   دستیاب کمانڈز کی فہرست حاصل کرنے کے لیے **help** بھیجیں۔
@@ -644,9 +637,8 @@ cli.cmd.contacts.pull.option.progress:
   ہر N رابطوں پر پیش رفت بتائیں۔ رپورٹ بند کرنے کے لیے 0 مقرر کریں۔
 cli.cmd.contacts.pull.option.lids:
   WhatsApp LID (گمنام) رابطوں کو ہم آہنگی میں شامل کریں۔
-task.contacts.completed:
-  👤✅ رابطے مکمل → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, ⚪
-  {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
+task.contacts.completed: |-
+  👤✅ رابطے مکمل → 🆕 {{progress.created}}، 🔄 {{progress.updated}}، 🏷️ {{progress.renamed}}، ⚪ {{progress.skipped}}، 🔴 {{progress.errors}}، 🖼️ {{progress.avatar.updated}}
 task.messages.started:
   ⏳ پیغامات کھینچے جا رہے ہیں 💬 {{{chat}}} ⏱️ {{{period}}}...
 task.messages.details: مزید تفصیلات کے لیے "{{{prefix}}}messages status" بھیجیں۔

@@ -17,6 +17,8 @@ import { SortOrder } from '@waha/structures/pagination.dto';
 import {
   AvatarUpdateMode,
   ContactService,
+  IsRawName,
+  NameUpdateMode,
 } from '@waha/apps/chatwoot/client/ContactService';
 import { Conversation } from '@waha/apps/chatwoot/client/Conversation';
 import { Locale } from '@waha/apps/chatwoot/i18n/locale';
@@ -34,6 +36,7 @@ export interface ContactsPullOptions {
   batch: number;
   progress: number | null;
   avatar: null | 'if-missing' | 'update';
+  updateNames: NameUpdateMode;
   attributes: boolean;
   contacts: {
     groups: boolean;
@@ -88,6 +91,7 @@ export class TaskContactsPullConsumer extends ChatWootTaskConsumer {
 interface Progress {
   created: number;
   updated: number;
+  renamed: number;
   skipped: number;
   errors: number;
   avatar: {
@@ -104,6 +108,7 @@ function total(progress: Progress) {
 const NullProgress: Progress = {
   created: 0,
   updated: 0,
+  renamed: 0,
   skipped: 0,
   errors: 0,
   avatar: {
@@ -201,12 +206,13 @@ class ContactsPullHandler {
         }
 
         this.logger.debug(`Pulling ${chatId}...`);
-        const result = await this.pullOneContact(options, chatId);
+        const result = await this.pullOneContact(options, contact);
         progress.created += result.created;
         progress.updated += result.updated;
+        progress.renamed += result.renamed;
         progress.avatar.updated += result.avatar.updated;
         this.logger.info(
-          `Contact ${chatId}: created=${result.created}, updated=${result.updated}, avatar.updated=${result.avatar.updated}`,
+          `Contact ${chatId}: created=${result.created}, updated=${result.updated}, renamed=${result.renamed}, avatar.updated=${result.avatar.updated}`,
         );
       } catch (e) {
         this.logger.error(`Error pulling contact ${contact.id}: ${e}`);
@@ -220,11 +226,47 @@ class ContactsPullHandler {
     await this.activity.completed(progress);
   }
 
-  private async pullOneContact(options: ContactsPullOptions, chatId: string) {
-    // Contact
-    const contactInfo = WhatsAppContactInfo(this.session, chatId, this.l);
+  private async pullOneContact(options: ContactsPullOptions, contact: any) {
+    const contactInfo = WhatsAppContactInfo(this.session, contact.id, this.l);
+    contactInfo.SetFetchedContact(contact);
     let [cwContact, created] =
       await this.contactService.findOrCreateContact(contactInfo);
+
+    // Name
+    let renamed = false;
+    if (!created) {
+      switch (options.updateNames) {
+        case NameUpdateMode.ALWAYS: {
+          const name = await contactInfo.SavedName();
+          if (name) {
+            renamed = await this.contactService.updateName(cwContact, name);
+          }
+          break;
+        }
+        case NameUpdateMode.IF_RAW: {
+          const name = await contactInfo.SavedName();
+          if (!name) {
+            break;
+          }
+          // Replace only raw names, nobody typed them by hand
+          const placeholders = [
+            contactInfo.ChatId(),
+            await contactInfo.JidId(),
+            await contactInfo.LidId(),
+            await contactInfo.PhoneNumberE164(),
+            cwContact.data.phone_number,
+            await contactInfo.PushName(),
+          ];
+          const current = cwContact.data.name ?? '';
+          if (!IsRawName(current, placeholders)) {
+            break;
+          }
+          renamed = await this.contactService.updateName(cwContact, name);
+          break;
+        }
+      }
+    }
+
     // Attributes
     if (options.attributes) {
       const attributes = await contactInfo.Attributes();
@@ -233,6 +275,7 @@ class ContactsPullHandler {
         attributes,
       );
     }
+
     // Avatar
     let avatarUpdated = false;
     switch (options.avatar) {
@@ -251,9 +294,11 @@ class ContactsPullHandler {
         );
         break;
     }
+
     return {
       created: created ? 1 : 0,
       updated: created ? 0 : 1,
+      renamed: renamed ? 1 : 0,
       avatar: {
         updated: avatarUpdated ? 1 : 0,
       },

@@ -194,6 +194,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   Выберите, как загружать аватары контактов: `skip`, `if-missing` или `update`.
 
+cli.cmd.contacts.pull.option.update-names: |-
+  Как обновлять имена существующих контактов: `no` - не трогать имена, имя получают только новые контакты (телефонная книга, push name или номер телефона). `if-raw` - сохранять имена, заданные вручную, заглушки (номер телефона, push name) заменять из телефонной книги. `always` - телефонная книга является источником истины, заменять любое имя.
+
 cli.cmd.contacts.pull.option.groups: |-
   Включить контакты групп WhatsApp в синхронизацию.
 
@@ -245,32 +248,22 @@ cli.help.globalOptions.title: |-
   **Глобальные опции:**
 
 task.contacts.status: |-
-  👤 Загрузка контактов: **{{state}}**
-  - ✅ Успешно: {{{progress.ok}}} контактов
+  👤 Контакты: **{{state}}**
+  - 🆕 Создано: {{{progress.created}}} контактов
+  - 🔄 Обновлено: {{{progress.updated}}} контактов
+  - 🏷️ Переименовано: {{{progress.renamed}}} контактов
   - ⚪ Пропущено: {{{progress.skipped}}} контактов
-  - ⚠️ Ошибки: {{{progress.errors}}} контактов
+  - 🔴 Ошибки: {{{progress.errors}}} контактов
+  - 🖼️ Аватар обновлён: {{{progress.avatar.updated}}} контактов
 
-  {{#job}}
-  ⌛ Хронология:
-  - В очереди: {{{timestamp}}}
-  {{#processedOn}}
-  - Начато: {{{processedOn}}}
-  {{/processedOn}}
-  {{#finishedOn}}
-  - Завершено: {{{finishedOn}}}
-  {{/finishedOn}}
-  {{/job}}
-
-  {{#error}}
   Подробности:
   [{{{details.text}}}]({{{details.url}}})
-  {{/error}}
 
 task.contacts.started: |-
   Идёт загрузка контактов...
 
 task.contacts.progress: |-
-  Загрузка контактов: ✅ {{progress.ok}}, ⚪ {{progress.skipped}}, ⚠️ {{progress.errors}}
+  👤⏳ Контакты: 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 
 app.help.reminder: |-
   Отправьте **help**, чтобы получить список доступных команд.
@@ -647,9 +640,8 @@ cli.cmd.contacts.pull.option.progress:
   Сообщать о прогрессе каждые N контактов. Значение 0 отключает отчёты.
 cli.cmd.contacts.pull.option.lids:
   Включать контакты WhatsApp LID (анонимные контакты) в синхронизацию.
-task.contacts.completed:
-  👤✅ Контакты завершены → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, ⚪
-  {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
+task.contacts.completed: |-
+  👤✅ Контакты завершены → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 task.messages.started: ⏳ Загружаем сообщения 💬 {{{chat}}} ⏱️ {{{period}}}...
 task.messages.details:
   Отправьте "{{{prefix}}}messages status", чтобы увидеть подробности.

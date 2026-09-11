@@ -26,6 +26,43 @@ export enum AvatarUpdateMode {
   ALWAYS,
 }
 
+export enum NameUpdateMode {
+  // skip name updates, only new contacts get a name (phone book, push name or phone number)
+  NO = 'no',
+  // keep names set by hand, replace raw ones (phone number, push name) from the phone book
+  IF_RAW = 'if-raw',
+  // the phone book is the source of truth, overwrite any name
+  ALWAYS = 'always',
+}
+
+/**
+ * Raw name - empty or one of the ids the contact was created with, nobody typed it by hand
+ */
+export function IsRawName(
+  name: string,
+  placeholders: Array<string | null | undefined>,
+): boolean {
+  const current = normalizeName(name);
+  if (!current) {
+    return true;
+  }
+  for (const placeholder of placeholders) {
+    if (!placeholder) {
+      continue;
+    }
+    const value = normalizeName(placeholder);
+    const bare = value.replace(/@.*$/, '').replace(/^\+/, '');
+    if (current === value || current === bare || current === `+${bare}`) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function normalizeName(name: string): string {
+  return name.trim().toLowerCase();
+}
+
 export function sanitizeName(name: string) {
   // 255 chars max
   const limit = 255;
@@ -182,6 +219,37 @@ export class ContactService {
       accountId: this.config.accountId,
       data: update,
     });
+    return true;
+  }
+
+  /**
+   * Set the contact name, returns true when it changed
+   */
+  public async updateName(
+    contact: ContactResponse,
+    name: string,
+  ): Promise<boolean> {
+    name = sanitizeName(name);
+    const current = contact.data.name ?? '';
+    if (!name || current.trim() === name.trim()) {
+      return false;
+    }
+    try {
+      await this.accountAPI.contacts.update({
+        id: contact.data.id,
+        accountId: this.config.accountId,
+        data: { name: name },
+      });
+    } catch (err) {
+      this.logger.warn(
+        `Error updating name for contact.id: ${contact.data.id} - ${err}`,
+      );
+      return false;
+    }
+    this.logger.info(
+      `Renamed contact.id: ${contact.data.id}: '${current}' => '${name}'`,
+    );
+    contact.data.name = name;
     return true;
   }
 

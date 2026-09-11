@@ -14,6 +14,7 @@ import {
 import { ContactsPullOptions } from '@waha/apps/chatwoot/consumers/task/contacts.pull';
 import { JobsOptions } from 'bullmq';
 import { JobDataTimeout } from '@waha/apps/app_sdk/AppConsumer';
+import { NameUpdateMode } from '@waha/apps/chatwoot/client/ContactService';
 
 export function AddContactsCommand(program: Command, ctx: CommandContext) {
   const l = ctx.l;
@@ -38,6 +39,14 @@ export function AddContactsCommand(program: Command, ctx: CommandContext) {
       )
         .choices(['if-missing', 'update'])
         .preset('if-missing'),
+    )
+    .addOption(
+      new Option(
+        '-n, --update-names <mode>',
+        l.r('cli.cmd.contacts.pull.option.update-names'),
+      )
+        .choices(Object.values(NameUpdateMode))
+        .default(NameUpdateMode.NO),
     )
     .option('-g, --groups', l.r('cli.cmd.contacts.pull.option.groups'))
     .option('-l, --lids', l.r('cli.cmd.contacts.pull.option.lids'))
@@ -92,6 +101,7 @@ export function AddContactsCommand(program: Command, ctx: CommandContext) {
         batch: opts.batch,
         progress: opts.progress,
         avatar: opts.avatar,
+        updateNames: opts.updateNames,
         attributes: opts.attributes,
         contacts: {
           lids: opts.lids,

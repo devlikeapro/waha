@@ -194,6 +194,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   কনট্যাক্টের অ্যাভাটার কীভাবে টানবেন নির্ধারণ করুন: `skip`, `if-missing`, অথবা `update`।
 
+cli.cmd.contacts.pull.option.update-names: |-
+  বিদ্যমান কন্টাক্টের নাম কীভাবে আপডেট করবেন: `no` - নাম স্পর্শ করবেন না, শুধু নতুন কন্টাক্ট নাম পাবে (ফোন বুক, push name বা ফোন নম্বর)। `if-raw` - হাতে দেওয়া নাম রাখুন, প্লেসহোল্ডার (ফোন নম্বর, push name) ফোন বুক থেকে সমাধান করুন। `always` - ফোন বুকই সত্যের উৎস, যেকোনো নাম প্রতিস্থাপন করুন।
+
 cli.cmd.contacts.pull.option.groups: |-
   সিঙ্কে WhatsApp গ্রুপ কনট্যাক্ট অন্তর্ভুক্ত করুন।
 
@@ -245,32 +248,22 @@ cli.help.globalOptions.title: |-
   **গ্লোবাল বিকল্পসমূহ:**
 
 task.contacts.status: |-
-  👤 কনট্যাক্ট টানা: **{{state}}**
-  - ✅ সফল: {{{progress.ok}}} কনট্যাক্ট
-  - ⚪ এড়িয়ে গেছে: {{{progress.skipped}}} কনট্যাক্ট
-  - ⚠️ ত্রুটি: {{{progress.errors}}} কনট্যাক্ট
+  👤 কন্টাক্ট: **{{state}}**
+  - 🆕 তৈরি: {{{progress.created}}} কন্টাক্ট
+  - 🔄 আপডেট: {{{progress.updated}}} কন্টাক্ট
+  - 🏷️ নাম পরিবর্তিত: {{{progress.renamed}}} কন্টাক্ট
+  - ⚪ বাদ: {{{progress.skipped}}} কন্টাক্ট
+  - 🔴 ত্রুটি: {{{progress.errors}}} কন্টাক্ট
+  - 🖼️ অ্যাভাটার আপডেট: {{{progress.avatar.updated}}} কন্টাক্ট
 
-  {{#job}}
-  ⌛ সময়রেখা:
-  - কিউ হয়েছে: {{{timestamp}}}
-  {{#processedOn}}
-  - শুরু হয়েছে: {{{processedOn}}}
-  {{/processedOn}}
-  {{#finishedOn}}
-  - শেষ হয়েছে: {{{finishedOn}}}
-  {{/finishedOn}}
-  {{/job}}
-
-  {{#error}}
   বিস্তারিত:
   [{{{details.text}}}]({{{details.url}}})
-  {{/error}}
 
 task.contacts.started: |-
   কনট্যাক্ট টানা হচ্ছে...
 
 task.contacts.progress: |-
-  কনট্যাক্ট টানা: ✅ {{progress.ok}}, ⚪ {{progress.skipped}}, ⚠️ {{progress.errors}}
+  👤⏳ কন্টাক্ট: 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 
 app.help.reminder: |-
   উপলব্ধ কমান্ডগুলির তালিকা পেতে **help** পাঠান।
@@ -643,9 +636,8 @@ cli.cmd.contacts.pull.option.progress:
   প্রতি N কন্টাক্টে অগ্রগতি জানান। রিপোর্ট বন্ধ করতে 0 সেট করুন।
 cli.cmd.contacts.pull.option.lids:
   সিঙ্কে WhatsApp LID (অনামা) কন্টাক্ট অন্তর্ভুক্ত করুন।
-task.contacts.completed:
-  👤✅ কন্টাক্ট সম্পন্ন → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, ⚪
-  {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
+task.contacts.completed: |-
+  👤✅ কন্টাক্ট সম্পন্ন → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 task.messages.started: ⏳ বার্তা টানা হচ্ছে 💬 {{{chat}}} ⏱️ {{{period}}}...
 task.messages.details: আরও জানতে "{{{prefix}}}messages status" পাঠান।
 task.messages.progress:

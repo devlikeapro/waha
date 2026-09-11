@@ -22,6 +22,9 @@ import { E164Parser } from '@waha/core/utils/PhoneJidNormalizer';
  * Base WhatsApp contact info class
  */
 abstract class ChatContactInfo implements ContactInfo {
+  // Already fetched WhatsApp contact, saves a request when known
+  protected contact: any = null;
+
   constructor(
     protected session: WAHASessionAPI,
     protected chatId: string,
@@ -30,6 +33,10 @@ abstract class ChatContactInfo implements ContactInfo {
 
   ChatId(): string {
     return this.chatId;
+  }
+
+  SetFetchedContact(contact: any) {
+    this.contact = contact;
   }
 
   async LidId(): Promise<string | null> {
@@ -41,6 +48,14 @@ abstract class ChatContactInfo implements ContactInfo {
   }
 
   async PhoneNumberE164(): Promise<string | null> {
+    return null;
+  }
+
+  async SavedName(): Promise<string | null> {
+    return null;
+  }
+
+  async PushName(): Promise<string | null> {
     return null;
   }
 
@@ -91,10 +106,26 @@ class JidContactInfo extends ChatContactInfo {
     return attributes;
   }
 
+  @CacheAsync()
+  async fetchContact(): Promise<any> {
+    if (this.contact) {
+      return this.contact;
+    }
+    return await this.session.getContact(this.chatId).catch(() => null);
+  }
+
+  async SavedName(): Promise<string | null> {
+    const contact = await this.fetchContact();
+    return contact?.name || null;
+  }
+
+  async PushName(): Promise<string | null> {
+    const contact = await this.fetchContact();
+    return contact?.pushName || contact?.pushname || null;
+  }
+
   async PublicContactCreate(): Promise<Contact> {
-    const contact: any = await this.session
-      .getContact(this.chatId)
-      .catch(() => null);
+    const contact: any = await this.fetchContact();
     const name =
       contact?.name || contact?.pushName || contact?.pushname || this.chatId;
     const phoneNumberE164 = E164Parser.fromJid(this.chatId);
@@ -134,7 +165,9 @@ class LidContactInfo extends ChatContactInfo {
     if (!pn) {
       return null;
     }
-    return new JidContactInfo(this.session, pn, this.locale);
+    const jid = new JidContactInfo(this.session, pn, this.locale);
+    jid.SetFetchedContact(this.contact);
+    return jid;
   }
 
   async LidId(): Promise<string | null> {
@@ -152,6 +185,32 @@ class LidContactInfo extends ChatContactInfo {
       return null;
     }
     return await jid.PhoneNumberE164();
+  }
+
+  @CacheAsync()
+  async fetchContact(): Promise<any> {
+    if (this.contact) {
+      return this.contact;
+    }
+    return await this.session.getContact(this.chatId).catch(() => null);
+  }
+
+  async SavedName(): Promise<string | null> {
+    const jid = await this.jid();
+    if (jid) {
+      return await jid.SavedName();
+    }
+    const contact = await this.fetchContact();
+    return contact?.name || null;
+  }
+
+  async PushName(): Promise<string | null> {
+    const jid = await this.jid();
+    if (jid) {
+      return await jid.PushName();
+    }
+    const contact = await this.fetchContact();
+    return contact?.pushName || contact?.pushname || null;
   }
 
   async AvatarUrl(): Promise<string | null> {
@@ -179,9 +238,7 @@ class LidContactInfo extends ChatContactInfo {
     if (jid) {
       result = await jid.PublicContactCreate();
     } else {
-      const contact: any = await this.session
-        .getContact(this.chatId)
-        .catch(() => null);
+      const contact: any = await this.fetchContact();
       const name =
         contact?.name || contact?.pushName || contact?.pushname || this.chatId;
       result = {

@@ -25,6 +25,11 @@ export interface ContactInfo {
   ChatId(): string;
 
   /**
+   * Reuse an already fetched WhatsApp contact instead of requesting it again
+   */
+  SetFetchedContact(contact: any): void;
+
+  /**
    * Linked id - @lid, null when unknown
    */
   LidId(): Promise<string | null>;
@@ -38,6 +43,16 @@ export interface ContactInfo {
    * Resolved E.164 phone number, null when not applicable
    */
   PhoneNumberE164(): Promise<string | null>;
+
+  /**
+   * Name saved in the phone book, null when not saved
+   */
+  SavedName(): Promise<string | null>;
+
+  /**
+   * Name the contact set for themselves, null when unknown
+   */
+  PushName(): Promise<string | null>;
 
   AvatarUrl(): Promise<string | null>;
 

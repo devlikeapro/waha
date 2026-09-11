@@ -194,6 +194,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   Pilih cara mengambil avatar kontak: `skip`, `if-missing`, atau `update`.
 
+cli.cmd.contacts.pull.option.update-names: |-
+  Cara memperbarui nama kontak yang sudah ada: `no` - jangan ubah nama, hanya kontak baru yang mendapat nama (buku telepon, push name, atau nomor telepon). `if-raw` - pertahankan nama yang diisi manual, ganti placeholder (nomor telepon, push name) dari buku telepon. `always` - buku telepon adalah sumber kebenaran, ganti nama apa pun.
+
 cli.cmd.contacts.pull.option.groups: |-
   Sertakan kontak grup WhatsApp dalam sinkronisasi.
 
@@ -245,32 +248,22 @@ cli.help.globalOptions.title: |-
   **Opsi global:**
 
 task.contacts.status: |-
-  👤 Penarikan kontak: **{{state}}**
-  - ✅ Berhasil: {{{progress.ok}}} kontak
+  👤 Kontak: **{{state}}**
+  - 🆕 Dibuat: {{{progress.created}}} kontak
+  - 🔄 Diperbarui: {{{progress.updated}}} kontak
+  - 🏷️ Diganti nama: {{{progress.renamed}}} kontak
   - ⚪ Dilewati: {{{progress.skipped}}} kontak
-  - ⚠️ Kesalahan: {{{progress.errors}}} kontak
+  - 🔴 Kesalahan: {{{progress.errors}}} kontak
+  - 🖼️ Avatar diperbarui: {{{progress.avatar.updated}}} kontak
 
-  {{#job}}
-  ⌛ Linimasa:
-  - Masuk antrean: {{{timestamp}}}
-  {{#processedOn}}
-  - Mulai: {{{processedOn}}}
-  {{/processedOn}}
-  {{#finishedOn}}
-  - Selesai: {{{finishedOn}}}
-  {{/finishedOn}}
-  {{/job}}
-
-  {{#error}}
   Detail:
   [{{{details.text}}}]({{{details.url}}})
-  {{/error}}
 
 task.contacts.started: |-
   Menarik kontak...
 
 task.contacts.progress: |-
-  Penarikan kontak: ✅ {{progress.ok}}, ⚪ {{progress.skipped}}, ⚠️ {{progress.errors}}
+  👤⏳ Kontak: 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 
 app.help.reminder: |-
   Kirim **help** untuk mendapatkan daftar perintah yang tersedia.
@@ -645,9 +638,8 @@ cli.cmd.contacts.pull.option.progress:
   Laporkan progres setiap N kontak. Setel ke 0 untuk menonaktifkan laporan.
 cli.cmd.contacts.pull.option.lids:
   Sertakan kontak WhatsApp LID (kontak anonim) dalam sinkronisasi.
-task.contacts.completed:
-  👤✅ Kontak selesai → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, ⚪
-  {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
+task.contacts.completed: |-
+  👤✅ Kontak selesai → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 task.messages.started: ⏳ Menarik pesan 💬 {{{chat}}} ⏱️ {{{period}}}...
 task.messages.details:
   Kirim "{{{prefix}}}messages status" untuk melihat rincian.

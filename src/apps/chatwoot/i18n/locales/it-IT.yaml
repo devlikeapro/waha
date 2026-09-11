@@ -547,6 +547,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   Scegli come recuperare gli avatar dei contatti.
 
+cli.cmd.contacts.pull.option.update-names: |-
+  Come aggiornare i nomi dei contatti esistenti: `no` - non toccare i nomi, solo i nuovi contatti ne ricevono uno (rubrica, push name o numero di telefono). `if-raw` - mantieni i nomi inseriti a mano, risolvi i segnaposto (numero di telefono, push name) dalla rubrica. `always` - la rubrica è la fonte di verità, sostituisci qualsiasi nome.
+
 cli.cmd.contacts.pull.option.groups: |-
   Includi i contatti dei gruppi WhatsApp.
 
@@ -604,15 +607,16 @@ task.contacts.started: |-
   👤⏳ Recupero contatti... Invia "contacts status" per maggiori dettagli.
 
 task.contacts.progress: |-
-  👤⏳ Contatti: 🆕 {{progress.created}}, 🔄 {{progress.updated}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
+  👤⏳ Contatti: 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 
 task.contacts.completed: |-
-  👤✅ Recupero contatti completato → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
+  👤✅ Recupero contatti completato → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 
 task.contacts.status: |-
   👤 Contatti: **{{state}}**
   - 🆕 Creati: {{{progress.created}}} contatti
   - 🔄 Aggiornati: {{{progress.updated}}} contatti
+  - 🏷️ Rinominati: {{{progress.renamed}}} contatti
   - ⚪ Saltati: {{{progress.skipped}}} contatti
   - 🔴 Errori: {{{progress.errors}}} contatti
   - 🖼️ Avatar Aggiornati: {{{progress.avatar.updated}}} contatti

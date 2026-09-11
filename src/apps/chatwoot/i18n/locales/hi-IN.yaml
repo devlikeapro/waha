@@ -194,6 +194,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   संपर्क अवतार कैसे खींचें चुनें: `skip`, `if-missing`, या `update`।
 
+cli.cmd.contacts.pull.option.update-names: |-
+  मौजूदा संपर्कों के नाम कैसे अपडेट करें: `no` - नामों को न छुएँ, केवल नए संपर्कों को नाम मिलेगा (फ़ोन बुक, push name या फ़ोन नंबर)। `if-raw` - हाथ से रखे नाम रखें, प्लेसहोल्डर (फ़ोन नंबर, push name) फ़ोन बुक से हल करें। `always` - फ़ोन बुक ही सत्य का स्रोत है, कोई भी नाम बदल दें।
+
 cli.cmd.contacts.pull.option.groups: |-
   सिंक में WhatsApp समूह संपर्क शामिल करें।
 
@@ -245,32 +248,22 @@ cli.help.globalOptions.title: |-
   **ग्लोबल विकल्प:**
 
 task.contacts.status: |-
-  👤 संपर्क खींचना: **{{state}}**
-  - ✅ सफल: {{{progress.ok}}} संपर्क
+  👤 संपर्क: **{{state}}**
+  - 🆕 बनाए गए: {{{progress.created}}} संपर्क
+  - 🔄 अपडेट किए गए: {{{progress.updated}}} संपर्क
+  - 🏷️ नाम बदले गए: {{{progress.renamed}}} संपर्क
   - ⚪ छोड़े गए: {{{progress.skipped}}} संपर्क
-  - ⚠️ त्रुटियाँ: {{{progress.errors}}} संपर्क
+  - 🔴 त्रुटियाँ: {{{progress.errors}}} संपर्क
+  - 🖼️ अवतार अपडेट: {{{progress.avatar.updated}}} संपर्क
 
-  {{#job}}
-  ⌛ समयरेखा:
-  - कतार में: {{{timestamp}}}
-  {{#processedOn}}
-  - शुरू हुआ: {{{processedOn}}}
-  {{/processedOn}}
-  {{#finishedOn}}
-  - समाप्त: {{{finishedOn}}}
-  {{/finishedOn}}
-  {{/job}}
-
-  {{#error}}
   विवरण:
   [{{{details.text}}}]({{{details.url}}})
-  {{/error}}
 
 task.contacts.started: |-
   संपर्क खींचे जा रहे हैं...
 
 task.contacts.progress: |-
-  संपर्क खींचना: ✅ {{progress.ok}}, ⚪ {{progress.skipped}}, ⚠️ {{progress.errors}}
+  👤⏳ संपर्क: 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 
 app.help.reminder: |-
   उपलब्ध कमांड की सूची प्राप्त करने के लिए **help** भेजें।
@@ -645,9 +638,8 @@ cli.cmd.contacts.pull.option.progress:
   हर N संपर्क पर प्रगति रिपोर्ट करें। रिपोर्ट बंद करने के लिए 0 सेट करें।
 cli.cmd.contacts.pull.option.lids:
   सिंक में WhatsApp LID (अनाम) संपर्क शामिल करें।
-task.contacts.completed:
-  👤✅ संपर्क पूरे → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, ⚪
-  {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
+task.contacts.completed: |-
+  👤✅ संपर्क पूरे → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 task.messages.started:
   ⏳ संदेश खींचे जा रहे हैं 💬 {{{chat}}} ⏱️ {{{period}}}...
 task.messages.details: और जानकारी के लिए "{{{prefix}}}messages status" भेजें।

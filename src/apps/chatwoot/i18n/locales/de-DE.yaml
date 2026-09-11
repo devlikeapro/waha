@@ -197,6 +197,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   Legen Sie fest, wie Avatare geladen werden: `skip`, `if-missing` oder `update`.
 
+cli.cmd.contacts.pull.option.update-names: |-
+  Wie Namen vorhandener Kontakte aktualisiert werden: `no` - Namen nicht anfassen, nur neue Kontakte erhalten einen (Telefonbuch, Push-Name oder Telefonnummer). `if-raw` - manuell gesetzte Namen behalten, Platzhalter (Telefonnummer, Push-Name) aus dem Telefonbuch auflösen. `always` - das Telefonbuch ist die Quelle der Wahrheit, jeden Namen ersetzen.
+
 cli.cmd.contacts.pull.option.groups: |-
   WhatsApp-Gruppenkontakte in die Synchronisierung einbeziehen.
 
@@ -248,32 +251,22 @@ cli.help.globalOptions.title: |-
   **Globale Optionen:**
 
 task.contacts.status: |-
-  👤 Kontakte abrufen: **{{state}}**
-  - ✅ Erfolgreich: {{{progress.ok}}} Kontakte
+  👤 Kontakte: **{{state}}**
+  - 🆕 Erstellt: {{{progress.created}}} Kontakte
+  - 🔄 Aktualisiert: {{{progress.updated}}} Kontakte
+  - 🏷️ Umbenannt: {{{progress.renamed}}} Kontakte
   - ⚪ Übersprungen: {{{progress.skipped}}} Kontakte
-  - ⚠️ Fehler: {{{progress.errors}}} Kontakte
+  - 🔴 Fehler: {{{progress.errors}}} Kontakte
+  - 🖼️ Avatar aktualisiert: {{{progress.avatar.updated}}} Kontakte
 
-  {{#job}}
-  ⌛ Zeitplan:
-  - Eingereiht: {{{timestamp}}}
-  {{#processedOn}}
-  - Start: {{{processedOn}}}
-  {{/processedOn}}
-  {{#finishedOn}}
-  - Ende: {{{finishedOn}}}
-  {{/finishedOn}}
-  {{/job}}
-
-  {{#error}}
   Details:
   [{{{details.text}}}]({{{details.url}}})
-  {{/error}}
 
 task.contacts.started: |-
   Kontakte werden abgerufen...
 
 task.contacts.progress: |-
-  Kontakte abrufen: ✅ {{progress.ok}}, ⚪ {{progress.skipped}}, ⚠️ {{progress.errors}}
+  👤⏳ Kontakte: 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 
 app.help.reminder: |-
   Senden Sie **help**, um die Liste der verfügbaren Befehle zu erhalten.
@@ -662,10 +655,8 @@ cli.cmd.contacts.pull.option.progress:
   Meldet den Fortschritt nach N Kontakten. 0 deaktiviert die Meldungen.
 cli.cmd.contacts.pull.option.lids:
   Bezieht WhatsApp-LID-Kontakte (anonyme Kontakte) in die Synchronisierung ein.
-task.contacts.completed:
-  👤✅ Kontakte abgeschlossen → 🆕 {{progress.created}}, 🔄
-  {{progress.updated}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️
-  {{progress.avatar.updated}}
+task.contacts.completed: |-
+  👤✅ Kontakte abgeschlossen → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 task.messages.started:
   ⏳ Nachrichten werden abgerufen 💬 {{{chat}}} ⏱️ {{{period}}}...
 task.messages.details:

@@ -194,6 +194,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   בחר כיצד למשוך תמונות פרופיל: `skip`, `if-missing` או `update`.
 
+cli.cmd.contacts.pull.option.update-names: |-
+  כיצד לעדכן שמות של אנשי קשר קיימים: `no` - לא לגעת בשמות, רק אנשי קשר חדשים מקבלים שם (ספר טלפונים, push name או מספר טלפון). `if-raw` - לשמור שמות שהוזנו ידנית, לפתור שמות זמניים (מספר טלפון, push name) מספר הטלפונים. `always` - ספר הטלפונים הוא מקור האמת, להחליף כל שם.
+
 cli.cmd.contacts.pull.option.groups: |-
   כלול בסנכרון אנשי קשר של קבוצות WhatsApp.
 
@@ -245,32 +248,22 @@ cli.help.globalOptions.title: |-
   **אפשרויות גלובליות:**
 
 task.contacts.status: |-
-  👤 משיכת אנשי קשר: **{{state}}**
-  - ✅ הצלחות: {{{progress.ok}}} אנשי קשר
-  - ⚪ שדלגו עליהם: {{{progress.skipped}}} אנשי קשר
-  - ⚠️ שגיאות: {{{progress.errors}}} אנשי קשר
+  👤 אנשי קשר: **{{state}}**
+  - 🆕 נוצרו: {{{progress.created}}} אנשי קשר
+  - 🔄 עודכנו: {{{progress.updated}}} אנשי קשר
+  - 🏷️ שונה שמם: {{{progress.renamed}}} אנשי קשר
+  - ⚪ דולגו: {{{progress.skipped}}} אנשי קשר
+  - 🔴 שגיאות: {{{progress.errors}}} אנשי קשר
+  - 🖼️ תמונת פרופיל עודכנה: {{{progress.avatar.updated}}} אנשי קשר
 
-  {{#job}}
-  ⌛ ציר זמן:
-  - נכנסה לתור: {{{timestamp}}}
-  {{#processedOn}}
-  - התחלה: {{{processedOn}}}
-  {{/processedOn}}
-  {{#finishedOn}}
-  - סיום: {{{finishedOn}}}
-  {{/finishedOn}}
-  {{/job}}
-
-  {{#error}}
   פרטים:
   [{{{details.text}}}]({{{details.url}}})
-  {{/error}}
 
 task.contacts.started: |-
   אנשי קשר נמשכים...
 
 task.contacts.progress: |-
-  משיכת אנשי קשר: ✅ {{progress.ok}}, ⚪ {{progress.skipped}}, ⚠️ {{progress.errors}}
+  👤⏳ אנשי קשר: 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 
 app.help.reminder: |-
   שלח **help** כדי לקבל את רשימת הפקודות הזמינות.
@@ -633,9 +626,8 @@ cli.cmd.contacts.pull.option.progress:
   דיווח על התקדמות כל N אנשי קשר. ערך 0 מבטל את הדוחות.
 cli.cmd.contacts.pull.option.lids:
   הכללת אנשי קשר אנונימיים של WhatsApp (LID) בסנכרון.
-task.contacts.completed:
-  👤✅ השלמת אנשי קשר → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, ⚪
-  {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
+task.contacts.completed: |-
+  👤✅ השלמת אנשי קשר → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 task.messages.started: ⏳ מושכים הודעות 💬 {{{chat}}} ⏱️ {{{period}}}...
 task.messages.details: שלחו "{{{prefix}}}messages status" לעוד פרטים.
 task.messages.progress:

@@ -195,6 +195,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   Escolha como buscar os avatares dos contatos: `skip`, `if-missing` ou `update`.
 
+cli.cmd.contacts.pull.option.update-names: |-
+  Como atualizar os nomes de contatos existentes: `no` - não mexer nos nomes, só contatos novos recebem um (agenda, push name ou número de telefone). `if-raw` - manter nomes definidos manualmente, resolver os genéricos (número de telefone, push name) a partir da agenda. `always` - a agenda é a fonte da verdade, substituir qualquer nome.
+
 cli.cmd.contacts.pull.option.groups: |-
   Incluir contatos de grupo do WhatsApp na sincronização.
 
@@ -246,32 +249,22 @@ cli.help.globalOptions.title: |-
   **Opções globais:**
 
 task.contacts.status: |-
-  👤 Busca de contatos: **{{state}}**
-  - ✅ Sucesso: {{{progress.ok}}} contatos
+  👤 Contatos: **{{state}}**
+  - 🆕 Criados: {{{progress.created}}} contatos
+  - 🔄 Atualizados: {{{progress.updated}}} contatos
+  - 🏷️ Renomeados: {{{progress.renamed}}} contatos
   - ⚪ Ignorados: {{{progress.skipped}}} contatos
-  - ⚠️ Erros: {{{progress.errors}}} contatos
+  - 🔴 Erros: {{{progress.errors}}} contatos
+  - 🖼️ Avatar atualizado: {{{progress.avatar.updated}}} contatos
 
-  {{#job}}
-  ⌛ Linha do tempo:
-  - Na fila: {{{timestamp}}}
-  {{#processedOn}}
-  - Início: {{{processedOn}}}
-  {{/processedOn}}
-  {{#finishedOn}}
-  - Fim: {{{finishedOn}}}
-  {{/finishedOn}}
-  {{/job}}
-
-  {{#error}}
   Detalhes:
   [{{{details.text}}}]({{{details.url}}})
-  {{/error}}
 
 task.contacts.started: |-
   Buscando contatos...
 
 task.contacts.progress: |-
-  Busca de contatos: ✅ {{progress.ok}}, ⚪ {{progress.skipped}}, ⚠️ {{progress.errors}}
+  👤⏳ Contatos: 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 
 app.help.reminder: |-
   Envie **help** para obter a lista de comandos disponíveis.
@@ -655,10 +648,8 @@ cli.cmd.contacts.pull.option.progress:
   de progresso.
 cli.cmd.contacts.pull.option.lids:
   Inclui contatos LID do WhatsApp (contatos anônimos) na sincronização.
-task.contacts.completed:
-  👤✅ Contatos concluídos → 🆕 {{progress.created}}, 🔄 {{progress.updated}},
-  ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️
-  {{progress.avatar.updated}}
+task.contacts.completed: |-
+  👤✅ Contatos concluídos → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 task.messages.started: ⏳ Buscando mensagens 💬 {{{chat}}} ⏱️ {{{period}}}...
 task.messages.details:
   Envie "{{{prefix}}}messages status" para ver mais detalhes.

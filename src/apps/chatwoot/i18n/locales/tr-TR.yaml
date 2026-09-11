@@ -194,6 +194,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   Kişi avatarlarının nasıl çekileceğini seçin: `skip`, `if-missing` veya `update`.
 
+cli.cmd.contacts.pull.option.update-names: |-
+  Mevcut kişilerin adlarının nasıl güncelleneceği: `no` - adlara dokunma, yalnızca yeni kişiler ad alır (rehber, push name veya telefon numarası). `if-raw` - elle girilen adları koru, yer tutucuları (telefon numarası, push name) rehberden çöz. `always` - rehber doğruluk kaynağıdır, her adı değiştir.
+
 cli.cmd.contacts.pull.option.groups: |-
   WhatsApp grup kişilerini senkronizasyona dahil et.
 
@@ -245,32 +248,22 @@ cli.help.globalOptions.title: |-
   **Genel seçenekler:**
 
 task.contacts.status: |-
-  👤 Kişi çekme: **{{state}}**
-  - ✅ Başarılı: {{{progress.ok}}} kişi
-  - ⚪ Atlanan: {{{progress.skipped}}} kişi
-  - ⚠️ Hatalar: {{{progress.errors}}} kişi
+  👤 Kişiler: **{{state}}**
+  - 🆕 Oluşturuldu: {{{progress.created}}} kişi
+  - 🔄 Güncellendi: {{{progress.updated}}} kişi
+  - 🏷️ Yeniden adlandırıldı: {{{progress.renamed}}} kişi
+  - ⚪ Atlandı: {{{progress.skipped}}} kişi
+  - 🔴 Hatalar: {{{progress.errors}}} kişi
+  - 🖼️ Avatar güncellendi: {{{progress.avatar.updated}}} kişi
 
-  {{#job}}
-  ⌛ Zaman çizelgesi:
-  - Sıraya alındı: {{{timestamp}}}
-  {{#processedOn}}
-  - Başladı: {{{processedOn}}}
-  {{/processedOn}}
-  {{#finishedOn}}
-  - Bitti: {{{finishedOn}}}
-  {{/finishedOn}}
-  {{/job}}
-
-  {{#error}}
   Ayrıntılar:
   [{{{details.text}}}]({{{details.url}}})
-  {{/error}}
 
 task.contacts.started: |-
   Kişiler çekiliyor...
 
 task.contacts.progress: |-
-  Kişi çekme: ✅ {{progress.ok}}, ⚪ {{progress.skipped}}, ⚠️ {{progress.errors}}
+  👤⏳ Kişiler: 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 
 app.help.reminder: |-
   Kullanılabilir komutların listesini almak için **help** gönderin.
@@ -646,9 +639,8 @@ cli.cmd.contacts.pull.option.progress:
   Her N kişide ilerlemeyi bildirir. 0 değeri raporları kapatır.
 cli.cmd.contacts.pull.option.lids:
   Senkronizasyona WhatsApp LID (anonim) kişilerini dahil eder.
-task.contacts.completed:
-  👤✅ Kişiler tamamlandı → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, ⚪
-  {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
+task.contacts.completed: |-
+  👤✅ Kişiler tamamlandı → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 task.messages.started: ⏳ Mesajlar çekiliyor 💬 {{{chat}}} ⏱️ {{{period}}}...
 task.messages.details:
   Daha fazla ayrıntı için "{{{prefix}}}messages status" gönderin.

@@ -194,6 +194,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   Choisissez comment charger les avatars des contacts : `skip`, `if-missing` ou `update`.
 
+cli.cmd.contacts.pull.option.update-names: |-
+  Comment mettre à jour les noms des contacts existants : `no` - ne pas toucher aux noms, seuls les nouveaux contacts en reçoivent un (carnet d'adresses, push name ou numéro de téléphone). `if-raw` - conserver les noms saisis à la main, résoudre les noms génériques (numéro de téléphone, push name) depuis le carnet d'adresses. `always` - le carnet d'adresses fait foi, remplacer tout nom.
+
 cli.cmd.contacts.pull.option.groups: |-
   Inclure les contacts de groupes WhatsApp dans la synchronisation.
 
@@ -245,32 +248,22 @@ cli.help.globalOptions.title: |-
   **Options globales :**
 
 task.contacts.status: |-
-  👤 Import de contacts : **{{state}}**
-  - ✅ Réussis : {{{progress.ok}}} contacts
+  👤 Contacts : **{{state}}**
+  - 🆕 Créés : {{{progress.created}}} contacts
+  - 🔄 Mis à jour : {{{progress.updated}}} contacts
+  - 🏷️ Renommés : {{{progress.renamed}}} contacts
   - ⚪ Ignorés : {{{progress.skipped}}} contacts
-  - ⚠️ Erreurs : {{{progress.errors}}} contacts
+  - 🔴 Erreurs : {{{progress.errors}}} contacts
+  - 🖼️ Avatar mis à jour : {{{progress.avatar.updated}}} contacts
 
-  {{#job}}
-  ⌛ Chronologie :
-  - En file d'attente : {{{timestamp}}}
-  {{#processedOn}}
-  - Début : {{{processedOn}}}
-  {{/processedOn}}
-  {{#finishedOn}}
-  - Fin : {{{finishedOn}}}
-  {{/finishedOn}}
-  {{/job}}
-
-  {{#error}}
   Détails :
   [{{{details.text}}}]({{{details.url}}})
-  {{/error}}
 
 task.contacts.started: |-
   Importation des contacts...
 
 task.contacts.progress: |-
-  Import de contacts : ✅ {{progress.ok}}, ⚪ {{progress.skipped}}, ⚠️ {{progress.errors}}
+  👤⏳ Contacts : 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 
 app.help.reminder: |-
   Envoyez **help** pour obtenir la liste des commandes disponibles.
@@ -660,9 +653,8 @@ cli.cmd.contacts.pull.option.progress:
   rapports.
 cli.cmd.contacts.pull.option.lids:
   Inclut les contacts LID WhatsApp (contacts anonymes) dans la synchronisation.
-task.contacts.completed:
-  👤✅ Contacts terminés → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, ⚪
-  {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
+task.contacts.completed: |-
+  👤✅ Contacts terminés → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 task.messages.started:
   ⏳ Récupération des messages 💬 {{{chat}}} ⏱️ {{{period}}}...
 task.messages.details:

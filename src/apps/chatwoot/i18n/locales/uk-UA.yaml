@@ -194,6 +194,9 @@ cli.cmd.contacts.pull.option.delay-batch: |-
 cli.cmd.contacts.pull.option.avatar: |-
   Виберіть, як завантажувати аватари контактів: `skip`, `if-missing` чи `update`.
 
+cli.cmd.contacts.pull.option.update-names: |-
+  Як оновлювати імена наявних контактів: `no` - не чіпати імена, ім'я отримують лише нові контакти (телефонна книга, push name або номер телефону). `if-raw` - зберігати імена, задані вручну, заповнювачі (номер телефону, push name) замінювати з телефонної книги. `always` - телефонна книга є джерелом істини, замінювати будь-яке ім'я.
+
 cli.cmd.contacts.pull.option.groups: |-
   Додати контакти груп WhatsApp до синхронізації.
 
@@ -245,32 +248,22 @@ cli.help.globalOptions.title: |-
   **Глобальні опції:**
 
 task.contacts.status: |-
-  👤 Отримання контактів: **{{state}}**
-  - ✅ Успішно: {{{progress.ok}}} контактів
+  👤 Контакти: **{{state}}**
+  - 🆕 Створено: {{{progress.created}}} контактів
+  - 🔄 Оновлено: {{{progress.updated}}} контактів
+  - 🏷️ Перейменовано: {{{progress.renamed}}} контактів
   - ⚪ Пропущено: {{{progress.skipped}}} контактів
-  - ⚠️ Помилки: {{{progress.errors}}} контактів
+  - 🔴 Помилки: {{{progress.errors}}} контактів
+  - 🖼️ Аватар оновлено: {{{progress.avatar.updated}}} контактів
 
-  {{#job}}
-  ⌛ Хронологія:
-  - У черзі: {{{timestamp}}}
-  {{#processedOn}}
-  - Початок: {{{processedOn}}}
-  {{/processedOn}}
-  {{#finishedOn}}
-  - Завершення: {{{finishedOn}}}
-  {{/finishedOn}}
-  {{/job}}
-
-  {{#error}}
   Деталі:
   [{{{details.text}}}]({{{details.url}}})
-  {{/error}}
 
 task.contacts.started: |-
   Отримання контактів...
 
 task.contacts.progress: |-
-  Отримання контактів: ✅ {{progress.ok}}, ⚪ {{progress.skipped}}, ⚠️ {{progress.errors}}
+  👤⏳ Контакти: 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 
 app.help.reminder: |-
   Надішліть **help**, щоб отримати список доступних команд.
@@ -645,9 +638,8 @@ cli.cmd.contacts.pull.option.progress:
   Повідомляти про прогрес кожні N контактів. Значення 0 вимикає звіти.
 cli.cmd.contacts.pull.option.lids:
   Включати анонімні контакти WhatsApp LID у синхронізацію.
-task.contacts.completed:
-  👤✅ Контакти завершено → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, ⚪
-  {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
+task.contacts.completed: |-
+  👤✅ Контакти завершено → 🆕 {{progress.created}}, 🔄 {{progress.updated}}, 🏷️ {{progress.renamed}}, ⚪ {{progress.skipped}}, 🔴 {{progress.errors}}, 🖼️ {{progress.avatar.updated}}
 task.messages.started:
   ⏳ Отримуємо повідомлення 💬 {{{chat}}} ⏱️ {{{period}}}...
 task.messages.details:
