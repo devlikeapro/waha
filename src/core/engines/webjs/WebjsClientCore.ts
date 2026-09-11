@@ -639,45 +639,72 @@ export class WebjsClientCore extends Client {
   /**
    * Presences methods
    */
-  public async subscribePresence(chatId: string): Promise<void> {
-    await this.pupPage.evaluate(async (chatId) => {
-      const d = require;
-      const WidFactory = d('WAWebWidFactory');
 
-      const wid = WidFactory.createWidFromWidLike(chatId);
-      const chat = d('WAWebChatCollection').ChatCollection.get(wid);
-      const tc = chat == null ? void 0 : chat.getTcToken();
-      await d('WAWebContactPresenceBridge').subscribePresence(wid, tc);
+  /**
+   * WhatsApp keys 1:1 presence by LID on LID-migrated accounts, so map @c.us to the current LID when known
+   */
+  private async getPresenceKey(chatId: string): Promise<string> {
+    return await this.pupPage.evaluate((chatId) => {
+      const d = require;
+      const wid = d('WAWebWidFactory').createWidFromWidLike(chatId);
+      if (wid.isGroup() || wid.isLid()) {
+        return chatId;
+      }
+      const lid = d('WAWebApiContact').getCurrentLid(wid);
+      if (!lid) {
+        return chatId;
+      }
+      // @ts-ignore
+      return window.WWebJS.GetSerialized(lid);
     }, chatId);
   }
 
-  private async getCurrentPresence(chatId: string): Promise<WebJSPresence[]> {
-    const result = await this.pupPage.evaluate(async (chatId) => {
+  public async subscribePresence(chatId: string): Promise<void> {
+    const key = await this.getPresenceKey(chatId);
+    await this.pupPage.evaluate(async (chatId) => {
       const d = require;
-      const WidFactory = d('WAWebWidFactory');
-      const PresenceCollection = d(
-        'WAWebPresenceCollection',
-      ).PresenceCollection;
-      const wid = WidFactory.createWidFromWidLike(chatId);
-      const presence = PresenceCollection.get(wid);
-      if (!presence) {
-        return [];
-      }
-      let chatstates = [];
-      if (chatId.endsWith('@c.us')) {
-        chatstates = [presence.chatstate];
-      } else {
-        chatstates = presence.chatstates.getModelsArray();
-      }
-      return chatstates.map((chatstate) => {
-        return {
-          // @ts-ignore
-          participant: window.WWebJS.GetSerialized(chatstate.id),
-          lastSeen: chatstate.t,
-          state: chatstate.type,
-        };
-      });
-    }, chatId);
+      const wid = d('WAWebWidFactory').createWidFromWidLike(chatId);
+      // find() subscribes user or group presence the same way the app does
+      await d('WAWebPresenceCollection').PresenceCollection.find(wid);
+    }, key);
+  }
+
+  private async getCurrentPresence(chatId: string): Promise<WebJSPresence[]> {
+    const key = await this.getPresenceKey(chatId);
+    const result = await this.pupPage.evaluate(
+      async (chatId, key) => {
+        const d = require;
+        const WidFactory = d('WAWebWidFactory');
+        const PresenceCollection = d(
+          'WAWebPresenceCollection',
+        ).PresenceCollection;
+        const wid = WidFactory.createWidFromWidLike(key);
+        const presence = PresenceCollection.get(wid);
+        if (!presence) {
+          return [];
+        }
+        if (wid.isGroup()) {
+          return presence.chatstates.getModelsArray().map((chatstate) => {
+            return {
+              // @ts-ignore
+              participant: window.WWebJS.GetSerialized(chatstate.id),
+              lastSeen: chatstate.t,
+              state: chatstate.type,
+            };
+          });
+        }
+        // Report the id the caller asked for, not the LID key
+        return [
+          {
+            participant: chatId,
+            lastSeen: presence.chatstate.t,
+            state: presence.chatstate.type,
+          },
+        ];
+      },
+      chatId,
+      key,
+    );
     return result;
   }
 
