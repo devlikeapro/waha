@@ -1,13 +1,23 @@
 import type { WAHAWebhookMessageAck } from '@waha/structures/webhooks.dto';
 import { isJidCusFormat } from '@waha/utils/wa';
 import { WAMessageAck } from '@waha/structures/enums.dto';
-import { isLidUser, toCusFormat } from '@waha/core/utils/jids';
+import { isLidUser } from '@waha/core/utils/jids';
 import { EngineHelper } from '@waha/apps/chatwoot/waha';
 
 export function ShouldMarkAsReadInChatWoot(
   event: WAHAWebhookMessageAck,
 ): boolean {
-  // Mark as seen only if it's DM
+  return (
+    ShouldUpdateMessageStatusInChatWoot(event) &&
+    (event.payload.ack === WAMessageAck.READ ||
+      event.payload.ack === WAMessageAck.PLAYED)
+  );
+}
+
+export function ShouldUpdateMessageStatusInChatWoot(
+  event: WAHAWebhookMessageAck,
+): boolean {
+  // Track individual delivery/read status only for direct messages.
   // Ignore groups and other multiple participants chats
   const chatId = EngineHelper.ChatID(event.payload);
   if (!isJidCusFormat(chatId) && !isLidUser(chatId)) {
@@ -15,18 +25,18 @@ export function ShouldMarkAsReadInChatWoot(
   }
 
   const payload = event.payload;
-  // Only READ and PLAYED
-  const read = payload.ack === WAMessageAck.READ;
-  const played = payload.ack == WAMessageAck.PLAYED;
-  if (!read && !played) {
+  if (
+    ![WAMessageAck.DEVICE, WAMessageAck.READ, WAMessageAck.PLAYED].includes(
+      payload.ack,
+    )
+  ) {
     return false;
   }
 
-  // Only process when OUR message (fromMe: true) was read by recipient
-  if (!payload.fromMe) {
+  // Only process acknowledgements of OUR outgoing messages.
+  if (payload.fromMe !== true) {
     return false;
   }
 
-  // Mark ChatWoot conversation as read when recipient reads our message
   return true;
 }

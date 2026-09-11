@@ -1,5 +1,6 @@
 import ChatwootClient from '@figuro/chatwoot-sdk';
 import type { conversation_message_create } from '@figuro/chatwoot-sdk/dist/models/conversation_message_create';
+import type { conversation_message_update } from '@figuro/chatwoot-sdk/dist/models/conversation_message_update';
 import { MessageType } from '@waha/apps/chatwoot/client/types';
 
 export class Conversation {
@@ -41,6 +42,23 @@ export class Conversation {
       data = { ...data, ...this.overrideIncoming };
     }
     return this.send(data);
+  }
+
+  public async updateMessageStatus(
+    messageId: number,
+    status: 'delivered' | 'read',
+  ) {
+    // The SDK supports PATCH but its generated model omits Chatwoot's status field.
+    const data: conversation_message_update & { status: 'delivered' | 'read' } =
+      {
+        status: status,
+      };
+    return this.accountAPI.messages.update({
+      accountId: this.accountId,
+      conversationId: this.conversationId,
+      messageId: messageId,
+      data: data,
+    });
   }
 
   public async activity(text: string) {

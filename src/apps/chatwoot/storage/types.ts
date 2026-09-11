@@ -15,6 +15,7 @@ export interface ChatWootCombinedKey {
 export interface ChatwootMessage extends ChatWootCombinedKey {
   id?: number;
   timestamp: Date;
+  expected_parts?: number;
 }
 
 export interface MessageMapping {

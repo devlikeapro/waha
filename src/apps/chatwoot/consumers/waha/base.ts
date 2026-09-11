@@ -47,14 +47,12 @@ export function ListenEventsForChatWoot(config: ChatWootConfig) {
     WAHAEvents.MESSAGE_REACTION,
     WAHAEvents.MESSAGE_EDITED,
     WAHAEvents.MESSAGE_REVOKED,
+    WAHAEvents.MESSAGE_ACK,
     WAHAEvents.SESSION_STATUS,
     WAHAEvents.CALL_RECEIVED,
     WAHAEvents.CALL_ACCEPTED,
     WAHAEvents.CALL_REJECTED,
   ];
-  if (config.conversations.markAsRead) {
-    events.push(WAHAEvents.MESSAGE_ACK);
-  }
   return events;
 }
 

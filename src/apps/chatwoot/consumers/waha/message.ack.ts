@@ -17,9 +17,14 @@ import { WAHAEvents } from '@waha/structures/enums.dto';
 import { WAHAWebhookMessageAck } from '@waha/structures/webhooks.dto';
 import { Job } from 'bullmq';
 import { PinoLogger } from 'nestjs-pino';
-import { ShouldMarkAsReadInChatWoot } from '@waha/apps/chatwoot/consumers/waha/message.ack.utils';
+import {
+  ShouldMarkAsReadInChatWoot,
+  ShouldUpdateMessageStatusInChatWoot,
+} from '@waha/apps/chatwoot/consumers/waha/message.ack.utils';
 import { parseMessageIdSerialized } from '@waha/core/utils/ids';
 import { MessageMappingService } from '@waha/apps/chatwoot/storage';
+import { MessageAckRepository } from '@waha/apps/chatwoot/storage/MessageAckRepository';
+import { MessageStatusService } from '@waha/apps/chatwoot/services/MessageStatusService';
 
 @Processor(QueueName.WAHA_MESSAGE_ACK, { concurrency: JOB_CONCURRENCY })
 export class WAHAMessageAckConsumer extends ChatWootWAHABaseConsumer {
@@ -32,7 +37,7 @@ export class WAHAMessageAckConsumer extends ChatWootWAHABaseConsumer {
   }
 
   ShouldProcess(event: any): boolean {
-    return ShouldMarkAsReadInChatWoot(event);
+    return ShouldUpdateMessageStatusInChatWoot(event);
   }
 
   GetChatId(event: WAHAWebhookMessageAck): string {
@@ -53,18 +58,16 @@ export class WAHAMessageAckConsumer extends ChatWootWAHABaseConsumer {
       info,
       session,
       container.Locale(),
+      container.MessageAckRepository(),
+      container.MessageStatusService(),
+      container.ChatWootConfig().conversations.markAsRead,
     );
-    try {
-      await handler.handle(event);
-    } catch (e) {
-      // TODO: Investigate errors
-      // https://github.com/devlikeapro/waha/issues/1492
-      this.logger.error(e);
-    }
+    // Let the existing queue retry API/storage failures instead of losing ACKs.
+    await handler.handle(event);
   }
 }
 
-class MessageAckHandler {
+export class MessageAckHandler {
   constructor(
     private readonly contactConversationService: ContactConversationService,
     protected mappingService: MessageMappingService,
@@ -72,12 +75,20 @@ class MessageAckHandler {
     private readonly info: IMessageInfo,
     private readonly session: WAHASessionAPI,
     private readonly locale: Locale,
+    private readonly acknowledgements: MessageAckRepository,
+    private readonly statusService: MessageStatusService,
+    private readonly markAsRead: boolean,
   ) {}
 
   async handle(event: WAHAWebhookMessageAck): Promise<void> {
     const payload = event.payload;
 
     const key = parseMessageIdSerialized(payload.id);
+    await this.acknowledgements.record(
+      key.id,
+      payload.ack,
+      new Date(event.timestamp),
+    );
     const chatwoot = await this.mappingService.getChatWootMessage({
       chat_id: null,
       message_id: key.id,
@@ -85,6 +96,15 @@ class MessageAckHandler {
     // No chatwoot message found, so we don't mark it as read
     // Filters out old messages and some service ack messages
     if (!chatwoot) {
+      return;
+    }
+
+    this.info.onConversationId(chatwoot.conversation_id);
+    const status = await this.statusService.sync(chatwoot);
+    if (!this.markAsRead || !ShouldMarkAsReadInChatWoot(event)) {
+      return;
+    }
+    if (chatwoot.expected_parts && status !== 'read') {
       return;
     }
 
@@ -104,7 +124,6 @@ class MessageAckHandler {
       );
       return;
     }
-    this.info.onConversationId(conversation.conversationId);
 
     const sourceId = conversation.sourceId;
     if (!sourceId) {
@@ -116,16 +135,16 @@ class MessageAckHandler {
 
     try {
       await this.contactConversationService.markConversationAsRead(
-        conversation.conversationId,
+        chatwoot.conversation_id,
         sourceId,
       );
       this.logger.info(
-        `Marked conversation ${conversation.conversationId} as read for chat.id: ${payload.from} (message: ${payload.id}, sourceId: ${sourceId})`,
+        `Marked conversation ${chatwoot.conversation_id} as read for chat.id: ${payload.from} (message: ${payload.id}, sourceId: ${sourceId})`,
       );
     } catch (error) {
       const reason = error instanceof Error ? error.message : String(error);
       this.logger.error(
-        `Error marking conversation ${conversation.conversationId} as read for chat.id: ${payload.from}. Reason: ${reason}`,
+        `Error marking conversation ${chatwoot.conversation_id} as read for chat.id: ${payload.from}. Reason: ${reason}`,
       );
       throw error;
     }

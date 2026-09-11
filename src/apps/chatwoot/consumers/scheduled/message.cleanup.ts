@@ -44,5 +44,6 @@ export class MessageCleanupConsumer extends ChatWootScheduledConsumer {
       .MessageMappingService()
       .cleanup(removeAfter);
     logger.info(`Removed ${removed} mappings for messages`);
+    await container.MessageAckRepository().cleanup(removeAfter);
   }
 }
