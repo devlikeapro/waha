@@ -10,6 +10,7 @@ import { ChatWootInboxAPI } from '@waha/apps/chatwoot/client/interfaces';
 import {
   ChatWootAppConfig,
   ChatWootConfig,
+  ChatWootOutgoingMode,
   DEFAULT_LOCALE,
   LinkPreview,
 } from '@waha/apps/chatwoot/dto/config.dto';
@@ -117,6 +118,10 @@ export class DIContainer {
       this.InboxAPI(),
       this.logger,
     );
+  }
+
+  public OutgoingMode(): ChatWootOutgoingMode {
+    return this.ChatWootConfig().conversations.outgoing;
   }
 
   @CacheSync()
@@ -229,6 +234,7 @@ export function ChatWootConfigDefaults(
       sort: ConversationSort.created_newest,
       status: null,
       markAsRead: true,
+      outgoing: ChatWootOutgoingMode.PRIVATE_NOTE,
     },
   };
   return lodash.defaultsDeep({}, config, defaults);

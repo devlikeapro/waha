@@ -13,6 +13,7 @@ import { ChatWootQueueService } from '@waha/apps/chatwoot/services/ChatWootQueue
 import { SessionManager } from '@waha/core/abc/manager.abc';
 import { AppRepository } from '@waha/apps/app_sdk/storage/AppRepository';
 import { CommandPrefix } from '@waha/apps/chatwoot/cli';
+import { IsExternalEcho } from '@waha/apps/chatwoot/api/webhook.guards';
 
 @Controller('webhooks/chatwoot/')
 export class ChatwootWebhookController {
@@ -41,8 +42,13 @@ export class ChatwootWebhookController {
     }
 
     const isCommandsChat = IsCommandsChat(body);
-    // Ignore private notes (most of them)
     const deleted = body?.content_attributes?.deleted;
+    // Ignore messages that came from WhatsApp, do not send them back
+    if (IsExternalEcho(body) && !deleted) {
+      return { success: true };
+    }
+
+    // Ignore private notes (most of them)
     if (body.private) {
       // Ignore any private note in commands chats
       if (isCommandsChat) {

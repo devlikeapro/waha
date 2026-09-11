@@ -30,6 +30,11 @@ export enum LinkPreview {
   HQ = 'HG',
 }
 
+export enum ChatWootOutgoingMode {
+  PRIVATE_NOTE = 'private-note',
+  MESSAGE = 'message',
+}
+
 export class ChatWootConversationsConfig {
   @IsEnum(ConversationSort)
   sort: ConversationSort;
@@ -46,6 +51,17 @@ export class ChatWootConversationsConfig {
   @IsOptional()
   @IsBoolean()
   markAsRead?: boolean = true;
+
+  @ApiPropertyOptional({
+    description:
+      'How to show messages sent from WhatsApp (not from ChatWoot): ' +
+      "'private-note' (default) or 'message' - a regular outgoing message, as if an agent sent it.",
+    enum: ChatWootOutgoingMode,
+    default: ChatWootOutgoingMode.PRIVATE_NOTE,
+  })
+  @IsOptional()
+  @IsEnum(ChatWootOutgoingMode)
+  outgoing?: ChatWootOutgoingMode = ChatWootOutgoingMode.PRIVATE_NOTE;
 }
 
 export interface ChatWootConfig {

@@ -59,6 +59,7 @@ export class WAHACallRejectedConsumer extends ChatWootWAHABaseConsumer {
       new WAHASessionAPI(event.session, container.WAHASelf()),
       locale,
       container.WAHASelf(),
+      container.OutgoingMode(),
     );
     const msg = BuildCallMessagePayload(
       event.payload,

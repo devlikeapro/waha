@@ -60,6 +60,7 @@ export class WAHAMessageReactionConsumer extends ChatWootWAHABaseConsumer {
       session,
       container.Locale(),
       container.WAHASelf(),
+      container.OutgoingMode(),
     );
     return await handler.handle(event.payload);
   }

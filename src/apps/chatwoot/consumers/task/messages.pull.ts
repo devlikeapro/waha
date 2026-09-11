@@ -294,6 +294,7 @@ class MessagesPullHandler {
       this.session,
       container.Locale(),
       container.WAHASelf(),
+      container.OutgoingMode(),
     );
     handler.force = options.force;
 
