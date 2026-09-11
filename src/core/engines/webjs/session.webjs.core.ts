@@ -25,10 +25,6 @@ import {
   ToGroupV2UpdateEvent,
 } from '@waha/core/engines/webjs/groups.webjs';
 import {
-  TagChatstateToPresence,
-  TagPresenceToPresence,
-} from '@waha/core/engines/webjs/presence';
-import {
   WebjsChannelMessage,
   WebjsClientCore,
 } from '@waha/core/engines/webjs/WebjsClientCore';
@@ -208,7 +204,11 @@ import {
 } from 'whatsapp-web.js/src/structures';
 import { GetSerialized } from '@waha/core/utils/serialized';
 
-import { WAJSPresenceChatStateType, WebJSPresence } from './types';
+import {
+  WAJSPresenceChatStateType,
+  WebJSPresence,
+  WebJSPresenceUpdate,
+} from './types';
 import { WebJSAuthFactory } from './WebJSAuthFactory';
 import {
   isJidCus,
@@ -351,7 +351,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   protected getWebjsTagsFlag() {
     // Emit 'tag:*' events only when explicitly enabled in session config.
-    // This flag is required for presence.update and message.ack events.
+    // This flag is required for message.ack events.
     // Disabled by default for performance and stability reasons.
     return !!this.sessionConfig?.webjs?.tagsEventsOn;
   }
@@ -2504,19 +2504,15 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     //
     // Presence
     //
-    const tagPresenceNode$ = fromEvent(this.whatsapp, Events.TAG_PRESENCE);
-    const presences$ = tagPresenceNode$.pipe(
-      map(TagPresenceToPresence),
-      filter(Boolean),
-      filter((presence: any) => this.jids.include(presence.id)),
+    const presenceUpdate$ = fromEvent(
+      this.whatsapp.events,
+      'presence.update',
+    ).pipe(
+      map((data: WebJSPresenceUpdate) =>
+        this.toWahaPresences(data.id, data.presences),
+      ),
+      filter((presence) => this.jids.include(presence.id)),
     );
-    const tagChatstateNode$ = fromEvent(this.whatsapp, 'tag:chatstate');
-    const chatstatePresences$ = tagChatstateNode$.pipe(
-      map(TagChatstateToPresence),
-      filter(Boolean),
-      filter((presence: any) => this.jids.include(presence.id)),
-    );
-    const presenceUpdate$ = merge(presences$, chatstatePresences$);
     this.events2.get(WAHAEvents.PRESENCE_UPDATE).switch(presenceUpdate$);
 
     //

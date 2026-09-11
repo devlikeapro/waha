@@ -10,3 +10,8 @@ export interface WebJSPresence {
   lastSeen?: number;
   state: WAJSPresenceChatStateType;
 }
+
+export interface WebJSPresenceUpdate {
+  id: string;
+  presences: WebJSPresence[];
+}
