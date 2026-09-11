@@ -67,6 +67,7 @@ import {
 } from '@waha/core/engines/noweb/noweb.newsletter';
 import { NowebAuthFactoryCore } from '@waha/core/engines/noweb/NowebAuthFactoryCore';
 import { NowebInMemoryStore } from '@waha/core/engines/noweb/store/NowebInMemoryStore';
+import { NoLastMessageInChatException } from '@waha/core/engines/noweb/noweb.exceptions';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
 import { toVcardV3 } from '@waha/core/vcard';
 import { createAgentProxy } from '@waha/core/helpers.proxy';
@@ -1863,6 +1864,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   ): Promise<any> {
     const jid = await this.hooks.wid.chat.promise(chatId, 'chatsPutArchive');
     const messages = await this.store.getMessagesByJid(jid, {}, { limit: 1 });
+    if (messages.length === 0) {
+      throw new NoLastMessageInChatException(chatId);
+    }
     return await this.sock.chatModify(
       { archive: archive, lastMessages: messages },
       jid,
@@ -1883,6 +1887,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   public async chatsUnreadChat(chatId: string): Promise<any> {
     const jid = await this.hooks.wid.chat.promise(chatId, 'chatsUnreadChat');
     const messages = await this.store.getMessagesByJid(jid, {}, { limit: 1 });
+    if (messages.length === 0) {
+      throw new NoLastMessageInChatException(chatId);
+    }
     return await this.sock.chatModify(
       { markRead: false, lastMessages: messages },
       jid,

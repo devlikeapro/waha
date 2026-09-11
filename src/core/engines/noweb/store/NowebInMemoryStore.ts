@@ -2,6 +2,7 @@ import type { Chat, Contact, GroupMetadata, proto } from '@adiwajshing/baileys';
 import type makeWASocket from '@adiwajshing/baileys';
 import type { Label } from '@adiwajshing/baileys/lib/Types/Label';
 import { BadRequestException } from '@nestjs/common';
+import { AckToStatus } from '@waha/core/utils/acks';
 import {
   GetChatMessagesFilter,
   OverviewFilter,
@@ -10,8 +11,10 @@ import { LidToPhoneNumber } from '@waha/structures/lids.dto';
 import {
   LimitOffsetParams,
   PaginationParams,
+  SortOrder,
 } from '@waha/structures/pagination.dto';
 import { PaginatorInMemory } from '@waha/utils/Paginator';
+import * as lodash from 'lodash';
 
 import { INowebStore } from './INowebStore';
 import makeInMemoryStore from './memory/make-in-memory-store';
@@ -56,13 +59,49 @@ export class NowebInMemoryStore implements INowebStore {
     return this.store.loadMessage(jid, id);
   }
 
-  getMessagesByJid(
+  async getMessagesByJid(
     chatId: string,
     filter: GetChatMessagesFilter,
     pagination: PaginationParams,
     merge?: boolean,
   ): Promise<any> {
-    throw new BadRequestException(this.errorMessage);
+    let messages = await this.store.loadMessages(
+      chatId,
+      Number.MAX_SAFE_INTEGER,
+      undefined,
+    );
+    const lte = filter['filter.timestamp.lte'];
+    const gte = filter['filter.timestamp.gte'];
+    const fromMe = filter['filter.fromMe'];
+    const ack = filter['filter.ack'];
+    messages = messages.filter((msg) => {
+      const timestamp = lodash.toNumber(msg.messageTimestamp as any);
+      if (lte != null && timestamp > lte) {
+        return false;
+      }
+      if (gte != null && timestamp < gte) {
+        return false;
+      }
+      if (fromMe != null && msg.key.fromMe !== fromMe) {
+        return false;
+      }
+      if (ack != null && msg.status !== AckToStatus(ack)) {
+        return false;
+      }
+      return true;
+    });
+    // Newest first by default, same as the persistent store
+    const order = pagination.sortOrder || SortOrder.DESC;
+    messages = lodash.orderBy(
+      messages,
+      [(msg) => lodash.toNumber(msg.messageTimestamp as any)],
+      [order],
+    );
+    const paginator = new PaginatorInMemory({
+      limit: pagination.limit,
+      offset: pagination.offset,
+    });
+    return paginator.apply(messages);
   }
 
   getMessageById(
