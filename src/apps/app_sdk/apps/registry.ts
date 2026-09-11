@@ -1,3 +1,4 @@
+import ArgentinePhoneNumbersAppModule from '@waha/apps/argentine-phone-numbers/app.module';
 import { ApiTags } from '@nestjs/swagger';
 import { AppModule } from '@waha/apps/app_sdk/apps/definition';
 import { AppApiTag } from '@waha/apps/app_sdk/apps/openapi';
@@ -11,6 +12,7 @@ import McpAppModule from '@waha/apps/mcp/app.module';
  * Add new apps here - the rest of app_sdk works off this list.
  */
 const APPS: AppModule[] = [
+  ArgentinePhoneNumbersAppModule,
   BrazilianPhoneNumbersAppModule,
   CallsAppModule,
   ChatWootAppModule,
