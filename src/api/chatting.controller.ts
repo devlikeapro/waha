@@ -296,6 +296,7 @@ export class ChattingController {
     description: 'You can use it as buttons or list replacement',
   })
   @CheckPolicies(CanSession(Action.Send, FromBody('session')))
+  @UsePipes(new WAHAValidationPipe())
   async sendPoll(@Body() request: MessagePollRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.sendPoll(request);
