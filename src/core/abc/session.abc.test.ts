@@ -1,4 +1,8 @@
-import { WhatsappSession } from '@waha/core/abc/session.abc';
+import {
+  parseChannelInviteLink,
+  parseGroupInviteLink,
+  WhatsappSession,
+} from '@waha/core/abc/session.abc';
 import { WAHAEvents, WAHASessionStatus } from '@waha/structures/enums.dto';
 import {
   MeInfo,
@@ -159,5 +163,26 @@ describe('WhatsappSession reachout timelock', () => {
     } finally {
       jest.useRealTimers();
     }
+  });
+});
+
+describe('parseGroupInviteLink', () => {
+  it.each([
+    ['AbCdEf123', 'AbCdEf123'],
+    ['https://chat.whatsapp.com/AbCdEf123', 'AbCdEf123'],
+    ['https://chat.whatsapp.com/AbCdEf123?s=sw&p=a&mlu=4&ilr=4', 'AbCdEf123'],
+    ['https://chat.whatsapp.com/AbCdEf123#ref', 'AbCdEf123'],
+    ['AbCdEf123?s=sw', 'AbCdEf123'],
+  ])('%s => %s', (link, code) => {
+    expect(parseGroupInviteLink(link)).toBe(code);
+  });
+});
+
+describe('parseChannelInviteLink', () => {
+  it.each([
+    ['https://whatsapp.com/channel/AbCdEf123', 'AbCdEf123'],
+    ['https://www.whatsapp.com/channel/AbCdEf123?utm=x', 'AbCdEf123'],
+  ])('%s => %s', (link, code) => {
+    expect(parseChannelInviteLink(link)).toBe(code);
   });
 });
