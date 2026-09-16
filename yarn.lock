@@ -5083,8 +5083,8 @@ __metadata:
 
 "@wppconnect/wa-js@github:wppconnect-team/wa-js#main":
   version: 4.6.0
-  resolution: "@wppconnect/wa-js@https://github.com/wppconnect-team/wa-js.git#commit=b9b8a2f126425cfde3a80bdd62f53cc5bc77dda8"
-  checksum: 10/461c051774e2419687733bb38ae1c01167231d735195449c8848bde3a9e46531a4b740b3c51b2d92691a7d957145c68a98382203456bcae7e5b3abd7b55b6530
+  resolution: "@wppconnect/wa-js@https://github.com/wppconnect-team/wa-js.git#commit=ff05c46609a7422e937e90604ddadc869a29137a"
+  checksum: 10/ad5c50b11b48f88e7c12c9ce22eb0fe9ace356721069ad392db0f5516389bd65f9159d9ad6e0454273928165766ac8917919b525e0eb531b08745220b8dbbf45
   languageName: node
   linkType: hard
 
