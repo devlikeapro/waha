@@ -53,7 +53,8 @@ export function ListenEventsForChatWoot(config: ChatWootConfig) {
     WAHAEvents.CALL_ACCEPTED,
     WAHAEvents.CALL_REJECTED,
   ];
-  if (config.conversations.markAsRead) {
+  const conversations = config.conversations;
+  if (conversations.markAsRead || conversations.syncMessageStatus) {
     events.push(WAHAEvents.MESSAGE_ACK);
   }
   return events;

@@ -44,5 +44,7 @@ export class MessageCleanupConsumer extends ChatWootScheduledConsumer {
       .MessageMappingService()
       .cleanup(removeAfter);
     logger.info(`Removed ${removed} mappings for messages`);
+    const acks = await container.MessageStatusService().cleanup(removeAfter);
+    logger.info(`Removed ${acks} acks for messages`);
   }
 }

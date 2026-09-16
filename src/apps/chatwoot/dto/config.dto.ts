@@ -54,6 +54,15 @@ export class ChatWootConversationsConfig {
 
   @ApiPropertyOptional({
     description:
+      'Update Chatwoot message status (delivered/read) for messages sent from Chatwoot using WhatsApp acks. Disabled by default',
+    default: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  syncMessageStatus?: boolean = false;
+
+  @ApiPropertyOptional({
+    description:
       'How to show messages sent from WhatsApp (not from ChatWoot): ' +
       "'private-note' (default) or 'message' - a regular outgoing message, as if an agent sent it.",
     enum: ChatWootOutgoingMode,

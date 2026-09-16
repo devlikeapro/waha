@@ -38,6 +38,7 @@ import {
 } from '@waha/apps/chatwoot/dto/config.dto';
 import { Locale } from '@waha/apps/chatwoot/i18n/locale';
 import { isJidGroup } from '@waha/core/utils/jids';
+import { MessageStatusService } from '@waha/apps/chatwoot/services/MessageStatusService';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const mime = require('mime-types');
@@ -65,6 +66,7 @@ export class ChatWootInboxMessageCreatedConsumer extends ChatWootInboxMessageCon
       session,
       container.ChatWootConfig(),
       container.Locale(),
+      container.MessageStatusService(),
     );
     return await handler.handle(body);
   }
@@ -77,6 +79,7 @@ export class MessageHandler {
     private session: WAHASessionAPI,
     private config: ChatWootConfig,
     private l: Locale,
+    private statusService: MessageStatusService,
   ) {}
 
   async handle(body: any) {
@@ -114,6 +117,7 @@ export class MessageHandler {
     // Send text (Part 1 if present)
     const attachments = message.attachments || [];
     const sendText = content && attachments.length !== 1;
+    const parts = attachments.length + (sendText ? 1 : 0);
     if (sendText) {
       part += 1; // Text is the first possible part
       const exists = await this.getMapping(message, part);
@@ -129,7 +133,7 @@ export class MessageHandler {
         });
         const msg = await this.sendTextMessage(chatId, text, replyTo, mentions);
         results.push(msg);
-        await this.saveMapping(message, msg, part);
+        await this.saveMapping(message, msg, part, parts);
         this.logger.info(`Text message sent: ${msg.id}`);
       }
     }
@@ -155,20 +159,42 @@ export class MessageHandler {
         `File message sent: ${msg.id} - ${file.data_url} - ${file.file_type}`,
       );
       results.push(msg);
-      await this.saveMapping(message, msg, part);
+      await this.saveMapping(message, msg, part, parts);
+    }
+    if (this.config.conversations.syncMessageStatus) {
+      await this.syncStatus(message, parts);
     }
     return results;
+  }
+
+  /**
+   * Push acks that arrived before the last part was mapped, best effort
+   */
+  private async syncStatus(message: any, parts: number) {
+    try {
+      await this.statusService.sync({
+        conversation_id: message.conversation.id,
+        message_id: message.id,
+        parts: parts,
+      });
+    } catch (err) {
+      this.logger.warn(
+        `ChatWoot => WhatsApp: error syncing status for Chatwoot message ${message.id}: ${err}`,
+      );
+    }
   }
 
   private async saveMapping(
     chatwootMessage: any,
     whatsappMessage: any,
     part: number,
+    parts: number,
   ): Promise<void> {
     const chatwoot: Omit<ChatwootMessage, 'id'> = {
       timestamp: new Date(chatwootMessage.created_at),
       conversation_id: chatwootMessage.conversation.id,
       message_id: chatwootMessage.id,
+      parts: parts,
     };
     const whatsapp = EngineHelper.WhatsAppMessageKeys(whatsappMessage);
     await this.mappingService.map(chatwoot, whatsapp, part);

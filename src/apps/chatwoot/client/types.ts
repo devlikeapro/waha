@@ -36,6 +36,13 @@ export enum MessageType {
   ACTIVITY = 'activity',
 }
 
+export enum MessageStatus {
+  SENT = 'sent',
+  DELIVERED = 'delivered',
+  READ = 'read',
+  FAILED = 'failed',
+}
+
 export enum CustomAttributeType {
   TEXT = 0,
   NUMBER = 1,

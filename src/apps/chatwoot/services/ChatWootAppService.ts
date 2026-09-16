@@ -121,6 +121,7 @@ export class ChatWootAppService implements IAppService {
     const knex = manager.store.getWAHADatabase();
     const di = new DIContainer(appDb.pk, app.config, this.logger, knex);
     await di.MessageMappingService().purge();
+    await di.MessageStatusService().purge();
     this.cleanCache(app);
   }
 

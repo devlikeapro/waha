@@ -126,11 +126,11 @@ export class MessageMappingService {
     }
     const mappings = [];
     for (const message of messages) {
-      const mapping =
-        await this.messageMappingRepository.getByChatwootMessageId(message.id);
-      if (mapping) {
-        mappings.push(mapping);
-      }
+      const parts =
+        await this.messageMappingRepository.getAllByChatwootMessageId(
+          message.id,
+        );
+      mappings.push(...parts);
     }
     const whatsapp = [];
     for (const mapping of mappings) {

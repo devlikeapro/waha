@@ -1,9 +1,13 @@
 import type { WAHAEngine, WAHAEvents } from '@waha/structures/enums.dto';
-import { ShouldMarkAsReadInChatWoot } from '@waha/apps/chatwoot/consumers/waha/message.ack.utils';
+import {
+  ShouldMarkAsReadInChatWoot,
+  ShouldProcessAckInChatWoot,
+} from '@waha/apps/chatwoot/consumers/waha/message.ack.utils';
 
 interface TestParam {
   name: string;
-  expected: boolean;
+  ShouldMarkAsReadInChatWoot: boolean;
+  ShouldProcessAckInChatWoot: boolean;
   GOWS: any;
   NOWEB: any;
   WEBJS: any;
@@ -14,10 +18,11 @@ interface TestParam {
  * Participant - 11111111111 (lid - 011111111111111)
  * Group - 222222222222222222
  */
-const ShouldMarkAsReadCases: TestParam[] = [
+const TestCases: TestParam[] = [
   {
     name: 'Participant read My message (READ ack)',
-    expected: true,
+    ShouldMarkAsReadInChatWoot: true,
+    ShouldProcessAckInChatWoot: true,
     GOWS: {
       id: 'evt_00000000000000000000000000',
       session: 'default',
@@ -131,7 +136,8 @@ const ShouldMarkAsReadCases: TestParam[] = [
   },
   {
     name: 'Participant received My message (DEVICE ack)',
-    expected: false,
+    ShouldMarkAsReadInChatWoot: false,
+    ShouldProcessAckInChatWoot: true,
     GOWS: {
       id: 'evt_00000000000000000000000000',
       session: 'default',
@@ -243,7 +249,8 @@ const ShouldMarkAsReadCases: TestParam[] = [
   },
   {
     name: 'Me read Participant message on another device (READ ack)',
-    expected: false,
+    ShouldMarkAsReadInChatWoot: false,
+    ShouldProcessAckInChatWoot: false,
     GOWS: {
       id: 'evt_00000000000000000000000000',
       session: 'default',
@@ -315,7 +322,8 @@ const ShouldMarkAsReadCases: TestParam[] = [
   },
   {
     name: 'Participant read My Group Message (READ ack)',
-    expected: false,
+    ShouldMarkAsReadInChatWoot: false,
+    ShouldProcessAckInChatWoot: false,
     GOWS: {
       id: 'evt_00000000000000000000000000',
       session: 'default',
@@ -446,18 +454,37 @@ const ShouldMarkAsReadCases: TestParam[] = [
   },
 ];
 
+const engines = ['GOWS', 'NOWEB', 'WEBJS'];
+
 describe('ShouldMarkAsReadInChatWoot', () => {
-  const engines = ['GOWS', 'NOWEB', 'WEBJS'];
   for (const engine of engines) {
     describe(engine, () => {
-      for (const param of ShouldMarkAsReadCases) {
-        const name = `[${param.expected}] ${param.name}`;
+      for (const param of TestCases) {
+        const name = `[${param.ShouldMarkAsReadInChatWoot}] ${param.name}`;
         const event = param[engine];
         const testfn = event ? test : test.skip;
-        const expected = param.expected;
+        const expected = param.ShouldMarkAsReadInChatWoot;
         testfn(name, () => {
           // Test
           const result = ShouldMarkAsReadInChatWoot(event);
+          expect(result).toBe(expected);
+        });
+      }
+    });
+  }
+});
+
+describe('ShouldProcessAckInChatWoot', () => {
+  for (const engine of engines) {
+    describe(engine, () => {
+      for (const param of TestCases) {
+        const name = `[${param.ShouldProcessAckInChatWoot}] ${param.name}`;
+        const event = param[engine];
+        const testfn = event ? test : test.skip;
+        const expected = param.ShouldProcessAckInChatWoot;
+        testfn(name, () => {
+          // Test
+          const result = ShouldProcessAckInChatWoot(event);
           expect(result).toBe(expected);
         });
       }

@@ -1,6 +1,7 @@
 import ChatwootClient from '@figuro/chatwoot-sdk';
 import type { conversation_message_create } from '@figuro/chatwoot-sdk/dist/models/conversation_message_create';
-import { MessageType } from '@waha/apps/chatwoot/client/types';
+import type { conversation_message_update } from '@figuro/chatwoot-sdk/dist/models/conversation_message_update';
+import { MessageStatus, MessageType } from '@waha/apps/chatwoot/client/types';
 
 export class Conversation {
   public onError: (e: any) => void;
@@ -41,6 +42,20 @@ export class Conversation {
       data = { ...data, ...this.overrideIncoming };
     }
     return this.send(data);
+  }
+
+  /**
+   * Update message status (sent/delivered/read/failed)
+   */
+  public async updateMessageStatus(messageId: number, status: MessageStatus) {
+    // The SDK model has no "status" field, but the endpoint accepts only status (and external_error)
+    const data = { status: status } as unknown as conversation_message_update;
+    return this.accountAPI.messages.update({
+      accountId: this.accountId,
+      conversationId: this.conversationId,
+      messageId: messageId,
+      data: data,
+    });
   }
 
   public async activity(text: string) {

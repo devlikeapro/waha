@@ -15,6 +15,9 @@ export interface ChatWootCombinedKey {
 export interface ChatwootMessage extends ChatWootCombinedKey {
   id?: number;
   timestamp: Date;
+  // WhatsApp messages sent for it (text + attachments)
+  // null - mirrored from WhatsApp
+  parts?: number | null;
 }
 
 export interface MessageMapping {

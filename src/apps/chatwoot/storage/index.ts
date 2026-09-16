@@ -5,6 +5,7 @@ import { ChatwootMessageRepository } from './ChatwootMessageRepository';
 import { MessageMappingRepository } from './MessageMappingRepository';
 import { MessageMappingService } from './MessageMappingService';
 import { ChatwootMessage, MessageMapping, WhatsAppMessage } from './types';
+import { WhatsAppAckRepository } from './WhatsAppAckRepository';
 import { WhatsAppMessageRepository } from './WhatsAppMessageRepository';
 
 // Export all types
@@ -15,6 +16,7 @@ export {
   AppRepository,
   ChatwootMessageRepository,
   MessageMappingRepository,
+  WhatsAppAckRepository,
   WhatsAppMessageRepository,
 };
 
