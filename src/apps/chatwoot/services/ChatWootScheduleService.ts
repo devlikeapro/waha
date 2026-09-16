@@ -31,7 +31,9 @@ export class ChatWootScheduleService {
     await messageCleanupQueue.upsertJobScheduler(
       this.JobId(QueueName.SCHEDULED_MESSAGE_CLEANUP, appId),
       // Every day at 17:00
-      { pattern: '0 0 17 * * *' },
+      {
+        pattern: '0 0 17 * * *',
+      },
       {
         data: {
           app: appId,
@@ -46,7 +48,9 @@ export class ChatWootScheduleService {
     await checkVersionQueue.upsertJobScheduler(
       this.JobId(QueueName.SCHEDULED_CHECK_VERSION, appId),
       // Every Wednesday (3) at 18:00
-      { pattern: '0 0 18 * * 3' },
+      {
+        pattern: '0 0 18 * * 3',
+      },
       {
         data: {
           app: appId,
@@ -58,17 +62,22 @@ export class ChatWootScheduleService {
     const checkTierQueue = this.queueRegistry.queue(
       QueueName.SCHEDULED_CHECK_TIER,
     );
-    await checkTierQueue.upsertJobScheduler(
+    // Disabled - since we do not have PLUS version anymore
+    await checkTierQueue.removeJobScheduler(
       this.JobId(QueueName.SCHEDULED_CHECK_TIER, appId),
-      // Every Monday (1) at 14:00
-      { pattern: '0 0 14 * * 1' },
-      {
-        data: {
-          app: appId,
-          session: sessionName,
-        },
-      },
     );
+    // Enabled
+    // await checkTierQueue.upsertJobScheduler(
+    //   this.JobId(QueueName.SCHEDULED_CHECK_TIER, appId),
+    //   // Every Monday (1) at 14:00
+    //   { pattern: '0 0 14 * * 1' },
+    //   {
+    //     data: {
+    //       app: appId,
+    //       session: sessionName,
+    //     },
+    //   },
+    // );
   }
 
   async unschedule(appId: string, sessionName: string): Promise<void> {
