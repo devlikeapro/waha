@@ -83,7 +83,7 @@ export class MediaLocalStorage implements IMediaStorage {
         const remaining = expired ? jitter : left;
         this.postponeRemoval(filepath, remaining);
       } catch (err) {
-        this.log.warn(`Failed to schedule removal for file ${entry}`, err);
+        this.log.warn(err, `Failed to schedule removal for file ${entry}`);
       }
     }
   }

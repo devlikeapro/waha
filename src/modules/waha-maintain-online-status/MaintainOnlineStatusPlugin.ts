@@ -69,7 +69,7 @@ export class MaintainOnlineStatusPlugin extends SessionPlugin<MaintainOnlineStat
         await this.session.setPresence(WAHAPresenceStatus.ONLINE);
         this.logger.debug('Set presence to ONLINE due to activity');
       } catch (error) {
-        this.logger.debug('Failed to set presence ONLINE', error);
+        this.logger.debug(error, 'Failed to set presence ONLINE');
         return;
       }
     }
@@ -91,7 +91,7 @@ export class MaintainOnlineStatusPlugin extends SessionPlugin<MaintainOnlineStat
         );
       } catch (error) {
         this.session.presence = WAHAPresenceStatus.OFFLINE;
-        this.logger.debug('Failed to set presence OFFLINE', error);
+        this.logger.debug(error, 'Failed to set presence OFFLINE');
       }
       this.cleanupPresenceTimeout();
     }, this.config.duration);
