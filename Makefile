@@ -48,7 +48,10 @@ link-webjs:
 
 unlink-webjs: up-webjs
 
-link-noweb:
+rebuild-noweb:
+	cd ../Baileys && yarn build
+
+link-noweb: rebuild-noweb
 	yarn up @adiwajshing/baileys@link:../Baileys
 
 unlink-noweb: up-noweb
