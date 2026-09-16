@@ -43,6 +43,16 @@ up-noweb-libsignal:
 up-webjs:
 	yarn up whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-2026-06-26
 
+link-webjs:
+	yarn up whatsapp-web.js@link:../whatsapp-web.js
+
+unlink-webjs: up-webjs
+
+link-noweb:
+	yarn up @adiwajshing/baileys@link:../Baileys
+
+unlink-noweb: up-noweb
+
 up-wpp:
 	SHARP_IGNORE_GLOBAL_LIBVIPS=1 yarn up @wppconnect-team/wppconnect@github:wppconnect-team/wppconnect#master
 	SHARP_IGNORE_GLOBAL_LIBVIPS=1 yarn up @wppconnect/wa-js@github:wppconnect-team/wa-js#main
