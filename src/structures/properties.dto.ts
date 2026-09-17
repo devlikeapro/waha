@@ -30,6 +30,15 @@ function ReplyToProperty() {
   });
 }
 
+function MentionsProperty() {
+  return ApiProperty({
+    description:
+      'Chat IDs to mention in the message. Use ["all"] to mention all participants in a group.',
+    example: ['11111111111@c.us'],
+    required: false,
+  });
+}
+
 function GeneratedMessageIdProperty() {
   return ApiProperty({
     description: 'Pre-generated message id',
@@ -50,6 +59,7 @@ export function ConvertApiProperty() {
 export {
   ChatIdProperty,
   GeneratedMessageIdProperty,
+  MentionsProperty,
   MessageIdOnlyProperty,
   MessageIdProperty,
   ReplyToProperty,
