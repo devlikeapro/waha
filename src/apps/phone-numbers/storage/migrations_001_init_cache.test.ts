@@ -7,6 +7,8 @@ const phoneNumbers = require('../migrations/001_init_app');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const argentine = require('../../argentine-phone-numbers/migrations/001_init_app');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+const mexican = require('../../mexican-phone-numbers/migrations/001_init_app');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const brazilian = require('../../brazilian-phone-numbers/migrations/001_init_brazilian_phone_numbers');
 
 describe('migrations_001_init_cache', () => {
@@ -28,6 +30,7 @@ describe('migrations_001_init_cache', () => {
   it('every phone numbers app gets its own table', async () => {
     await phoneNumbers.up(db);
     await argentine.up(db);
+    await mexican.up(db);
     await brazilian.up(db);
 
     expect(await db.schema.hasTable('app_phone_numbers_cache')).toBe(true);

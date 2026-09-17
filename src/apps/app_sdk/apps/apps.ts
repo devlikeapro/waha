@@ -4,6 +4,7 @@ import { BrazilianPhoneNumbersAppConfig } from '@waha/apps/brazilian-phone-numbe
 import { CallsAppConfig } from '@waha/apps/calls/dto/config.dto';
 import { ChatWootAppConfig } from '@waha/apps/chatwoot/dto/config.dto';
 import { McpAppConfig } from '@waha/apps/mcp/dto/config.dto';
+import { MexicanPhoneNumbersAppConfig } from '@waha/apps/mexican-phone-numbers/dto';
 import { PhoneNumbersAppConfig } from '@waha/apps/phone-numbers/dto/config.dto';
 
 export enum AppName {
@@ -12,6 +13,7 @@ export enum AppName {
   chatwoot = 'chatwoot',
   calls = 'calls',
   mcp = 'mcp',
+  mexicanPhoneNumbers = 'mexican-phone-numbers',
   phoneNumbers = 'phone-numbers',
 }
 
@@ -27,6 +29,7 @@ export const AppConfigClasses: Record<AppName, Type<any>> = {
   [AppName.calls]: CallsAppConfig,
   [AppName.chatwoot]: ChatWootAppConfig,
   [AppName.mcp]: McpAppConfig,
+  [AppName.mexicanPhoneNumbers]: MexicanPhoneNumbersAppConfig,
 };
 
 export function GetAppConfigClass(name: AppName): Type<any> {

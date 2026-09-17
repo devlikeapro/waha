@@ -3,7 +3,7 @@ import { AppName } from '@waha/apps/app_sdk/apps/apps';
 import { ArgentinePhoneNumbersController } from '@waha/apps/argentine-phone-numbers/controller';
 import { ArgentinePhoneNumbersAppService } from '@waha/apps/argentine-phone-numbers/services/ArgentinePhoneNumbersAppService';
 
-const argentinephonenumbersAppModule: AppModule = {
+const ArgentinePhoneNumbersAppModule: AppModule = {
   name: AppName.argentinePhoneNumbers,
   openapi: {
     title: 'Phone Numbers: Argentina',
@@ -25,4 +25,4 @@ const argentinephonenumbersAppModule: AppModule = {
   Service: ArgentinePhoneNumbersAppService,
 };
 
-export default argentinephonenumbersAppModule;
+export default ArgentinePhoneNumbersAppModule;

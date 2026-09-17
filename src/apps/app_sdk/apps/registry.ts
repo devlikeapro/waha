@@ -6,6 +6,7 @@ import { AppApiTag } from '@waha/apps/app_sdk/apps/openapi';
 import CallsAppModule from '@waha/apps/calls/app.module';
 import ChatWootAppModule from '@waha/apps/chatwoot/app.module';
 import McpAppModule from '@waha/apps/mcp/app.module';
+import MexicanPhoneNumbersAppModule from '@waha/apps/mexican-phone-numbers/app.module';
 import PhoneNumbersAppModule from '@waha/apps/phone-numbers/app.module';
 
 /**
@@ -18,6 +19,7 @@ const APPS: AppModule[] = [
   CallsAppModule,
   ChatWootAppModule,
   McpAppModule,
+  MexicanPhoneNumbersAppModule,
   PhoneNumbersAppModule,
 ];
 
