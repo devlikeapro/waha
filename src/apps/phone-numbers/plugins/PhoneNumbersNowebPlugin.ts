@@ -1,4 +1,4 @@
-import { BrazilianPhoneCorePlugin } from '@waha/apps/brazilian-phone-numbers/plugins/BrazilianPhoneCorePlugin';
+import { PhoneNumbersCorePlugin } from '@waha/apps/phone-numbers/plugins/PhoneNumbersCorePlugin';
 import { toCusFormat, toJID } from '@waha/core/utils/jids';
 
 import type { WhatsappSessionNoWebCore } from '@waha/core/engines/noweb/session.noweb.core';
@@ -6,9 +6,9 @@ import type { WhatsappSessionNoWebCore } from '@waha/core/engines/noweb/session.
 /**
  * NOWEB local tier: the session's contact store, populated from history sync
  * and received messages. A contact stored under one of the candidate forms is
- * the canonical 9th-digit variant - no network call needed.
+ * the canonical form - no network call needed.
  */
-export class BrazilianPhoneNowebPlugin extends BrazilianPhoneCorePlugin {
+export class PhoneNumbersNowebPlugin extends PhoneNumbersCorePlugin {
   protected async lookupKnownChatId(
     candidates: string[],
   ): Promise<string | null> {

@@ -1,5 +1,8 @@
 import {
   extractPhoneDigits,
+  shouldSkipPhoneNormalization,
+} from '@waha/apps/phone-numbers/utils/phone';
+import {
   generateBrazilMobileLookupCandidates,
   isBrazilCountryCode,
   isBrazilLandline,
@@ -8,13 +11,12 @@ import {
   needsBrazilWhatsAppLookup,
   normalizeBrazilMobileForSendDigits,
   normalizeBrazilTollFreeDigits,
-  shouldSkipBrazilPhoneNormalization,
-} from './brPhone';
+} from './BrazilianPhoneNumberRule';
 
-describe('brPhone', () => {
+describe('BrazilianPhoneNumberRule', () => {
   it('skips groups and lids', () => {
-    expect(shouldSkipBrazilPhoneNormalization('123@g.us')).toBe(true);
-    expect(shouldSkipBrazilPhoneNormalization('123@lid')).toBe(true);
+    expect(shouldSkipPhoneNormalization('123@g.us')).toBe(true);
+    expect(shouldSkipPhoneNormalization('123@lid')).toBe(true);
   });
 
   it('detects BR country code', () => {

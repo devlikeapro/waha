@@ -1,72 +1,29 @@
 import { UnprocessableEntityException } from '@nestjs/common';
-import { BrazilianPhoneGowsPlugin } from '@waha/apps/brazilian-phone-numbers/plugins/BrazilianPhoneGowsPlugin';
-import { BrazilianPhoneNowebPlugin } from '@waha/apps/brazilian-phone-numbers/plugins/BrazilianPhoneNowebPlugin';
-import { BrazilianPhoneCorePlugin } from '@waha/apps/brazilian-phone-numbers/plugins/BrazilianPhoneCorePlugin';
+import { BrazilianPhoneNumberRule } from '@waha/apps/brazilian-phone-numbers/rules/BrazilianPhoneNumberRule';
+import { PhoneNumbersBaseConfig } from '@waha/apps/phone-numbers/dto/config.dto';
+import { PhoneNumbersGowsPlugin } from '@waha/apps/phone-numbers/plugins/PhoneNumbersGowsPlugin';
+import { PhoneNumbersNowebPlugin } from '@waha/apps/phone-numbers/plugins/PhoneNumbersNowebPlugin';
+import { PhoneNumbersCorePlugin } from '@waha/apps/phone-numbers/plugins/PhoneNumbersCorePlugin';
 import {
-  BrazilianPhoneNumbersAppConfig,
-  BrazilianPhoneNumbersCacheConfig,
-} from '@waha/apps/brazilian-phone-numbers/dto/config.dto';
-import { WhatsappSession } from '@waha/core/abc/session.abc';
-import { RegisterPluginHooks } from '@waha/core/abc/session.plugin.hooks';
-
-const logger: any = {
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
-  debug: jest.fn(),
-};
-logger.child = () => logger;
-
-const BaseSession = WhatsappSession as unknown as new (params: any) => any;
-
-class TestSession extends BaseSession {}
-
-function buildSession(): any {
-  return new TestSession({
-    name: 'test',
-    printQR: false,
-    loggerBuilder: { child: () => logger },
-    sessionStore: null,
-    mediaManager: null,
-    sessionConfig: null,
-    engineConfig: null,
-    ignore: {},
-  });
-}
-
-function buildConfig(
-  overrides: Partial<BrazilianPhoneNumbersAppConfig> = {},
-): BrazilianPhoneNumbersAppConfig {
-  const config = new BrazilianPhoneNumbersAppConfig();
-  config.cache = new BrazilianPhoneNumbersCacheConfig();
-  return Object.assign(config, overrides);
-}
+  buildPlugin as buildPhoneNumbersPlugin,
+  resolveChat,
+  stubLookup,
+} from '@waha/apps/phone-numbers/plugins/testing';
 
 interface BuildOptions {
-  config?: Partial<BrazilianPhoneNumbersAppConfig>;
+  config?: Partial<PhoneNumbersBaseConfig>;
   repository?: any;
-  pluginClass?: typeof BrazilianPhoneCorePlugin;
+  pluginClass?: typeof PhoneNumbersCorePlugin;
 }
 
 function buildPlugin(options: BuildOptions = {}) {
-  const session = buildSession();
-  const PluginClass = options.pluginClass ?? BrazilianPhoneCorePlugin;
-  const plugin = new PluginClass(session, logger, buildConfig(options.config), {
-    repository: options.repository ?? null,
+  return buildPhoneNumbersPlugin({
+    ...options,
+    rules: [new BrazilianPhoneNumberRule()],
   });
-  RegisterPluginHooks(plugin);
-  return { session: session, plugin: plugin };
 }
 
-function resolveChat(session: any, wid: string, method = 'sendText') {
-  return session.hooks.wid.chat.promise(wid, method);
-}
-
-function stubLookup(session: any, answer: any) {
-  session.checkNumberStatus = jest.fn(async () => answer);
-}
-
-describe('BrazilianPhonePlugin - wid.chat', () => {
+describe('BrazilianPhoneNumbers - wid.chat', () => {
   it('resolves and caches the canonical phone when the engine answers with a PN', async () => {
     // '558591203123' is the real number: DDD 85 with an 8-digit local part.
     const { session } = buildPlugin();
@@ -180,7 +137,7 @@ describe('BrazilianPhonePlugin - wid.chat', () => {
     expect(session.checkNumberStatus).not.toHaveBeenCalled();
   });
 
-  it('leaves non-Brazilian numbers untouched', async () => {
+  it('leaves numbers of other countries untouched', async () => {
     const { session } = buildPlugin();
     stubLookup(session, { numberExists: false });
 
@@ -314,7 +271,7 @@ describe('BrazilianPhonePlugin - wid.chat', () => {
   });
 });
 
-describe('BrazilianPhonePlugin - wid.mention', () => {
+describe('BrazilianPhoneNumbers - wid.mention', () => {
   it('resolves mentions best-effort and never breaks the send', async () => {
     const { session } = buildPlugin({ config: { strict: true } });
     stubLookup(session, { numberExists: false });
@@ -330,7 +287,7 @@ describe('BrazilianPhonePlugin - wid.mention', () => {
   });
 });
 
-describe('BrazilianPhonePlugin - persistent cache tier', () => {
+describe('BrazilianPhoneNumbers - persistent cache tier', () => {
   function buildRepository() {
     return {
       get: jest.fn().mockResolvedValue(null),
@@ -403,9 +360,9 @@ describe('BrazilianPhonePlugin - persistent cache tier', () => {
   });
 });
 
-describe('BrazilianPhoneGowsPlugin - local LID map tier', () => {
+describe('BrazilianPhoneNumbers GOWS - local LID map tier', () => {
   it('resolves via the LID map with no WhatsApp lookup', async () => {
-    const { session } = buildPlugin({ pluginClass: BrazilianPhoneGowsPlugin });
+    const { session } = buildPlugin({ pluginClass: PhoneNumbersGowsPlugin });
     stubLookup(session, { numberExists: false });
     session.findLIDByPhoneNumber = jest.fn(async (phone: string) => {
       if (phone === '558591203123') {
@@ -421,7 +378,7 @@ describe('BrazilianPhoneGowsPlugin - local LID map tier', () => {
   });
 
   it('falls through to the WhatsApp lookup for unknown numbers', async () => {
-    const { session } = buildPlugin({ pluginClass: BrazilianPhoneGowsPlugin });
+    const { session } = buildPlugin({ pluginClass: PhoneNumbersGowsPlugin });
     stubLookup(session, {
       numberExists: true,
       chatId: '5585991203123@c.us',
@@ -437,9 +394,9 @@ describe('BrazilianPhoneGowsPlugin - local LID map tier', () => {
   });
 });
 
-describe('BrazilianPhoneNowebPlugin - local contact store tier', () => {
+describe('BrazilianPhoneNumbers NOWEB - local contact store tier', () => {
   it('resolves via the contact store with no WhatsApp lookup', async () => {
-    const { session } = buildPlugin({ pluginClass: BrazilianPhoneNowebPlugin });
+    const { session } = buildPlugin({ pluginClass: PhoneNumbersNowebPlugin });
     stubLookup(session, { numberExists: false });
     session.store = {
       getContactById: jest.fn(async (jid: string) => {
@@ -457,7 +414,7 @@ describe('BrazilianPhoneNowebPlugin - local contact store tier', () => {
   });
 
   it('falls through to the WhatsApp lookup when the store has no match', async () => {
-    const { session } = buildPlugin({ pluginClass: BrazilianPhoneNowebPlugin });
+    const { session } = buildPlugin({ pluginClass: PhoneNumbersNowebPlugin });
     stubLookup(session, {
       numberExists: true,
       chatId: '558591203123@c.us',

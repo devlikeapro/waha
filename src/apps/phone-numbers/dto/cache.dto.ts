@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class BrazilianPhoneMemoryCacheEntry {
+export class PhoneNumbersMemoryCacheEntry {
   @ApiProperty({
     description: 'Phone number digits the cache entry is keyed by',
   })
@@ -21,7 +21,7 @@ export class BrazilianPhoneMemoryCacheEntry {
   expiresAt: Date | null;
 }
 
-export class BrazilianPhoneDbCacheEntry {
+export class PhoneNumbersDbCacheEntry {
   @ApiProperty({
     description: 'Record id',
   })
@@ -48,14 +48,14 @@ export class BrazilianPhoneDbCacheEntry {
   resolvedAt: Date;
 }
 
-export class BrazilianPhoneMemoryCacheStats {
+export class PhoneNumbersMemoryCacheStats {
   @ApiProperty({
     description: 'Number of entries in the in-memory cache',
   })
   total: number;
 }
 
-export class BrazilianPhoneDbCacheStats {
+export class PhoneNumbersDbCacheStats {
   @ApiProperty({
     description: 'Total number of entries in the persistent cache',
   })
@@ -67,24 +67,24 @@ export class BrazilianPhoneDbCacheStats {
   verified: number;
 }
 
-export class BrazilianPhoneCacheStatsResponse {
+export class PhoneNumbersCacheStatsResponse {
   @ApiProperty({
     description: 'In-memory cache stats; null when the session is not running',
     nullable: true,
-    type: BrazilianPhoneMemoryCacheStats,
+    type: PhoneNumbersMemoryCacheStats,
   })
-  memory: BrazilianPhoneMemoryCacheStats | null;
+  memory: PhoneNumbersMemoryCacheStats | null;
 
   @ApiProperty({
     description:
       'Persistent cache stats; null when the persistent cache is disabled',
     nullable: true,
-    type: BrazilianPhoneDbCacheStats,
+    type: PhoneNumbersDbCacheStats,
   })
-  db: BrazilianPhoneDbCacheStats | null;
+  db: PhoneNumbersDbCacheStats | null;
 }
 
-export class BrazilianPhoneCachePurgeResponse {
+export class PhoneNumbersCachePurgeResponse {
   @ApiProperty({
     description: 'Number of entries removed from the persistent cache',
   })

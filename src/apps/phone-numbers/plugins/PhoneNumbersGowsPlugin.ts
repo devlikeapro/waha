@@ -1,14 +1,14 @@
-import { BrazilianPhoneCorePlugin } from '@waha/apps/brazilian-phone-numbers/plugins/BrazilianPhoneCorePlugin';
+import { PhoneNumbersCorePlugin } from '@waha/apps/phone-numbers/plugins/PhoneNumbersCorePlugin';
 
 /**
  * GOWS local tier: the PN<->LID map (whatsmeow's 'whatsmeow_lid_map'), which is
  * populated from contact sync and received messages and persisted in the gows
  * store. A PN that has a LID mapping is a number this session already knows in
- * its canonical form, so the correct 9th-digit variant is picked with zero
+ * its canonical form, so the correct form is picked with zero
  * network calls. Only genuinely cold numbers fall through to the WhatsApp
  * lookup tier.
  */
-export class BrazilianPhoneGowsPlugin extends BrazilianPhoneCorePlugin {
+export class PhoneNumbersGowsPlugin extends PhoneNumbersCorePlugin {
   protected async lookupKnownChatId(
     candidates: string[],
   ): Promise<string | null> {

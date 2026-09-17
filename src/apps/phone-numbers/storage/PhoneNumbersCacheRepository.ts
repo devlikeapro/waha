@@ -1,23 +1,23 @@
 import { Knex } from 'knex';
 
-export interface BrazilianPhoneCacheEntry {
+export interface PhoneNumbersCacheEntry {
   key: string;
   chatId: string;
   verified: boolean;
   resolvedAt: Date;
 }
 
-export interface BrazilianPhoneCacheRow extends BrazilianPhoneCacheEntry {
+export interface PhoneNumbersCacheRow extends PhoneNumbersCacheEntry {
   id: number;
 }
 
-export interface BrazilianPhoneCacheStats {
+export interface PhoneNumbersCacheStats {
   total: number;
   verified: number;
 }
 
-export class BrazilianPhoneCacheRepository {
-  static tableName = 'app_brazilian_phone_numbers_cache';
+export class PhoneNumbersCacheRepository {
+  static tableName = 'app_phone_numbers_cache';
 
   constructor(
     private readonly knex: Knex,
@@ -26,7 +26,7 @@ export class BrazilianPhoneCacheRepository {
   ) {}
 
   get tableName() {
-    return BrazilianPhoneCacheRepository.tableName;
+    return (this.constructor as typeof PhoneNumbersCacheRepository).tableName;
   }
 
   // Entries resolved before this date are expired.
@@ -34,7 +34,7 @@ export class BrazilianPhoneCacheRepository {
     return new Date(Date.now() - this.ttlMs);
   }
 
-  async get(key: string): Promise<BrazilianPhoneCacheEntry | null> {
+  async get(key: string): Promise<PhoneNumbersCacheEntry | null> {
     const row = await this.knex(this.tableName)
       .where({
         app_pk: this.appPk,
@@ -75,7 +75,7 @@ export class BrazilianPhoneCacheRepository {
   /**
    * Lists cache entries for the app, sorted by id (insertion order).
    */
-  async list(limit: number, offset: number): Promise<BrazilianPhoneCacheRow[]> {
+  async list(limit: number, offset: number): Promise<PhoneNumbersCacheRow[]> {
     const rows = await this.knex(this.tableName)
       .where({ app_pk: this.appPk })
       .orderBy('id', 'asc')
@@ -103,7 +103,7 @@ export class BrazilianPhoneCacheRepository {
     return await query.delete();
   }
 
-  async stats(): Promise<BrazilianPhoneCacheStats> {
+  async stats(): Promise<PhoneNumbersCacheStats> {
     const row: any = await this.knex(this.tableName)
       .where({ app_pk: this.appPk })
       .count({ total: '*' })

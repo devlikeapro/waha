@@ -1,20 +1,24 @@
+import ArgentinePhoneNumbersAppModule from '@waha/apps/argentine-phone-numbers/app.module';
 import { ApiTags } from '@nestjs/swagger';
+import BrazilianPhoneNumbersAppModule from '@waha/apps/brazilian-phone-numbers/app.module';
 import { AppModule } from '@waha/apps/app_sdk/apps/definition';
 import { AppApiTag } from '@waha/apps/app_sdk/apps/openapi';
-import BrazilianPhoneNumbersAppModule from '@waha/apps/brazilian-phone-numbers/app.module';
 import CallsAppModule from '@waha/apps/calls/app.module';
 import ChatWootAppModule from '@waha/apps/chatwoot/app.module';
 import McpAppModule from '@waha/apps/mcp/app.module';
+import PhoneNumbersAppModule from '@waha/apps/phone-numbers/app.module';
 
 /**
  * Registry of available apps.
  * Add new apps here - the rest of app_sdk works off this list.
  */
 const APPS: AppModule[] = [
+  ArgentinePhoneNumbersAppModule,
   BrazilianPhoneNumbersAppModule,
   CallsAppModule,
   ChatWootAppModule,
   McpAppModule,
+  PhoneNumbersAppModule,
 ];
 
 // Tag every app controller with the app's OpenAPI tag ("🧩 Apps: {Title}") from AppModule.openapi,

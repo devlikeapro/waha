@@ -1,10 +1,7 @@
 import {
-  isJidBroadcast,
-  isJidGroup,
-  isJidMetaAI,
-  isJidNewsletter,
-  isLidUser,
-} from '@waha/core/utils/jids';
+  PhoneNumberResolution,
+  PhoneNumberRule,
+} from '@waha/apps/phone-numbers/rules/PhoneNumberRule';
 
 const COUNTRY_CODE = '55';
 const LANDLINE_FIRST_DIGIT = /^[2-5]/;
@@ -12,10 +9,6 @@ const MOBILE_FIRST_DIGIT = /^[6-9]/;
 
 export const BR_PHONE_DDD_LOOKUP_MIN = 31;
 export const BR_PHONE_DDD_LOOKUP_MAX = 99;
-
-// Unverified best-guesses and confirmed-negatives live only in the in-memory
-// cache with this short TTL, so a number registered later is re-checked soon.
-export const BR_PHONE_NEGATIVE_CACHE_TTL_SECONDS = 10 * 60;
 
 // A Brazil number (country code 55) must be 55 + DDD(2) + local(8 or 9) digits.
 const BR_PHONE_MIN_LENGTH = 12;
@@ -32,39 +25,6 @@ export function isMalformedBrazilPhone(digits: string): boolean {
   return (
     digits.length < BR_PHONE_MIN_LENGTH || digits.length > BR_PHONE_MAX_LENGTH
   );
-}
-
-export function extractPhoneDigits(value: string): string {
-  if (!value) {
-    return '';
-  }
-  const local = value.split('@')[0] ?? value;
-  return local.split(':')[0].replace(/\D/g, '');
-}
-
-export function shouldSkipBrazilPhoneNormalization(chatId: string): boolean {
-  if (!chatId) {
-    return true;
-  }
-  if (isJidGroup(chatId)) {
-    return true;
-  }
-  if (isJidBroadcast(chatId)) {
-    return true;
-  }
-  if (isLidUser(chatId)) {
-    return true;
-  }
-  if (isJidNewsletter(chatId)) {
-    return true;
-  }
-  if (isJidMetaAI(chatId)) {
-    return true;
-  }
-  if (chatId === 'me') {
-    return true;
-  }
-  return false;
 }
 
 export function isBrazilPhone(digits: string): boolean {
@@ -172,7 +132,35 @@ export function generateBrazilMobileLookupCandidates(digits: string): string[] {
   return [...new Set(candidates)];
 }
 
-export function getBrazilPhoneCacheKeys(digits: string): string[] {
-  const candidates = generateBrazilMobileLookupCandidates(digits);
-  return [...new Set([digits, ...candidates])];
+/**
+ * Brazil: mobiles got a 9th digit, callers send either form - static rule for DDD < 31, lookup for the rest
+ */
+export class BrazilianPhoneNumberRule implements PhoneNumberRule {
+  matches(digits: string): boolean {
+    // Dialed toll-free has no country code
+    return isBrazilCountryCode(digits) || BR_TOLLFREE_DIALED.test(digits);
+  }
+
+  resolve(digits: string): PhoneNumberResolution | null {
+    // Before the length check - dialed '0800...' is shorter than a full number
+    const tollFree = normalizeBrazilTollFreeDigits(digits);
+    if (tollFree) {
+      return { candidates: [], fallback: tollFree };
+    }
+    if (isMalformedBrazilPhone(digits)) {
+      return null;
+    }
+    // Landlines are sent as is
+    if (!isBrazilMobile(digits)) {
+      return { candidates: [], fallback: digits };
+    }
+    const normalized = normalizeBrazilMobileForSendDigits(digits);
+    if (!needsBrazilWhatsAppLookup(digits)) {
+      return { candidates: [], fallback: normalized };
+    }
+    return {
+      candidates: generateBrazilMobileLookupCandidates(digits),
+      fallback: normalized,
+    };
+  }
 }

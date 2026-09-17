@@ -1,26 +1,18 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 import {
-  BrazilianPhoneMemoryCacheEntry,
-  BrazilianPhoneMemoryCacheStats,
-} from '@waha/apps/brazilian-phone-numbers/dto/cache.dto';
+  PhoneNumbersMemoryCacheEntry,
+  PhoneNumbersMemoryCacheStats,
+} from '@waha/apps/phone-numbers/dto/cache.dto';
 import {
-  BrazilianPhoneNumbersAppConfig,
   DEFAULT_MEMORY_TTL,
-} from '@waha/apps/brazilian-phone-numbers/dto/config.dto';
-import { BrazilianPhoneCacheRepository } from '@waha/apps/brazilian-phone-numbers/storage/BrazilianPhoneCacheRepository';
+  PhoneNumbersBaseConfig,
+} from '@waha/apps/phone-numbers/dto/config.dto';
+import { PhoneNumberRule } from '@waha/apps/phone-numbers/rules/PhoneNumberRule';
+import { PhoneNumbersCacheRepository } from '@waha/apps/phone-numbers/storage/PhoneNumbersCacheRepository';
 import {
-  BR_PHONE_NEGATIVE_CACHE_TTL_SECONDS,
   extractPhoneDigits,
-  generateBrazilMobileLookupCandidates,
-  getBrazilPhoneCacheKeys,
-  isBrazilCountryCode,
-  isBrazilMobile,
-  isMalformedBrazilPhone,
-  needsBrazilWhatsAppLookup,
-  normalizeBrazilMobileForSendDigits,
-  normalizeBrazilTollFreeDigits,
-  shouldSkipBrazilPhoneNormalization,
-} from '@waha/apps/brazilian-phone-numbers/utils/brPhone';
+  shouldSkipPhoneNormalization,
+} from '@waha/apps/phone-numbers/utils/phone';
 import { ensureSuffix, WhatsappSession } from '@waha/core/abc/session.abc';
 import { SessionPlugin } from '@waha/core/abc/session.plugin';
 import { PluginHook } from '@waha/core/abc/session.plugin.hooks';
@@ -62,26 +54,32 @@ const SEND_METHODS = new Set([
 // Confirmed-negative marker in the memory cache ('' is not a valid chat id).
 const NOT_FOUND = '';
 
-export interface BrazilianPhoneCorePluginDeps {
-  repository: BrazilianPhoneCacheRepository | null;
+// Unverified best-guesses and confirmed-negatives live only in the in-memory
+// cache with this short TTL, so a number registered later is re-checked soon.
+export const NEGATIVE_CACHE_TTL_SECONDS = 10 * 60;
+
+export interface PhoneNumbersCorePluginDeps {
+  repository: PhoneNumbersCacheRepository | null;
+  rules: PhoneNumberRule[];
 }
 
 /**
- * Resolves Brazilian phone numbers into the chat id the account is actually
- * registered under (9th-digit ambiguity for DDD 31-99, static rule for
- * DDD < 31, 0800 toll-free rewrite), tiered cheapest-first:
+ * Resolves phone numbers into the chat id the account is actually registered
+ * under. Which numbers and which forms to try come from the injected rules,
+ * the tiers are shared, cheapest-first:
  *
- * 1. in-memory cache, keyed by both forms of the number
- * 2. static 9th-digit rule for DDD < 31 - no network
+ * 1. in-memory cache, keyed by every form of the number
+ * 2. deterministic rewrite from the rule - no network
  * 3. persistent database cache (verified resolutions only)
  * 4. local contact / LID store (engine-specific subclasses) - no network
  * 5. WhatsApp lookup, single-flight so concurrent sends share one query
  */
-export class BrazilianPhoneCorePlugin extends SessionPlugin<
-  BrazilianPhoneNumbersAppConfig,
-  BrazilianPhoneCorePluginDeps
+export class PhoneNumbersCorePlugin extends SessionPlugin<
+  PhoneNumbersBaseConfig,
+  PhoneNumbersCorePluginDeps
 > {
   protected memory: NodeCache;
+  protected rules: PhoneNumberRule[];
   // Single-flight guard: concurrent first-time resolutions of the same number
   // share one in-flight WhatsApp lookup instead of each firing its own query.
   private inflight: Map<string, Promise<string>> = new Map();
@@ -89,8 +87,8 @@ export class BrazilianPhoneCorePlugin extends SessionPlugin<
   constructor(
     session: WhatsappSession,
     logger: Logger,
-    config: BrazilianPhoneNumbersAppConfig,
-    deps: BrazilianPhoneCorePluginDeps,
+    config: PhoneNumbersBaseConfig,
+    deps: PhoneNumbersCorePluginDeps,
   ) {
     super(session, logger, config, deps);
     const memoryTtlMs =
@@ -98,6 +96,7 @@ export class BrazilianPhoneCorePlugin extends SessionPlugin<
     this.memory = new NodeCache({
       stdTTL: Math.floor(memoryTtlMs / 1000),
     });
+    this.rules = deps.rules;
   }
 
   @PluginHook((hooks) => hooks.wid.chat)
@@ -128,13 +127,13 @@ export class BrazilianPhoneCorePlugin extends SessionPlugin<
     this.memory.flushAll();
   }
 
-  public getMemoryCacheStats(): BrazilianPhoneMemoryCacheStats {
+  public getMemoryCacheStats(): PhoneNumbersMemoryCacheStats {
     return { total: this.memory.keys().length };
   }
 
   // Entries sorted by key, so API pagination over them is stable.
-  public getMemoryCacheEntries(): BrazilianPhoneMemoryCacheEntry[] {
-    const entries: BrazilianPhoneMemoryCacheEntry[] = [];
+  public getMemoryCacheEntries(): PhoneNumbersMemoryCacheEntry[] {
+    const entries: PhoneNumbersMemoryCacheEntry[] = [];
     for (const key of this.memory.keys().sort()) {
       const chatId = this.memory.get<string>(key);
       if (chatId === undefined) {
@@ -165,34 +164,33 @@ export class BrazilianPhoneCorePlugin extends SessionPlugin<
   // re-adding '@c.us' to LID digits builds an id that addresses nobody.
   protected async resolve(wid: string, validate: boolean): Promise<string> {
     const withSuffix = ensureSuffix(wid);
-    if (shouldSkipBrazilPhoneNormalization(withSuffix)) {
+    if (shouldSkipPhoneNormalization(withSuffix)) {
       return withSuffix;
     }
 
     const digits = extractPhoneDigits(withSuffix);
-    // Brazilian toll-free (0800): deterministic rewrite to the stored form, no
-    // lookup. Handled before the country-code gate because the dialed form
-    // ('0800...') has no 55 prefix.
-    const tollFree = normalizeBrazilTollFreeDigits(digits);
-    if (tollFree) {
-      return ensureSuffix(tollFree);
-    }
-    if (!isBrazilCountryCode(digits)) {
+    const rule = this.rules.find((r) => r.matches(digits));
+    if (!rule) {
       return withSuffix;
     }
-    // Malformed Brazilian numbers (e.g. 55859912): hard error only on the send
-    // path; local-only ops just pass it through untouched.
-    if (isMalformedBrazilPhone(digits)) {
+    const resolution = rule.resolve(digits);
+    // Malformed: hard error only on the send path, local-only ops pass it through
+    if (!resolution) {
       if (validate) {
         throw new UnprocessableEntityException(
-          `Invalid Brazilian phone number '${withSuffix}'.`,
+          `Invalid phone number '${withSuffix}'.`,
         );
       }
       return withSuffix;
     }
-    // Landlines and already-valid non-mobile numbers are left untouched.
-    if (!isBrazilMobile(digits)) {
-      return withSuffix;
+    const candidates = resolution.candidates;
+    const fallback = ensureSuffix(resolution.fallback);
+    // Nothing to check - the rule already knows the form
+    if (candidates.length === 0) {
+      if (fallback !== withSuffix) {
+        this.cacheInMemory(digits, [], fallback);
+      }
+      return fallback;
     }
 
     // Tier 1: in-memory cache. undefined = miss, '' = confirmed-negative
@@ -202,7 +200,7 @@ export class BrazilianPhoneCorePlugin extends SessionPlugin<
       if (cached === NOT_FOUND) {
         if (validate) {
           throw new UnprocessableEntityException(
-            `Brazilian mobile phone number '${withSuffix}' does not exist on WhatsApp.`,
+            `Phone number '${withSuffix}' does not exist on WhatsApp.`,
           );
         }
         return withSuffix;
@@ -210,30 +208,19 @@ export class BrazilianPhoneCorePlugin extends SessionPlugin<
       return cached;
     }
 
-    // DDD below the lookup range: static 9th-digit rule, no network needed.
-    if (!needsBrazilWhatsAppLookup(digits)) {
-      const normalized = ensureSuffix(
-        normalizeBrazilMobileForSendDigits(digits),
-      );
-      this.cacheInMemory(digits, normalized);
-      return normalized;
-    }
-
     // Tier 2: database cache (verified resolutions only).
     const fromDb = await this.getFromDb(digits);
     if (fromDb) {
-      this.cacheInMemory(digits, fromDb);
+      this.cacheInMemory(digits, candidates, fromDb);
       return fromDb;
     }
-
-    const candidates = generateBrazilMobileLookupCandidates(digits);
 
     // Tier 3: local contact/LID store (engine-specific), no network.
     const fromStore = await this.lookupKnownChatId(candidates);
     if (fromStore) {
-      await this.cacheResolved(digits, fromStore);
+      await this.cacheResolved(digits, candidates, fromStore);
       this.logger.debug(
-        `BR mobile '${withSuffix}' resolved locally to '${fromStore}' (no WhatsApp lookup).`,
+        `'${withSuffix}' resolved locally to '${fromStore}' (no WhatsApp lookup).`,
       );
       return fromStore;
     }
@@ -248,15 +235,21 @@ export class BrazilianPhoneCorePlugin extends SessionPlugin<
     }
 
     // Tier 4: WhatsApp lookup as last resort, de-duplicated via single-flight.
-    return await this.resolveViaWhatsApp(digits, withSuffix, candidates);
+    return await this.resolveViaWhatsApp(
+      digits,
+      withSuffix,
+      candidates,
+      fallback,
+    );
   }
 
   private resolveViaWhatsApp(
     digits: string,
     withSuffix: string,
     candidates: string[],
+    fallback: string,
   ): Promise<string> {
-    const key = getBrazilPhoneCacheKeys(digits).sort().join('|');
+    const key = cacheKeys(digits, candidates).sort().join('|');
     const inflight = this.inflight.get(key);
     if (inflight) {
       return inflight;
@@ -265,6 +258,7 @@ export class BrazilianPhoneCorePlugin extends SessionPlugin<
       digits,
       withSuffix,
       candidates,
+      fallback,
     ).finally(() => this.inflight.delete(key));
     this.inflight.set(key, promise);
     return promise;
@@ -274,9 +268,10 @@ export class BrazilianPhoneCorePlugin extends SessionPlugin<
     digits: string,
     withSuffix: string,
     candidates: string[],
+    fallback: string,
   ): Promise<string> {
     this.logger.debug(
-      `BR mobile '${withSuffix}' not found locally, performing WhatsApp lookup for: ${candidates.join(
+      `'${withSuffix}' not found locally, performing WhatsApp lookup for: ${candidates.join(
         ', ',
       )}`,
     );
@@ -291,7 +286,7 @@ export class BrazilianPhoneCorePlugin extends SessionPlugin<
       } catch (error) {
         lookupFailed = true;
         this.logger.warn(
-          `Failed to verify Brazilian mobile candidate '${candidate}': ${error}`,
+          `Failed to verify phone number candidate '${candidate}': ${error}`,
         );
         continue;
       }
@@ -300,7 +295,7 @@ export class BrazilianPhoneCorePlugin extends SessionPlugin<
       // routable, and it must not be reduced to digits).
       const chatId = result?.pn || result?.chatId;
       if (result?.numberExists && chatId) {
-        await this.cacheResolved(digits, chatId);
+        await this.cacheResolved(digits, candidates, chatId);
         return chatId;
       }
     }
@@ -308,7 +303,7 @@ export class BrazilianPhoneCorePlugin extends SessionPlugin<
     // Could not validate due to network/engine error: send as-is, do not cache.
     if (lookupFailed) {
       this.logger.warn(
-        `Could not validate Brazilian mobile number '${withSuffix}', sending as-is. Tried: ${candidates.join(
+        `Could not validate phone number '${withSuffix}', sending as-is. Tried: ${candidates.join(
           ', ',
         )}`,
       );
@@ -319,11 +314,12 @@ export class BrazilianPhoneCorePlugin extends SessionPlugin<
     if (this.config.strict) {
       this.cacheInMemory(
         digits,
+        candidates,
         NOT_FOUND,
-        BR_PHONE_NEGATIVE_CACHE_TTL_SECONDS,
+        NEGATIVE_CACHE_TTL_SECONDS,
       );
       throw new UnprocessableEntityException(
-        `Brazilian mobile phone number '${withSuffix}' does not exist on WhatsApp. Tried: ${candidates.join(
+        `Phone number '${withSuffix}' does not exist on WhatsApp. Tried: ${candidates.join(
           ', ',
         )}`,
       );
@@ -331,37 +327,50 @@ export class BrazilianPhoneCorePlugin extends SessionPlugin<
     // Soft (default): warn and send the best-guess anyway, so a lookup
     // false-negative never blocks a valid send. Short TTL - the number may
     // get registered later.
-    const bestGuess = ensureSuffix(normalizeBrazilMobileForSendDigits(digits));
-    this.cacheInMemory(digits, bestGuess, BR_PHONE_NEGATIVE_CACHE_TTL_SECONDS);
+    this.cacheInMemory(
+      digits,
+      candidates,
+      fallback,
+      NEGATIVE_CACHE_TTL_SECONDS,
+    );
     this.logger.warn(
-      `Brazilian mobile number '${withSuffix}' not found on WhatsApp, sending best-guess '${bestGuess}'. Tried: ${candidates.join(
+      `Phone number '${withSuffix}' not found on WhatsApp, sending '${fallback}'. Tried: ${candidates.join(
         ', ',
       )}`,
     );
-    return bestGuess;
+    return fallback;
   }
 
   // Cache under every form of the number, so both '5585...' and '55859...'
   // hit the same entry. Default TTL for resolutions, the short negative TTL
   // for best-guesses and confirmed-negatives.
-  private cacheInMemory(digits: string, chatId: string, ttl?: number): void {
-    for (const key of getBrazilPhoneCacheKeys(digits)) {
+  private cacheInMemory(
+    digits: string,
+    candidates: string[],
+    chatId: string,
+    ttl?: number,
+  ): void {
+    for (const key of cacheKeys(digits, candidates)) {
       this.memory.set(key, chatId, ttl);
     }
   }
 
   // Verified resolution: memory plus the database tier (when enabled).
-  private async cacheResolved(digits: string, chatId: string): Promise<void> {
-    this.cacheInMemory(digits, chatId);
+  private async cacheResolved(
+    digits: string,
+    candidates: string[],
+    chatId: string,
+  ): Promise<void> {
+    this.cacheInMemory(digits, candidates, chatId);
     if (!this.deps.repository) {
       return;
     }
     try {
-      const keys = getBrazilPhoneCacheKeys(digits);
+      const keys = cacheKeys(digits, candidates);
       await this.deps.repository.setMany(keys, chatId, true, new Date());
     } catch (error) {
       this.logger.warn(
-        `Failed to persist BR phone resolution for '${digits}': ${error}`,
+        `Failed to persist phone number resolution for '${digits}': ${error}`,
       );
     }
   }
@@ -375,9 +384,13 @@ export class BrazilianPhoneCorePlugin extends SessionPlugin<
       return entry?.chatId ?? null;
     } catch (error) {
       this.logger.warn(
-        `Failed to read BR phone cache for '${digits}': ${error}`,
+        `Failed to read phone number cache for '${digits}': ${error}`,
       );
       return null;
     }
   }
+}
+
+function cacheKeys(digits: string, candidates: string[]): string[] {
+  return [...new Set([digits, ...candidates])];
 }

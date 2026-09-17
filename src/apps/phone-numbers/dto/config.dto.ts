@@ -12,7 +12,7 @@ import * as ms from 'ms';
 export const DEFAULT_MEMORY_TTL: ms.StringValue = '24h';
 export const DEFAULT_PERSISTENT_TTL: ms.StringValue = '31d';
 
-export class BrazilianPhoneNumbersCacheConfig {
+export class PhoneNumbersCacheConfig {
   @ApiProperty({
     description:
       'TTL for resolved numbers in the in-memory cache tier, as a duration string.',
@@ -49,10 +49,13 @@ export class BrazilianPhoneNumbersCacheConfig {
   persistentTtl?: string = DEFAULT_PERSISTENT_TTL;
 }
 
-export class BrazilianPhoneNumbersAppConfig {
+/**
+ * Shared by every phone numbers app - the country ones add nothing on top
+ */
+export class PhoneNumbersBaseConfig {
   @ApiProperty({
     description:
-      'When a Brazilian mobile number is confirmed NOT to exist on WhatsApp: ' +
+      'When a number is confirmed NOT to exist on WhatsApp: ' +
       'false (default) - warn and send the best-guess anyway; ' +
       'true - reject the send with 422. Strict trades delivery for certainty ' +
       'and can block valid sends on lookup false-negatives (throttling).',
@@ -78,11 +81,43 @@ export class BrazilianPhoneNumbersAppConfig {
   @ApiProperty({
     description: 'Cache tuning for resolved numbers.',
     required: false,
-    type: BrazilianPhoneNumbersCacheConfig,
+    type: PhoneNumbersCacheConfig,
   })
   @IsOptional()
   @ValidateNested()
-  @Type(() => BrazilianPhoneNumbersCacheConfig)
-  cache?: BrazilianPhoneNumbersCacheConfig =
-    new BrazilianPhoneNumbersCacheConfig();
+  @Type(() => PhoneNumbersCacheConfig)
+  cache?: PhoneNumbersCacheConfig = new PhoneNumbersCacheConfig();
+}
+
+export class PhoneNumbersRuleConfig {
+  @ApiProperty({
+    description:
+      'Handle numbers (digits only, no + or @c.us) matching this regexp - resolve them to the chat id WhatsApp knows.',
+    example: '^52',
+  })
+  @IsString()
+  regexp: string;
+
+  @ApiProperty({
+    description: 'Also check the replaced form ("^52(\\d{10})$" => "521$1").',
+    required: false,
+    example: '521$1',
+  })
+  @IsOptional()
+  @IsString()
+  replace?: string;
+}
+
+export class PhoneNumbersAppConfig extends PhoneNumbersBaseConfig {
+  @ApiProperty({
+    description:
+      'Which numbers to handle, first matching rule wins. No rules - handle every number.',
+    required: false,
+    type: [PhoneNumbersRuleConfig],
+    example: [{ regexp: '^52(\\d{10})$', replace: '521$1' }],
+  })
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => PhoneNumbersRuleConfig)
+  rules?: PhoneNumbersRuleConfig[];
 }

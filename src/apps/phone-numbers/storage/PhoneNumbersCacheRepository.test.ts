@@ -1,18 +1,18 @@
 import knex, { Knex } from 'knex';
 
-import { BrazilianPhoneCacheRepository } from './BrazilianPhoneCacheRepository';
+import { PhoneNumbersCacheRepository } from './PhoneNumbersCacheRepository';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const initApps = require('../../app_sdk/migrations/001_init_apps');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const initCache = require('../migrations/001_init_brazilian_phone_numbers');
+const initCache = require('../migrations/001_init_app');
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-describe('BrazilianPhoneCacheRepository', () => {
+describe('PhoneNumbersCacheRepository', () => {
   let db: Knex;
   let appPk: number;
-  let repository: BrazilianPhoneCacheRepository;
+  let repository: PhoneNumbersCacheRepository;
 
   beforeAll(async () => {
     db = knex({
@@ -26,7 +26,7 @@ describe('BrazilianPhoneCacheRepository', () => {
       .insert({
         id: 'app_test',
         session: 'default',
-        app: 'brazilian-phone-numbers',
+        app: 'phone-numbers',
         config: '{}',
       })
       .returning('pk');
@@ -38,7 +38,7 @@ describe('BrazilianPhoneCacheRepository', () => {
   });
 
   beforeEach(async () => {
-    repository = new BrazilianPhoneCacheRepository(db, appPk, 31 * DAY_MS);
+    repository = new PhoneNumbersCacheRepository(db, appPk, 31 * DAY_MS);
     await repository.purge();
   });
 
