@@ -6,7 +6,7 @@ import { ArgentinePhoneNumbersAppService } from '@waha/apps/argentine-phone-numb
 const argentinephonenumbersAppModule: AppModule = {
   name: AppName.argentinePhoneNumbers,
   openapi: {
-    title: 'Argentine Phone Numbers',
+    title: 'Phone Numbers: Argentina',
     description:
       'Resolve Argentine phone numbers (with and without the mobile 9)',
   },

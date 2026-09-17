@@ -6,7 +6,7 @@ import { BrazilianPhoneNumbersAppService } from '@waha/apps/brazilian-phone-numb
 const brazilianphonenumbersAppModule: AppModule = {
   name: AppName.brazilianPhoneNumbers,
   openapi: {
-    title: 'Brazilian Phone Numbers',
+    title: 'Phone Numbers: Brazil',
     description: 'Resolve Brazilian phone numbers (with and without 9 digit)',
   },
   definition: {
