@@ -1,0 +1,126 @@
+name: Publish Hermiq WAHA
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+env:
+  IMAGE_NAME: waha
+
+jobs:
+  build-and-push:
+    name: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout WAHA
+        uses: actions/checkout@v4
+
+      # WWEBJS_READ_TOKEN is a fine-grained PAT (Contents: Read-only on
+      # Hermiq-ai/whatsapp-web.js) passed to the build as a BuildKit secret,
+      # never baked into an image layer or exposed in a log — see the
+      # `--mount=type=secret` usage in the Dockerfile's `yarn install` steps.
+      - name: Build Docker image
+        run: |
+          set -euo pipefail
+
+          docker build \
+            --tag "${IMAGE_NAME}:${GITHUB_SHA}" \
+            --secret id=github_token,env=WWEBJS_READ_TOKEN \
+            .
+        env:
+          WWEBJS_READ_TOKEN: ${{ secrets.WWEBJS_READ_TOKEN }}
+
+      # ── Image scanning (ISO 27001 A.8.8 vulnerability management, and the
+      # in-cluster half of A.8.7 anti-malware) ──────────────────────────────
+      - name: Trivy — full report (non-blocking, evidence)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          scan-type: image
+          format: json
+          output: trivy-report.json
+          severity: CRITICAL,HIGH,MEDIUM,LOW
+          scanners: vuln,secret
+          exit-code: "0"
+          timeout: 10m
+
+      - name: Upload Trivy report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report-${{ github.sha }}
+          path: trivy-report.json
+          retention-days: 90
+
+      - name: Trivy — fail on fixable CRITICAL/HIGH
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          scan-type: image
+          format: table
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          scanners: vuln,secret
+          exit-code: "1"
+          timeout: 10m
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Login to DOCR
+        run: doctl registry login --expiry-seconds 1200
+
+      - name: Tag and push Docker image
+        env:
+          DOCR_REGISTRY: ${{ secrets.DOCR_REGISTRY }}
+        run: |
+          set -euo pipefail
+
+          REGISTRY="registry.digitalocean.com/${DOCR_REGISTRY}"
+          LOCAL_IMAGE="${IMAGE_NAME}:${GITHUB_SHA}"
+          SHA_IMAGE="${REGISTRY}/${IMAGE_NAME}:${GITHUB_SHA}"
+
+          docker tag "${LOCAL_IMAGE}" "${SHA_IMAGE}"
+          docker push "${SHA_IMAGE}"
+
+          # Also push a human-readable tag: the git tag on a tag-triggered
+          # run, otherwise "latest" for manual dispatches off the default branch.
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            EXTRA_TAG="${GITHUB_REF_NAME}"
+          else
+            EXTRA_TAG="latest"
+          fi
+          EXTRA_IMAGE="${REGISTRY}/${IMAGE_NAME}:${EXTRA_TAG}"
+          docker tag "${LOCAL_IMAGE}" "${EXTRA_IMAGE}"
+          docker push "${EXTRA_IMAGE}"
+
+  notify-failure:
+    name: notify-failure
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: always() && needs.build-and-push.result == 'failure'
+
+    steps:
+      - name: Notify Slack on failure
+        uses: slackapi/slack-github-action@v2
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "❌ *${{ github.workflow }}* failed on `${{ github.ref_name }}`",
+              "attachments": [
+                {
+                  "color": "danger",
+                  "text": "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                }
+              ]
+            }
