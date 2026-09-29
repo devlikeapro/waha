@@ -47,6 +47,7 @@ import {
   WANumberExistResult,
 } from '../structures/chatting.dto';
 import { WAMessage } from '../structures/responses.dto';
+import { validateBroadcastListParticipants } from '@waha/core/utils/broadcastLists';
 import {
   mentionsAll,
   validateRequestMentions,
@@ -79,6 +80,7 @@ export class ChattingController {
   @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendText(@Body() request: MessageTextRequest): Promise<WAMessage> {
     const whatsapp = await this.manager.getWorkingSession(request.session);
+    validateBroadcastListParticipants(request);
     if (mentionsAll(request)) {
       validateRequestMentions(request);
       request.mentions = await whatsapp.resolveMentionsAll(request.chatId);
@@ -95,6 +97,7 @@ export class ChattingController {
   @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendImage(@Body() request: MessageImageRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
+    validateBroadcastListParticipants(request);
     if (mentionsAll(request)) {
       validateRequestMentions(request);
       request.mentions = await whatsapp.resolveMentionsAll(request.chatId);
@@ -111,6 +114,7 @@ export class ChattingController {
   @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendFile(@Body() request: MessageFileRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
+    validateBroadcastListParticipants(request);
     if (mentionsAll(request)) {
       validateRequestMentions(request);
       request.mentions = await whatsapp.resolveMentionsAll(request.chatId);
@@ -127,6 +131,7 @@ export class ChattingController {
   @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendVoice(@Body() request: MessageVoiceRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
+    validateBroadcastListParticipants(request);
     return whatsapp.sendVoice(request);
   }
 
@@ -139,6 +144,7 @@ export class ChattingController {
   @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendVideo(@Body() request: MessageVideoRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
+    validateBroadcastListParticipants(request);
     if (mentionsAll(request)) {
       validateRequestMentions(request);
       request.mentions = await whatsapp.resolveMentionsAll(request.chatId);

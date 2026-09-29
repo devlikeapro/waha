@@ -68,6 +68,7 @@ import {
 import { NowebAuthFactoryCore } from '@waha/core/engines/noweb/NowebAuthFactoryCore';
 import { NowebInMemoryStore } from '@waha/core/engines/noweb/store/NowebInMemoryStore';
 import { NoLastMessageInChatException } from '@waha/core/engines/noweb/noweb.exceptions';
+import { rejectUnsupportedBroadcastListParticipants } from '@waha/core/utils/broadcastLists';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
 import { toVcardV3 } from '@waha/core/vcard';
 import { createAgentProxy } from '@waha/core/helpers.proxy';
@@ -1120,6 +1121,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   @Activity()
   async sendText(request: MessageTextRequest) {
+    rejectUnsupportedBroadcastListParticipants(request);
     const chatId = await this.hooks.wid.chat.promise(
       request.chatId,
       'sendText',
@@ -1277,6 +1279,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   @Activity()
   async sendImage(request: MessageImageRequest) {
+    rejectUnsupportedBroadcastListParticipants(request);
     const message: any = await this.fileToMessage(
       request.file,
       'image',
@@ -1315,6 +1318,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   @Activity()
   async sendFile(request: MessageFileRequest) {
+    rejectUnsupportedBroadcastListParticipants(request);
     const message: any = await this.fileToMessage(
       request.file,
       'document',
@@ -1340,6 +1344,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   @Activity()
   async sendVoice(request: MessageVoiceRequest) {
+    rejectUnsupportedBroadcastListParticipants(request);
     const message: any = await this.fileToMessage(request.file, 'audio');
     message.mimetype = message.mimetype || WAMimeType.VOICE;
     if (request.convert) {
@@ -1356,6 +1361,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   @Activity()
   async sendVideo(request: MessageVideoRequest) {
+    rejectUnsupportedBroadcastListParticipants(request);
     const message: any = await this.fileToMessage(
       request.file,
       'video',

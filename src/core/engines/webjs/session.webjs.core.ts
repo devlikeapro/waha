@@ -34,6 +34,7 @@ import {
 } from '@waha/core/engines/webjs/WPage';
 import { WAMimeType } from '@waha/core/media/WAMimeType';
 import { detectMimetype } from '@waha/utils/files';
+import { rejectUnsupportedBroadcastListParticipants } from '@waha/core/utils/broadcastLists';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
 import {
   IMediaEngineProcessor,
@@ -982,6 +983,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   async sendText(request: MessageTextRequest) {
+    rejectUnsupportedBroadcastListParticipants(request);
     const options = await this.getMessageOptions(request);
     const chatId = await this.hooks.wid.chat.promise(
       request.chatId,
@@ -1060,6 +1062,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   async sendFile(request: MessageFileRequest) {
+    rejectUnsupportedBroadcastListParticipants(request);
     const media = await this.fileToMedia(request.file);
     if (!media.mimetype) {
       media.mimetype = await detectMimetype(Buffer.from(media.data, 'base64'));
@@ -1079,6 +1082,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   async sendImage(request: MessageImageRequest) {
+    rejectUnsupportedBroadcastListParticipants(request);
     const media = await this.fileToMedia(request.file);
     media.mimetype = media.mimetype || WAMimeType.IMAGE;
     let options = await this.getMessageOptions(request);
@@ -1095,6 +1099,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   async sendVoice(request) {
+    rejectUnsupportedBroadcastListParticipants(request);
     const media = await this.fileToMedia(request.file);
     if (request.convert) {
       await this.convertVoice(media);
@@ -1114,6 +1119,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   async sendVideo(request: MessageVideoRequest) {
+    rejectUnsupportedBroadcastListParticipants(request);
     this.checkBrowserIsChrome();
     const media = await this.fileToMedia(request.file);
     media.mimetype = media.mimetype || WAMimeType.VIDEO;

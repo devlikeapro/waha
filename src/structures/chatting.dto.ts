@@ -35,6 +35,7 @@ import {
   VoiceRemoteFile,
 } from './files.dto';
 import {
+  BroadcastListParticipantsProperty,
   ChatIdProperty,
   ConvertApiProperty,
   GeneratedMessageIdProperty,
@@ -195,6 +196,9 @@ export class MessageTextRequest extends ChatRequest {
 
   linkPreview?: boolean = true;
   linkPreviewHighQuality?: boolean = false;
+
+  @BroadcastListParticipantsProperty()
+  participants?: string[];
 }
 
 @ApiExtraModels(FileURL, FileContent)
@@ -321,6 +325,9 @@ export class MessageImageRequest extends FileRequest {
 
   @ReplyToProperty()
   reply_to?: string;
+
+  @BroadcastListParticipantsProperty()
+  participants?: string[];
 }
 
 export class MessageFileRequest extends FileRequest {
@@ -331,6 +338,9 @@ export class MessageFileRequest extends FileRequest {
 
   @ReplyToProperty()
   reply_to?: string;
+
+  @BroadcastListParticipantsProperty()
+  participants?: string[];
 }
 
 @ApiExtraModels(VoiceBinaryFile, VoiceRemoteFile)
@@ -348,6 +358,9 @@ export class MessageVoiceRequest extends ChatRequest {
 
   @ConvertApiProperty()
   convert: boolean;
+
+  @BroadcastListParticipantsProperty()
+  participants?: string[];
 }
 
 @ApiExtraModels(VideoRemoteFile, VideoBinaryFile)
@@ -380,6 +393,9 @@ export class MessageVideoRequest extends ChatRequest {
 
   @ConvertApiProperty()
   convert: boolean;
+
+  @BroadcastListParticipantsProperty()
+  participants?: string[];
 }
 
 export class MessageStickerRequest extends FileRequest {
