@@ -2016,6 +2016,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   @Activity()
   public async upsertContact(chatId: string, body: ContactUpdateBody) {
     const jid = await this.hooks.wid.chat.promise(chatId, 'upsertContact');
+    const lid = await this.resolveContactLid(jid);
     let fullName = body.firstName;
     if (body.lastName) {
       fullName = `${body.firstName} ${body.lastName}`;
@@ -2023,16 +2024,26 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     const action = {
       fullName: fullName,
       firstName: body.firstName,
+      lidJid: lid ?? undefined,
       saveOnPrimaryAddressbook: true,
     };
     await this.sock.addOrEditContact(jid, action);
-    const updates: Partial<Contact>[] = [
-      {
-        id: jid,
-        name: fullName,
-      },
-    ];
-    this.sock.ev.emit('contacts.update', updates);
+    const update: Partial<Contact> = {
+      id: jid,
+      name: fullName,
+    };
+    if (lid) {
+      update.lid = lid;
+    }
+    this.sock.ev.emit('contacts.update', [update]);
+  }
+
+  private async resolveContactLid(pn: string): Promise<string | null> {
+    const lid = await this.sock.signalRepository.lidMapping.getLIDForPN(pn);
+    if (!lid) {
+      return null;
+    }
+    return jidNormalizedUser(lid);
   }
 
   async getContact(query: ContactQuery) {
