@@ -31,6 +31,11 @@ export class SettingsMemberAddMode {
   membersCanAddNewMember: boolean = true;
 }
 
+export class SettingsMemberShareHistoryMode {
+  @IsBoolean()
+  membersCanShareHistory: boolean = true;
+}
+
 export class SettingsMembershipApproval {
   @IsBoolean()
   newMembersApprovalRequired: boolean = false;

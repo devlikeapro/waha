@@ -1025,6 +1025,10 @@ export abstract class WhatsappSession {
     throw new NotImplementedByEngineError();
   }
 
+  public setMemberShareHistoryMode(id, value) {
+    throw new NotImplementedByEngineError();
+  }
+
   public getMembershipApprovalMode(
     id: string,
   ): Promise<SettingsMembershipApproval> {
