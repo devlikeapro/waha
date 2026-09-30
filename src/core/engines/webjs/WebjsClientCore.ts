@@ -338,9 +338,14 @@ export class WebjsClientCore extends Client {
   async setPushName(name: string) {
     await this.ensureWahaInjected();
     await this.pupPage.evaluate(async (pushName) => {
-      return await window
-        .require('WAWebSetPushnameConnAction')
-        .setPushname(pushName);
+      // @ts-ignore
+      const WAWebSetPushnameConnAction = await window.WWebJS.requireLazy(
+        'WAWebSetPushnameConnAction',
+        {
+          'WAWebProfileDrawer.react': 'WAWebProfileDrawerLoadableRequireBundle',
+        },
+      );
+      return await WAWebSetPushnameConnAction.setPushname(pushName);
     }, name);
     if (this.info) {
       this.info.pushname = name;
