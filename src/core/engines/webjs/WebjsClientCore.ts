@@ -142,26 +142,6 @@ export class WebjsClientCore extends Client {
   }
 
   /**
-   * @result indicating whether the UX fresh look was successfully hidden.
-   */
-  hideUXFreshLook(): Promise<boolean> {
-    return this.pupPage.evaluate(() => {
-      const WAWebUserPrefsUiRefresh = window.require('WAWebUserPrefsUiRefresh');
-      if (!WAWebUserPrefsUiRefresh) {
-        return false;
-      }
-      if (WAWebUserPrefsUiRefresh.getUiRefreshNuxAcked()) {
-        return false;
-      }
-      WAWebUserPrefsUiRefresh.incrementNuxViewCount();
-      WAWebUserPrefsUiRefresh.setUiRefreshNuxAcked(true);
-      const WAWebModalManager = window.require('WAWebModalManager');
-      WAWebModalManager.ModalManager.close();
-      return true;
-    });
-  }
-
-  /**
    * @result indicating whether the "What's New" auto-modal was prevented or dismissed.
    */
   hideWhatsNewModal(): Promise<boolean> {

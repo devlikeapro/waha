@@ -686,22 +686,6 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       this.logger.info(`Session '${this.name}' is ready!`);
     });
 
-    //
-    // Temp fix for hiding "Fresh look" modal
-    // https://github.com/devlikeapro/waha/issues/987
-    //
-    this.whatsapp.on(Events.READY, async () => {
-      try {
-        const hidden = await this.whatsapp.hideUXFreshLook();
-        if (hidden) {
-          this.logger.info('"Fresh look" modal has been hidden');
-        }
-      } catch (err) {
-        this.logger.warn('Failed to hide "Fresh look" modal');
-        this.logger.warn(err, err.stack);
-      }
-    });
-
     this.whatsapp.on(Events.AUTHENTICATED, async (args) => {
       this.status = WAHASessionStatus.WORKING;
       this.qr.save('');
