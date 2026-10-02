@@ -159,7 +159,13 @@ export class WebjsClientCore extends Client {
       if (!WAWebUserPrefsMeUser.getMaybeMePnUser()) {
         return false;
       }
-      const nux = WAWebWhatsNewNux.createWhatsNewNux();
+      // The app checks the cool-off with AB-prop driven days (15 or 30)
+      const WAWebWhatsNewGatingUtils = window.require(
+        'WAWebWhatsNewGatingUtils',
+      );
+      const days =
+        WAWebWhatsNewGatingUtils?.getWhatsNewAutoModalCooldownDays?.();
+      const nux = WAWebWhatsNewNux.createWhatsNewNux(days);
       if (!nux.shouldShow()) {
         return false;
       }
