@@ -117,6 +117,7 @@ import {
   GroupSortField,
   ParticipantsRequest,
   SettingsMemberAddMode,
+  SettingsMemberShareHistoryMode,
   SettingsMembershipApproval,
   SettingsSecurityChangeInfo,
 } from '@waha/structures/groups.dto';
@@ -1755,6 +1756,28 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
     // The library setter is inverted - it takes "adminsOnly"
     return groupChat.setAddMembersAdminsOnly(!value);
+  }
+
+  public async getMemberShareHistoryMode(
+    id: string,
+  ): Promise<SettingsMemberShareHistoryMode> {
+    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    return {
+      membersCanShareHistory:
+        // @ts-ignore
+        groupChat.groupMetadata.memberShareGroupHistoryMode ===
+        'all_member_share',
+    };
+  }
+
+  @Activity()
+  public async setMemberShareHistoryMode(
+    id: string,
+    value: boolean,
+  ): Promise<boolean> {
+    const groupChat = (await this.whatsapp.getChatById(id)) as GroupChat;
+    // The library setter is inverted - it takes "adminsOnly"
+    return groupChat.setShareHistoryAdminsOnly(!value);
   }
 
   @Activity()

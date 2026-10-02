@@ -9,6 +9,7 @@ import {
   GroupIdInput,
   GroupJoinInput,
   GroupMembershipApprovalInput,
+  GroupMemberShareHistoryInput,
   GroupParticipantsInput,
   GroupPictureInput,
   GroupsListInput,
@@ -401,6 +402,47 @@ export class GroupTools extends McpController {
     return this.textRequest({
       method: 'PUT',
       url: `/api/${session}/groups/${id}/settings/security/membership-approval`,
+      data: body,
+    });
+  }
+
+  @Tool('groups-get-member-share-history', {
+    title: 'Get member share history setting',
+    description:
+      'Get whether all members or only admins can share message history with new members',
+    inputSchema: GroupIdInput,
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+    },
+  })
+  async getMemberShareHistory({ session, id }: z.infer<typeof GroupIdInput>) {
+    return this.textRequest({
+      method: 'GET',
+      url: `/api/${session}/groups/${id}/settings/security/member-share-history-mode`,
+    });
+  }
+
+  @Tool('groups-set-member-share-history', {
+    title: 'Set member share history setting',
+    description:
+      'Allow all members or only admins to share message history with new members',
+    inputSchema: GroupMemberShareHistoryInput,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+    },
+  })
+  async setMemberShareHistory({
+    session,
+    id,
+    ...body
+  }: z.infer<typeof GroupMemberShareHistoryInput>) {
+    return this.textRequest({
+      method: 'PUT',
+      url: `/api/${session}/groups/${id}/settings/security/member-share-history-mode`,
       data: body,
     });
   }

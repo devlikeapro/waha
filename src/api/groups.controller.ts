@@ -362,11 +362,27 @@ export class GroupsController {
     @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
     @Body() request: SettingsMemberShareHistoryMode,
-  ) {
+  ): Promise<boolean> {
     return session.setMemberShareHistoryMode(
       id,
       request.membersCanShareHistory,
     );
+  }
+
+  @Get(':id/settings/security/member-share-history-mode')
+  @SessionApiParam
+  @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
+  @ApiOperation({
+    summary: 'Get settings - members can send message history to new members',
+    description:
+      'The group settings for whether members can share message history with new members, or only admins can.',
+  })
+  getMemberShareHistoryMode(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+  ): Promise<SettingsMemberShareHistoryMode> {
+    return session.getMemberShareHistoryMode(id);
   }
 
   @Put(':id/settings/security/membership-approval')

@@ -8,6 +8,7 @@ import {
   JoinGroupRequest,
   ParticipantsRequest,
   SettingsMembershipApproval,
+  SettingsMemberShareHistoryMode,
   SettingsSecurityChangeInfo,
   SubjectRequest,
 } from '@waha/structures/groups.dto';
@@ -68,6 +69,13 @@ export const GroupParticipantsInput = DtoToZod(ParticipantsRequest).extend({
 
 export const GroupMembershipApprovalInput = DtoToZod(
   SettingsMembershipApproval,
+).extend({
+  session: SessionField,
+  id: GroupIdField,
+});
+
+export const GroupMemberShareHistoryInput = DtoToZod(
+  SettingsMemberShareHistoryMode,
 ).extend({
   session: SessionField,
   id: GroupIdField,

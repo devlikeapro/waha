@@ -28,7 +28,6 @@ import makeWASocket, {
 import { WACallEvent } from '@adiwajshing/baileys/lib/Types/Call';
 import { BaileysEventMap } from '@adiwajshing/baileys/lib/Types/Events';
 import { GroupMetadata } from '@adiwajshing/baileys/lib/Types/GroupMetadata';
-import { executeWMexQuery } from '@adiwajshing/baileys/lib/Socket/mex';
 import {
   Label as NOWEBLabel,
   LabelActionBody,
@@ -297,14 +296,6 @@ const ToEnginePresenceStatus = flipObject(PresenceStatuses);
 export interface NowebConfig {
   waVersion: WAVersion;
 }
-
-// WhatsApp Web MEX (w:mex) doc/query_id for the group property mutation that sets
-// "members can send message history to new members". Captured from WhatsApp Web's
-// WAWebMexUpdateGroupPropertyJobMutation on 2026-09-25 (see whatsapp-rust
-// wacore/src/iq/mex_operations.rs, mod update_group_property). WhatsApp rotates these
-// ids when Web is updated -- if this mutation starts failing, re-capture the query_id
-// from a fresh WhatsApp Web session before assuming the endpoint itself is broken.
-const MEX_QUERY_ID_UPDATE_GROUP_PROPERTY = '9418211574894172';
 
 export class WhatsappSessionNoWebCore extends WhatsappSession {
   private START_ATTEMPT_DELAY_SECONDS = 2;
@@ -2248,23 +2239,21 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return await this.sock.groupMemberAddMode(id, mode);
   }
 
+  public async getMemberShareHistoryMode(
+    id: string,
+  ): Promise<SettingsMemberShareHistoryMode> {
+    const group = await this.getGroup(id);
+    return { membersCanShareHistory: !!group.memberShareHistoryMode };
+  }
+
   @Activity()
-  public async setMemberShareHistoryMode(id, value) {
-    const mode = value ? 'ALL_MEMBER_SHARE' : 'ADMIN_SHARE';
-    const result = await executeWMexQuery<{ state?: string }>(
-      { group_id: id, update: { member_share_group_history_mode: mode } },
-      MEX_QUERY_ID_UPDATE_GROUP_PROPERTY,
-      'xwa2_group_update_property',
-      this.sock.query,
-      this.sock.generateMessageTag,
-    );
-    if (result?.state !== 'ACTIVE') {
-      throw new Error(
-        `Failed to set member share history mode for group '${id}': ` +
-          `unexpected state '${result?.state}'`,
-      );
-    }
-    return result;
+  public async setMemberShareHistoryMode(
+    id: string,
+    value: boolean,
+  ): Promise<boolean> {
+    const mode = value ? 'all_member_share' : 'admin_share';
+    await this.sock.groupMemberShareHistoryMode(id, mode);
+    return true;
   }
 
   public async getMembershipApprovalMode(

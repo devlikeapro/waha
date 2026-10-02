@@ -178,6 +178,7 @@ import {
   NormalizeJoinRequestMethod,
   ParticipantsRequest,
   SettingsMemberAddMode,
+  SettingsMemberShareHistoryMode,
   SettingsMembershipApproval,
   SettingsSecurityChangeInfo,
 } from '@waha/structures/groups.dto';
@@ -1622,6 +1623,20 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
       'member_add_mode' as GroupProperty,
       value,
     );
+  }
+
+  public async getMemberShareHistoryMode(
+    id: string,
+  ): Promise<SettingsMemberShareHistoryMode> {
+    const groupId = await this.hooks.wid.chat.promise(
+      id,
+      'getMemberShareHistoryMode',
+    );
+    const group = await this.wpp!.getChatById(groupId);
+    // Undocumented property - 'all_member_share' or 'admin_share'
+    // @ts-ignore
+    const mode = group?.groupMetadata?.memberShareGroupHistoryMode;
+    return { membersCanShareHistory: mode === 'all_member_share' };
   }
 
   public async getMembershipApprovalMode(

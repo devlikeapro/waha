@@ -133,6 +133,7 @@ import {
   Participant,
   ParticipantsRequest,
   SettingsMemberAddMode,
+  SettingsMemberShareHistoryMode,
   SettingsMembershipApproval,
   SettingsSecurityChangeInfo,
 } from '@waha/structures/groups.dto';
@@ -1802,6 +1803,30 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     });
     await promisify(this.client.SetGroupMemberAddMode)(req);
     return;
+  }
+
+  public async getMemberShareHistoryMode(
+    id: string,
+  ): Promise<SettingsMemberShareHistoryMode> {
+    const group = await this.getGroup(id);
+    return {
+      membersCanShareHistory:
+        group.MemberShareHistoryMode === 'all_member_share',
+    };
+  }
+
+  @Activity()
+  public async setMemberShareHistoryMode(
+    id: string,
+    value: boolean,
+  ): Promise<boolean> {
+    const req = new messages.JidBoolRequest({
+      session: this.session,
+      jid: id,
+      value: value,
+    });
+    await promisify(this.client.SetGroupMemberShareHistoryMode)(req);
+    return true;
   }
 
   public async getMembershipApprovalMode(

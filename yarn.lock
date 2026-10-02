@@ -7,7 +7,7 @@ __metadata:
 
 "@adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-2026-04-28":
   version: 7.0.0-rc14
-  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=93433a380977fce781d25c5e40d8f12d8ea8109e"
+  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=14ed18cd9fc524309fbecaed4949ea73eaf6761e"
   dependencies:
     "@cacheable/node-cache": "npm:^1.4.0"
     "@hapi/boom": "npm:^9.1.3"
@@ -32,7 +32,7 @@ __metadata:
       optional: true
     link-preview-js:
       optional: true
-  checksum: 10/3fdf6e7eea36d474a46c70e645872f588d3c47dcdc99898477be1665302844aa3c5da221cd9773380ea66d28deb9e9e565a1507323be5840eba23352c7707583
+  checksum: 10/d7c290e64065517c43094f5700daf1230dfa54254aa2965d8efca94bdefbd464904a390f16d695c0305a0e7f408acd9fda566bacb30dc493ff563fcb06892873
   languageName: node
   linkType: hard
 
@@ -14381,7 +14381,7 @@ __metadata:
 
 "whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-2026-06-26":
   version: 1.34.7
-  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=a95362738822bcb670f9e20f79acaf83304a6a2d"
+  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=7bcd3528538372f9420a63472491513066993090"
   dependencies:
     archiver: "npm:7.0.1"
     fluent-ffmpeg: "npm:2.1.3"
@@ -14398,7 +14398,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 10/ee21c2d7cf3e94eccc931fca7f386aaf6fd5ba4d8f362dd79df8f45fab22298538eaedb5fa5c4ae80a622e51a229601f20fd41c90a781428ad681ce821861de6
+  checksum: 10/52b776bd9cde2799fed01ca507f8a43e17cce11254fa58cc3e96fa40f206532311050a38d6c25ee895616c9c39286615e6513c952667b6bd8610d5de03068cdb
   languageName: node
   linkType: hard
 

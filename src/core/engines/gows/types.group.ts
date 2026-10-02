@@ -101,6 +101,7 @@ export interface GroupInfoFull {
   IsAnnounce: boolean; // specifies whether only admins can send messages in the group
   Participants: GOWSGroupParticipant[];
   MemberAddMode: string; // all_member_add | admin_add
+  MemberShareHistoryMode: string; // all_member_share | admin_share
   IsJoinApprovalRequired: boolean;
 }
 

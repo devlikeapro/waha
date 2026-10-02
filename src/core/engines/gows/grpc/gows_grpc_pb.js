@@ -1073,6 +1073,18 @@ setGroupMemberAddMode: {
     responseDeserialize: deserialize_messages_Empty,
   },
   // who can add members - true - all members, false - admins only
+setGroupMemberShareHistoryMode: {
+    path: '/messages.MessageService/SetGroupMemberShareHistoryMode',
+    requestStream: false,
+    responseStream: false,
+    requestType: gows_pb.JidBoolRequest,
+    responseType: gows_pb.Empty,
+    requestSerialize: serialize_messages_JidBoolRequest,
+    requestDeserialize: deserialize_messages_JidBoolRequest,
+    responseSerialize: serialize_messages_Empty,
+    responseDeserialize: deserialize_messages_Empty,
+  },
+  // who can share message history with new members - true - all members, false - admins only
 updateGroupParticipants: {
     path: '/messages.MessageService/UpdateGroupParticipants',
     requestStream: false,

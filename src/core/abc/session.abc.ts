@@ -114,6 +114,7 @@ import {
   GroupsListFields,
   ParticipantsRequest,
   SettingsMemberAddMode,
+  SettingsMemberShareHistoryMode,
   SettingsMembershipApproval,
   SettingsSecurityChangeInfo,
 } from '../../structures/groups.dto';
@@ -1025,7 +1026,16 @@ export abstract class WhatsappSession {
     throw new NotImplementedByEngineError();
   }
 
-  public setMemberShareHistoryMode(id, value) {
+  public getMemberShareHistoryMode(
+    id: string,
+  ): Promise<SettingsMemberShareHistoryMode> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public setMemberShareHistoryMode(
+    id: string,
+    value: boolean,
+  ): Promise<boolean> {
     throw new NotImplementedByEngineError();
   }
 
