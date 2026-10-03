@@ -131,6 +131,7 @@ import {
   WppSendTextOptions,
   WppSendTextStatusOptions,
 } from '@waha/core/engines/wpp/WppTypes';
+import { rejectUnsupportedBroadcastListParticipants } from '@waha/core/utils/broadcastLists';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
 import {
   IMediaEngineProcessor,
@@ -689,6 +690,7 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
 
   @Activity()
   async sendImage(request: MessageImageRequest) {
+    rejectUnsupportedBroadcastListParticipants(request);
     const quotedMessageId = this.getReplyToMessageId(request as any);
     const content = await this.fileToBuffer(request.file);
     const mimetype = request.file.mimetype || WAMimeType.IMAGE;
@@ -719,6 +721,7 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
 
   @Activity()
   async sendFile(request: MessageFileRequest) {
+    rejectUnsupportedBroadcastListParticipants(request);
     const quotedMessageId = this.getReplyToMessageId(request as any);
     const content = await this.fileToBuffer(request.file);
     const mimetype = request.file.mimetype || (await detectMimetype(content));
@@ -749,6 +752,7 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
 
   @Activity()
   async sendVoice(request: MessageVoiceRequest) {
+    rejectUnsupportedBroadcastListParticipants(request);
     const quotedMessageId = this.getReplyToMessageId(request as any);
     let content = await this.fileToBuffer(request.file);
     let mimetype = request.file.mimetype || WAMimeType.VOICE;
@@ -773,6 +777,7 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
 
   @Activity()
   async sendVideo(request: MessageVideoRequest) {
+    rejectUnsupportedBroadcastListParticipants(request);
     const quotedMessageId = this.getReplyToMessageId(request as any);
     let content = await this.fileToBuffer(request.file);
     let mimetype = request.file.mimetype || WAMimeType.VIDEO;
@@ -1000,6 +1005,7 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
 
   @Activity()
   async sendText(request: MessageTextRequest) {
+    rejectUnsupportedBroadcastListParticipants(request);
     const quotedMessageId = this.getReplyToMessageId(request as any);
     let mentions: string[] | undefined;
     if (request.mentions) {
