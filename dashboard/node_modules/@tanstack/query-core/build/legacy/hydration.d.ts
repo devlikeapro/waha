@@ -1,0 +1,2 @@
+import { a as defaultShouldDehydrateQuery, c as hydrate, i as defaultShouldDehydrateMutation, n as DehydratedState, o as dehydrate, r as HydrateOptions, s as dehydrateQuery, t as DehydrateOptions } from "./hydration-Cq7QYAzB.js";
+export { DehydrateOptions, DehydratedState, HydrateOptions, defaultShouldDehydrateMutation, defaultShouldDehydrateQuery, dehydrate, dehydrateQuery, hydrate };

@@ -1,0 +1,74 @@
+import { CustomScaleDefinition } from './CustomScaleDefinition';
+import { CategoricalDomainItem } from '../types';
+/**
+ * This is internal representation of scale used in Recharts.
+ * Users will provide CustomScaleDefinition or a string, which we will parse into RechartsScale.
+ * Most importantly, RechartsScale is fully immutable - there are no setters that mutate the scale in place.
+ * This is important for React integration - if the scale changes, we want to trigger re-renders.
+ * Mutating the scale in place would not trigger re-renders, leading to stale UI.
+ */
+export interface RechartsScale<Domain extends CategoricalDomainItem = CategoricalDomainItem> {
+    /**
+     * Returns the scale's current domain.
+     * The domain could be:
+     * - in categorical scales: an array of strings or categories
+     * - in continuous scales: tuple of two numbers: [min, max]
+     */
+    domain(): ReadonlyArray<Domain>;
+    /**
+     * Returns the scale’s current range.
+     *
+     * This should be a readonly tuple of two numbers: [min, max]
+     * and so a better type would be `readonly [number, number]` but again - breaking changes,
+     * so let's keep that for 4.0.
+     */
+    range(): ReadonlyArray<number>;
+    /**
+     * Returns the minimum value from the range.
+     */
+    rangeMin(): number;
+    /**
+     * Returns the maximum value from the range.
+     */
+    rangeMax(): number;
+    /**
+     * Returns true if the given value is within the scale's range.
+     * @param value
+     */
+    isInRange(value: number): boolean;
+    /**
+     * Returns width of each band.
+     * Most scales are not banded, so this method is optional.
+     * Banded scales (like scaleBand from d3-scale) will implement this method.
+     */
+    bandwidth?: () => number;
+    /**
+     * Quantitative (continuous) scales provide a ticks method that returns representative values from the scale’s domain.
+     * Ordinal and band scales do not have this method.
+     *
+     * An optional count argument requests more or fewer ticks.
+     * The number of ticks returned, however, is not necessarily equal to the requested count.
+     *
+     * @see {@link https://d3js.org/d3-scale/linear#linear_ticks}
+     * @see {@link https://observablehq.com/@d3/scale-ticks}
+     *
+     * @param count number of ticks
+     */
+    ticks?: (count: number | undefined) => ReadonlyArray<number>;
+    /**
+     * Given an arbitrary input, returns the corresponding point derived from the output range if the input is in the scale's domain.
+     * If the input is not included in the domain, returns undefined.
+     */
+    map(input: unknown, options?: {
+        position?: BandPosition;
+    }): number | undefined;
+}
+/**
+ * Position within a band for banded scales.
+ * In scales that are not banded, this parameter is ignored.
+ *
+ * @inline
+ */
+export type BandPosition = 'start' | 'middle' | 'end';
+export declare function rechartsScaleFactory<Domain extends CategoricalDomainItem = CategoricalDomainItem>(d3Scale: CustomScaleDefinition<Domain>): RechartsScale<Domain>;
+export declare function rechartsScaleFactory<Domain extends CategoricalDomainItem = CategoricalDomainItem>(d3Scale: CustomScaleDefinition<Domain> | undefined): RechartsScale<Domain> | undefined;

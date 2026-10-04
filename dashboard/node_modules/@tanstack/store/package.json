@@ -1,0 +1,57 @@
+{
+  "name": "@tanstack/store",
+  "version": "0.11.1",
+  "description": "Framework agnostic type-safe store w/ reactive framework adapters",
+  "author": "Tanner Linsley",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TanStack/store.git",
+    "directory": "packages/store"
+  },
+  "homepage": "https://tanstack.com/store",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/tannerlinsley"
+  },
+  "keywords": [
+    "store",
+    "typescript"
+  ],
+  "type": "module",
+  "types": "./dist/index.d.cts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "src"
+  ],
+  "devDependencies": {
+    "@angular/core": "^21.2.8",
+    "@preact/signals": "^2.9.0",
+    "solid-js": "^1.9.12",
+    "vue": "^3.5.32"
+  },
+  "scripts": {
+    "clean": "premove ./dist ./coverage",
+    "test:eslint": "eslint ./src ./tests",
+    "test:types": "pnpm run \"/^test:types:ts[0-9]{2}$/\"",
+    "test:types:ts56": "node ../../node_modules/typescript56/lib/tsc.js",
+    "test:types:ts57": "node ../../node_modules/typescript57/lib/tsc.js",
+    "test:types:ts58": "node ../../node_modules/typescript58/lib/tsc.js",
+    "test:types:ts59": "tsc",
+    "test:lib": "vitest",
+    "test:bench": "vitest bench",
+    "test:lib:dev": "pnpm run test:lib --watch",
+    "test:build": "publint --strict",
+    "build": "tsdown --tsconfig tsconfig.build.json"
+  }
+}

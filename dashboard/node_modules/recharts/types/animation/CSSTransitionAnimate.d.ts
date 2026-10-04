@@ -1,0 +1,22 @@
+import * as React from 'react';
+import { CSSProperties } from 'react';
+import { EasingInput, NamedBezier } from './easing';
+import { AnimationController } from './AnimationController';
+type CSSTransitionAnimateProps = {
+    animationId: string;
+    animationController?: AnimationController;
+    duration?: number;
+    begin?: number;
+    easing?: NamedBezier;
+    isActive?: boolean | 'auto';
+    canBegin?: boolean;
+    from: string;
+    to: string;
+    attributeName: string;
+    onAnimationStart?: () => void;
+    onAnimationEnd?: () => void;
+    children: (style: CSSProperties) => React.ReactNode;
+};
+export declare function extractCssEasing(easingInput: EasingInput): NamedBezier | undefined;
+export declare function CSSTransitionAnimate(outsideProps: CSSTransitionAnimateProps): React.ReactNode;
+export {};
