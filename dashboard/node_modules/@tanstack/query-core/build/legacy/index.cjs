@@ -1,0 +1,61 @@
+Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
+const require_timeoutManager = require("./timeoutManager.cjs");
+const require_utils = require("./utils.cjs");
+const require_environmentManager = require("./environmentManager.cjs");
+const require_focusManager = require("./focusManager.cjs");
+const require_hydration = require("./hydration.cjs");
+const require_notifyManager = require("./notifyManager.cjs");
+const require_onlineManager = require("./onlineManager.cjs");
+const require_retryer = require("./retryer.cjs");
+const require_query = require("./query.cjs");
+const require_queryObserver = require("./queryObserver.cjs");
+const require_infiniteQueryObserver = require("./infiniteQueryObserver.cjs");
+const require_mutation = require("./mutation.cjs");
+const require_mutationCache = require("./mutationCache.cjs");
+const require_mutationObserver = require("./mutationObserver.cjs");
+const require_queriesObserver = require("./queriesObserver.cjs");
+const require_queryCache = require("./queryCache.cjs");
+const require_queryClient = require("./queryClient.cjs");
+const require_streamedQuery = require("./streamedQuery.cjs");
+const require_types = require("./types.cjs");
+//#region src/index.ts
+/* istanbul ignore file */
+//#endregion
+exports.CancelledError = require_retryer.CancelledError;
+exports.InfiniteQueryObserver = require_infiniteQueryObserver.InfiniteQueryObserver;
+exports.Mutation = require_mutation.Mutation;
+exports.MutationCache = require_mutationCache.MutationCache;
+exports.MutationObserver = require_mutationObserver.MutationObserver;
+exports.QueriesObserver = require_queriesObserver.QueriesObserver;
+exports.Query = require_query.Query;
+exports.QueryCache = require_queryCache.QueryCache;
+exports.QueryClient = require_queryClient.QueryClient;
+exports.QueryObserver = require_queryObserver.QueryObserver;
+exports.dataTagErrorSymbol = require_types.dataTagErrorSymbol;
+exports.dataTagSymbol = require_types.dataTagSymbol;
+exports.defaultScheduler = require_notifyManager.defaultScheduler;
+exports.defaultShouldDehydrateMutation = require_hydration.defaultShouldDehydrateMutation;
+exports.defaultShouldDehydrateQuery = require_hydration.defaultShouldDehydrateQuery;
+exports.dehydrate = require_hydration.dehydrate;
+exports.dehydrateQuery = require_hydration.dehydrateQuery;
+exports.environmentManager = require_environmentManager.environmentManager;
+exports.experimental_streamedQuery = require_streamedQuery.streamedQuery;
+exports.focusManager = require_focusManager.focusManager;
+exports.hashKey = require_utils.hashKey;
+exports.hydrate = require_hydration.hydrate;
+exports.isCancelledError = require_retryer.isCancelledError;
+exports.isServer = require_utils.isServer;
+exports.keepPreviousData = require_utils.keepPreviousData;
+exports.matchMutation = require_utils.matchMutation;
+exports.matchQuery = require_utils.matchQuery;
+exports.noop = require_utils.noop;
+exports.notifyManager = require_notifyManager.notifyManager;
+exports.onlineManager = require_onlineManager.onlineManager;
+exports.partialMatchKey = require_utils.partialMatchKey;
+exports.replaceEqualDeep = require_utils.replaceEqualDeep;
+exports.shouldThrowError = require_utils.shouldThrowError;
+exports.skipToken = require_utils.skipToken;
+exports.timeoutManager = require_timeoutManager.timeoutManager;
+exports.unsetMarker = require_types.unsetMarker;
+
+//# sourceMappingURL=index.cjs.map

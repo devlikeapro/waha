@@ -1,0 +1,10 @@
+import { RechartsRootState } from '../store';
+import { AxisId } from '../cartesianAxisSlice';
+import { CartesianTickItem } from '../../util/types';
+import { RechartsScale } from '../../util/scale/RechartsScale';
+export declare const selectPolarAxis: (state: RechartsRootState, axisType: "angleAxis" | "radiusAxis", axisId: AxisId) => import("../polarAxisSlice").RadiusAxisSettings;
+export declare const selectPolarAxisScale: (state: RechartsRootState, axisType: 'angleAxis' | 'radiusAxis', polarAxisId: AxisId) => RechartsScale | undefined;
+export declare const selectPolarCategoricalDomain: (state: RechartsRootState, axisType: 'angleAxis' | 'radiusAxis', polarAxisId: AxisId) => ReadonlyArray<unknown> | undefined;
+export declare const selectPolarAxisTicks: (state: RechartsRootState, axisType: 'angleAxis' | 'radiusAxis', polarAxisId: AxisId, isPanorama: boolean) => ReadonlyArray<CartesianTickItem> | undefined;
+export declare const selectPolarAngleAxisTicks: (state: RechartsRootState, axisType: 'angleAxis', polarAxisId: AxisId, isPanorama: boolean) => ReadonlyArray<CartesianTickItem> | undefined;
+export declare const selectPolarGraphicalItemAxisTicks: (state: RechartsRootState, axisType: 'angleAxis' | 'radiusAxis', polarAxisId: AxisId, isPanorama: boolean) => ReadonlyArray<CartesianTickItem> | undefined;

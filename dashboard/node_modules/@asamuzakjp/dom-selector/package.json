@@ -1,0 +1,80 @@
+{
+  "name": "@asamuzakjp/dom-selector",
+  "description": "A CSS selector engine.",
+  "author": "asamuzaK",
+  "license": "MIT",
+  "homepage": "https://github.com/asamuzaK/domSelector#readme",
+  "bugs": {
+    "url": "https://github.com/asamuzaK/domSelector/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asamuzaK/domSelector.git"
+  },
+  "files": [
+    "src",
+    "types"
+  ],
+  "type": "module",
+  "types": "./types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "bidi-js": "^1.1.0",
+    "css-tree": "^3.2.1",
+    "is-potential-custom-element-name": "^1.0.1",
+    "lru-cache": "^11.5.2"
+  },
+  "devDependencies": {
+    "@types/css-tree": "^3.2.0",
+    "@types/node": "^26.5.1",
+    "c8": "^12.0.0",
+    "chai": "^6.2.2",
+    "commander": "^15.0.0",
+    "eslint": "^10.10.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsdoc": "^64.3.9",
+    "eslint-plugin-prettier": "^5.5.6",
+    "eslint-plugin-regexp": "^3.3.0",
+    "eslint-plugin-unicorn": "^74.0.0",
+    "globals": "^17.12.0",
+    "jsdom": "^30.0.1",
+    "mitata": "^1.0.34",
+    "mocha": "^12.0.1",
+    "neostandard": "^0.14.0-next.1",
+    "prettier": "^3.9.6",
+    "sinon": "^22.1.0",
+    "tinybench": "^6.2.0",
+    "typescript": "^7.0.2",
+    "wpt-runner": "^7.0.0"
+  },
+  "overrides": {
+    "jsdom": "$jsdom"
+  },
+  "scripts": {
+    "bench": "node --expose-gc benchmark/bench.js",
+    "bench:cache": "node --expose-gc benchmark/bench-cache.js",
+    "bench:nwsapi": "node --expose-gc benchmark/bench-nwsapi.js",
+    "bench:ps-form": "node --expose-gc benchmark/bench-default.js && node --expose-gc benchmark/bench-indeterminate.js && node --expose-gc benchmark/bench-valid-invalid.js",
+    "bench:ps-has": "node --expose-gc benchmark/bench-has.js",
+    "bench:ps-nth": "node --expose-gc benchmark/bench-nth-child.js && node --expose-gc benchmark/bench-nth-of-type.js",
+    "bench:ps-traverse": "node --expose-gc benchmark/bench-dir.js && node --expose-gc benchmark/bench-lang.js",
+    "bench:tl": "node --expose-gc benchmark/bench-testing-library.js",
+    "bench:universal": "node --expose-gc benchmark/bench-universal.js",
+    "build": "npm run tsc && npm run lint && npm test",
+    "lint": "eslint --fix .",
+    "test": "c8 --reporter=text mocha --exit test/**/*.test.js",
+    "test:wpt": "node test/wpt/wpt-runner.js",
+    "tsc": "node scripts/index clean --dir=types -i && npx tsc",
+    "update:wpt": "git submodule update --init --recursive --remote"
+  },
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  },
+  "version": "9.1.4"
+}

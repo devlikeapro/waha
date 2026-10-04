@@ -1,0 +1,56 @@
+{
+  "name": "file-entry-cache",
+  "version": "11.1.5",
+  "description": "A lightweight cache for file metadata, ideal for processes that work on a specific set of files and only need to reprocess files that have changed since the last run",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaredwray/cacheable.git",
+    "directory": "packages/file-entry-cache"
+  },
+  "author": "Jared Wray <me@jaredwray.com>",
+  "license": "MIT",
+  "private": false,
+  "keywords": [
+    "file cache",
+    "task cache files",
+    "file cache",
+    "key par",
+    "key value",
+    "cache"
+  ],
+  "devDependencies": {
+    "pino": "^10.3.1",
+    "tsdown": "^0.22.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "flat-cache": "^6.1.23"
+  },
+  "files": [
+    "dist",
+    "license"
+  ],
+  "scripts": {
+    "build": "rimraf ./dist && tsdown src/index.ts --format cjs,esm --dts --clean",
+    "lint": "biome check --write --error-on-warnings",
+    "test": "pnpm lint && vitest run --coverage",
+    "test:ci": "biome check --error-on-warnings && vitest run --coverage",
+    "clean": "rimraf ./dist ./coverage ./node_modules"
+  }
+}

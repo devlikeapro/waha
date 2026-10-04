@@ -1,0 +1,31 @@
+export declare class PseudoClassEvaluator {
+    #private;
+    constructor(evaluator: import('./evaluator.js').Evaluator);
+    clearResults(all?: boolean): void;
+    reset(): void;
+    matchPseudoClassSelector(ast: import('css-tree').CssNode, node: Element, opt?: import('../index.js').FindOptions): boolean;
+    private #evaluateLogicalPseudo;
+    private #evaluatePseudoClassFunc;
+    private #matchActivePseudoClass;
+    private #matchDefaultPseudoClass;
+    private #matchDisabledPseudoClass;
+    private #matchEmptyPseudoClass;
+    private #matchFocusPseudoClass;
+    private #matchFocusVisiblePseudoClass;
+    private #matchFocusWithinPseudoClass;
+    private #matchHoverPseudoClass;
+    private #matchIndeterminatePseudoClass;
+    private #matchLocalLinkPseudoClass;
+    private #matchTargetPseudoClass;
+    private #matchValidityPseudoClass;
+    private #matchAnPlusB;
+    private #getSelectorBranches;
+    private #filterNthChildOfSelectorBranches;
+    private #matchLogicalPseudoFunc;
+    private #evaluateHasPseudo;
+    private #buildHasAllowlist;
+    private #acquireSet;
+    private #matchHasPseudoFunc;
+    private #hasCombinatorMatch;
+    private #checkNode;
+}

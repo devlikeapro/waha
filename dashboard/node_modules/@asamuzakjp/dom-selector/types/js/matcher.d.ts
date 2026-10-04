@@ -1,0 +1,12 @@
+export declare const matchPseudoElementSelector: (astName: string, astType: string, { forgive, globalObject, warn }?: import('../index.js').FindOptions) => void;
+export declare const matchDirectionPseudoClass: (ast: import('css-tree').CssNode, node: Element, dirCache?: WeakMap<any, any>) => boolean;
+export declare const matchLanguagePseudoClass: (ast: import('css-tree').CssNode, node: Element, langCache?: WeakMap<any, any>) => boolean;
+export declare const matchCheckedPseudoClass: (node: Element) => boolean;
+export declare const matchLinkPseudoClass: (node: Element) => boolean;
+export declare const matchOpenPseudoClass: (node: Element) => boolean;
+export declare const matchPlaceholderShownPseudoClass: (node: Element, keys: Set<string>) => boolean;
+export declare const matchRangePseudoClass: (astName: string, node: Element, keys: Set<string>) => boolean;
+export declare const matchReadOnlyPseudoClass: (astName: string, node: Element) => boolean;
+export declare const matchRequiredPseudoClass: (astName: string, node: Element, keys: Set<string>) => boolean;
+export declare const matchAttributeSelector: (ast: import('css-tree').CssNode, node: Element, { check, forgive, globalObject }?: import('../index.js').FindOptions) => boolean;
+export declare const matchTypeSelector: (ast: import('css-tree').CssNode, node: Element, { check, forgive, globalObject }?: import('../index.js').FindOptions) => boolean;

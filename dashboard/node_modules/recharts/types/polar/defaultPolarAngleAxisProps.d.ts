@@ -1,0 +1,23 @@
+export declare const defaultPolarAngleAxisProps: {
+    readonly allowDecimals: false;
+    readonly allowDuplicatedCategory: true;
+    readonly allowDataOverflow: false;
+    readonly angle: 0;
+    readonly angleAxisId: 0;
+    readonly axisLine: true;
+    readonly axisLineType: "polygon";
+    readonly cx: 0;
+    readonly cy: 0;
+    readonly hide: false;
+    readonly includeHidden: false;
+    readonly label: false;
+    readonly niceTicks: "auto";
+    readonly orientation: "outer";
+    readonly reversed: false;
+    readonly scale: "auto";
+    readonly tick: true;
+    readonly tickLine: true;
+    readonly tickSize: 8;
+    readonly type: "auto";
+    readonly zIndex: 500;
+};

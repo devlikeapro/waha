@@ -1,0 +1,38 @@
+{
+  "name": "linkifyjs",
+  "type": "module",
+  "version": "4.3.3",
+  "description": "Find URLs, email addresses, #hashtags and @mentions in plain-text strings, then convert them into HTML <a> links.",
+  "main": "dist/linkify.cjs",
+  "module": "dist/linkify.mjs",
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "clean": "rm -rf lib dist *.tgz *.d.ts",
+    "prepack": "run-s clean build tsc",
+    "tsc": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nfrasser/linkifyjs.git",
+    "directory": "packages/linkifyjs"
+  },
+  "keywords": [
+    "autolink",
+    "email",
+    "hashtag",
+    "html",
+    "jquery",
+    "link",
+    "mention",
+    "react",
+    "twitter",
+    "url"
+  ],
+  "author": "Nick Frasser (https://nfrasser.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nfrasser/linkifyjs/issues"
+  },
+  "homepage": "https://linkify.js.org"
+}

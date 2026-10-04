@@ -1,0 +1,11 @@
+export var selectRootMaxBarSize = state => state.rootProps.maxBarSize;
+export var selectBarGap = state => state.rootProps.barGap;
+export var selectBarCategoryGap = state => state.rootProps.barCategoryGap;
+export var selectRootBarSize = state => state.rootProps.barSize;
+export var selectStackOffsetType = state => state.rootProps.stackOffset;
+export var selectReverseStackOrder = state => state.rootProps.reverseStackOrder;
+export var selectChartName = state => state.options.chartName;
+export var selectSyncId = state => state.rootProps.syncId;
+export var selectSyncMethod = state => state.rootProps.syncMethod;
+export var selectEventEmitter = state => state.options.eventEmitter;
+export var selectChartBaseValue = state => state.rootProps.baseValue;

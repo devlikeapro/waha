@@ -1,0 +1,55 @@
+import { CellData, Getter, RowData } from "../../types/type-utils.js";
+import { Column } from "../../types/Column.js";
+import { Row } from "../../types/Row.js";
+import { Table } from "../../types/Table.js";
+import { Cell } from "../../types/Cell.js";
+import { TableFeatures } from "../../types/TableFeatures.js";
+//#region src/core/cells/coreCellsFeature.types.d.ts
+interface CellContext<in out TFeatures extends TableFeatures, in out TData extends RowData, TValue extends CellData = CellData> {
+  cell: Cell<TFeatures, TData, TValue>;
+  column: Column<TFeatures, TData, TValue>;
+  getValue: Getter<TValue>;
+  renderValue: Getter<TValue | null>;
+  row: Row<TFeatures, TData>;
+  table: Table<TFeatures, TData>;
+}
+interface Cell_CoreProperties<in out TFeatures extends TableFeatures, in out TData extends RowData, TValue extends CellData = CellData> {
+  /**
+   * The associated Column object for the cell.
+   */
+  column: Column<TFeatures, TData, TValue>;
+  /**
+   * The unique ID for the cell across the entire table.
+   */
+  id: string;
+  /**
+   * The associated Row object for the cell.
+   */
+  row: Row<TFeatures, TData>;
+  /**
+   * Reference to the parent table instance.
+   */
+  table: Table<TFeatures, TData>;
+}
+interface Cell_Cell<in out TFeatures extends TableFeatures, in out TData extends RowData, TValue extends CellData = CellData> extends Cell_CoreProperties<TFeatures, TData, TValue> {
+  /**
+   * Returns the rendering context (or props) for cell-based components like cells and aggregated cells. Use these props with your framework's `flexRender` utility to render these using the template of your choice:
+   */
+  getContext: () => CellContext<TFeatures, TData, TValue>;
+  /**
+   * Returns the value for the cell, accessed via the associated column's accessor key or accessor function.
+   */
+  getValue: CellContext<TFeatures, TData, TValue>['getValue'];
+  /**
+   * Renders the value for a cell the same as `getValue`, but will return the `renderFallbackValue` if no value is found.
+   */
+  renderValue: CellContext<TFeatures, TData, TValue>['renderValue'];
+}
+interface TableOptions_Cell {
+  /**
+   * Value used when the desired value is not found in the data.
+   */
+  renderFallbackValue?: any;
+}
+//#endregion
+export { CellContext, Cell_Cell, Cell_CoreProperties, TableOptions_Cell };
