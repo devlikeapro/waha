@@ -41,6 +41,7 @@ import {
 } from '@waha/apps/chatwoot/dto/config.dto';
 import { clearContent } from '@waha/apps/chatwoot/consumers/utils';
 import { SetExternalEcho } from '@waha/apps/chatwoot/api/webhook.guards';
+import { ShouldMarkAsSeenByAgent } from '@waha/apps/chatwoot/consumers/waha/seen.utils';
 
 export function ListenEventsForChatWoot(config: ChatWootConfig) {
   const events = [
@@ -290,6 +291,14 @@ export abstract class MessageBaseHandler<
     return true;
   }
 
+  /**
+   * Whether a reply typed on the phone marks the conversation as seen by the
+   * agent in Chatwoot (only for regular messages, not reactions, edits or calls)
+   */
+  protected get marksSeenByAgent() {
+    return false;
+  }
+
   async ShouldProcessMessage(payload: Payload): Promise<boolean> {
     const key = parseMessageIdSerialized(payload.id);
     const chatwoot = await this.mappingService.getChatWootMessage({
@@ -334,9 +343,30 @@ export abstract class MessageBaseHandler<
       `Created message as '${message.message_type}' from WhatsApp: ${response.id}`,
     );
     await this.saveMapping(response, payload);
+    if (
+      this.marksSeenByAgent &&
+      ShouldMarkAsSeenByAgent(payload, this.historyMessage)
+    ) {
+      await this.markSeenByAgent(conversation.conversationId);
+    }
     // Clear attachments content to avoid saving it in the task result
     message.attachments = clearContent(message.attachments);
     return message;
+  }
+
+  /**
+   * Best effort: the message is already in Chatwoot, a failure here must not
+   * retry the job and duplicate it
+   */
+  private async markSeenByAgent(conversationId: number): Promise<void> {
+    try {
+      await this.repo.markConversationAsSeenByAgent(conversationId);
+    } catch (err) {
+      const reason = err instanceof Error ? err.message : String(err);
+      this.logger.warn(
+        `Error marking conversation.id: ${conversationId} as seen by the agent: ${reason}`,
+      );
+    }
   }
 
   private async saveMapping(
