@@ -30,6 +30,9 @@ export class MongoApiKeyRepository implements IApiKeyRepository {
   }
 
   async getActiveByKey(key: string): Promise<ApiKey | null> {
+    if (typeof key !== 'string') {
+      return null;
+    }
     const data = await this.collection.findOne({ key: key, isActive: true });
     return data ? this.stripId(data) : null;
   }
@@ -40,6 +43,9 @@ export class MongoApiKeyRepository implements IApiKeyRepository {
   }
 
   async getByKey(key: string): Promise<ApiKey | null> {
+    if (typeof key !== 'string') {
+      return null;
+    }
     const data = await this.collection.findOne({ key: key });
     return data ? this.stripId(data) : null;
   }
