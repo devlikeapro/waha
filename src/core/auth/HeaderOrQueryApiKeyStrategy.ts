@@ -27,11 +27,11 @@ export class HeaderOrQueryApiKeyStrategy extends PassportStrategy {
   }
 
   authenticate(req: Request): void {
-    const headerKey = req.headers['x-api-key'] as string | undefined;
-    const queryKey = req.query['x-api-key'] as string | undefined;
+    const headerKey = req.headers['x-api-key'];
+    const queryKey = req.query['x-api-key'];
     const apiKey = headerKey ?? queryKey;
 
-    if (!apiKey) {
+    if (typeof apiKey !== 'string' || !apiKey) {
       return this.fail({ message: 'Missing API Key' }, null);
     }
 

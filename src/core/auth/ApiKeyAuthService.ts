@@ -7,7 +7,7 @@ export class ApiKeyAuthService {
   constructor(private manager: SessionManager) {}
 
   async get(apikey: string): Promise<User | null> {
-    if (!apikey) {
+    if (typeof apikey !== 'string' || !apikey) {
       return null;
     }
     const key = await this.manager.apiKeyRepository.getActiveByKey(apikey);
