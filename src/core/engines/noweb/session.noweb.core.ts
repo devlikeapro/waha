@@ -26,6 +26,7 @@ import makeWASocket, {
   WAVersion,
 } from '@adiwajshing/baileys';
 import { WACallEvent } from '@adiwajshing/baileys/lib/Types/Call';
+import { extractInteractiveBody } from '@waha/core/engines/noweb/interactive.body';
 import { BaileysEventMap } from '@adiwajshing/baileys/lib/Types/Events';
 import { GroupMetadata } from '@adiwajshing/baileys/lib/Types/GroupMetadata';
 import {
@@ -3991,6 +3992,15 @@ export function extractBody(message): string | null {
       const parts = [response.title, response.description];
       body = parts.filter(Boolean).join('\n');
     }
+  }
+
+  // Interactive message (buttons, carousel)
+  if (!body) {
+    body = extractInteractiveBody(content.interactiveMessage);
+  }
+  // Event message
+  if (!body) {
+    body = content.eventMessage?.name;
   }
 
   return body;
