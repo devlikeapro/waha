@@ -43,7 +43,7 @@ export class NoWebPsqlAuth {
                 let value = await this.repository.getCategory(type, id);
                 if (type === 'app-state-sync-key' && value) {
                   value =
-                    esm.b.WAProto.Message.AppStateSyncKeyData.create(value);
+                    esm.b.WAProto.Message.AppStateSyncKeyData.fromObject(value);
                 }
                 data[id] = value;
               }),

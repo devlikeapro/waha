@@ -95,7 +95,9 @@ export const useMultiFileAuthState = async (
             ids.map(async (id) => {
               let value = await readData(`${type}-${id}.json`);
               if (type === 'app-state-sync-key' && value) {
-                value = esm.b.proto.Message.AppStateSyncKeyData.create(value);
+                // fromObject converts the stored base64 string back into bytes
+                value =
+                  esm.b.proto.Message.AppStateSyncKeyData.fromObject(value);
               }
 
               data[id] = value;
