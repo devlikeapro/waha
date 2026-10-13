@@ -114,7 +114,9 @@ export class SqlKVRepository<Entity> {
   }
 
   async getCount(): Promise<number> {
-    const query = this.select().count({ count: 'id' });
+    // Not this.select(): it prepends `${table}.*` to the aggregate, and
+    // PostgreSQL rejects that with 42803 (SQLite silently accepts it).
+    const query = this.knex.count({ count: 'id' }).from(this.table);
     const row = await query.first();
     if (!row) {
       return 0;
