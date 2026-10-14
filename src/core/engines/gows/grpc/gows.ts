@@ -1428,7 +1428,7 @@ export namespace messages {
         }
     }
     export class SessionStorageConfig extends pb_1.Message {
-        #one_of_decls: number[][] = [[1], [2], [3], [4], [5], [6]];
+        #one_of_decls: number[][] = [[1], [2], [3], [4], [5], [6], [7]];
         constructor(data?: any[] | ({} & (({
             messages?: boolean;
         }) | ({
@@ -1441,6 +1441,8 @@ export namespace messages {
             contacts?: boolean;
         }) | ({
             message_secrets?: boolean;
+        }) | ({
+            purge_deleted_chats?: boolean;
         })))) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -1462,6 +1464,9 @@ export namespace messages {
                 }
                 if ("message_secrets" in data && data.message_secrets != undefined) {
                     this.message_secrets = data.message_secrets;
+                }
+                if ("purge_deleted_chats" in data && data.purge_deleted_chats != undefined) {
+                    this.purge_deleted_chats = data.purge_deleted_chats;
                 }
             }
         }
@@ -1519,6 +1524,15 @@ export namespace messages {
         get has_message_secrets() {
             return pb_1.Message.getField(this, 6) != null;
         }
+        get purge_deleted_chats() {
+            return pb_1.Message.getFieldWithDefault(this, 7, false) as boolean;
+        }
+        set purge_deleted_chats(value: boolean) {
+            pb_1.Message.setOneofField(this, 7, this.#one_of_decls[6], value);
+        }
+        get has_purge_deleted_chats() {
+            return pb_1.Message.getField(this, 7) != null;
+        }
         get _messages() {
             const cases: {
                 [index: number]: "none" | "messages";
@@ -1573,6 +1587,15 @@ export namespace messages {
             };
             return cases[pb_1.Message.computeOneofCase(this, [6])];
         }
+        get _purge_deleted_chats() {
+            const cases: {
+                [index: number]: "none" | "purge_deleted_chats";
+            } = {
+                0: "none",
+                7: "purge_deleted_chats"
+            };
+            return cases[pb_1.Message.computeOneofCase(this, [7])];
+        }
         static fromObject(data: {
             messages?: boolean;
             groups?: boolean;
@@ -1580,6 +1603,7 @@ export namespace messages {
             labels?: boolean;
             contacts?: boolean;
             message_secrets?: boolean;
+            purge_deleted_chats?: boolean;
         }): SessionStorageConfig {
             const message = new SessionStorageConfig({});
             if (data.messages != null) {
@@ -1600,6 +1624,9 @@ export namespace messages {
             if (data.message_secrets != null) {
                 message.message_secrets = data.message_secrets;
             }
+            if (data.purge_deleted_chats != null) {
+                message.purge_deleted_chats = data.purge_deleted_chats;
+            }
             return message;
         }
         toObject() {
@@ -1610,6 +1637,7 @@ export namespace messages {
                 labels?: boolean;
                 contacts?: boolean;
                 message_secrets?: boolean;
+                purge_deleted_chats?: boolean;
             } = {};
             if (this.messages != null) {
                 data.messages = this.messages;
@@ -1629,6 +1657,9 @@ export namespace messages {
             if (this.message_secrets != null) {
                 data.message_secrets = this.message_secrets;
             }
+            if (this.purge_deleted_chats != null) {
+                data.purge_deleted_chats = this.purge_deleted_chats;
+            }
             return data;
         }
         serialize(): Uint8Array;
@@ -1647,6 +1678,8 @@ export namespace messages {
                 writer.writeBool(5, this.contacts);
             if (this.has_message_secrets)
                 writer.writeBool(6, this.message_secrets);
+            if (this.has_purge_deleted_chats)
+                writer.writeBool(7, this.purge_deleted_chats);
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -1673,6 +1706,9 @@ export namespace messages {
                         break;
                     case 6:
                         message.message_secrets = reader.readBool();
+                        break;
+                    case 7:
+                        message.purge_deleted_chats = reader.readBool();
                         break;
                     default: reader.skipField();
                 }
@@ -6720,6 +6756,546 @@ export namespace messages {
         }
         static deserializeBinary(bytes: Uint8Array): ChatUnreadRequest {
             return ChatUnreadRequest.deserialize(bytes);
+        }
+    }
+    export class DeleteChatRequest extends pb_1.Message {
+        #one_of_decls: number[][] = [[4]];
+        constructor(data?: any[] | ({
+            session?: Session;
+            jid?: string;
+            deleteMedia?: boolean;
+        } & (({
+            purge?: boolean;
+        })))) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("session" in data && data.session != undefined) {
+                    this.session = data.session;
+                }
+                if ("jid" in data && data.jid != undefined) {
+                    this.jid = data.jid;
+                }
+                if ("deleteMedia" in data && data.deleteMedia != undefined) {
+                    this.deleteMedia = data.deleteMedia;
+                }
+                if ("purge" in data && data.purge != undefined) {
+                    this.purge = data.purge;
+                }
+            }
+        }
+        get session() {
+            return pb_1.Message.getWrapperField(this, Session, 1) as Session;
+        }
+        set session(value: Session) {
+            pb_1.Message.setWrapperField(this, 1, value);
+        }
+        get has_session() {
+            return pb_1.Message.getField(this, 1) != null;
+        }
+        get jid() {
+            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+        }
+        set jid(value: string) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        get deleteMedia() {
+            return pb_1.Message.getFieldWithDefault(this, 3, false) as boolean;
+        }
+        set deleteMedia(value: boolean) {
+            pb_1.Message.setField(this, 3, value);
+        }
+        get purge() {
+            return pb_1.Message.getFieldWithDefault(this, 4, false) as boolean;
+        }
+        set purge(value: boolean) {
+            pb_1.Message.setOneofField(this, 4, this.#one_of_decls[0], value);
+        }
+        get has_purge() {
+            return pb_1.Message.getField(this, 4) != null;
+        }
+        get _purge() {
+            const cases: {
+                [index: number]: "none" | "purge";
+            } = {
+                0: "none",
+                4: "purge"
+            };
+            return cases[pb_1.Message.computeOneofCase(this, [4])];
+        }
+        static fromObject(data: {
+            session?: ReturnType<typeof Session.prototype.toObject>;
+            jid?: string;
+            deleteMedia?: boolean;
+            purge?: boolean;
+        }): DeleteChatRequest {
+            const message = new DeleteChatRequest({});
+            if (data.session != null) {
+                message.session = Session.fromObject(data.session);
+            }
+            if (data.jid != null) {
+                message.jid = data.jid;
+            }
+            if (data.deleteMedia != null) {
+                message.deleteMedia = data.deleteMedia;
+            }
+            if (data.purge != null) {
+                message.purge = data.purge;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                session?: ReturnType<typeof Session.prototype.toObject>;
+                jid?: string;
+                deleteMedia?: boolean;
+                purge?: boolean;
+            } = {};
+            if (this.session != null) {
+                data.session = this.session.toObject();
+            }
+            if (this.jid != null) {
+                data.jid = this.jid;
+            }
+            if (this.deleteMedia != null) {
+                data.deleteMedia = this.deleteMedia;
+            }
+            if (this.purge != null) {
+                data.purge = this.purge;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.has_session)
+                writer.writeMessage(1, this.session, () => this.session.serialize(writer));
+            if (this.jid.length)
+                writer.writeString(2, this.jid);
+            if (this.deleteMedia != false)
+                writer.writeBool(3, this.deleteMedia);
+            if (this.has_purge)
+                writer.writeBool(4, this.purge);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): DeleteChatRequest {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new DeleteChatRequest();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        reader.readMessage(message.session, () => message.session = Session.deserialize(reader));
+                        break;
+                    case 2:
+                        message.jid = reader.readString();
+                        break;
+                    case 3:
+                        message.deleteMedia = reader.readBool();
+                        break;
+                    case 4:
+                        message.purge = reader.readBool();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): DeleteChatRequest {
+            return DeleteChatRequest.deserialize(bytes);
+        }
+    }
+    export class DeleteChatRange extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            jid?: string;
+            lastMessageTimestamp?: number;
+            lastMessageId?: string;
+            lastMessageFromMe?: boolean;
+            lastMessageSender?: string;
+            lastMessageSentAt?: number;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("jid" in data && data.jid != undefined) {
+                    this.jid = data.jid;
+                }
+                if ("lastMessageTimestamp" in data && data.lastMessageTimestamp != undefined) {
+                    this.lastMessageTimestamp = data.lastMessageTimestamp;
+                }
+                if ("lastMessageId" in data && data.lastMessageId != undefined) {
+                    this.lastMessageId = data.lastMessageId;
+                }
+                if ("lastMessageFromMe" in data && data.lastMessageFromMe != undefined) {
+                    this.lastMessageFromMe = data.lastMessageFromMe;
+                }
+                if ("lastMessageSender" in data && data.lastMessageSender != undefined) {
+                    this.lastMessageSender = data.lastMessageSender;
+                }
+                if ("lastMessageSentAt" in data && data.lastMessageSentAt != undefined) {
+                    this.lastMessageSentAt = data.lastMessageSentAt;
+                }
+            }
+        }
+        get jid() {
+            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        }
+        set jid(value: string) {
+            pb_1.Message.setField(this, 1, value);
+        }
+        get lastMessageTimestamp() {
+            return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
+        }
+        set lastMessageTimestamp(value: number) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        get lastMessageId() {
+            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+        }
+        set lastMessageId(value: string) {
+            pb_1.Message.setField(this, 3, value);
+        }
+        get lastMessageFromMe() {
+            return pb_1.Message.getFieldWithDefault(this, 4, false) as boolean;
+        }
+        set lastMessageFromMe(value: boolean) {
+            pb_1.Message.setField(this, 4, value);
+        }
+        get lastMessageSender() {
+            return pb_1.Message.getFieldWithDefault(this, 5, "") as string;
+        }
+        set lastMessageSender(value: string) {
+            pb_1.Message.setField(this, 5, value);
+        }
+        get lastMessageSentAt() {
+            return pb_1.Message.getFieldWithDefault(this, 6, 0) as number;
+        }
+        set lastMessageSentAt(value: number) {
+            pb_1.Message.setField(this, 6, value);
+        }
+        static fromObject(data: {
+            jid?: string;
+            lastMessageTimestamp?: number;
+            lastMessageId?: string;
+            lastMessageFromMe?: boolean;
+            lastMessageSender?: string;
+            lastMessageSentAt?: number;
+        }): DeleteChatRange {
+            const message = new DeleteChatRange({});
+            if (data.jid != null) {
+                message.jid = data.jid;
+            }
+            if (data.lastMessageTimestamp != null) {
+                message.lastMessageTimestamp = data.lastMessageTimestamp;
+            }
+            if (data.lastMessageId != null) {
+                message.lastMessageId = data.lastMessageId;
+            }
+            if (data.lastMessageFromMe != null) {
+                message.lastMessageFromMe = data.lastMessageFromMe;
+            }
+            if (data.lastMessageSender != null) {
+                message.lastMessageSender = data.lastMessageSender;
+            }
+            if (data.lastMessageSentAt != null) {
+                message.lastMessageSentAt = data.lastMessageSentAt;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                jid?: string;
+                lastMessageTimestamp?: number;
+                lastMessageId?: string;
+                lastMessageFromMe?: boolean;
+                lastMessageSender?: string;
+                lastMessageSentAt?: number;
+            } = {};
+            if (this.jid != null) {
+                data.jid = this.jid;
+            }
+            if (this.lastMessageTimestamp != null) {
+                data.lastMessageTimestamp = this.lastMessageTimestamp;
+            }
+            if (this.lastMessageId != null) {
+                data.lastMessageId = this.lastMessageId;
+            }
+            if (this.lastMessageFromMe != null) {
+                data.lastMessageFromMe = this.lastMessageFromMe;
+            }
+            if (this.lastMessageSender != null) {
+                data.lastMessageSender = this.lastMessageSender;
+            }
+            if (this.lastMessageSentAt != null) {
+                data.lastMessageSentAt = this.lastMessageSentAt;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.jid.length)
+                writer.writeString(1, this.jid);
+            if (this.lastMessageTimestamp != 0)
+                writer.writeInt64(2, this.lastMessageTimestamp);
+            if (this.lastMessageId.length)
+                writer.writeString(3, this.lastMessageId);
+            if (this.lastMessageFromMe != false)
+                writer.writeBool(4, this.lastMessageFromMe);
+            if (this.lastMessageSender.length)
+                writer.writeString(5, this.lastMessageSender);
+            if (this.lastMessageSentAt != 0)
+                writer.writeInt64(6, this.lastMessageSentAt);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): DeleteChatRange {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new DeleteChatRange();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        message.jid = reader.readString();
+                        break;
+                    case 2:
+                        message.lastMessageTimestamp = reader.readInt64();
+                        break;
+                    case 3:
+                        message.lastMessageId = reader.readString();
+                        break;
+                    case 4:
+                        message.lastMessageFromMe = reader.readBool();
+                        break;
+                    case 5:
+                        message.lastMessageSender = reader.readString();
+                        break;
+                    case 6:
+                        message.lastMessageSentAt = reader.readInt64();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): DeleteChatRange {
+            return DeleteChatRange.deserialize(bytes);
+        }
+    }
+    export class AckChatDeletedRequest extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            session?: Session;
+            id?: string;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("session" in data && data.session != undefined) {
+                    this.session = data.session;
+                }
+                if ("id" in data && data.id != undefined) {
+                    this.id = data.id;
+                }
+            }
+        }
+        get session() {
+            return pb_1.Message.getWrapperField(this, Session, 1) as Session;
+        }
+        set session(value: Session) {
+            pb_1.Message.setWrapperField(this, 1, value);
+        }
+        get has_session() {
+            return pb_1.Message.getField(this, 1) != null;
+        }
+        get id() {
+            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+        }
+        set id(value: string) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        static fromObject(data: {
+            session?: ReturnType<typeof Session.prototype.toObject>;
+            id?: string;
+        }): AckChatDeletedRequest {
+            const message = new AckChatDeletedRequest({});
+            if (data.session != null) {
+                message.session = Session.fromObject(data.session);
+            }
+            if (data.id != null) {
+                message.id = data.id;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                session?: ReturnType<typeof Session.prototype.toObject>;
+                id?: string;
+            } = {};
+            if (this.session != null) {
+                data.session = this.session.toObject();
+            }
+            if (this.id != null) {
+                data.id = this.id;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.has_session)
+                writer.writeMessage(1, this.session, () => this.session.serialize(writer));
+            if (this.id.length)
+                writer.writeString(2, this.id);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): AckChatDeletedRequest {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new AckChatDeletedRequest();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        reader.readMessage(message.session, () => message.session = Session.deserialize(reader));
+                        break;
+                    case 2:
+                        message.id = reader.readString();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): AckChatDeletedRequest {
+            return AckChatDeletedRequest.deserialize(bytes);
+        }
+    }
+    export class DeleteChatResponse extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            ranges?: DeleteChatRange[];
+            confirmed?: boolean;
+            purge?: boolean;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("ranges" in data && data.ranges != undefined) {
+                    this.ranges = data.ranges;
+                }
+                if ("confirmed" in data && data.confirmed != undefined) {
+                    this.confirmed = data.confirmed;
+                }
+                if ("purge" in data && data.purge != undefined) {
+                    this.purge = data.purge;
+                }
+            }
+        }
+        get ranges() {
+            return pb_1.Message.getRepeatedWrapperField(this, DeleteChatRange, 1) as DeleteChatRange[];
+        }
+        set ranges(value: DeleteChatRange[]) {
+            pb_1.Message.setRepeatedWrapperField(this, 1, value);
+        }
+        get confirmed() {
+            return pb_1.Message.getFieldWithDefault(this, 2, false) as boolean;
+        }
+        set confirmed(value: boolean) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        get purge() {
+            return pb_1.Message.getFieldWithDefault(this, 3, false) as boolean;
+        }
+        set purge(value: boolean) {
+            pb_1.Message.setField(this, 3, value);
+        }
+        static fromObject(data: {
+            ranges?: ReturnType<typeof DeleteChatRange.prototype.toObject>[];
+            confirmed?: boolean;
+            purge?: boolean;
+        }): DeleteChatResponse {
+            const message = new DeleteChatResponse({});
+            if (data.ranges != null) {
+                message.ranges = data.ranges.map(item => DeleteChatRange.fromObject(item));
+            }
+            if (data.confirmed != null) {
+                message.confirmed = data.confirmed;
+            }
+            if (data.purge != null) {
+                message.purge = data.purge;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                ranges?: ReturnType<typeof DeleteChatRange.prototype.toObject>[];
+                confirmed?: boolean;
+                purge?: boolean;
+            } = {};
+            if (this.ranges != null) {
+                data.ranges = this.ranges.map((item: DeleteChatRange) => item.toObject());
+            }
+            if (this.confirmed != null) {
+                data.confirmed = this.confirmed;
+            }
+            if (this.purge != null) {
+                data.purge = this.purge;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.ranges.length)
+                writer.writeRepeatedMessage(1, this.ranges, (item: DeleteChatRange) => item.serialize(writer));
+            if (this.confirmed != false)
+                writer.writeBool(2, this.confirmed);
+            if (this.purge != false)
+                writer.writeBool(3, this.purge);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): DeleteChatResponse {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new DeleteChatResponse();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        reader.readMessage(message.ranges, () => pb_1.Message.addToRepeatedWrapperField(message, 1, DeleteChatRange.deserialize(reader), DeleteChatRange));
+                        break;
+                    case 2:
+                        message.confirmed = reader.readBool();
+                        break;
+                    case 3:
+                        message.purge = reader.readBool();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): DeleteChatResponse {
+            return DeleteChatResponse.deserialize(bytes);
         }
     }
     export class PhoneInfo extends pb_1.Message {
@@ -11825,6 +12401,24 @@ export namespace messages {
                 responseSerialize: (message: Empty) => Buffer.from(message.serialize()),
                 responseDeserialize: (bytes: Buffer) => Empty.deserialize(new Uint8Array(bytes))
             },
+            DeleteChat: {
+                path: "/messages.MessageService/DeleteChat",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: DeleteChatRequest) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => DeleteChatRequest.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: DeleteChatResponse) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => DeleteChatResponse.deserialize(new Uint8Array(bytes))
+            },
+            AckChatDeleted: {
+                path: "/messages.MessageService/AckChatDeleted",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: AckChatDeletedRequest) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => AckChatDeletedRequest.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: Empty) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => Empty.deserialize(new Uint8Array(bytes))
+            },
             FetchReachoutTimelock: {
                 path: "/messages.MessageService/FetchReachoutTimelock",
                 requestStream: false,
@@ -12164,6 +12758,8 @@ export namespace messages {
         abstract SubscribePresence(call: grpc_1.ServerUnaryCall<SubscribePresenceRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
         abstract CheckPhones(call: grpc_1.ServerUnaryCall<CheckPhonesRequest, CheckPhonesResponse>, callback: grpc_1.sendUnaryData<CheckPhonesResponse>): void;
         abstract MarkChatUnread(call: grpc_1.ServerUnaryCall<ChatUnreadRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
+        abstract DeleteChat(call: grpc_1.ServerUnaryCall<DeleteChatRequest, DeleteChatResponse>, callback: grpc_1.sendUnaryData<DeleteChatResponse>): void;
+        abstract AckChatDeleted(call: grpc_1.ServerUnaryCall<AckChatDeletedRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
         abstract FetchReachoutTimelock(call: grpc_1.ServerUnaryCall<Session, Json>, callback: grpc_1.sendUnaryData<Json>): void;
         abstract FetchMessageCapping(call: grpc_1.ServerUnaryCall<Session, Json>, callback: grpc_1.sendUnaryData<Json>): void;
         abstract GenerateNewMessageID(call: grpc_1.ServerUnaryCall<Session, NewMessageIDResponse>, callback: grpc_1.sendUnaryData<NewMessageIDResponse>): void;
@@ -12321,6 +12917,12 @@ export namespace messages {
         };
         MarkChatUnread: GrpcUnaryServiceInterface<ChatUnreadRequest, Empty> = (message: ChatUnreadRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<Empty>, options?: grpc_1.CallOptions | grpc_1.requestCallback<Empty>, callback?: grpc_1.requestCallback<Empty>): grpc_1.ClientUnaryCall => {
             return super.MarkChatUnread(message, metadata, options, callback);
+        };
+        DeleteChat: GrpcUnaryServiceInterface<DeleteChatRequest, DeleteChatResponse> = (message: DeleteChatRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<DeleteChatResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<DeleteChatResponse>, callback?: grpc_1.requestCallback<DeleteChatResponse>): grpc_1.ClientUnaryCall => {
+            return super.DeleteChat(message, metadata, options, callback);
+        };
+        AckChatDeleted: GrpcUnaryServiceInterface<AckChatDeletedRequest, Empty> = (message: AckChatDeletedRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<Empty>, options?: grpc_1.CallOptions | grpc_1.requestCallback<Empty>, callback?: grpc_1.requestCallback<Empty>): grpc_1.ClientUnaryCall => {
+            return super.AckChatDeleted(message, metadata, options, callback);
         };
         FetchReachoutTimelock: GrpcUnaryServiceInterface<Session, Json> = (message: Session, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<Json>, options?: grpc_1.CallOptions | grpc_1.requestCallback<Json>, callback?: grpc_1.requestCallback<Json>): grpc_1.ClientUnaryCall => {
             return super.FetchReachoutTimelock(message, metadata, options, callback);

@@ -30,6 +30,22 @@ export const ChatInput = z.object({
   chatId: ChatIdField,
 });
 
+export const DeleteChatInput = ChatInput.extend({
+  deleteMedia: z
+    .boolean()
+    .optional()
+    .default(false)
+    .describe(
+      "Also delete the chat's media from the phone gallery - irreversible (GOWS only). It does not change what happens on the server",
+    ),
+  purge: z
+    .boolean()
+    .optional()
+    .describe(
+      'Clear the chat from the server too (the messages GOWS stored). Omit to follow the session setting, true by default (GOWS only)',
+    ),
+});
+
 export const ChatPictureInput = DtoToZod(ChatPictureQuery).extend({
   session: SessionField,
   chatId: ChatIdField,

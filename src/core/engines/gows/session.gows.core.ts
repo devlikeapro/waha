@@ -76,6 +76,7 @@ import {
 import {
   ChatSortField,
   ChatSummary,
+  DeleteChatResponse,
   GetChatMessageQuery,
   GetChatMessagesFilter,
   GetChatMessagesQuery,
@@ -208,6 +209,11 @@ import {
   isLabelUpsertEvent,
 } from './labels.gows';
 import {
+  assertDeletableChatId,
+  toDeleteChatError,
+  toDeleteChatResponse,
+} from './chats.gows';
+import {
   BuildEventStreamClient,
   BuildMessageServiceClient,
 } from '@waha/core/engines/gows/clients';
@@ -243,6 +249,7 @@ function getGowsStorageConfig(
     labels: storeConfig?.labels !== false,
     contacts: storeConfig?.contacts !== false,
     message_secrets: storeConfig?.messageSecrets !== false,
+    purge_deleted_chats: storeConfig?.purgeDeletedChats !== false,
   });
 }
 
@@ -2915,6 +2922,34 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     });
     await promisify(this.client.MarkChatUnread)(request);
     return { success: true };
+  }
+
+  /**
+   * Deletes the chat for the account, like "Delete chat" on the phone.
+   * purge overrides the session setting for this deletion.
+   */
+  @Activity()
+  public async deleteChat(
+    chatId: string,
+    deleteMedia: boolean = false,
+    purge?: boolean,
+  ): Promise<DeleteChatResponse> {
+    assertDeletableChatId(chatId);
+    const jid = await this.hooks.wid.chat.promise(chatId, 'deleteChat');
+    // Without purge, GOWS follows the session setting
+    const request = new messages.DeleteChatRequest({
+      session: this.session,
+      jid: jid,
+      deleteMedia: deleteMedia,
+      purge: purge,
+    });
+    let response: messages.DeleteChatResponse;
+    try {
+      response = await promisify(this.client.DeleteChat)(request);
+    } catch (error) {
+      throw toDeleteChatError(error);
+    }
+    return toDeleteChatResponse(chatId, deleteMedia, response);
   }
 
   @Activity()

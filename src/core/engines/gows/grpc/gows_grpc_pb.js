@@ -4,6 +4,17 @@
 var grpc = require('@grpc/grpc-js');
 var gows_pb = require('./gows_pb.js');
 
+function serialize_messages_AckChatDeletedRequest(arg) {
+  if (!(arg instanceof gows_pb.AckChatDeletedRequest)) {
+    throw new Error('Expected argument of type messages.AckChatDeletedRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_messages_AckChatDeletedRequest(buffer_arg) {
+  return gows_pb.AckChatDeletedRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_messages_ButtonReplyRequest(arg) {
   if (!(arg instanceof gows_pb.ButtonReplyRequest)) {
     throw new Error('Expected argument of type messages.ButtonReplyRequest');
@@ -101,6 +112,28 @@ function serialize_messages_CreateNewsletterRequest(arg) {
 
 function deserialize_messages_CreateNewsletterRequest(buffer_arg) {
   return gows_pb.CreateNewsletterRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_messages_DeleteChatRequest(arg) {
+  if (!(arg instanceof gows_pb.DeleteChatRequest)) {
+    throw new Error('Expected argument of type messages.DeleteChatRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_messages_DeleteChatRequest(buffer_arg) {
+  return gows_pb.DeleteChatRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_messages_DeleteChatResponse(arg) {
+  if (!(arg instanceof gows_pb.DeleteChatResponse)) {
+    throw new Error('Expected argument of type messages.DeleteChatResponse');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_messages_DeleteChatResponse(buffer_arg) {
+  return gows_pb.DeleteChatResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_messages_DeleteLabelRequest(arg) {
@@ -1195,6 +1228,29 @@ getProfilePicture: {
     responseType: gows_pb.Empty,
     requestSerialize: serialize_messages_ChatUnreadRequest,
     requestDeserialize: deserialize_messages_ChatUnreadRequest,
+    responseSerialize: serialize_messages_Empty,
+    responseDeserialize: deserialize_messages_Empty,
+  },
+  deleteChat: {
+    path: '/messages.MessageService/DeleteChat',
+    requestStream: false,
+    responseStream: false,
+    requestType: gows_pb.DeleteChatRequest,
+    responseType: gows_pb.DeleteChatResponse,
+    requestSerialize: serialize_messages_DeleteChatRequest,
+    requestDeserialize: deserialize_messages_DeleteChatRequest,
+    responseSerialize: serialize_messages_DeleteChatResponse,
+    responseDeserialize: deserialize_messages_DeleteChatResponse,
+  },
+  // Confirms a gows.ChatDeletedEvent with an ID was handled, so it is not sent again
+ackChatDeleted: {
+    path: '/messages.MessageService/AckChatDeleted',
+    requestStream: false,
+    responseStream: false,
+    requestType: gows_pb.AckChatDeletedRequest,
+    responseType: gows_pb.Empty,
+    requestSerialize: serialize_messages_AckChatDeletedRequest,
+    requestDeserialize: deserialize_messages_AckChatDeletedRequest,
     responseSerialize: serialize_messages_Empty,
     responseDeserialize: deserialize_messages_Empty,
   },

@@ -7,7 +7,10 @@ import {
   LimitOffsetParams,
   PaginationParams,
 } from '@waha/structures/pagination.dto';
-import { ChatIdProperty } from '@waha/structures/properties.dto';
+import {
+  ChatIdProperty,
+  MessageIdProperty,
+} from '@waha/structures/properties.dto';
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
@@ -173,6 +176,106 @@ export class ReadChatMessagesResponse {
     description: 'Messages IDs that have been read',
   })
   ids?: string[];
+}
+
+export class DeleteChatQuery {
+  @ApiProperty({
+    required: false,
+    default: false,
+    description:
+      'Also delete the media of the chat from the phone gallery, like "Delete ' +
+      'media in this chat from your device gallery" on the phone: the photos, ' +
+      "videos and files saved in the phone's gallery go too, irreversibly " +
+      '(GOWS only). It does not change what happens on the server, see purge.',
+  })
+  @Transform(BooleanString)
+  @IsBoolean()
+  @IsOptional()
+  deleteMedia?: boolean = false;
+
+  @ApiProperty({
+    required: false,
+    description:
+      'Clear the chat from the server once deleted: the messages GOWS stored ' +
+      'for it. Omit to follow the session setting ' +
+      'config.gows.storage.purgeDeletedChats (true by default). Applies to ' +
+      'this deletion only, never to one made on the phone (GOWS only)',
+  })
+  @Transform(BooleanString)
+  @IsBoolean()
+  @IsOptional()
+  purge?: boolean;
+}
+
+export class DeleteChatLastMessage {
+  @MessageIdProperty()
+  id: string;
+
+  @ApiProperty({
+    description: 'When the message was sent (unix time, seconds)',
+    example: 1760000000,
+  })
+  timestamp: number;
+}
+
+export class DeleteChatRange {
+  @ChatIdProperty({
+    description:
+      'The id the deletion was sent to: the chat, or the other id (phone number or LID) of a direct chat',
+  })
+  chatId: string;
+
+  @ApiProperty({
+    description:
+      'Messages sent up to this time (unix time, seconds) are deleted, newer ones are kept',
+    example: 1760000000,
+  })
+  lastMessageTimestamp: number;
+
+  @ApiProperty({
+    type: DeleteChatLastMessage,
+    nullable: true,
+    description:
+      'The last message stored under this id, sent to WhatsApp as the end of the range; null when none is stored (the range then ends when the chat was deleted)',
+  })
+  lastMessage: DeleteChatLastMessage | null;
+}
+
+export class DeleteChatResponse {
+  @ApiProperty({ example: true })
+  success: boolean;
+
+  @ChatIdProperty({ description: 'The chat, as requested' })
+  id: string;
+
+  @ApiProperty({
+    description:
+      'Whether WhatsApp was asked to delete the media from the phone gallery too',
+  })
+  deleteMedia: boolean;
+
+  @ApiProperty({
+    description:
+      'Whether the chat is cleared from the server (the messages GOWS stored) ' +
+      'when the deletion comes back from WhatsApp',
+  })
+  purge: boolean;
+
+  @ApiProperty({
+    description:
+      'false when WhatsApp accepted the deletion but reading it back failed: ' +
+      'the chat is deleted for the account, the stored messages go once it ' +
+      'is read again, retried in the background and on the next sync',
+  })
+  confirmed: boolean;
+
+  @ApiProperty({
+    type: [DeleteChatRange],
+    description:
+      'One per id the deletion was sent to, the one the phone uses first: ' +
+      'the chat and, for a direct chat, its other id (phone number or LID) when known',
+  })
+  ranges: DeleteChatRange[];
 }
 
 export class GetChatMessageQuery {

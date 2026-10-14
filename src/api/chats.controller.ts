@@ -12,13 +12,19 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ChatIdApiParam } from '@waha/nestjs/params/ChatIdApiParam';
 import { MessageIdApiParam } from '@waha/nestjs/params/MessageIdApiParam';
 import {
   SessionApiParam,
   WorkingSessionParam,
 } from '@waha/nestjs/params/SessionApiParam';
+import { WAHAValidationPipe } from '@waha/nestjs/pipes/WAHAValidationPipe';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import { WhatsappSession } from '../core/abc/session.abc';
@@ -26,6 +32,8 @@ import {
   ChatPictureQuery,
   ChatPictureResponse,
   ChatSummary,
+  DeleteChatQuery,
+  DeleteChatResponse,
   GetChatMessageQuery,
   GetChatMessagesFilter,
   GetChatMessagesQuery,
@@ -100,13 +108,32 @@ class ChatsController {
   @Delete(':chatId')
   @SessionApiParam
   @CheckPolicies(CanSession(Action.Send, FromParam('session')))
-  @ApiOperation({ summary: 'Deletes the chat' })
+  @ApiOperation({
+    summary: 'Deletes the chat',
+    description:
+      'Deletes the chat for this account, like "Delete chat" on the phone. ' +
+      'deleteMedia=true also deletes the media from the phone gallery; they ' +
+      'are kept there by default.\n\n' +
+      'GOWS: the answer tells which ids got the deletion and up to when. ' +
+      'The messages GOWS stored for the chat are cleared too, once the ' +
+      'deletion comes back from WhatsApp, unless purge=false or the session ' +
+      'keeps deleted chats (config.gows.storage.purgeDeletedChats=false), ' +
+      'whatever deleteMedia. Only direct chats and groups the account has ' +
+      'left can be deleted.',
+  })
+  @ApiOkResponse({
+    type: DeleteChatResponse,
+    description:
+      'GOWS: what the deletion covered. Other engines answer a boolean.',
+  })
+  @UsePipes(new WAHAValidationPipe())
   @ChatIdApiParam
   deleteChat(
     @WorkingSessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
+    @Query() query: DeleteChatQuery,
   ) {
-    return session.deleteChat(chatId);
+    return session.deleteChat(chatId, query.deleteMedia, query.purge);
   }
 
   @Get(':chatId/picture')

@@ -743,7 +743,11 @@ export abstract class WhatsappSession {
     throw new NotImplementedByEngineError();
   }
 
-  public deleteChat(chatId) {
+  public deleteChat(
+    chatId: string,
+    deleteMedia: boolean = false,
+    purge?: boolean,
+  ): Promise<any> {
     throw new NotImplementedByEngineError();
   }
 

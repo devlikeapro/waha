@@ -11,6 +11,7 @@ import {
   ChatsListInput,
   ChatsOverviewBodyInput,
   ChatsOverviewInput,
+  DeleteChatInput,
   DeleteMessageInput,
   EditMessageInput,
   PinMessageInput,
@@ -103,18 +104,25 @@ export class ChatTools extends McpController {
 
   @Tool('chats-delete', {
     title: 'Delete chat',
-    description: 'Delete a chat',
-    inputSchema: ChatInput,
+    description:
+      'Delete a chat for this account, like "Delete chat" on the phone. The phone gallery keeps its media unless deleteMedia is true; the server copy goes too unless purge is false or the session keeps deleted chats',
+    inputSchema: DeleteChatInput,
     annotations: {
       readOnlyHint: false,
       destructiveHint: true,
       idempotentHint: false,
     },
   })
-  async deleteChat({ session, chatId }: z.infer<typeof ChatInput>) {
+  async deleteChat({
+    session,
+    chatId,
+    deleteMedia,
+    purge,
+  }: z.infer<typeof DeleteChatInput>) {
     return this.textRequest({
       method: 'DELETE',
       url: `/api/${session}/chats/${chatId}`,
+      params: { deleteMedia: deleteMedia, purge: purge },
     });
   }
 

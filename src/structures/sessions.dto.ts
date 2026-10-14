@@ -175,6 +175,19 @@ export class GowsStorageConfig {
   @IsBoolean()
   @IsOptional()
   messageSecrets?: boolean | null;
+
+  @ApiProperty({
+    description:
+      'Clear a deleted chat from the server, whether it was deleted on the phone or via the API: ' +
+      'its stored messages (phone number and LID) and its ephemeral setting. Set to false to keep ' +
+      'them on the server (the chat is still deleted on WhatsApp); omit or null to keep enabled. ' +
+      'DELETE /api/{session}/chats/{chatId}?purge= overrides it for one deletion.',
+    required: false,
+    example: true,
+  })
+  @IsBoolean()
+  @IsOptional()
+  purgeDeletedChats?: boolean | null;
 }
 
 export class GowsConfig {
@@ -321,6 +334,7 @@ export class SessionConfig {
         labels: true,
         contacts: true,
         messageSecrets: true,
+        purgeDeletedChats: true,
       },
     },
   })
