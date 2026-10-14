@@ -151,6 +151,7 @@ export class DescriptionRequest {
 }
 
 export class SubjectRequest {
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @IsNotEmpty()
   subject: string;

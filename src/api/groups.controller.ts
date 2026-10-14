@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { GroupIdApiParam } from '@waha/nestjs/params/ChatIdApiParam';
+import { WAHAValidationPipe } from '@waha/nestjs/pipes/WAHAValidationPipe';
 import {
   SessionApiParam,
   WorkingSessionParam,
@@ -224,6 +225,7 @@ export class GroupsController {
   @SessionApiParam
   @GroupIdApiParam
   @CheckPolicies(CanSession(Action.Send, FromParam('session')))
+  @UsePipes(new WAHAValidationPipe())
   setDescription(
     @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
@@ -241,6 +243,7 @@ export class GroupsController {
     description:
       'Returns "true" if the subject was properly updated. This can return "false" if the user does not have the necessary permissions.',
   })
+  @UsePipes(new WAHAValidationPipe())
   setSubject(
     @WorkingSessionParam session: WhatsappSession,
     @Param('id') id: string,
