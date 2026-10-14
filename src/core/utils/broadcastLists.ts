@@ -1,6 +1,10 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
-import { isJidBroadcast, isJidStatusBroadcast } from '@waha/core/utils/jids';
+import {
+  isJidBroadcast,
+  isJidStatusBroadcast,
+  toCusFormat,
+} from '@waha/core/utils/jids';
 
 /**
  * A broadcast list a user created on their phone - as opposed to
@@ -41,6 +45,32 @@ export function validateBroadcastListParticipants(request: {
         `the members of a list created on the phone can't be read from a linked device.`,
     );
   }
+}
+
+/**
+ * Recipients of a broadcast list message: each participant's LID, once,
+ * leaving out the account itself ("own" holds its phone number and LID).
+ */
+export async function getBroadcastListRecipients(
+  participants: string[],
+  own: string[],
+  findLid: (participant: string) => Promise<string>,
+): Promise<string[]> {
+  const ownIds = own.filter(Boolean).map((jid) => toCusFormat(jid));
+  const lids: string[] = [];
+  for (const participant of participants ?? []) {
+    if (ownIds.includes(toCusFormat(participant))) {
+      continue;
+    }
+    const lid = await findLid(participant);
+    if (ownIds.includes(toCusFormat(lid))) {
+      continue;
+    }
+    if (!lids.includes(lid)) {
+      lids.push(lid);
+    }
+  }
+  return lids;
 }
 
 function isListOfIds(value: unknown): boolean {

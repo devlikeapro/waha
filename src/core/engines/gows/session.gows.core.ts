@@ -50,6 +50,7 @@ import {
 } from '@waha/core/media/IMediaEngineProcessor';
 import { LottieMediaProcessorWrapper } from '@waha/core/media/LottieMediaProcessorWrapper';
 import { QR } from '@waha/core/QR';
+import { getBroadcastListRecipients } from '@waha/core/utils/broadcastLists';
 import { ExtractMessageKeysForRead } from '@waha/core/utils/convertors';
 import { parseMessageIdSerialized } from '@waha/core/utils/ids';
 import {
@@ -1273,26 +1274,11 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   protected async prepareJidsForBroadcastList(
     participants: string[],
   ): Promise<string[]> {
-    if (!participants || participants.length == 0) {
-      return [];
-    }
-    const own = [this.me?.lid, this.me?.id]
-      .filter(Boolean)
-      .map((jid) => toCusFormat(jid));
-    const lids: string[] = [];
-    for (const participant of participants) {
-      if (own.includes(toCusFormat(participant))) {
-        continue;
-      }
-      const lid = await this.findBroadcastListParticipantLid(participant);
-      if (own.includes(toCusFormat(lid))) {
-        continue;
-      }
-      if (!lids.includes(lid)) {
-        lids.push(lid);
-      }
-    }
-    return lids;
+    return await getBroadcastListRecipients(
+      participants,
+      [this.me?.lid, this.me?.id],
+      (participant) => this.findBroadcastListParticipantLid(participant),
+    );
   }
 
   private async findBroadcastListParticipantLid(
