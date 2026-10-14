@@ -1264,7 +1264,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
    *   list's sender key, the phone decrypts the fan-out copy directly and
    *   never records the message as sent (it shows up neither in the list nor
    *   in the recipients' chats). Without the key, the phone asks for a retry
-   *   and gets the message as a DeviceSentMessage, which it records like one
+   *   and gets the message encrypted for it alone, which it records like one
    *   sent from the phone.
    *
    * The members of a list created on the phone can't be read from a linked
