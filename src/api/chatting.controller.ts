@@ -396,6 +396,7 @@ export class ChattingController {
   @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async reply(@Body() request: MessageReplyRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
+    validateBroadcastListParticipants(request);
     return whatsapp.reply(request);
   }
 
