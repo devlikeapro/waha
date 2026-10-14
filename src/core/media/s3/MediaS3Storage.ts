@@ -17,6 +17,14 @@ import * as lodash from 'lodash';
 import { Logger } from 'pino';
 
 export class MediaS3Storage implements IMediaStorage {
+  ASCII_KEYS = new Set([
+    'waha-session',
+    'waha-chat-id',
+    'waha-message-id',
+    // 'waha-media-filename', // encode it using percent-encoding (URL encoding)
+    'waha-created-at',
+  ]);
+
   constructor(
     private client: S3Client,
     private mediaS3UrlResolver: MediaS3UrlResolver,
@@ -35,7 +43,7 @@ export class MediaS3Storage implements IMediaStorage {
   async save(buffer: Buffer, data: MediaData): Promise<boolean> {
     const key = this.getKey(data);
     let metadata = getMetadata(data);
-    metadata = await this.stringifyMetadata(metadata);
+    metadata = encode(metadata, this.ASCII_KEYS);
     const command = new PutObjectCommand({
       Bucket: this.bucket,
       Key: key,
@@ -45,17 +53,6 @@ export class MediaS3Storage implements IMediaStorage {
     });
     await this.client.send(command);
     return true;
-  }
-
-  async stringifyMetadata(metadata) {
-    metadata = lodash.cloneDeep(metadata);
-    // Convert all metadata values to string because
-    // underlying S3 SDK will call .trim() on them
-    for (const key in metadata) {
-      const value = String(metadata[key]);
-      metadata[key] = encodeURIComponent(value);
-    }
-    return metadata;
   }
 
   async exists(data: MediaData): Promise<boolean> {
@@ -119,4 +116,27 @@ export class MediaS3Storage implements IMediaStorage {
   async close() {
     return;
   }
+}
+
+/**
+ * Encode metadata values using percent-encoding (URL encoding) OR ascii
+ * We keep some values as ASCII for backward compatability
+ */
+function encode(
+  metadata: Record<string, any>,
+  ascii: Set<string>,
+): Record<string, string> {
+  metadata = lodash.cloneDeep(metadata);
+  // Convert all metadata values to string because
+  // underlying S3 SDK will call .trim() on them
+  for (const key in metadata) {
+    const value = String(metadata[key]);
+    if (ascii.has(key)) {
+      // only ascii allowed in value for those values
+      metadata[key] = value.replace(/[^\x20-\x7E]/g, '');
+      continue;
+    }
+    metadata[key] = encodeURIComponent(value);
+  }
+  return metadata;
 }
