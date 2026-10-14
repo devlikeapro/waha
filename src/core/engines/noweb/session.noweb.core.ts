@@ -3720,14 +3720,40 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       const key = parseMessageIdSerialized(request.reply_to, true);
       quoted = await this.store.loadMessage(jid, key.id);
     }
-    const chat = await this.store.getChat(jid);
+    const ephemeralExpiration = await this.getEphemeralExpiration(jid);
     const messageId = request.id ? request.id : this.generateMessageID();
     this.hooks.message.sent.call(messageId);
     return {
       quoted: quoted,
-      ephemeralExpiration: chat?.ephemeralExpiration,
+      ephemeralExpiration: ephemeralExpiration,
       messageId: messageId,
     };
+  }
+
+  private async getEphemeralExpiration(
+    jid: string,
+  ): Promise<number | undefined> {
+    const chat = await this.store.getChat(jid);
+    if (chat?.ephemeralExpiration) {
+      return chat.ephemeralExpiration;
+    }
+
+    // Nothing found for the chat, check by alt
+    if (this.store instanceof NowebInMemoryStore) {
+      return undefined;
+    }
+    let altJid: string | null = null;
+    if (isPnUser(jid)) {
+      altJid = await this.store.findLidByPN(jid);
+    } else if (isLidUser(jid)) {
+      altJid = await this.store.findPNByLid(jid);
+    }
+
+    if (!altJid) {
+      return undefined;
+    }
+    const altChat = await this.store.getChat(altJid);
+    return altChat?.ephemeralExpiration ?? undefined;
   }
 
   protected getLinkPreview(request): any {
