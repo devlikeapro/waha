@@ -91,4 +91,15 @@ export function redactUrlParams(
   return url.replace(value, '[REDACTED]');
 }
 
+// A request url as it can be logged: every x-api-key in the query (any case) is redacted
+export function redactApiKeyInUrl(url: string | undefined): string {
+  const parsed = new URL(url || '', 'http://localhost');
+  for (const key of Array.from(parsed.searchParams.keys())) {
+    if (key.toLowerCase() === 'x-api-key') {
+      parsed.searchParams.set(key, 'REDACTED');
+    }
+  }
+  return parsed.pathname + parsed.search;
+}
+
 export { getNestJSLogLevels };

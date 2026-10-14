@@ -18,6 +18,7 @@ import { WebSocket } from '@waha/nestjs/ws/ws';
 import { WAHAEvents, WAHAEventsWild } from '@waha/structures/enums.dto';
 import { EventWildUnmask } from '@waha/utils/events';
 import { generatePrefixedId } from '@waha/utils/ids';
+import { redactApiKeyInUrl } from '@waha/utils/logging';
 import { IncomingMessage } from 'http';
 import { URL } from 'url';
 import { Server } from 'ws';
@@ -72,13 +73,14 @@ export class WebsocketGatewayCore
   ): Promise<any> {
     // wsc - websocket client
     socket.id = generatePrefixedId('wsc');
+    const url = redactApiKeyInUrl(request.url);
 
     const user = await this.auth.validateRequest(request);
     if (!user) {
       // Not authorized - close connection
       socket.close(WebSocketCloseCode.POLICY_VIOLATION, 'Unauthorized');
       this.logger.debug(
-        `Unauthorized websocket connection attempt: ${request.url} - ${socket.id}`,
+        `Unauthorized websocket connection attempt: ${url} - ${socket.id}`,
       );
       return;
     }
@@ -96,7 +98,7 @@ export class WebsocketGatewayCore
       return;
     }
 
-    this.logger.debug(`New client connected: ${request.url} - ${socket.id}`);
+    this.logger.debug(`New client connected: ${url} - ${socket.id}`);
     const events = params.events as WAHAEvents[];
     this.logger.debug(
       `Client connected to session: '${session}', events: ${events}, ${socket.id}`,
