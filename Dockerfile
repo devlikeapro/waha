@@ -1,5 +1,5 @@
 ARG NODE_IMAGE_TAG=24.11-bookworm-slim
-ARG GOLANG_IMAGE_TAG=1.24-bookworm
+ARG GOLANG_IMAGE_TAG=1.26-bookworm
 
 #
 # Build
@@ -84,15 +84,29 @@ RUN apt-get update  \
 
 COPY waha.config.json /tmp/waha.config.json
 WORKDIR /go/gows
+# waha.gows.build:
+#   "release" (default) - download the prebuilt binary from the repo releases
+#   "source"            - clone repo@ref and build it (needed for the VoIP calls fork)
 RUN \
     GOWS_GITHUB_REPO=$(jq -r '.waha.gows.repo' /tmp/waha.config.json) && \
     GOWS_SHA=$(jq -r '.waha.gows.ref' /tmp/waha.config.json) && \
+    GOWS_BUILD=$(jq -r '.waha.gows.build // "release"' /tmp/waha.config.json) && \
     ARCH=$(uname -m) && \
     if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; \
     elif [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; \
     else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
     mkdir -p /go/gows/bin && \
-    wget -O /go/gows/bin/gows https://github.com/${GOWS_GITHUB_REPO}/releases/download/${GOWS_SHA}/gows-${ARCH} && \
+    if [ "$GOWS_BUILD" = "source" ]; then \
+      git clone --filter=blob:none https://github.com/${GOWS_GITHUB_REPO}.git /go/gows/src-repo && \
+      cd /go/gows/src-repo && git checkout ${GOWS_SHA} && \
+      go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.12 && \
+      go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.6.0 && \
+      make build-proto build && \
+      cp bin/gows /go/gows/bin/gows && \
+      cd /go/gows && rm -rf /go/gows/src-repo; \
+    else \
+      wget -O /go/gows/bin/gows https://github.com/${GOWS_GITHUB_REPO}/releases/download/${GOWS_SHA}/gows-${ARCH}; \
+    fi && \
     chmod +x /go/gows/bin/gows
 
 

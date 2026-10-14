@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CallData } from '@waha/structures/calls.dto';
+import { CallData, CallInfo } from '@waha/structures/calls.dto';
 import { EventResponsePayload } from '@waha/structures/events.dto';
 import { Label, LabelChatAssociation } from '@waha/structures/labels.dto';
 
@@ -357,6 +357,16 @@ export class WAHAWebhookCallRejected extends WAHAWebhook {
   event = WAHAEvents.CALL_REJECTED;
 
   payload: CallData;
+}
+
+export class WAHAWebhookCallState extends WAHAWebhook {
+  @ApiProperty({
+    description:
+      'The event is triggered when a native (VoIP) call changes its state: ringing, connecting, active, ended...',
+  })
+  event = WAHAEvents.CALL_STATE;
+
+  payload: CallInfo;
 }
 
 export class WAHAWebhookLabelUpsert extends WAHAWebhook {

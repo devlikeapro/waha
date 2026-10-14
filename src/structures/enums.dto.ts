@@ -25,6 +25,7 @@ export enum WAHAEvents {
   CALL_RECEIVED = 'call.received',
   CALL_ACCEPTED = 'call.accepted',
   CALL_REJECTED = 'call.rejected',
+  CALL_STATE = 'call.state',
   LABEL_UPSERT = 'label.upsert',
   LABEL_DELETED = 'label.deleted',
   LABEL_CHAT_ADDED = 'label.chat.added',

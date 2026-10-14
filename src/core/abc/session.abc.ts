@@ -3,6 +3,7 @@ import { ReachoutTimelockTracker } from '@waha/core/abc/ReachoutTimelockTracker'
 import { getBrowserExecutablePath as getBrowserExecutablePathAutodetect } from '@waha/core/abc/session.browser';
 import { PluginRegistry } from '@waha/core/abc/session.plugin.registry';
 import { IMediaConverter } from '@waha/core/media/IMediaConverter';
+import { CallInfo } from '@waha/structures/calls.dto';
 import { Ffmpeg } from '@waha/core/utils/ffmpeg';
 import { MessagesForRead } from '@waha/core/utils/convertors';
 import {
@@ -726,6 +727,29 @@ export abstract class WhatsappSession {
   }
 
   public rejectCall(from: string, id: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  /**
+   * Native (VoIP) calls - GOWS only
+   */
+  public startCall(chatId: string): Promise<CallInfo> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public acceptCall(id: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public endCall(id: string): Promise<void> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public connectCallMedia(id: string, sdp: string): Promise<string> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public getActiveCalls(): Promise<CallInfo[]> {
     throw new NotImplementedByEngineError();
   }
 

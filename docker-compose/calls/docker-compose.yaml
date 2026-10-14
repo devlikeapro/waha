@@ -1,0 +1,41 @@
+# WAHA + ligações de voz nativas (engine GOWS do fork com VoIP)
+#
+# 1. Ajuste waha.config.json -> waha.gows.repo para o SEU fork do gows-plus
+# 2. Na raiz do repositório:  docker compose -f docker-compose/calls/docker-compose.yaml up -d --build
+# 3. Abra examples/calls/index.html no navegador (Chrome/Edge/Firefox)
+services:
+  waha:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      args:
+        # GOWS é o único engine com ligações nativas
+        WHATSAPP_DEFAULT_ENGINE: GOWS
+        # GOWS não precisa de navegador: imagem bem menor
+        USE_BROWSER: none
+    image: waha-voip:local
+    restart: always
+    ports:
+      - '3000:3000/tcp'
+      # Áudio WebRTC navegador <-> WAHA (precisa bater com GOWS_VOIP_WEBRTC_UDP_PORT_MIN/MAX)
+      - '40000-40100:40000-40100/udp'
+    volumes:
+      - './sessions:/app/.sessions'
+      - './media:/app/.media'
+    environment:
+      WHATSAPP_DEFAULT_ENGINE: GOWS
+      WAHA_API_KEY: ${WAHA_API_KEY:-troque-esta-chave}
+      # Eventos de chamada no webhook (opcional)
+      # WHATSAPP_HOOK_URL: https://seu-servidor/webhook
+      # WHATSAPP_HOOK_EVENTS: call.received,call.state,call.rejected
+
+      # --- Ligações nativas (VoIP) ---
+      GOWS_VOIP_ENABLED: 'true'
+      # Máximo de chamadas simultâneas por sessão (0 = sem limite)
+      GOWS_VOIP_MAX_CALLS: '4'
+      # IP que o NAVEGADOR consegue alcançar (IP da máquina na rede local ou IP público do servidor)
+      GOWS_VOIP_WEBRTC_PUBLIC_IPS: ${WAHA_PUBLIC_IP:-127.0.0.1}
+      GOWS_VOIP_WEBRTC_UDP_PORT_MIN: '40000'
+      GOWS_VOIP_WEBRTC_UDP_PORT_MAX: '40100'
+      # STUN/TURN opcionais (ex.: stun:stun.l.google.com:19302)
+      # GOWS_VOIP_WEBRTC_ICE_SERVERS: ''

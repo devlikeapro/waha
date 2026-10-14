@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WAHA Ligações</title>
+<style>
+  :root {
+    --bg: #f6f7f5; --card: #ffffff; --ink: #18201b; --muted: #66706a; --line: #dfe3df;
+    --accent: #128c4a; --accent-ink: #ffffff; --danger: #c43d3d; --warn: #b7791f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #111513; --card: #1a201c; --ink: #e8ece9; --muted: #96a19b; --line: #2b332e;
+            --accent: #2fbf71; --accent-ink: #08130c; --danger: #e46a6a; --warn: #e0a84c; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 20px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+            padding: 16px; margin-bottom: 16px; }
+  h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  input { width: 100%; padding: 9px 10px; border-radius: 8px; border: 1px solid var(--line);
+          background: var(--bg); color: var(--ink); font: inherit; }
+  button { padding: 9px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg);
+           color: var(--ink); font: inherit; cursor: pointer; }
+  button.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 600; }
+  button.danger { background: var(--danger); color: #fff; border-color: transparent; }
+  button:disabled { opacity: .5; cursor: default; }
+  .row { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; }
+  .row > div { flex: 1 1 200px; }
+  .call { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+          padding: 12px 0; border-top: 1px solid var(--line); }
+  .call:first-child { border-top: none; }
+  .peer { font-weight: 600; }
+  .meta { color: var(--muted); font-size: 13px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600;
+           border: 1px solid var(--line); margin-left: 6px; }
+  .badge.active { color: var(--accent); border-color: var(--accent); }
+  .badge.ring { color: var(--warn); border-color: var(--warn); }
+  .actions { display: flex; gap: 8px; }
+  .meter { height: 6px; width: 120px; background: var(--line); border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; }
+  .meter > i { display: block; height: 100%; width: 0; background: var(--accent); }
+  .empty { color: var(--muted); }
+  #log { font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted);
+         max-height: 160px; overflow: auto; white-space: pre-wrap; margin: 0; }
+  .err { color: var(--danger); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Ligações pelo WAHA</h1>
+  <p class="sub">Página de teste das chamadas de voz nativas (engine GOWS). O áudio vai direto do navegador ao WAHA via WebRTC.</p>
+
+  <section>
+    <h2>Conexão</h2>
+    <div class="grid">
+      <div><label for="url">URL do WAHA</label><input id="url" placeholder="http://localhost:3000"></div>
+      <div><label for="key">API key</label><input id="key" type="password" placeholder="X-Api-Key"></div>
+      <div><label for="session">Sessão</label><input id="session" placeholder="default"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Discar</h2>
+    <div class="row">
+      <div><label for="phone">Número (com DDI e DDD)</label><input id="phone" inputmode="tel" placeholder="5581999999999"></div>
+      <button class="primary" id="dial">Ligar</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Chamadas</h2>
+    <div id="calls"><p class="empty">Nenhuma chamada ativa.</p></div>
+  </section>
+
+  <section>
+    <h2>Registro</h2>
+    <pre id="log"></pre>
+  </section>
+</main>
+
+<script>
+(() => {
+  const SAMPLE_RATE = 16000;
+  const $ = (id) => document.getElementById(id);
+  const fields = ['url', 'key', 'session'];
+
+  // ---- settings (per browser) ----
+  const load = () => { try { return JSON.parse(localStorage.getItem('waha-calls') || '{}'); } catch { return {}; } };
+  const saved = load();
+  $('url').value = saved.url || 'http://localhost:3000';
+  $('key').value = saved.key || '';
+  $('session').value = saved.session || 'default';
+  fields.forEach((f) => $(f).addEventListener('change', () => {
+    try { localStorage.setItem('waha-calls', JSON.stringify(Object.fromEntries(fields.map((k) => [k, $(k).value])))); } catch {}
+  }));
+
+  const log = (msg, isErr) => {
+    const line = document.createElement('div');
+    if (isErr) line.className = 'err';
+    line.textContent = new Date().toLocaleTimeString() + '  ' + msg;
+    $('log').prepend(line);
+  };
+
+  // ---- API ----
+  const base = () => $('url').value.replace(/\/+$/, '') + '/api/' + encodeURIComponent($('session').value || 'default');
+  async function api(method, path, body) {
+    const res = await fetch(base() + path, {
+      method,
+      headers: { 'Content-Type': 'application/json', 'X-Api-Key': $('key').value },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const text = await res.text();
+    if (!res.ok) throw new Error(res.status + ' ' + (text || res.statusText));
+    return text ? JSON.parse(text) : null;
+  }
+
+  // ---- PCM helpers ----
+  const toInt16 = (f32) => {
+    const v = new DataView(new ArrayBuffer(f32.length * 2));
+    for (let i = 0; i < f32.length; i++) {
+      let s = f32[i]; s = Number.isNaN(s) ? 0 : Math.max(-1, Math.min(1, s));
+      v.setInt16(i * 2, s < 0 ? Math.round(s * 32768) : Math.round(s * 32767), true);
+    }
+    return v.buffer;
+  };
+  const toFloat = (buf) => {
+    const v = new DataView(buf), n = buf.byteLength >> 1, out = new Float32Array(n);
+    for (let i = 0; i < n; i++) out[i] = v.getInt16(i * 2, true) / 32768;
+    return out;
+  };
+
+  // AudioWorklets (inline, same as WaCalls' client)
+  const WORKLETS = `
+    class CaptureProcessor extends AudioWorkletProcessor {
+      process(inputs) { const ch = inputs[0] && inputs[0][0]; if (ch && ch.length) this.port.postMessage(ch.slice(0)); return true; }
+    }
+    registerProcessor('capture-processor', CaptureProcessor);
+    const RING = 16000 * 2;
+    class PlaybackProcessor extends AudioWorkletProcessor {
+      constructor() { super(); this.ring = new Float32Array(RING); this.r = 0; this.w = 0; this.n = 0;
+        this.port.onmessage = (e) => { const d = e.data; for (let i = 0; i < d.length; i++) {
+          this.ring[this.w] = d[i]; this.w = (this.w + 1) % RING;
+          if (this.n < RING) this.n++; else this.r = (this.r + 1) % RING; } }; }
+      process(_i, outputs) { const out = outputs[0][0]; if (!out) return true;
+        for (let i = 0; i < out.length; i++) { if (this.n > 0) { out[i] = this.ring[this.r]; this.r = (this.r + 1) % RING; this.n--; } else out[i] = 0; }
+        return true; }
+    }
+    registerProcessor('playback-processor', PlaybackProcessor);`;
+  const workletUrl = URL.createObjectURL(new Blob([WORKLETS], { type: 'application/javascript' }));
+
+  // ---- media legs, one per call ----
+  const media = new Map(); // callId -> { close, level }
+
+  async function attachMedia(callId) {
+    if (media.has(callId)) return;
+    media.set(callId, { close: () => {}, level: 0, pending: true });
+    try {
+      const mic = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+      const pc = new RTCPeerConnection({ iceServers: [] });
+      const dc = pc.createDataChannel('pcm', { ordered: true });
+      dc.binaryType = 'arraybuffer';
+
+      const ctx = new AudioContext({ sampleRate: SAMPLE_RATE });
+      await ctx.audioWorklet.addModule(workletUrl);
+      await ctx.resume();
+      const entry = media.get(callId);
+
+      const capture = new AudioWorkletNode(ctx, 'capture-processor');
+      capture.port.onmessage = (e) => {
+        if (dc.readyState === 'open') dc.send(toInt16(e.data));
+        let peak = 0; for (const s of e.data) peak = Math.max(peak, Math.abs(s));
+        entry.level = entry.level * 0.8 + peak * 0.2;
+      };
+      ctx.createMediaStreamSource(mic).connect(capture);
+      capture.connect(ctx.destination); // keeps the graph running; capture outputs silence
+
+      const playback = new AudioWorkletNode(ctx, 'playback-processor');
+      playback.connect(ctx.destination);
+      dc.onmessage = (e) => playback.port.postMessage(toFloat(e.data));
+
+      await pc.setLocalDescription(await pc.createOffer());
+      await new Promise((resolve) => {
+        if (pc.iceGatheringState === 'complete') return resolve();
+        pc.addEventListener('icegatheringstatechange', () => pc.iceGatheringState === 'complete' && resolve());
+        setTimeout(resolve, 3000);
+      });
+      const { sdp } = await api('POST', '/calls/' + encodeURIComponent(callId) + '/media', { sdp: pc.localDescription.sdp });
+      await pc.setRemoteDescription({ type: 'answer', sdp });
+      pc.addEventListener('connectionstatechange', () => log('áudio ' + callId.slice(0, 8) + ': ' + pc.connectionState));
+
+      entry.pending = false;
+      entry.close = () => {
+        try { mic.getTracks().forEach((t) => t.stop()); } catch {}
+        try { ctx.close(); } catch {}
+        try { pc.close(); } catch {}
+      };
+      log('áudio conectado à chamada ' + callId.slice(0, 8));
+    } catch (err) {
+      log('falha ao conectar áudio: ' + err.message, true);
+      const m = media.get(callId); if (m) m.close();
+      media.delete(callId);
+    }
+  }
+
+  function detachMedia(callId) {
+    const m = media.get(callId);
+    if (m) { m.close(); media.delete(callId); }
+  }
+
+  // ---- actions ----
+  $('dial').addEventListener('click', async () => {
+    const digits = $('phone').value.replace(/\D/g, '');
+    if (!digits) return log('informe o número', true);
+    $('dial').disabled = true;
+    try {
+      const call = await api('POST', '/calls/start', { chatId: digits + '@c.us' });
+      log('ligando para ' + digits + ' (' + call.id.slice(0, 8) + ')');
+      attachMedia(call.id);
+      refresh();
+    } catch (err) {
+      log('erro ao ligar: ' + err.message, true);
+    } finally {
+      $('dial').disabled = false;
+    }
+  });
+
+  async function act(kind, call) {
+    try {
+      if (kind === 'accept') {
+        await attachMedia(call.id);
+        await api('POST', '/calls/' + encodeURIComponent(call.id) + '/accept');
+        log('chamada atendida');
+      } else if (kind === 'reject') {
+        await api('POST', '/calls/reject', { from: call.peer, id: call.id });
+        log('chamada recusada');
+      } else if (kind === 'end') {
+        await api('POST', '/calls/' + encodeURIComponent(call.id) + '/end');
+        log('chamada encerrada');
+      }
+    } catch (err) {
+      log('erro: ' + err.message, true);
+    }
+    refresh();
+  }
+
+  // ---- rendering + polling ----
+  const STATE = {
+    initiating: 'iniciando', ringing: 'chamando', incoming_ringing: 'recebendo',
+    connecting: 'conectando', active: 'em ligação', on_hold: 'em espera', ended: 'encerrada',
+  };
+  let lastIds = new Set();
+
+  let lastSig = '';
+  function render(calls) {
+    // Only rebuild the list when something visible changed, so clicks are never lost mid-render
+    const sig = JSON.stringify(calls.map((c) => [c.id, c.state, c.mediaConnected,
+      media.has(c.id) ? Math.round((media.get(c.id).level || 0) * 30) + (media.get(c.id).pending ? 'p' : '') : '-']));
+    if (sig === lastSig) return;
+    lastSig = sig;
+    const box = $('calls');
+    box.textContent = '';
+    if (!calls.length) {
+      const p = document.createElement('p'); p.className = 'empty'; p.textContent = 'Nenhuma chamada ativa.';
+      box.appendChild(p); return;
+    }
+    for (const call of calls) {
+      const el = document.createElement('div'); el.className = 'call';
+      const info = document.createElement('div');
+      const peer = document.createElement('span'); peer.className = 'peer';
+      peer.textContent = (call.peer || '').replace(/@.*/, '');
+      const badge = document.createElement('span');
+      badge.className = 'badge ' + (call.state === 'active' ? 'active' : /ring/.test(call.state) ? 'ring' : '');
+      badge.textContent = STATE[call.state] || call.state;
+      const meta = document.createElement('div'); meta.className = 'meta';
+      const m = media.get(call.id);
+      meta.textContent = (call.direction === 'incoming' ? 'recebida' : 'feita') + ' · ' +
+        (m && !m.pending ? 'microfone ligado ' : call.mediaConnected ? 'áudio em outro navegador' : 'sem áudio');
+      if (m && !m.pending) {
+        const meter = document.createElement('span'); meter.className = 'meter';
+        const bar = document.createElement('i'); bar.style.width = Math.min(100, m.level * 300) + '%';
+        meter.appendChild(bar); meta.appendChild(meter);
+      }
+      info.append(peer, badge, meta);
+
+      const actions = document.createElement('div'); actions.className = 'actions';
+      const btn = (label, cls, kind) => {
+        const b = document.createElement('button'); b.textContent = label; if (cls) b.className = cls;
+        b.addEventListener('click', () => act(kind, call)); actions.appendChild(b);
+      };
+      if (call.state === 'incoming_ringing') { btn('Atender', 'primary', 'accept'); btn('Recusar', 'danger', 'reject'); }
+      else btn('Desligar', 'danger', 'end');
+      if (!m && call.state !== 'incoming_ringing') {
+        const b = document.createElement('button'); b.textContent = 'Usar meu microfone';
+        b.addEventListener('click', () => attachMedia(call.id)); actions.prepend(b);
+      }
+      el.append(info, actions);
+      box.appendChild(el);
+    }
+  }
+
+  let busy = false;
+  async function refresh() {
+    if (busy) return; busy = true;
+    try {
+      const calls = (await api('GET', '/calls')) || [];
+      const ids = new Set(calls.map((c) => c.id));
+      for (const c of calls) if (!lastIds.has(c.id) && c.direction === 'incoming') log('chamada recebida de ' + (c.peer || '').replace(/@.*/, ''));
+      for (const id of [...media.keys()]) if (!ids.has(id)) { detachMedia(id); log('chamada ' + id.slice(0, 8) + ' terminou'); }
+      lastIds = ids;
+      render(calls);
+    } catch (err) {
+      lastSig = '';
+      $('calls').innerHTML = '';
+      const p = document.createElement('p'); p.className = 'err';
+      p.textContent = 'Não foi possível ler as chamadas: ' + err.message;
+      $('calls').appendChild(p);
+    } finally { busy = false; }
+  }
+  refresh();
+  setInterval(refresh, 1000);
+})();
+</script>
+</body>
+</html>

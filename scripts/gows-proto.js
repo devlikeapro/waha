@@ -54,9 +54,13 @@ function cleanDirectory(directory, suffix) {
 async function downloadFiles(repo, ref, directory) {
   for (const file of PROTO_FILES) {
     const url = `https://github.com/${repo}/releases/download/${ref}/${file}`;
+    // Forks built from source have no releases: fall back to the file in the repo
+    const rawUrl = `https://raw.githubusercontent.com/${repo}/${ref}/proto/${file}`;
     const filePath = path.join(directory, file);
     try {
-      const response = await axios.get(url, { responseType: 'arraybuffer' });
+      const response = await axios
+        .get(url, { responseType: 'arraybuffer' })
+        .catch(() => axios.get(rawUrl, { responseType: 'arraybuffer' }));
       fs.writeFileSync(filePath, response.data);
       console.log(`Downloaded: ${file}`);
     } catch (error) {

@@ -11177,6 +11177,716 @@ export namespace messages {
             return RejectCallRequest.deserialize(bytes);
         }
     }
+    export class StartCallRequest extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            session?: Session;
+            jid?: string;
+            isVideo?: boolean;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("session" in data && data.session != undefined) {
+                    this.session = data.session;
+                }
+                if ("jid" in data && data.jid != undefined) {
+                    this.jid = data.jid;
+                }
+                if ("isVideo" in data && data.isVideo != undefined) {
+                    this.isVideo = data.isVideo;
+                }
+            }
+        }
+        get session() {
+            return pb_1.Message.getWrapperField(this, Session, 1) as Session;
+        }
+        set session(value: Session) {
+            pb_1.Message.setWrapperField(this, 1, value);
+        }
+        get has_session() {
+            return pb_1.Message.getField(this, 1) != null;
+        }
+        get jid() {
+            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+        }
+        set jid(value: string) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        get isVideo() {
+            return pb_1.Message.getFieldWithDefault(this, 3, false) as boolean;
+        }
+        set isVideo(value: boolean) {
+            pb_1.Message.setField(this, 3, value);
+        }
+        static fromObject(data: {
+            session?: ReturnType<typeof Session.prototype.toObject>;
+            jid?: string;
+            isVideo?: boolean;
+        }): StartCallRequest {
+            const message = new StartCallRequest({});
+            if (data.session != null) {
+                message.session = Session.fromObject(data.session);
+            }
+            if (data.jid != null) {
+                message.jid = data.jid;
+            }
+            if (data.isVideo != null) {
+                message.isVideo = data.isVideo;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                session?: ReturnType<typeof Session.prototype.toObject>;
+                jid?: string;
+                isVideo?: boolean;
+            } = {};
+            if (this.session != null) {
+                data.session = this.session.toObject();
+            }
+            if (this.jid != null) {
+                data.jid = this.jid;
+            }
+            if (this.isVideo != null) {
+                data.isVideo = this.isVideo;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.has_session)
+                writer.writeMessage(1, this.session, () => this.session.serialize(writer));
+            if (this.jid.length)
+                writer.writeString(2, this.jid);
+            if (this.isVideo != false)
+                writer.writeBool(3, this.isVideo);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): StartCallRequest {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new StartCallRequest();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        reader.readMessage(message.session, () => message.session = Session.deserialize(reader));
+                        break;
+                    case 2:
+                        message.jid = reader.readString();
+                        break;
+                    case 3:
+                        message.isVideo = reader.readBool();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): StartCallRequest {
+            return StartCallRequest.deserialize(bytes);
+        }
+    }
+    export class CallIdRequest extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            session?: Session;
+            id?: string;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("session" in data && data.session != undefined) {
+                    this.session = data.session;
+                }
+                if ("id" in data && data.id != undefined) {
+                    this.id = data.id;
+                }
+            }
+        }
+        get session() {
+            return pb_1.Message.getWrapperField(this, Session, 1) as Session;
+        }
+        set session(value: Session) {
+            pb_1.Message.setWrapperField(this, 1, value);
+        }
+        get has_session() {
+            return pb_1.Message.getField(this, 1) != null;
+        }
+        get id() {
+            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+        }
+        set id(value: string) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        static fromObject(data: {
+            session?: ReturnType<typeof Session.prototype.toObject>;
+            id?: string;
+        }): CallIdRequest {
+            const message = new CallIdRequest({});
+            if (data.session != null) {
+                message.session = Session.fromObject(data.session);
+            }
+            if (data.id != null) {
+                message.id = data.id;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                session?: ReturnType<typeof Session.prototype.toObject>;
+                id?: string;
+            } = {};
+            if (this.session != null) {
+                data.session = this.session.toObject();
+            }
+            if (this.id != null) {
+                data.id = this.id;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.has_session)
+                writer.writeMessage(1, this.session, () => this.session.serialize(writer));
+            if (this.id.length)
+                writer.writeString(2, this.id);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): CallIdRequest {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new CallIdRequest();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        reader.readMessage(message.session, () => message.session = Session.deserialize(reader));
+                        break;
+                    case 2:
+                        message.id = reader.readString();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): CallIdRequest {
+            return CallIdRequest.deserialize(bytes);
+        }
+    }
+    export class CallInfo extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            id?: string;
+            peer?: string;
+            creator?: string;
+            direction?: string;
+            state?: string;
+            isVideo?: boolean;
+            endReason?: string;
+            mediaConnected?: boolean;
+            timestamp?: number;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("id" in data && data.id != undefined) {
+                    this.id = data.id;
+                }
+                if ("peer" in data && data.peer != undefined) {
+                    this.peer = data.peer;
+                }
+                if ("creator" in data && data.creator != undefined) {
+                    this.creator = data.creator;
+                }
+                if ("direction" in data && data.direction != undefined) {
+                    this.direction = data.direction;
+                }
+                if ("state" in data && data.state != undefined) {
+                    this.state = data.state;
+                }
+                if ("isVideo" in data && data.isVideo != undefined) {
+                    this.isVideo = data.isVideo;
+                }
+                if ("endReason" in data && data.endReason != undefined) {
+                    this.endReason = data.endReason;
+                }
+                if ("mediaConnected" in data && data.mediaConnected != undefined) {
+                    this.mediaConnected = data.mediaConnected;
+                }
+                if ("timestamp" in data && data.timestamp != undefined) {
+                    this.timestamp = data.timestamp;
+                }
+            }
+        }
+        get id() {
+            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        }
+        set id(value: string) {
+            pb_1.Message.setField(this, 1, value);
+        }
+        get peer() {
+            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+        }
+        set peer(value: string) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        get creator() {
+            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+        }
+        set creator(value: string) {
+            pb_1.Message.setField(this, 3, value);
+        }
+        get direction() {
+            return pb_1.Message.getFieldWithDefault(this, 4, "") as string;
+        }
+        set direction(value: string) {
+            pb_1.Message.setField(this, 4, value);
+        }
+        get state() {
+            return pb_1.Message.getFieldWithDefault(this, 5, "") as string;
+        }
+        set state(value: string) {
+            pb_1.Message.setField(this, 5, value);
+        }
+        get isVideo() {
+            return pb_1.Message.getFieldWithDefault(this, 6, false) as boolean;
+        }
+        set isVideo(value: boolean) {
+            pb_1.Message.setField(this, 6, value);
+        }
+        get endReason() {
+            return pb_1.Message.getFieldWithDefault(this, 7, "") as string;
+        }
+        set endReason(value: string) {
+            pb_1.Message.setField(this, 7, value);
+        }
+        get mediaConnected() {
+            return pb_1.Message.getFieldWithDefault(this, 8, false) as boolean;
+        }
+        set mediaConnected(value: boolean) {
+            pb_1.Message.setField(this, 8, value);
+        }
+        get timestamp() {
+            return pb_1.Message.getFieldWithDefault(this, 9, 0) as number;
+        }
+        set timestamp(value: number) {
+            pb_1.Message.setField(this, 9, value);
+        }
+        static fromObject(data: {
+            id?: string;
+            peer?: string;
+            creator?: string;
+            direction?: string;
+            state?: string;
+            isVideo?: boolean;
+            endReason?: string;
+            mediaConnected?: boolean;
+            timestamp?: number;
+        }): CallInfo {
+            const message = new CallInfo({});
+            if (data.id != null) {
+                message.id = data.id;
+            }
+            if (data.peer != null) {
+                message.peer = data.peer;
+            }
+            if (data.creator != null) {
+                message.creator = data.creator;
+            }
+            if (data.direction != null) {
+                message.direction = data.direction;
+            }
+            if (data.state != null) {
+                message.state = data.state;
+            }
+            if (data.isVideo != null) {
+                message.isVideo = data.isVideo;
+            }
+            if (data.endReason != null) {
+                message.endReason = data.endReason;
+            }
+            if (data.mediaConnected != null) {
+                message.mediaConnected = data.mediaConnected;
+            }
+            if (data.timestamp != null) {
+                message.timestamp = data.timestamp;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                id?: string;
+                peer?: string;
+                creator?: string;
+                direction?: string;
+                state?: string;
+                isVideo?: boolean;
+                endReason?: string;
+                mediaConnected?: boolean;
+                timestamp?: number;
+            } = {};
+            if (this.id != null) {
+                data.id = this.id;
+            }
+            if (this.peer != null) {
+                data.peer = this.peer;
+            }
+            if (this.creator != null) {
+                data.creator = this.creator;
+            }
+            if (this.direction != null) {
+                data.direction = this.direction;
+            }
+            if (this.state != null) {
+                data.state = this.state;
+            }
+            if (this.isVideo != null) {
+                data.isVideo = this.isVideo;
+            }
+            if (this.endReason != null) {
+                data.endReason = this.endReason;
+            }
+            if (this.mediaConnected != null) {
+                data.mediaConnected = this.mediaConnected;
+            }
+            if (this.timestamp != null) {
+                data.timestamp = this.timestamp;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.id.length)
+                writer.writeString(1, this.id);
+            if (this.peer.length)
+                writer.writeString(2, this.peer);
+            if (this.creator.length)
+                writer.writeString(3, this.creator);
+            if (this.direction.length)
+                writer.writeString(4, this.direction);
+            if (this.state.length)
+                writer.writeString(5, this.state);
+            if (this.isVideo != false)
+                writer.writeBool(6, this.isVideo);
+            if (this.endReason.length)
+                writer.writeString(7, this.endReason);
+            if (this.mediaConnected != false)
+                writer.writeBool(8, this.mediaConnected);
+            if (this.timestamp != 0)
+                writer.writeInt64(9, this.timestamp);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): CallInfo {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new CallInfo();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        message.id = reader.readString();
+                        break;
+                    case 2:
+                        message.peer = reader.readString();
+                        break;
+                    case 3:
+                        message.creator = reader.readString();
+                        break;
+                    case 4:
+                        message.direction = reader.readString();
+                        break;
+                    case 5:
+                        message.state = reader.readString();
+                        break;
+                    case 6:
+                        message.isVideo = reader.readBool();
+                        break;
+                    case 7:
+                        message.endReason = reader.readString();
+                        break;
+                    case 8:
+                        message.mediaConnected = reader.readBool();
+                        break;
+                    case 9:
+                        message.timestamp = reader.readInt64();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): CallInfo {
+            return CallInfo.deserialize(bytes);
+        }
+    }
+    export class CallInfoList extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            calls?: CallInfo[];
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("calls" in data && data.calls != undefined) {
+                    this.calls = data.calls;
+                }
+            }
+        }
+        get calls() {
+            return pb_1.Message.getRepeatedWrapperField(this, CallInfo, 1) as CallInfo[];
+        }
+        set calls(value: CallInfo[]) {
+            pb_1.Message.setRepeatedWrapperField(this, 1, value);
+        }
+        static fromObject(data: {
+            calls?: ReturnType<typeof CallInfo.prototype.toObject>[];
+        }): CallInfoList {
+            const message = new CallInfoList({});
+            if (data.calls != null) {
+                message.calls = data.calls.map(item => CallInfo.fromObject(item));
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                calls?: ReturnType<typeof CallInfo.prototype.toObject>[];
+            } = {};
+            if (this.calls != null) {
+                data.calls = this.calls.map((item: CallInfo) => item.toObject());
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.calls.length)
+                writer.writeRepeatedMessage(1, this.calls, (item: CallInfo) => item.serialize(writer));
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): CallInfoList {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new CallInfoList();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        reader.readMessage(message.calls, () => pb_1.Message.addToRepeatedWrapperField(message, 1, CallInfo.deserialize(reader), CallInfo));
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): CallInfoList {
+            return CallInfoList.deserialize(bytes);
+        }
+    }
+    export class ConnectCallMediaRequest extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            session?: Session;
+            id?: string;
+            sdp?: string;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("session" in data && data.session != undefined) {
+                    this.session = data.session;
+                }
+                if ("id" in data && data.id != undefined) {
+                    this.id = data.id;
+                }
+                if ("sdp" in data && data.sdp != undefined) {
+                    this.sdp = data.sdp;
+                }
+            }
+        }
+        get session() {
+            return pb_1.Message.getWrapperField(this, Session, 1) as Session;
+        }
+        set session(value: Session) {
+            pb_1.Message.setWrapperField(this, 1, value);
+        }
+        get has_session() {
+            return pb_1.Message.getField(this, 1) != null;
+        }
+        get id() {
+            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+        }
+        set id(value: string) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        get sdp() {
+            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+        }
+        set sdp(value: string) {
+            pb_1.Message.setField(this, 3, value);
+        }
+        static fromObject(data: {
+            session?: ReturnType<typeof Session.prototype.toObject>;
+            id?: string;
+            sdp?: string;
+        }): ConnectCallMediaRequest {
+            const message = new ConnectCallMediaRequest({});
+            if (data.session != null) {
+                message.session = Session.fromObject(data.session);
+            }
+            if (data.id != null) {
+                message.id = data.id;
+            }
+            if (data.sdp != null) {
+                message.sdp = data.sdp;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                session?: ReturnType<typeof Session.prototype.toObject>;
+                id?: string;
+                sdp?: string;
+            } = {};
+            if (this.session != null) {
+                data.session = this.session.toObject();
+            }
+            if (this.id != null) {
+                data.id = this.id;
+            }
+            if (this.sdp != null) {
+                data.sdp = this.sdp;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.has_session)
+                writer.writeMessage(1, this.session, () => this.session.serialize(writer));
+            if (this.id.length)
+                writer.writeString(2, this.id);
+            if (this.sdp.length)
+                writer.writeString(3, this.sdp);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ConnectCallMediaRequest {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ConnectCallMediaRequest();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        reader.readMessage(message.session, () => message.session = Session.deserialize(reader));
+                        break;
+                    case 2:
+                        message.id = reader.readString();
+                        break;
+                    case 3:
+                        message.sdp = reader.readString();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): ConnectCallMediaRequest {
+            return ConnectCallMediaRequest.deserialize(bytes);
+        }
+    }
+    export class ConnectCallMediaResponse extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            sdp?: string;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("sdp" in data && data.sdp != undefined) {
+                    this.sdp = data.sdp;
+                }
+            }
+        }
+        get sdp() {
+            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        }
+        set sdp(value: string) {
+            pb_1.Message.setField(this, 1, value);
+        }
+        static fromObject(data: {
+            sdp?: string;
+        }): ConnectCallMediaResponse {
+            const message = new ConnectCallMediaResponse({});
+            if (data.sdp != null) {
+                message.sdp = data.sdp;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                sdp?: string;
+            } = {};
+            if (this.sdp != null) {
+                data.sdp = this.sdp;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.sdp.length)
+                writer.writeString(1, this.sdp);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ConnectCallMediaResponse {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ConnectCallMediaResponse();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        message.sdp = reader.readString();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): ConnectCallMediaResponse {
+            return ConnectCallMediaResponse.deserialize(bytes);
+        }
+    }
     export class PollMessage extends pb_1.Message {
         #one_of_decls: number[][] = [];
         constructor(data?: any[] | {
@@ -12095,6 +12805,51 @@ export namespace messages {
                 responseSerialize: (message: Empty) => Buffer.from(message.serialize()),
                 responseDeserialize: (bytes: Buffer) => Empty.deserialize(new Uint8Array(bytes))
             },
+            StartCall: {
+                path: "/messages.MessageService/StartCall",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: StartCallRequest) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => StartCallRequest.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: CallInfo) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => CallInfo.deserialize(new Uint8Array(bytes))
+            },
+            AcceptCall: {
+                path: "/messages.MessageService/AcceptCall",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: CallIdRequest) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => CallIdRequest.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: Empty) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => Empty.deserialize(new Uint8Array(bytes))
+            },
+            EndCall: {
+                path: "/messages.MessageService/EndCall",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: CallIdRequest) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => CallIdRequest.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: Empty) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => Empty.deserialize(new Uint8Array(bytes))
+            },
+            ConnectCallMedia: {
+                path: "/messages.MessageService/ConnectCallMedia",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: ConnectCallMediaRequest) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => ConnectCallMediaRequest.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: ConnectCallMediaResponse) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => ConnectCallMediaResponse.deserialize(new Uint8Array(bytes))
+            },
+            GetActiveCalls: {
+                path: "/messages.MessageService/GetActiveCalls",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: Session) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => Session.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: CallInfoList) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => CallInfoList.deserialize(new Uint8Array(bytes))
+            },
             GetMessageById: {
                 path: "/messages.MessageService/GetMessageById",
                 requestStream: false,
@@ -12194,6 +12949,11 @@ export namespace messages {
         abstract CancelEventMessage(call: grpc_1.ServerUnaryCall<CancelEventMessageRequest, MessageResponse>, callback: grpc_1.sendUnaryData<MessageResponse>): void;
         abstract DownloadMedia(call: grpc_1.ServerUnaryCall<DownloadMediaRequest, DownloadMediaResponse>, callback: grpc_1.sendUnaryData<DownloadMediaResponse>): void;
         abstract RejectCall(call: grpc_1.ServerUnaryCall<RejectCallRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
+        abstract StartCall(call: grpc_1.ServerUnaryCall<StartCallRequest, CallInfo>, callback: grpc_1.sendUnaryData<CallInfo>): void;
+        abstract AcceptCall(call: grpc_1.ServerUnaryCall<CallIdRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
+        abstract EndCall(call: grpc_1.ServerUnaryCall<CallIdRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
+        abstract ConnectCallMedia(call: grpc_1.ServerUnaryCall<ConnectCallMediaRequest, ConnectCallMediaResponse>, callback: grpc_1.sendUnaryData<ConnectCallMediaResponse>): void;
+        abstract GetActiveCalls(call: grpc_1.ServerUnaryCall<Session, CallInfoList>, callback: grpc_1.sendUnaryData<CallInfoList>): void;
         abstract GetMessageById(call: grpc_1.ServerUnaryCall<EntityByIdRequest, Json>, callback: grpc_1.sendUnaryData<Json>): void;
         abstract GetMessages(call: grpc_1.ServerUnaryCall<GetMessagesRequest, JsonList>, callback: grpc_1.sendUnaryData<JsonList>): void;
         abstract GetChats(call: grpc_1.ServerUnaryCall<GetChatsRequest, JsonList>, callback: grpc_1.sendUnaryData<JsonList>): void;
@@ -12411,6 +13171,21 @@ export namespace messages {
         };
         RejectCall: GrpcUnaryServiceInterface<RejectCallRequest, Empty> = (message: RejectCallRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<Empty>, options?: grpc_1.CallOptions | grpc_1.requestCallback<Empty>, callback?: grpc_1.requestCallback<Empty>): grpc_1.ClientUnaryCall => {
             return super.RejectCall(message, metadata, options, callback);
+        };
+        StartCall: GrpcUnaryServiceInterface<StartCallRequest, CallInfo> = (message: StartCallRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<CallInfo>, options?: grpc_1.CallOptions | grpc_1.requestCallback<CallInfo>, callback?: grpc_1.requestCallback<CallInfo>): grpc_1.ClientUnaryCall => {
+            return super.StartCall(message, metadata, options, callback);
+        };
+        AcceptCall: GrpcUnaryServiceInterface<CallIdRequest, Empty> = (message: CallIdRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<Empty>, options?: grpc_1.CallOptions | grpc_1.requestCallback<Empty>, callback?: grpc_1.requestCallback<Empty>): grpc_1.ClientUnaryCall => {
+            return super.AcceptCall(message, metadata, options, callback);
+        };
+        EndCall: GrpcUnaryServiceInterface<CallIdRequest, Empty> = (message: CallIdRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<Empty>, options?: grpc_1.CallOptions | grpc_1.requestCallback<Empty>, callback?: grpc_1.requestCallback<Empty>): grpc_1.ClientUnaryCall => {
+            return super.EndCall(message, metadata, options, callback);
+        };
+        ConnectCallMedia: GrpcUnaryServiceInterface<ConnectCallMediaRequest, ConnectCallMediaResponse> = (message: ConnectCallMediaRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<ConnectCallMediaResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<ConnectCallMediaResponse>, callback?: grpc_1.requestCallback<ConnectCallMediaResponse>): grpc_1.ClientUnaryCall => {
+            return super.ConnectCallMedia(message, metadata, options, callback);
+        };
+        GetActiveCalls: GrpcUnaryServiceInterface<Session, CallInfoList> = (message: Session, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<CallInfoList>, options?: grpc_1.CallOptions | grpc_1.requestCallback<CallInfoList>, callback?: grpc_1.requestCallback<CallInfoList>): grpc_1.ClientUnaryCall => {
+            return super.GetActiveCalls(message, metadata, options, callback);
         };
         GetMessageById: GrpcUnaryServiceInterface<EntityByIdRequest, Json> = (message: EntityByIdRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<Json>, options?: grpc_1.CallOptions | grpc_1.requestCallback<Json>, callback?: grpc_1.requestCallback<Json>): grpc_1.ClientUnaryCall => {
             return super.GetMessageById(message, metadata, options, callback);

@@ -5,7 +5,15 @@ import {
 } from '@adiwajshing/baileys';
 import * as grpc from '@grpc/grpc-js';
 import { connectivityState } from '@grpc/grpc-js';
-import { UnprocessableEntityException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  NotFoundException,
+  NotImplementedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import {
   extractDeviceId,
   getChannelInviteLink,
@@ -148,7 +156,7 @@ import {
   WAMessage,
   WAMessageReaction,
 } from '@waha/structures/responses.dto';
-import { CallData } from '@waha/structures/calls.dto';
+import { CallData, CallInfo } from '@waha/structures/calls.dto';
 import {
   MeInfo,
   MessageCappingData,
@@ -246,6 +254,34 @@ function getGowsStorageConfig(
   });
 }
 
+/**
+ * Maps GOWS gRPC errors of the native calls API to HTTP errors
+ */
+async function callsRpc<Req, Res>(
+  fn: (req: Req) => Promise<Res>,
+  req: Req,
+): Promise<Res> {
+  try {
+    return await fn(req);
+  } catch (err) {
+    const message = err?.details || err?.message || String(err);
+    switch (err?.code) {
+      case grpc.status.NOT_FOUND:
+        throw new NotFoundException(message);
+      case grpc.status.INVALID_ARGUMENT:
+        throw new BadRequestException(message);
+      case grpc.status.FAILED_PRECONDITION:
+        throw new ConflictException(message);
+      case grpc.status.RESOURCE_EXHAUSTED:
+        throw new HttpException(message, HttpStatus.TOO_MANY_REQUESTS);
+      case grpc.status.UNIMPLEMENTED:
+        throw new NotImplementedException(message);
+      default:
+        throw err;
+    }
+  }
+}
+
 enum WhatsMeowEvent {
   CONNECTED = 'gows.ConnectedEventData',
   DISCONNECTED = 'events.Disconnected',
@@ -278,6 +314,7 @@ enum WhatsMeowEvent {
   CALL_REJECT = 'events.CallReject',
   CALL_TERMINATE = 'events.CallTerminate',
   CALL_OFFER_NOTICE = 'events.CallOfferNotice',
+  CALL_STATE = 'gows.CallStateEvent',
   // Other
   AppState = 'events.AppState',
   AppStateSyncComplete = 'AppStateSyncComplete',
@@ -734,6 +771,13 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     );
     this.events2.get(WAHAEvents.CALL_REJECTED).switch(callRejected$);
 
+    // Native (VoIP) calls state
+    const callState$ = all$.pipe(
+      onlyEvent(WhatsMeowEvent.CALL_STATE),
+      map(this.toCallInfo.bind(this)),
+    );
+    this.events2.get(WAHAEvents.CALL_STATE).switch(callState$);
+
     const presence$ = all$.pipe(
       onlyEvent(WhatsMeowEvent.PRESENCE),
       filter((event: any) => this.jids.include(event?.From)),
@@ -1092,6 +1136,64 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       id: id,
     });
     await promisify(this.client.RejectCall)(request);
+  }
+
+  /**
+   * Native (VoIP) calls
+   */
+  @Activity()
+  async startCall(chatId: string): Promise<CallInfo> {
+    const jid = await this.hooks.wid.chat.promise(chatId, 'startCall');
+    const request = new messages.StartCallRequest({
+      session: this.session,
+      jid: jid,
+      isVideo: false,
+    });
+    const response = await callsRpc(
+      promisify(this.client.StartCall),
+      request,
+    );
+    return this.toCallInfo(response.toObject());
+  }
+
+  @Activity()
+  async acceptCall(id: string): Promise<void> {
+    const request = new messages.CallIdRequest({
+      session: this.session,
+      id: id,
+    });
+    await callsRpc(promisify(this.client.AcceptCall), request);
+  }
+
+  @Activity()
+  async endCall(id: string): Promise<void> {
+    const request = new messages.CallIdRequest({
+      session: this.session,
+      id: id,
+    });
+    await callsRpc(promisify(this.client.EndCall), request);
+  }
+
+  async connectCallMedia(id: string, sdp: string): Promise<string> {
+    const request = new messages.ConnectCallMediaRequest({
+      session: this.session,
+      id: id,
+      sdp: sdp,
+    });
+    const response = await callsRpc(
+      promisify(this.client.ConnectCallMedia),
+      request,
+    );
+    return response.toObject().sdp;
+  }
+
+  async getActiveCalls(): Promise<CallInfo[]> {
+    const response = await callsRpc(
+      promisify(this.client.GetActiveCalls),
+      this.session,
+    );
+    const calls = response.toObject().calls || [];
+    return calls.map((call) => this.toCallInfo(call));
   }
 
   @Activity()
@@ -3111,6 +3213,25 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       return true;
     }
     return this.jids.include(call.From);
+  }
+
+  /**
+   * Accepts both the gRPC CallInfo (camelCase) and the gows.CallStateEvent JSON (PascalCase)
+   */
+  private toCallInfo(call: any): CallInfo {
+    const peer = call?.peer ?? call?.Peer;
+    const endReason = call?.endReason ?? call?.EndReason;
+    const timestamp = Number(call?.timestamp ?? call?.Timestamp ?? 0);
+    return {
+      id: call?.id ?? call?.ID,
+      peer: peer ? toCusFormat(peer) : peer,
+      direction: call?.direction ?? call?.Direction,
+      state: call?.state ?? call?.State,
+      isVideo: !!(call?.isVideo ?? call?.IsVideo),
+      endReason: endReason || undefined,
+      mediaConnected: !!(call?.mediaConnected ?? call?.MediaConnected),
+      timestamp: timestamp || Math.floor(Date.now() / 1000),
+    };
   }
 
   private toCallData(call: any): CallData {
