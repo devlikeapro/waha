@@ -114,8 +114,12 @@ export class SqlKVRepository<Entity> {
   }
 
   async getCount(): Promise<number> {
-    // Not this.select(): it prepends `${table}.*` to the aggregate, and
-    // PostgreSQL rejects that with 42803 (SQLite silently accepts it).
+    // DO NOT `this.select().count(...)`
+    // It renders `select "table_name".*, count("id") as "count" from "table_name"` - PostgreSQL rejects that with
+    // 42803 `column "table_name.id" must appear in the GROUP BY clause`
+    //
+    // DO `this.knex.count(...).from(...)`
+    // It renders `select count("id") as "count" from "table_name"` - works in PostgreSQL and SQLite
     const query = this.knex.count({ count: 'id' }).from(this.table);
     const row = await query.first();
     if (!row) {
