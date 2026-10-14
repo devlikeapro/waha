@@ -102,6 +102,9 @@ export class EventMessageRequest {
   @ChatIdProperty()
   chatId: string;
 
+  @ValidateNested()
+  @Type(() => EventMessage)
+  @IsNotEmpty()
   event: EventMessage;
 
   @ReplyToProperty()
