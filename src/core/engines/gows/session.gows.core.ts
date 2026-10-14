@@ -50,12 +50,14 @@ import {
 } from '@waha/core/media/IMediaEngineProcessor';
 import { LottieMediaProcessorWrapper } from '@waha/core/media/LottieMediaProcessorWrapper';
 import { QR } from '@waha/core/QR';
+import { getBroadcastListRecipients } from '@waha/core/utils/broadcastLists';
 import { ExtractMessageKeysForRead } from '@waha/core/utils/convertors';
 import { parseMessageIdSerialized } from '@waha/core/utils/ids';
 import {
   isJidBroadcast,
   isJidGroup,
   isJidNewsletter,
+  isLidUser,
   toCusFormat,
 } from '@waha/core/utils/jids';
 import {
@@ -1105,6 +1107,9 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         ),
       );
     }
+    const participants = await this.prepareJidsForBroadcastList(
+      request.participants,
+    );
     const message = new messages.MessageRequest({
       id: request.id,
       jid: jid,
@@ -1114,6 +1119,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       linkPreviewHighQuality: request.linkPreviewHighQuality,
       replyTo: getMessageIdFromSerialized(request.reply_to),
       mentions: mentions,
+      participants: participants,
     });
     const response = await promisify(this.client.SendMessage)(message);
     const data = response.toObject();
@@ -1248,6 +1254,47 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     const response = await promisify(this.client.RevokeMessage)(message);
     const data = response.toObject();
     return this.messageResponse(jid, data);
+  }
+
+  /**
+   * Recipients of a broadcast list, addressed the way the phone does it.
+   *
+   * - By LID: sending with phone-number JIDs is rejected by the server
+   *   ("server returned error 420"). Phone numbers are mapped to their LID here.
+   * - Without the account itself: if the account's own devices receive the
+   *   list's sender key, the phone decrypts the fan-out copy directly and
+   *   never records the message as sent (it shows up neither in the list nor
+   *   in the recipients' chats). Without the key, the phone asks for a retry
+   *   and gets the message encrypted for it alone, which it records like one
+   *   sent from the phone.
+   *
+   * The members of a list created on the phone can't be read from a linked
+   * device, so the caller provides them.
+   */
+  protected async prepareJidsForBroadcastList(
+    participants: string[],
+  ): Promise<string[]> {
+    return await getBroadcastListRecipients(
+      participants,
+      [this.me?.lid, this.me?.id],
+      (participant) => this.findBroadcastListParticipantLid(participant),
+    );
+  }
+
+  private async findBroadcastListParticipantLid(
+    participant: string,
+  ): Promise<string> {
+    if (isLidUser(participant)) {
+      return participant;
+    }
+    const found = await this.findLIDByPhoneNumber(participant);
+    if (!found.lid) {
+      throw new UnprocessableEntityException(
+        `No LID is known for '${participant}': it can't be addressed in a broadcast list yet. ` +
+          `Pass its LID ('<id>@lid') instead, or exchange a message with it first.`,
+      );
+    }
+    return found.lid;
   }
 
   protected async prepareJidsForStatus(contacts: string[]) {
@@ -1456,7 +1503,16 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         value: request.backgroundColor,
       });
     }
-    const participants = await this.prepareJidsForStatus(request.contacts);
+    // request.contacts is who a Status is sent to; request.participants is
+    // who a broadcast list is sent to - the two never coexist on one request.
+    let participants: string[];
+    if (request.participants?.length) {
+      participants = await this.prepareJidsForBroadcastList(
+        request.participants,
+      );
+    } else {
+      participants = await this.prepareJidsForStatus(request.contacts);
+    }
     let mentions: string[] | undefined;
     if (request.mentions) {
       mentions = await Promise.all(

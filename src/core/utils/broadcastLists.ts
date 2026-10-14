@@ -1,0 +1,95 @@
+import { UnprocessableEntityException } from '@nestjs/common';
+import { NotImplementedByEngineError } from '@waha/core/exceptions';
+import {
+  isJidBroadcast,
+  isJidStatusBroadcast,
+  toCusFormat,
+} from '@waha/core/utils/jids';
+
+/**
+ * A broadcast list a user created on their phone - as opposed to
+ * 'status@broadcast', which is the WhatsApp Status feed.
+ */
+export function isBroadcastListJid(jid: string): boolean {
+  return isJidBroadcast(jid) && !isJidStatusBroadcast(jid);
+}
+
+/**
+ * 'participants' is only meaningful for broadcast lists: WhatsApp doesn't
+ * let a linked device read who is on a list created on the phone, so the
+ * caller has to provide the recipients themselves. Reject the request early
+ * with a clear message instead of silently ignoring it or sending to the
+ * wrong chat.
+ */
+export function validateBroadcastListParticipants(request: {
+  chatId: string;
+  participants?: string[];
+}) {
+  if (request.participants != null && !isListOfIds(request.participants)) {
+    throw new UnprocessableEntityException(
+      `"participants" must be a list of phone numbers or LIDs, like ["11111111111@c.us", "22222222222@lid"].`,
+    );
+  }
+  const isList = isBroadcastListJid(request.chatId);
+  if (request.participants && request.participants.length > 0) {
+    if (!isList) {
+      throw new UnprocessableEntityException(
+        `"participants" can be used only when sending to a broadcast list ('<id>@broadcast'), not to '${request.chatId}'.`,
+      );
+    }
+    return;
+  }
+  if (isList) {
+    throw new UnprocessableEntityException(
+      `Sending to a broadcast list ('${request.chatId}') requires "participants" - ` +
+        `the members of a list created on the phone can't be read from a linked device.`,
+    );
+  }
+}
+
+/**
+ * Recipients of a broadcast list message: each participant's LID, once,
+ * leaving out the account itself ("own" holds its phone number and LID).
+ */
+export async function getBroadcastListRecipients(
+  participants: string[],
+  own: string[],
+  findLid: (participant: string) => Promise<string>,
+): Promise<string[]> {
+  const ownIds = own.filter(Boolean).map((jid) => toCusFormat(jid));
+  const lids: string[] = [];
+  for (const participant of participants ?? []) {
+    if (ownIds.includes(toCusFormat(participant))) {
+      continue;
+    }
+    const lid = await findLid(participant);
+    if (ownIds.includes(toCusFormat(lid))) {
+      continue;
+    }
+    if (!lids.includes(lid)) {
+      lids.push(lid);
+    }
+  }
+  return lids;
+}
+
+function isListOfIds(value: unknown): boolean {
+  return (
+    Array.isArray(value) &&
+    value.every((item) => typeof item === 'string' && item.length > 0)
+  );
+}
+
+/**
+ * Engines other than GOWS have no way to fan a message out to explicit
+ * broadcast list participants, so fail loudly instead of dropping them.
+ */
+export function rejectUnsupportedBroadcastListParticipants(request: {
+  participants?: string[];
+}) {
+  if (request.participants && request.participants.length > 0) {
+    throw new NotImplementedByEngineError(
+      'Sending to a broadcast list with "participants" is not supported.',
+    );
+  }
+}
