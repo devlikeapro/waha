@@ -93,6 +93,56 @@ npm run start
 - Skip it on methods that only throw `NotImplementedByEngineError` /
   `AvailableInPlusVersion`
 
+## Request Validation (DTOs)
+
+- No global pipe: every new `@Body()` / `@Query()` endpoint declares
+  `WAHAValidationPipe`
+- Under whitelist every DTO field needs a class-validator decorator, otherwise
+  it is dropped;
+  - `@ApiProperty` and the `*Property()` helpers in
+    `src/structures/properties.dto.ts` do not count
+- Nested class fields need `@ValidateNested()` + `@Type()` or their rules never
+  run;
+  - `@ValidateNested()` without `@Type()` drops all nested keys the same way
+
+```typescript
+@Post('/send')
+@UsePipes(new WAHAValidationPipe())
+async send(@Body() request: SendRequest) {}
+
+// BAD
+class _SendRequest {
+  @ChatIdProperty()
+  chatId: string; // no validator => stripped by whitelist
+
+  options?: Options; // no @ValidateNested => Options rules never run
+
+  @ValidateNested()
+  items: Item[]; // no @Type => nested keys dropped
+}
+
+// GOOD
+class SendRequest {
+  @ChatIdProperty()
+  @IsString()
+  chatId: string;
+
+  @ValidateNested()
+  @Type(() => Options)
+  @IsOptional()
+  options?: Options;
+
+  @ValidateNested({ each: true })
+  @Type(() => Item)
+  @IsArray()
+  items: Item[];
+}
+```
+
+- Union file fields (`FileURL | FileContent`): copy `LinkPreviewData.image` in
+  `src/structures/chatting.dto.ts` - `@ValidateNested()` + `@Transform` to the
+  concrete class + `@IsFileType()`
+
 ## MCP Tools
 
 MCP tools live in `src/apps/mcp/tools/` and expose the HTTP API to AI clients.
