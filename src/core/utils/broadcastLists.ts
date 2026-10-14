@@ -21,6 +21,11 @@ export function validateBroadcastListParticipants(request: {
   chatId: string;
   participants?: string[];
 }) {
+  if (request.participants != null && !isListOfIds(request.participants)) {
+    throw new UnprocessableEntityException(
+      `"participants" must be a list of phone numbers or LIDs, like ["11111111111@c.us", "22222222222@lid"].`,
+    );
+  }
   const isList = isBroadcastListJid(request.chatId);
   if (request.participants && request.participants.length > 0) {
     if (!isList) {
@@ -36,6 +41,13 @@ export function validateBroadcastListParticipants(request: {
         `the members of a list created on the phone can't be read from a linked device.`,
     );
   }
+}
+
+function isListOfIds(value: unknown): boolean {
+  return (
+    Array.isArray(value) &&
+    value.every((item) => typeof item === 'string' && item.length > 0)
+  );
 }
 
 /**

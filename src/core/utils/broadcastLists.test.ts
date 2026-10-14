@@ -69,6 +69,18 @@ describe('validateBroadcastListParticipants', () => {
       }),
     ).toThrow(UnprocessableEntityException);
   });
+
+  it.each([['22222222222@c.us'], [[22222222222]], [['22222222222@c.us', '']]])(
+    'rejects participants that are not a list of IDs: %p',
+    (participants) => {
+      expect(() =>
+        validateBroadcastListParticipants({
+          chatId: '11111111111@broadcast',
+          participants: participants as any,
+        }),
+      ).toThrow(UnprocessableEntityException);
+    },
+  );
 });
 
 describe('rejectUnsupportedBroadcastListParticipants', () => {
