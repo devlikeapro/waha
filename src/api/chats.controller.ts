@@ -26,6 +26,8 @@ import {
   ChatPictureQuery,
   ChatPictureResponse,
   ChatSummary,
+  DeleteMessagesForMeRequest,
+  DeleteMessagesForMeResponse,
   GetChatMessageQuery,
   GetChatMessagesFilter,
   GetChatMessagesQuery,
@@ -46,6 +48,7 @@ import { CheckPolicies } from '@waha/core/auth/policies.decorator';
 import { CanSession, FromParam } from '@waha/core/auth/policies';
 
 import { Action } from '@waha/core/auth/casl.types';
+import { WAHAValidationPipe } from '@waha/nestjs/pipes/WAHAValidationPipe';
 
 @ApiSecurity('api_key')
 @Controller('api/:session/chats')
@@ -215,6 +218,26 @@ class ChatsController {
     @Param('chatId') chatId: string,
   ) {
     return session.clearMessages(chatId);
+  }
+
+  @Post(':chatId/messages/delete-for-me')
+  @SessionApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
+  @ChatIdApiParam
+  @ApiOperation({
+    summary: 'Deletes messages for this account only ("Delete for me")',
+    description:
+      'The other participants keep the messages. ' +
+      'Works for received and sent messages, nothing is revoked. ' +
+      'All the messages are deleted at once, or none if one of them is not found in the chat.',
+  })
+  @UsePipes(new WAHAValidationPipe())
+  deleteMessagesForMe(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('chatId') chatId: string,
+    @Body() body: DeleteMessagesForMeRequest,
+  ): Promise<DeleteMessagesForMeResponse> {
+    return session.deleteMessagesForMe(chatId, body);
   }
 
   @Delete(':chatId/messages/:messageId')

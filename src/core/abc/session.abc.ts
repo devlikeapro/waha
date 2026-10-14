@@ -25,6 +25,8 @@ import {
 } from '@waha/structures/channels.dto';
 import {
   ChatSummary,
+  DeleteMessagesForMeRequest,
+  DeleteMessagesForMeResponse,
   GetChatMessageQuery,
   GetChatMessagesFilter,
   GetChatMessagesQuery,
@@ -801,6 +803,13 @@ export abstract class WhatsappSession {
   }
 
   public deleteMessage(chatId: string, messageId: string) {
+    throw new NotImplementedByEngineError();
+  }
+
+  public deleteMessagesForMe(
+    chatId: string,
+    request: DeleteMessagesForMeRequest,
+  ): Promise<DeleteMessagesForMeResponse> {
     throw new NotImplementedByEngineError();
   }
 
