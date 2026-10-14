@@ -1646,9 +1646,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@img/sharp-win32-x64@npm:^0.35.4":
-  version: 0.35.4
-  resolution: "@img/sharp-win32-x64@npm:0.35.4"
+"@img/sharp-win32-x64@npm:^0.35.5":
+  version: 0.35.5
+  resolution: "@img/sharp-win32-x64@npm:0.35.5"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -5058,11 +5058,11 @@ __metadata:
   linkType: hard
 
 "@wppconnect-team/wppconnect@github:wppconnect-team/wppconnect#master":
-  version: 2.3.3
-  resolution: "@wppconnect-team/wppconnect@https://github.com/wppconnect-team/wppconnect.git#commit=d7c82aaba16c549f556aae2841197cd4e11c77c3"
+  version: 2.3.4
+  resolution: "@wppconnect-team/wppconnect@https://github.com/wppconnect-team/wppconnect.git#commit=1ada25070496db1dfc117f1062d6fb6cb47cf599"
   dependencies:
-    "@img/sharp-win32-x64": "npm:^0.35.4"
-    "@wppconnect/wa-js": "npm:^4.6.0"
+    "@img/sharp-win32-x64": "npm:^0.35.5"
+    "@wppconnect/wa-js": "npm:^4.6.1"
     "@wppconnect/wa-version": "npm:^1.5.4472"
     atob: "npm:^2.1.2"
     axios: "npm:^1.20.0"
@@ -5085,7 +5085,7 @@ __metadata:
     reflect-metadata: "npm:^0.2.1"
     rimraf: "npm:^3.0.2"
     sanitize-filename: "npm:^1.6.4"
-    sharp: "npm:0.35.4"
+    sharp: "npm:0.35.5"
     tmp: "npm:^0.2.7"
     tree-kill: "npm:^1.2.2"
     winston: "npm:^3.19.0"
@@ -5095,21 +5095,21 @@ __metadata:
       optional: true
     fsevents:
       optional: true
-  checksum: 10/da8c2ca3be46104fd004a87df87587cfc38cefe0230b2b07ddf4dd64957fc030c3b904371ce5f9f3178501254136d11f3ec84468ac4d7c4feae6d0e6f16d1c20
+  checksum: 10/620a7aeaa9639c658b0bef8499a4b169411ef15d986343a6a7367d78d1a9a4695a73400497574f9ce1b48cd976159eca2ccdd0fc1c3b6a0a85290f0821ca92d1
   languageName: node
   linkType: hard
 
 "@wppconnect/wa-js@github:wppconnect-team/wa-js#main":
-  version: 4.6.0
-  resolution: "@wppconnect/wa-js@https://github.com/wppconnect-team/wa-js.git#commit=879d5c2b30e2ef633abeed8cdf7f601823ef0911"
-  checksum: 10/29d70f88869e536c438803183b56732b45721a6d267d3c67fe90664bba53d737338262c186d7dcb6f850e6caf8d55276f5422987652958fc207f9ac85e4292e0
+  version: 4.6.1
+  resolution: "@wppconnect/wa-js@https://github.com/wppconnect-team/wa-js.git#commit=4e8707fe9b251923beaf56bf18049d5ec0234155"
+  checksum: 10/d5169e84aaa81712089ccf183036e9872b6cd250016d1d22f1dd842ebec377702243053b59867e055dad2bd7cd87afe5d5209a86e8ab5d76f5af195c0799e8a8
   languageName: node
   linkType: hard
 
-"@wppconnect/wa-js@npm:^4.6.0":
-  version: 4.6.0
-  resolution: "@wppconnect/wa-js@npm:4.6.0"
-  checksum: 10/2f3ef8bfadb8af39239a38d2a42a0c13d4a0caf69c3115e8c431613a76b01791df2b9798f00c142f2d56d52daaf733171f9f7f3ef05404bd6a63c84fdde95dce
+"@wppconnect/wa-js@npm:^4.6.1":
+  version: 4.6.1
+  resolution: "@wppconnect/wa-js@npm:4.6.1"
+  checksum: 10/d4315379c1b88d58558324c8358191468f1833507deb3ea791c40d2aa4786195ec483220a881a0abcb255667e4ec5a5d7950c6c0da157aaf16480acd3c1fa083
   languageName: node
   linkType: hard
 
