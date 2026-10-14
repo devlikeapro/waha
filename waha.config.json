@@ -1,7 +1,7 @@
 {
   "waha": {
     "gows": {
-      "repo": "SEU_USUARIO_GITHUB/gows-plus",
+      "repo": "JoRodriguesDev/gows-plus",
       "ref": "feat/voip-calls",
       "build": "source"
     },
