@@ -53,8 +53,7 @@ export class MediaS3Storage implements IMediaStorage {
     // underlying S3 SDK will call .trim() on them
     for (const key in metadata) {
       const value = String(metadata[key]);
-      // only ascii allowed in value for S3
-      metadata[key] = value.replace(/[^\x20-\x7E]/g, '');
+      metadata[key] = encodeURIComponent(value);
     }
     return metadata;
   }
