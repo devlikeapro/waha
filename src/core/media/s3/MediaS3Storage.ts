@@ -53,9 +53,6 @@ export class MediaS3Storage implements IMediaStorage {
     // underlying S3 SDK will call .trim() on them
     for (const key in metadata) {
       const value = String(metadata[key]);
-      // Percent-encode instead of dropping non-ascii: stripping left runs of
-      // spaces behind, which break the signature on services that do not
-      // collapse them. decodeURIComponent() restores the original filename.
       metadata[key] = encodeURIComponent(value);
     }
     return metadata;
