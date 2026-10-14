@@ -44,8 +44,11 @@ export class LabelsController {
   @SessionApiParam
   @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get all labels' })
-  getAll(@WorkingSessionParam session: WhatsappSession): Promise<Label[]> {
-    return session.getLabels();
+  async getAll(
+    @WorkingSessionParam session: WhatsappSession,
+  ): Promise<Label[]> {
+    const labels = await session.getLabels();
+    return lodash.sortBy(labels, (label) => parseInt(label.id, 10));
   }
 
   @Post('/')
@@ -128,11 +131,12 @@ export class LabelsController {
   @ChatIdApiParam
   @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @ApiOperation({ summary: 'Get labels for the chat' })
-  getChatLabels(
+  async getChatLabels(
     @WorkingSessionParam session: WhatsappSession,
     @Param('chatId') chatId: string,
   ): Promise<Label[]> {
-    return session.getChatLabels(chatId);
+    const labels = await session.getChatLabels(chatId);
+    return lodash.sortBy(labels, (label) => parseInt(label.id, 10));
   }
 
   @Put('/chats/:chatId')
