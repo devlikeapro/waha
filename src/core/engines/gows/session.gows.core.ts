@@ -74,6 +74,7 @@ import {
   PreviewChannelMessages,
 } from '@waha/structures/channels.dto';
 import {
+  ChatDeletedEvent,
   ChatSortField,
   ChatSummary,
   DeleteChatResponse,
@@ -210,6 +211,7 @@ import {
 } from './labels.gows';
 import {
   assertDeletableChatId,
+  DeletedChats,
   toDeleteChatError,
   toDeleteChatResponse,
 } from './chats.gows';
@@ -285,6 +287,8 @@ enum WhatsMeowEvent {
   CALL_REJECT = 'events.CallReject',
   CALL_TERMINATE = 'events.CallTerminate',
   CALL_OFFER_NOTICE = 'events.CallOfferNotice',
+  // Chats
+  CHAT_DELETED = 'gows.ChatDeletedEvent',
   // Other
   AppState = 'events.AppState',
   AppStateSyncComplete = 'AppStateSyncComplete',
@@ -313,6 +317,9 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   protected presences: any;
 
   private local$ = new Subject<EnginePayload>();
+  // chat.deleted payloads
+  private chatDeleted$ = new Subject<ChatDeletedEvent>();
+  private deletedChats: DeletedChats;
 
   public constructor(config) {
     super(config);
@@ -512,6 +519,15 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     });
     events.on(WhatsMeowEvent.MESSAGE_CAPPING, (data) => {
       this.messageCapping.update(parseMessageCapping(data));
+    });
+    this.deletedChats = new DeletedChats(
+      this.logger,
+      (payload) => this.chatDeleted$.next(payload),
+      (jid) => this.jids.include(jid),
+      (id) => this.confirmChatDeleted(id),
+    );
+    events.on(WhatsMeowEvent.CHAT_DELETED, (data) => {
+      void this.deletedChats.handle(data);
     });
     events.on(WhatsMeowEvent.UNDECRYPTABLE_MESSAGE, (data) => {
       this.logger.error(
@@ -880,6 +896,22 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
 
     this.events2.get(WAHAEvents.LABEL_CHAT_ADDED).switch(labelChatAdded$);
     this.events2.get(WAHAEvents.LABEL_CHAT_DELETED).switch(labelChatDeleted$);
+
+    //
+    // Chats
+    //
+    this.events2.get(WAHAEvents.CHAT_DELETED).switch(this.chatDeleted$);
+  }
+
+  /**
+   * Tells GOWS a deleted chat was handled, so it is not sent again
+   */
+  protected async confirmChatDeleted(id: string): Promise<void> {
+    const request = new messages.AckChatDeletedRequest({
+      session: this.session,
+      id: id,
+    });
+    await promisify(this.client.AckChatDeleted)(request);
   }
 
   @Activity()

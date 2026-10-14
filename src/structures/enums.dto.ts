@@ -22,6 +22,7 @@ export enum WAHAEvents {
   POLL_VOTE = 'poll.vote',
   POLL_VOTE_FAILED = 'poll.vote.failed',
   CHAT_ARCHIVE = 'chat.archive',
+  CHAT_DELETED = 'chat.deleted',
   CALL_RECEIVED = 'call.received',
   CALL_ACCEPTED = 'call.accepted',
   CALL_REJECTED = 'call.rejected',

@@ -7,6 +7,8 @@ import {
 } from '@nestjs/common';
 import {
   assertDeletableChatId,
+  DeletedChats,
+  toChatDeletedEvent,
   toDeleteChatError,
   toDeleteChatResponse,
 } from '@waha/core/engines/gows/chats.gows';
@@ -171,6 +173,236 @@ describe('assertDeletableChatId', () => {
     expect(() => assertDeletableChatId(chatId)).toThrow(
       UnprocessableEntityException,
     );
+  });
+});
+
+describe('toChatDeletedEvent', () => {
+  const event = {
+    Timestamp: '2026-10-13T16:28:17.123Z',
+    DeletedBefore: '2026-10-13T16:20:01Z',
+    DeleteMedia: true,
+    MessageIDs: ['A', 'B'],
+  };
+
+  it('gives both ids of a direct chat deleted by phone number', () => {
+    const payload = toChatDeletedEvent({
+      ...event,
+      JID: '22670000000@s.whatsapp.net',
+      AltJID: '123456789012345@lid',
+    });
+
+    expect(payload).toEqual({
+      id: '22670000000@c.us',
+      pn: '22670000000@c.us',
+      lid: '123456789012345@lid',
+      timestamp: 1791908897,
+      deletedBefore: 1791908401,
+      deleteMedia: true,
+      purged: false,
+    });
+  });
+
+  it('gives both ids of a direct chat deleted by LID', () => {
+    const payload = toChatDeletedEvent({
+      ...event,
+      JID: '123456789012345@lid',
+      AltJID: '22670000000@s.whatsapp.net',
+    });
+
+    expect(payload.id).toBe('123456789012345@lid');
+    expect(payload.pn).toBe('22670000000@c.us');
+    expect(payload.lid).toBe('123456789012345@lid');
+  });
+
+  it('has no other id for a group or an unknown pair', () => {
+    const group = toChatDeletedEvent({
+      ...event,
+      JID: '120363000000000000@g.us',
+      AltJID: '',
+      DeleteMedia: false,
+    });
+    const unknown = toChatDeletedEvent({
+      ...event,
+      JID: '123456789012345@lid',
+      AltJID: '',
+    });
+
+    expect(group).toMatchObject({
+      id: '120363000000000000@g.us',
+      pn: null,
+      lid: null,
+      deleteMedia: false,
+    });
+    expect(unknown).toMatchObject({ pn: null, lid: '123456789012345@lid' });
+  });
+
+  it('gives a LID without its device', () => {
+    const payload = toChatDeletedEvent({
+      ...event,
+      JID: '22670000000@s.whatsapp.net',
+      AltJID: '123456789012345:7@lid',
+    });
+
+    expect(payload.lid).toBe('123456789012345@lid');
+  });
+
+  it('gives null for a missing time', () => {
+    const payload = toChatDeletedEvent({
+      ...event,
+      JID: '22670000000@s.whatsapp.net',
+      Timestamp: '0001-01-01T00:00:00Z',
+    });
+
+    expect(payload.timestamp).toBeNull();
+  });
+});
+
+describe('DeletedChats', () => {
+  const deleted = {
+    JID: '22670000000@s.whatsapp.net',
+    AltJID: '123456789012345@lid',
+    Timestamp: '2026-10-13T16:28:17.123Z',
+    DeletedBefore: '2026-10-13T16:20:01Z',
+    DeleteMedia: true,
+    FromFullSync: false,
+    Purged: true,
+    MessageIDs: ['A', 'B'],
+  };
+
+  function setup(confirm: jest.Mock = jest.fn().mockResolvedValue(undefined)) {
+    const logger: any = { info: jest.fn(), error: jest.fn(), warn: jest.fn() };
+    const notify = jest.fn();
+    const include = jest.fn().mockReturnValue(true);
+    const chats = new DeletedChats(logger, notify, include, confirm);
+    return {
+      chats: chats,
+      logger: logger,
+      notify: notify,
+      include: include,
+      confirm: confirm,
+    };
+  }
+
+  it('notifies the deletion', async () => {
+    const { chats, notify } = setup();
+
+    await chats.handle(deleted);
+
+    expect(notify).toHaveBeenCalledTimes(1);
+    expect(notify.mock.calls[0][0]).toMatchObject({
+      id: '22670000000@c.us',
+      deleteMedia: true,
+      purged: true,
+    });
+  });
+
+  it('tells a chat the server keeps (not purged)', async () => {
+    const { chats, notify } = setup();
+
+    await chats.handle({ ...deleted, Purged: false, MessageIDs: [] });
+
+    expect(notify.mock.calls[0][0]).toMatchObject({
+      deleteMedia: true,
+      purged: false,
+    });
+  });
+
+  it('does not notify a deletion GOWS failed to clear', async () => {
+    const { chats, notify, logger, confirm } = setup();
+
+    await chats.handle({
+      ...deleted,
+      ID: 'failed',
+      Error: 'messages of x: database is locked',
+    });
+
+    expect(notify).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalled();
+    expect(confirm).toHaveBeenCalledWith('failed');
+  });
+
+  it('does not notify a full sync replay or an ignored chat', async () => {
+    const { chats, notify, include } = setup();
+
+    await chats.handle({ ...deleted, FromFullSync: true });
+    include.mockReturnValue(false);
+    await chats.handle(deleted);
+
+    expect(notify).not.toHaveBeenCalled();
+  });
+
+  it('confirms a deletion to GOWS once handled, and handles it once', async () => {
+    const { chats, notify, confirm } = setup();
+    const event = { ...deleted, ID: 'deletion-1' };
+
+    await chats.handle(event);
+    await chats.handle(event);
+
+    expect(notify).toHaveBeenCalledTimes(1);
+    expect(confirm).toHaveBeenCalledWith('deletion-1');
+    expect(confirm).toHaveBeenCalledTimes(1);
+  });
+
+  it('handles a deletion sent twice at once only once', async () => {
+    let finish: () => void;
+    const confirm = jest.fn(
+      () => new Promise<void>((resolve) => (finish = resolve)),
+    );
+    const { chats, notify } = setup(confirm);
+    const event = { ...deleted, ID: 'deletion-1' };
+
+    const first = chats.handle(event);
+    await chats.handle(event);
+    finish();
+    await first;
+
+    expect(notify).toHaveBeenCalledTimes(1);
+    expect(confirm).toHaveBeenCalledTimes(1);
+  });
+
+  it('sends a deletion again to GOWS when confirming it failed', async () => {
+    const confirm = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('UNAVAILABLE'))
+      .mockResolvedValueOnce(undefined);
+    const { chats, notify, logger } = setup(confirm);
+    const event = { ...deleted, ID: 'deletion-1' };
+
+    await chats.handle(event);
+    // GOWS sends it again (stream reconnected, session restarted)
+    await chats.handle(event);
+
+    expect(logger.warn).toHaveBeenCalled();
+    expect(confirm).toHaveBeenCalledTimes(2);
+    expect(notify).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not confirm a deletion without ID', async () => {
+    const { chats, confirm, notify } = setup();
+
+    await chats.handle(deleted);
+    await chats.handle(deleted);
+
+    expect(confirm).not.toHaveBeenCalled();
+    expect(notify).toHaveBeenCalledTimes(2);
+  });
+
+  // The API refuses to delete a broadcast list, the phone can
+  it('notifies a broadcast list deleted on the phone', async () => {
+    const { chats, notify } = setup();
+
+    await chats.handle({
+      ...deleted,
+      JID: '1760000000@broadcast',
+      AltJID: '',
+      MessageIDs: ['LIST-1'],
+    });
+
+    expect(notify.mock.calls[0][0]).toMatchObject({
+      id: '1760000000@broadcast',
+      pn: null,
+      lid: null,
+    });
   });
 });
 

@@ -114,9 +114,10 @@ class ChatsController {
       'Deletes the chat for this account, like "Delete chat" on the phone. ' +
       'deleteMedia=true also deletes the media from the phone gallery; they ' +
       'are kept there by default.\n\n' +
-      'GOWS: the answer tells which ids got the deletion and up to when. ' +
-      'The messages GOWS stored for the chat are cleared too, once the ' +
-      'deletion comes back from WhatsApp, unless purge=false or the session ' +
+      'GOWS: the answer tells which ids got the deletion and up to when; ' +
+      'the chat.deleted webhook follows once the deletion comes back. ' +
+      'The messages GOWS stored for the chat are cleared too, unless ' +
+      'purge=false or the session ' +
       'keeps deleted chats (config.gows.storage.purgeDeletedChats=false), ' +
       'whatever deleteMedia. Only direct chats and groups the account has ' +
       'left can be deleted.',

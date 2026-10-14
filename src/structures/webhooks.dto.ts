@@ -3,7 +3,7 @@ import { CallData } from '@waha/structures/calls.dto';
 import { EventResponsePayload } from '@waha/structures/events.dto';
 import { Label, LabelChatAssociation } from '@waha/structures/labels.dto';
 
-import { ChatArchiveEvent } from './chats.dto';
+import { ChatArchiveEvent, ChatDeletedEvent } from './chats.dto';
 import { MessageDestination } from './chatting.dto';
 import {
   WAHAEngine,
@@ -327,6 +327,16 @@ export class WAHAWebhookChatArchive extends WAHAWebhook {
   event = WAHAEvents.CHAT_ARCHIVE;
 
   payload: ChatArchiveEvent;
+}
+
+export class WAHAWebhookChatDeleted extends WAHAWebhook {
+  @ApiProperty({
+    description:
+      'The event is triggered when the chat is deleted on the phone or via API',
+  })
+  event = WAHAEvents.CHAT_DELETED;
+
+  payload: ChatDeletedEvent;
 }
 
 export class WAHAWebhookCallReceived extends WAHAWebhook {

@@ -257,15 +257,16 @@ export class DeleteChatResponse {
   @ApiProperty({
     description:
       'Whether the chat is cleared from the server (the messages GOWS stored) ' +
-      'when the deletion comes back from WhatsApp',
+      'when the deletion comes back from WhatsApp - see chat.deleted',
   })
   purge: boolean;
 
   @ApiProperty({
     description:
       'false when WhatsApp accepted the deletion but reading it back failed: ' +
-      'the chat is deleted for the account, the stored messages go once it ' +
-      'is read again, retried in the background and on the next sync',
+      'the chat is deleted for the account, the stored messages go and ' +
+      'chat.deleted is sent once it is read again, retried in the ' +
+      'background and on the next sync',
   })
   confirmed: boolean;
 
@@ -427,4 +428,55 @@ export class ChatArchiveEvent {
   archived: boolean;
 
   timestamp: number;
+}
+
+export class ChatDeletedEvent {
+  @ChatIdProperty()
+  id: string;
+
+  @ApiProperty({
+    description:
+      'Phone number of a direct chat, if known - both ids may hold its messages',
+    example: '11111111111@c.us',
+    required: false,
+  })
+  pn?: string | null;
+
+  @ApiProperty({
+    description: 'LID of a direct chat, if known',
+    example: '123123123@lid',
+    required: false,
+  })
+  lid?: string | null;
+
+  @ApiProperty({
+    description: 'When the chat was deleted (unix time, seconds)',
+    type: Number,
+    nullable: true,
+  })
+  timestamp: number | null;
+
+  @ApiProperty({
+    description:
+      'Messages sent before this time (unix time, seconds) were deleted from ' +
+      'the stored messages, newer ones are kept. Never after the deletion.',
+    type: Number,
+    nullable: true,
+  })
+  deletedBefore: number | null;
+
+  @ApiProperty({
+    description:
+      'The flag of the deletion on WhatsApp: delete the media of the chat ' +
+      'from the phone gallery too. What was done on the server is in purged.',
+  })
+  deleteMedia: boolean;
+
+  @ApiProperty({
+    description:
+      'Whether the chat was cleared from the server: the messages GOWS ' +
+      'stored for it. false when the session (or the deletion request) ' +
+      'keeps deleted chats: nothing was removed.',
+  })
+  purged: boolean;
 }
