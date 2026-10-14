@@ -317,7 +317,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
   protected presences: any;
 
   private local$ = new Subject<EnginePayload>();
-  // chat.deleted payloads
+  // chat.deleted payloads, sent once the media of the chat are removed
   private chatDeleted$ = new Subject<ChatDeletedEvent>();
   private deletedChats: DeletedChats;
 
@@ -522,6 +522,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     });
     this.deletedChats = new DeletedChats(
       this.logger,
+      (messageIds) => this.mediaManager.removeMessagesMedia(messageIds),
       (payload) => this.chatDeleted$.next(payload),
       (jid) => this.jids.include(jid),
       (id) => this.confirmChatDeleted(id),

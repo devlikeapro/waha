@@ -1,4 +1,8 @@
-import { IMediaStorage, MediaData } from '@waha/core/media/IMediaStorage';
+import {
+  getMediaFileMessageId,
+  IMediaStorage,
+  MediaData,
+} from '@waha/core/media/IMediaStorage';
 import { SECOND } from '@waha/structures/enums.dto';
 import * as fsp from 'fs/promises';
 import * as path from 'path';
@@ -50,6 +54,43 @@ export class MediaLocalStorage implements IMediaStorage {
     const filename = this.getKey(data);
     const url = this.baseUrl + filename;
     return { url };
+  }
+
+  async removeMessagesMedia(
+    session: string,
+    messageIds: string[],
+  ): Promise<number> {
+    // Only the files right in the session folder named after a message
+    const root = path.resolve(this.filesFolder);
+    const folder = path.resolve(root, session);
+    if (path.dirname(folder) !== root || messageIds.length === 0) {
+      return 0;
+    }
+    let entries: fs.Dirent[];
+    try {
+      entries = await fsp.readdir(folder, { withFileTypes: true });
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        return 0;
+      }
+      throw err;
+    }
+    const ids = new Set(messageIds);
+    let removed = 0;
+    for (const entry of entries) {
+      if (!entry.isFile() || !ids.has(getMediaFileMessageId(entry.name))) {
+        continue;
+      }
+      try {
+        await fsp.unlink(path.join(folder, entry.name));
+        removed += 1;
+      } catch (err) {
+        if (err.code !== 'ENOENT') {
+          throw err;
+        }
+      }
+    }
+    return removed;
   }
 
   async purge() {

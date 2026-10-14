@@ -27,6 +27,9 @@ function ext(mimetype: string): string {
   return extension;
 }
 
+// How long the media of a deleted chat's messages stay unwanted (downloads still running)
+const REMOVED_MEDIA_TTL_MS = 10 * 60 * 1000;
+
 export class MediaManager implements IMediaManager {
   // https://github.com/IndigoUnited/node-promise-retry
   RETRY_OPTIONS = {
@@ -34,6 +37,9 @@ export class MediaManager implements IMediaManager {
     minTimeout: 1000,
     maxTimeout: 3000,
   };
+
+  // Message id => when its media were removed (removeMessagesMedia)
+  private removed = new Map<string, number>();
 
   constructor(
     private sessionName: string,
@@ -75,6 +81,13 @@ export class MediaManager implements IMediaManager {
       },
     };
 
+    if (this.wasRemoved(messageId)) {
+      this.log.info(
+        `The media of '${messageId}' were removed with its chat, not downloading it`,
+      );
+      return null;
+    }
+
     const exists = await this.withRetry('Checking media', () =>
       this.exists(mediaData),
     );
@@ -101,6 +114,14 @@ export class MediaManager implements IMediaManager {
         this.saveMedia(content.buffer, mediaData),
       );
       this.log.info(`The media from '${messageId}' has been saved.`);
+      if (this.wasRemoved(messageId)) {
+        // Its chat was deleted during the download: the file goes too
+        await this.storage.removeMessagesMedia(this.sessionName, [messageId]);
+        this.log.info(
+          `The media of '${messageId}' were removed with its chat during the download, removed it`,
+        );
+        return null;
+      }
     }
 
     const data = await this.withRetry('Getting media URL', () =>
@@ -154,6 +175,30 @@ export class MediaManager implements IMediaManager {
       media.error.details = `${err.stack}`;
     }
     return media;
+  }
+
+  /**
+   * Removes the stored media of the messages, and of their downloads in the next minutes
+   */
+  async removeMessagesMedia(messageIds: string[]): Promise<number> {
+    if (!messageIds || messageIds.length === 0) {
+      return 0;
+    }
+    const now = Date.now();
+    for (const [id, at] of this.removed) {
+      if (now - at > REMOVED_MEDIA_TTL_MS) {
+        this.removed.delete(id);
+      }
+    }
+    for (const id of messageIds) {
+      this.removed.set(id, now);
+    }
+    return await this.storage.removeMessagesMedia(this.sessionName, messageIds);
+  }
+
+  private wasRemoved(messageId: string): boolean {
+    const at = this.removed.get(messageId);
+    return at !== undefined && Date.now() - at <= REMOVED_MEDIA_TTL_MS;
   }
 
   private async fetchMedia(

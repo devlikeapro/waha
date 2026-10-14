@@ -116,11 +116,13 @@ class ChatsController {
       'are kept there by default.\n\n' +
       'GOWS: the answer tells which ids got the deletion and up to when; ' +
       'the chat.deleted webhook follows once the deletion comes back. ' +
-      'The messages GOWS stored for the chat are cleared too, unless ' +
-      'purge=false or the session ' +
-      'keeps deleted chats (config.gows.storage.purgeDeletedChats=false), ' +
-      'whatever deleteMedia. Only direct chats and groups the account has ' +
-      'left can be deleted.',
+      'The server copy - stored messages and the media files WAHA stored ' +
+      'for them - is cleared too unless purge=false or the session keeps ' +
+      'deleted chats (config.gows.storage.purgeDeletedChats=false), ' +
+      'whatever deleteMedia. Only the files of the messages GOWS stored can ' +
+      'be found, none when GOWS does not store messages; with S3 media ' +
+      'storage the credentials need s3:ListBucket and s3:DeleteObject. ' +
+      'Only direct chats and groups the account has left can be deleted.',
   })
   @ApiOkResponse({
     type: DeleteChatResponse,

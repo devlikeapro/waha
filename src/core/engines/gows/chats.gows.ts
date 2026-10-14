@@ -118,14 +118,16 @@ interface DeletedChatState {
 }
 
 /**
- * Sends chat.deleted for a gows.ChatDeletedEvent, then confirms it to GOWS.
- * GOWS resends unconfirmed deletions; each ID is handled once per run.
+ * Removes the media files of the deleted messages, sends chat.deleted, then
+ * confirms the gows.ChatDeletedEvent to GOWS. GOWS resends unconfirmed
+ * deletions; each ID is notified once per run, the removal retried.
  */
 export class DeletedChats {
   private states = new Map<string, DeletedChatState>();
 
   constructor(
     private readonly logger: Logger,
+    private readonly removeMedia: (messageIds: string[]) => Promise<number>,
     private readonly notify: (payload: ChatDeletedEvent) => void,
     private readonly include: (jid: string) => boolean,
     private readonly confirm: (id: string) => Promise<void>,
@@ -146,13 +148,14 @@ export class DeletedChats {
       state.busy = true;
     }
     try {
+      const mediaRemoved = await this.removeMediaOf(event);
       if (!state?.notified) {
-        this.notifyOnce(event);
+        this.notifyOnce(event, mediaRemoved);
         if (state) {
           state.notified = true;
         }
       }
-      if (id) {
+      if (id && mediaRemoved !== null) {
         state.confirmed = await this.confirmed(event, id);
       }
     } finally {
@@ -162,7 +165,7 @@ export class DeletedChats {
     }
   }
 
-  private notifyOnce(event: any) {
+  private notifyOnce(event: any, mediaRemoved: number | null) {
     if (event?.Error) {
       // Messages may still be stored: no chat.deleted
       this.logger.error(
@@ -174,7 +177,7 @@ export class DeletedChats {
     if (event?.FromFullSync || !this.include(event?.JID)) {
       return;
     }
-    this.notify(toChatDeletedEvent(event));
+    this.notify(toChatDeletedEvent(event, mediaRemoved));
   }
 
   private async confirmed(event: any, id: string): Promise<boolean> {
@@ -200,12 +203,38 @@ export class DeletedChats {
     state.at = now;
     this.states.set(id, state);
   }
+
+  /**
+   * Returns how many files were removed, null when removing them failed
+   */
+  private async removeMediaOf(event: any): Promise<number | null> {
+    const ids: string[] = event?.MessageIDs ?? [];
+    if (ids.length === 0) {
+      return 0;
+    }
+    try {
+      const removed = await this.removeMedia(ids);
+      this.logger.info(
+        `Removed ${removed} media file(s) of the deleted chat '${event.JID}'`,
+      );
+      return removed;
+    } catch (err) {
+      this.logger.error(
+        err,
+        `Failed to remove the media of the deleted chat '${event.JID}'`,
+      );
+      return null;
+    }
+  }
 }
 
 /**
  * Converts a GOWS ChatDeletedEvent to the chat.deleted payload
  */
-export function toChatDeletedEvent(event: any): ChatDeletedEvent {
+export function toChatDeletedEvent(
+  event: any,
+  mediaRemoved: number | null = 0,
+): ChatDeletedEvent {
   const jids: string[] = [event.JID, event.AltJID].filter(Boolean);
   const pn = jids.find((jid) => isPnUser(jid));
   const lid = jids.find((jid) => isLidUser(jid));
@@ -217,6 +246,7 @@ export function toChatDeletedEvent(event: any): ChatDeletedEvent {
     deletedBefore: toSeconds(event.DeletedBefore),
     deleteMedia: Boolean(event.DeleteMedia),
     purged: Boolean(event.Purged),
+    mediaRemoved: mediaRemoved,
   };
 }
 

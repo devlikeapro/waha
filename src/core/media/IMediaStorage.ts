@@ -40,6 +40,15 @@ abstract class IMediaStorage {
 
   abstract getStorageData(data: MediaData): Promise<MediaStorageData>;
 
+  /**
+   * Removes the stored media of the session's messages, whatever its extension.
+   * Returns how many files were removed.
+   */
+  abstract removeMessagesMedia(
+    session: string,
+    messageIds: string[],
+  ): Promise<number>;
+
   abstract purge(): Promise<void>;
 
   abstract close(): Promise<void>;
@@ -54,6 +63,18 @@ export function getMetadata(data: MediaData): any {
     'waha-media-filename': data.file.filename,
     'waha-created-at': now.getTime(),
   };
+}
+
+/**
+ * Returns the message id of a stored media file name,
+ * "{messageId}.{extension}", or null when the name has no extension.
+ */
+export function getMediaFileMessageId(filename: string): string | null {
+  const dot = filename.lastIndexOf('.');
+  if (dot <= 0 || dot === filename.length - 1) {
+    return null;
+  }
+  return filename.slice(0, dot);
 }
 
 export { IMediaStorage };

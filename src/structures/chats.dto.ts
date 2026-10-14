@@ -197,9 +197,10 @@ export class DeleteChatQuery {
     required: false,
     description:
       'Clear the chat from the server once deleted: the messages GOWS stored ' +
-      'for it. Omit to follow the session setting ' +
-      'config.gows.storage.purgeDeletedChats (true by default). Applies to ' +
-      'this deletion only, never to one made on the phone (GOWS only)',
+      'for it and the media files WAHA stored for them. Omit to follow the ' +
+      'session setting config.gows.storage.purgeDeletedChats (true by ' +
+      'default). Applies to this deletion only, never to one made on the ' +
+      'phone (GOWS only)',
   })
   @Transform(BooleanString)
   @IsBoolean()
@@ -256,17 +257,17 @@ export class DeleteChatResponse {
 
   @ApiProperty({
     description:
-      'Whether the chat is cleared from the server (the messages GOWS stored) ' +
-      'when the deletion comes back from WhatsApp - see chat.deleted',
+      'Whether the chat is cleared from the server (stored messages and their ' +
+      'media files) when the deletion comes back from WhatsApp - see chat.deleted',
   })
   purge: boolean;
 
   @ApiProperty({
     description:
       'false when WhatsApp accepted the deletion but reading it back failed: ' +
-      'the chat is deleted for the account, the stored messages go and ' +
-      'chat.deleted is sent once it is read again, retried in the ' +
-      'background and on the next sync',
+      'the chat is deleted for the account, the local copy (stored messages, ' +
+      'media, chat.deleted webhook) follows once it is read again, retried ' +
+      'in the background and on the next sync',
   })
   confirmed: boolean;
 
@@ -468,15 +469,26 @@ export class ChatDeletedEvent {
   @ApiProperty({
     description:
       'The flag of the deletion on WhatsApp: delete the media of the chat ' +
-      'from the phone gallery too. What was done on the server is in purged.',
+      'from the phone gallery too. What was done on the server is in purged and mediaRemoved.',
   })
   deleteMedia: boolean;
 
   @ApiProperty({
     description:
-      'Whether the chat was cleared from the server: the messages GOWS ' +
-      'stored for it. false when the session (or the deletion request) ' +
+      'Whether the chat was cleared from the server: its stored messages and ' +
+      'their media files. false when the session (or the deletion request) ' +
       'keeps deleted chats: nothing was removed.',
   })
   purged: boolean;
+
+  @ApiProperty({
+    description:
+      'How many files WAHA stored on the server for the deleted messages were ' +
+      'removed, whatever deleteMedia (0 when not purged). Only the files of the ' +
+      'messages GOWS stored can be found: 0 when its message storage is ' +
+      'disabled. null when removing them failed (retried later).',
+    type: Number,
+    nullable: true,
+  })
+  mediaRemoved: number | null;
 }

@@ -199,6 +199,7 @@ describe('toChatDeletedEvent', () => {
       deletedBefore: 1791908401,
       deleteMedia: true,
       purged: false,
+      mediaRemoved: 0,
     });
   });
 
@@ -269,19 +270,152 @@ describe('DeletedChats', () => {
     MessageIDs: ['A', 'B'],
   };
 
-  function setup(confirm: jest.Mock = jest.fn().mockResolvedValue(undefined)) {
+  function setup(
+    confirm: jest.Mock = jest.fn().mockResolvedValue(undefined),
+    removeMedia: jest.Mock = jest.fn().mockResolvedValue(2),
+  ) {
     const logger: any = { info: jest.fn(), error: jest.fn(), warn: jest.fn() };
     const notify = jest.fn();
     const include = jest.fn().mockReturnValue(true);
-    const chats = new DeletedChats(logger, notify, include, confirm);
+    const chats = new DeletedChats(
+      logger,
+      removeMedia,
+      notify,
+      include,
+      confirm,
+    );
     return {
       chats: chats,
       logger: logger,
       notify: notify,
       include: include,
       confirm: confirm,
+      removeMedia: removeMedia,
     };
   }
+
+  it('removes the media, then notifies how many files went', async () => {
+    const { chats, notify, removeMedia } = setup();
+
+    await chats.handle(deleted);
+
+    expect(removeMedia).toHaveBeenCalledWith(['A', 'B']);
+    expect(notify).toHaveBeenCalledTimes(1);
+    expect(notify.mock.calls[0][0]).toMatchObject({
+      id: '22670000000@c.us',
+      deleteMedia: true,
+      mediaRemoved: 2,
+    });
+  });
+
+  // deleteMedia is the phone gallery: the server files go anyway
+  it('removes the files on the server without deleteMedia too', async () => {
+    const { chats, notify, removeMedia } = setup();
+
+    await chats.handle({ ...deleted, DeleteMedia: false });
+
+    expect(removeMedia).toHaveBeenCalledWith(['A', 'B']);
+    expect(notify.mock.calls[0][0]).toMatchObject({
+      deleteMedia: false,
+      mediaRemoved: 2,
+    });
+  });
+
+  it('finds no media when GOWS stored no message', async () => {
+    const { chats, notify, removeMedia } = setup();
+
+    await chats.handle({ ...deleted, MessageIDs: null });
+
+    expect(removeMedia).not.toHaveBeenCalled();
+    expect(notify.mock.calls[0][0]).toMatchObject({ mediaRemoved: 0 });
+  });
+
+  it('notifies a failed media removal with null', async () => {
+    const { chats, notify, logger } = setup(
+      undefined,
+      jest.fn().mockRejectedValue(new Error('S3 is down')),
+    );
+
+    await chats.handle(deleted);
+
+    expect(notify.mock.calls[0][0].mediaRemoved).toBeNull();
+    expect(logger.error).toHaveBeenCalled();
+  });
+
+  it('removes the media of a deletion GOWS failed to clear', async () => {
+    const { chats, notify, removeMedia } = setup();
+
+    await chats.handle({
+      ...deleted,
+      Error: 'messages of x: database is locked',
+    });
+
+    expect(removeMedia).toHaveBeenCalledWith(['A', 'B']);
+    expect(notify).not.toHaveBeenCalled();
+  });
+
+  it('removes the media of a full sync replay or an ignored chat', async () => {
+    const { chats, notify, include, removeMedia } = setup();
+
+    await chats.handle({ ...deleted, FromFullSync: true });
+    include.mockReturnValue(false);
+    await chats.handle(deleted);
+
+    expect(removeMedia).toHaveBeenCalledTimes(2);
+    expect(notify).not.toHaveBeenCalled();
+  });
+
+  it('retries the media of a deletion not confirmed, without notifying again', async () => {
+    const removeMedia = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('S3 is down'))
+      .mockResolvedValueOnce(2);
+    const { chats, notify, confirm } = setup(undefined, removeMedia);
+    const event = { ...deleted, ID: 'deletion-1' };
+
+    await chats.handle(event);
+    expect(confirm).not.toHaveBeenCalled();
+    expect(notify).toHaveBeenCalledTimes(1);
+    expect(notify.mock.calls[0][0].mediaRemoved).toBeNull();
+
+    // GOWS sends it again (stream reconnected, session restarted)
+    await chats.handle(event);
+
+    expect(removeMedia).toHaveBeenCalledTimes(2);
+    expect(notify).toHaveBeenCalledTimes(1);
+    expect(confirm).toHaveBeenCalledWith('deletion-1');
+  });
+
+  it('removes nothing for a chat the server keeps (not purged)', async () => {
+    const { chats, notify, removeMedia, confirm } = setup();
+
+    await chats.handle({
+      ...deleted,
+      ID: 'kept',
+      Purged: false,
+      MessageIDs: [],
+    });
+
+    expect(removeMedia).not.toHaveBeenCalled();
+    expect(notify.mock.calls[0][0]).toMatchObject({
+      purged: false,
+      mediaRemoved: 0,
+    });
+    expect(confirm).toHaveBeenCalledWith('kept');
+  });
+
+  it('removes the media of a broadcast list deleted on the phone', async () => {
+    const { chats, removeMedia } = setup();
+
+    await chats.handle({
+      ...deleted,
+      JID: '1760000000@broadcast',
+      AltJID: '',
+      MessageIDs: ['LIST-1'],
+    });
+
+    expect(removeMedia).toHaveBeenCalledWith(['LIST-1']);
+  });
 
   it('notifies the deletion', async () => {
     const { chats, notify } = setup();
@@ -344,18 +478,19 @@ describe('DeletedChats', () => {
   });
 
   it('handles a deletion sent twice at once only once', async () => {
-    let finish: () => void;
-    const confirm = jest.fn(
-      () => new Promise<void>((resolve) => (finish = resolve)),
+    let finish: (count: number) => void;
+    const removeMedia = jest.fn(
+      () => new Promise<number>((resolve) => (finish = resolve)),
     );
-    const { chats, notify } = setup(confirm);
+    const { chats, notify, confirm } = setup(undefined, removeMedia);
     const event = { ...deleted, ID: 'deletion-1' };
 
     const first = chats.handle(event);
     await chats.handle(event);
-    finish();
+    finish(2);
     await first;
 
+    expect(removeMedia).toHaveBeenCalledTimes(1);
     expect(notify).toHaveBeenCalledTimes(1);
     expect(confirm).toHaveBeenCalledTimes(1);
   });

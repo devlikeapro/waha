@@ -105,7 +105,7 @@ export class ChatTools extends McpController {
   @Tool('chats-delete', {
     title: 'Delete chat',
     description:
-      'Delete a chat for this account, like "Delete chat" on the phone. The phone gallery keeps its media unless deleteMedia is true; the server copy goes too unless purge is false or the session keeps deleted chats',
+      'Delete a chat for this account, like "Delete chat" on the phone. The phone gallery keeps its media unless deleteMedia is true; the server copy (messages, media files) goes too unless purge is false or the session keeps deleted chats',
     inputSchema: DeleteChatInput,
     annotations: {
       readOnlyHint: false,

@@ -189,6 +189,11 @@ class PgBinaryWriteFrameStream extends Transform {
   }
 }
 
+const FILE_NAMES_BATCH = 1000;
+
+// The full path without its extension: "AAA.0.jpeg" => "AAA.0", NULL without one
+const FILE_NAME_WITHOUT_EXTENSION = "substring(fullpath from '^(.+)\\.[^.]+$')";
+
 function Migrations(table: string): string[] {
   return [
     `CREATE TABLE IF NOT EXISTS ${table}
@@ -309,6 +314,23 @@ export class PsqlFileRepository {
 
   async delete(fullpath: string) {
     await this.table().where('fullpath', fullpath).del();
+  }
+
+  /**
+   * Deletes the files "{name}.{extension}" of the names, returns their full paths.
+   * No index on the name: a table scan, fine for rare deletions.
+   */
+  async deleteByNames(names: string[]): Promise<string[]> {
+    const deleted: string[] = [];
+    for (let i = 0; i < names.length; i += FILE_NAMES_BATCH) {
+      const batch = names.slice(i, i + FILE_NAMES_BATCH);
+      const rows = await this.table()
+        .whereRaw(`${FILE_NAME_WITHOUT_EXTENSION} = ANY(?::text[])`, [batch])
+        .del()
+        .returning('fullpath');
+      deleted.push(...rows.map((row) => row.fullpath));
+    }
+    return deleted;
   }
 
   /**

@@ -16,5 +16,9 @@ export interface IMediaManager {
     message: Message,
     options: MediaDownloadOptions,
   ): Promise<WAMedia | null>;
+  /**
+   * Removes the stored media of the messages, returns how many files were removed
+   */
+  removeMessagesMedia(messageIds: string[]): Promise<number>;
   close(): void;
 }

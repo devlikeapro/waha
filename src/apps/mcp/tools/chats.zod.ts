@@ -42,7 +42,7 @@ export const DeleteChatInput = ChatInput.extend({
     .boolean()
     .optional()
     .describe(
-      'Clear the chat from the server too (the messages GOWS stored). Omit to follow the session setting, true by default (GOWS only)',
+      'Clear the chat from the server too (stored messages and their media files). Omit to follow the session setting, true by default (GOWS only)',
     ),
 });
 

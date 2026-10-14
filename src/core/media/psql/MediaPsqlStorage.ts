@@ -59,6 +59,15 @@ export class MediaPsqlStorage implements IMediaStorage {
     return { url: url };
   }
 
+  async removeMessagesMedia(
+    session: string,
+    messageIds: string[],
+  ): Promise<number> {
+    // The table belongs to the session, the files are "{messageId}.{extension}"
+    const deleted = await this.repository.deleteByNames(messageIds);
+    return deleted.length;
+  }
+
   async purge(): Promise<void> {
     this.logger.debug('Purging S3 bucket is not supported');
   }
