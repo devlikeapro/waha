@@ -377,12 +377,19 @@ export class WebjsClientCore extends Client {
   async updateLabel(label: Label) {
     await this.ensureWahaInjected();
     return await this.pupPage.evaluate(async (label) => {
-      return await window.require('WAWebBizLabelEditingAction').labelEditAction(
-        label.id,
-        label.name,
-        undefined, // predefinedId
-        label.color,
-      );
+      const predefinedId = window
+        .require('WAWebLabelConstants')
+        .mapLabelNameToPredefinedId(label.name);
+      return await window
+        .require('WAWebBizLabelEditingAction')
+        .labelEditAction(
+          label.id,
+          label.name,
+          predefinedId,
+          label.color,
+          label.isActive,
+          label.type,
+        );
     }, label);
   }
 
