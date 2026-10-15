@@ -10455,12 +10455,16 @@ export namespace messages {
         }
     }
     export class Label extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {
+        #one_of_decls: number[][] = [[5], [6]];
+        constructor(data?: any[] | ({
             id?: string;
             name?: string;
             color?: number;
-        }) {
+        } & (({
+            type?: number;
+        }) | ({
+            isActive?: boolean;
+        })))) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
             if (!Array.isArray(data) && typeof data == "object") {
@@ -10472,6 +10476,12 @@ export namespace messages {
                 }
                 if ("color" in data && data.color != undefined) {
                     this.color = data.color;
+                }
+                if ("type" in data && data.type != undefined) {
+                    this.type = data.type;
+                }
+                if ("isActive" in data && data.isActive != undefined) {
+                    this.isActive = data.isActive;
                 }
             }
         }
@@ -10493,10 +10503,48 @@ export namespace messages {
         set color(value: number) {
             pb_1.Message.setField(this, 4, value);
         }
+        get type() {
+            return pb_1.Message.getFieldWithDefault(this, 5, 0) as number;
+        }
+        set type(value: number) {
+            pb_1.Message.setOneofField(this, 5, this.#one_of_decls[0], value);
+        }
+        get has_type() {
+            return pb_1.Message.getField(this, 5) != null;
+        }
+        get isActive() {
+            return pb_1.Message.getFieldWithDefault(this, 6, false) as boolean;
+        }
+        set isActive(value: boolean) {
+            pb_1.Message.setOneofField(this, 6, this.#one_of_decls[1], value);
+        }
+        get has_isActive() {
+            return pb_1.Message.getField(this, 6) != null;
+        }
+        get _type() {
+            const cases: {
+                [index: number]: "none" | "type";
+            } = {
+                0: "none",
+                5: "type"
+            };
+            return cases[pb_1.Message.computeOneofCase(this, [5])];
+        }
+        get _isActive() {
+            const cases: {
+                [index: number]: "none" | "isActive";
+            } = {
+                0: "none",
+                6: "isActive"
+            };
+            return cases[pb_1.Message.computeOneofCase(this, [6])];
+        }
         static fromObject(data: {
             id?: string;
             name?: string;
             color?: number;
+            type?: number;
+            isActive?: boolean;
         }): Label {
             const message = new Label({});
             if (data.id != null) {
@@ -10508,6 +10556,12 @@ export namespace messages {
             if (data.color != null) {
                 message.color = data.color;
             }
+            if (data.type != null) {
+                message.type = data.type;
+            }
+            if (data.isActive != null) {
+                message.isActive = data.isActive;
+            }
             return message;
         }
         toObject() {
@@ -10515,6 +10569,8 @@ export namespace messages {
                 id?: string;
                 name?: string;
                 color?: number;
+                type?: number;
+                isActive?: boolean;
             } = {};
             if (this.id != null) {
                 data.id = this.id;
@@ -10524,6 +10580,12 @@ export namespace messages {
             }
             if (this.color != null) {
                 data.color = this.color;
+            }
+            if (this.type != null) {
+                data.type = this.type;
+            }
+            if (this.isActive != null) {
+                data.isActive = this.isActive;
             }
             return data;
         }
@@ -10537,6 +10599,10 @@ export namespace messages {
                 writer.writeString(2, this.name);
             if (this.color != 0)
                 writer.writeInt32(4, this.color);
+            if (this.has_type)
+                writer.writeInt32(5, this.type);
+            if (this.has_isActive)
+                writer.writeBool(6, this.isActive);
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -10554,6 +10620,12 @@ export namespace messages {
                         break;
                     case 4:
                         message.color = reader.readInt32();
+                        break;
+                    case 5:
+                        message.type = reader.readInt32();
+                        break;
+                    case 6:
+                        message.isActive = reader.readBool();
                         break;
                     default: reader.skipField();
                 }

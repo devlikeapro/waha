@@ -114,6 +114,8 @@ export class LabelsController {
     label.name = labelDto.name;
     label.color = labelDto.color;
     label.colorHex = Label.toHex(label.color);
+    label.type ??= LabelListType.CUSTOM;
+    label.isActive ??= true;
     await session.updateLabel(label);
     return label;
   }

@@ -21553,7 +21553,9 @@ proto.messages.Label.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     name: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    color: jspb.Message.getFieldWithDefault(msg, 4, 0)
+    color: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    type: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    isactive: jspb.Message.getBooleanFieldWithDefault(msg, 6, false)
   };
 
   if (includeInstance) {
@@ -21602,6 +21604,14 @@ proto.messages.Label.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readInt32());
       msg.setColor(value);
       break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setType(value);
+      break;
+    case 6:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsactive(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -21649,6 +21659,20 @@ proto.messages.Label.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeInt32(
       4,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeInt32(
+      5,
+      f
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 6));
+  if (f != null) {
+    writer.writeBool(
+      6,
       f
     );
   }
@@ -21706,6 +21730,78 @@ proto.messages.Label.prototype.getColor = function() {
  */
 proto.messages.Label.prototype.setColor = function(value) {
   return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+/**
+ * optional int32 type = 5;
+ * @return {number}
+ */
+proto.messages.Label.prototype.getType = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.messages.Label} returns this
+ */
+proto.messages.Label.prototype.setType = function(value) {
+  return jspb.Message.setField(this, 5, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.messages.Label} returns this
+ */
+proto.messages.Label.prototype.clearType = function() {
+  return jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.messages.Label.prototype.hasType = function() {
+  return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional bool isActive = 6;
+ * @return {boolean}
+ */
+proto.messages.Label.prototype.getIsactive = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 6, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.messages.Label} returns this
+ */
+proto.messages.Label.prototype.setIsactive = function(value) {
+  return jspb.Message.setField(this, 6, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.messages.Label} returns this
+ */
+proto.messages.Label.prototype.clearIsactive = function() {
+  return jspb.Message.setField(this, 6, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.messages.Label.prototype.hasIsactive = function() {
+  return jspb.Message.getField(this, 6) != null;
 };
 
 
