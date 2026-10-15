@@ -366,7 +366,11 @@ export class WebjsClientCore extends Client {
     return await this.pupPage.evaluate(async (label) => {
       return await window
         .require('WAWebBizLabelEditingAction')
-        .labelDeleteAction(label.id, label.name, label.color);
+        .labelDeleteAction({
+          color: label.color,
+          labelId: label.id,
+          name: label.name,
+        });
     }, label);
   }
 
