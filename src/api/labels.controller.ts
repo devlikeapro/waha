@@ -22,6 +22,7 @@ import {
 import {
   Label,
   LabelBody,
+  LabelListType,
   SetLabelsRequest,
 } from '@waha/structures/labels.dto';
 import * as lodash from 'lodash';
@@ -63,7 +64,13 @@ export class LabelsController {
     const labelDto = body.toDTO();
 
     const labels = await session.getLabels();
-    if (labels.length >= 20) {
+    const customLabels = labels.filter(
+      (label) =>
+        label.type == null ||
+        label.type === LabelListType.NONE ||
+        label.type === LabelListType.CUSTOM,
+    );
+    if (customLabels.length >= 20) {
       throw new UnprocessableEntityException('Maximum 20 labels allowed');
     }
 

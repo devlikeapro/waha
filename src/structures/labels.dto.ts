@@ -134,6 +134,31 @@ export class Label {
   }
 }
 
+// LabelEditAction.ListType from the WhatsApp app state proto
+export enum LabelListType {
+  NONE = 0,
+  UNREAD = 1,
+  GROUPS = 2,
+  FAVORITES = 3,
+  PREDEFINED = 4,
+  CUSTOM = 5,
+  COMMUNITY = 6,
+  SERVER_ASSIGNED = 7,
+  DRAFTED = 8,
+  AI_HANDOFF = 9,
+  CHANNELS = 10,
+  AI_RESPONDING = 11,
+  ARCHIVED = 12,
+  LOCKED = 13,
+  INVITES = 14,
+  THIRD_PARTY = 15,
+  LEAD = 16,
+  MENTIONS_AND_REPLIES = 17,
+  REQUESTS = 18,
+  BUSINESS = 19,
+  ONE_ON_ONE = 20,
+}
+
 export class LabelID {
   @ApiProperty({
     example: '1',
