@@ -1,0 +1,1 @@
+export var pickAxisType = (_state, axisType) => axisType;

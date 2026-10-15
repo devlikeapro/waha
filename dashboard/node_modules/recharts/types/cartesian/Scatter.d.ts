@@ -1,0 +1,313 @@
+import { ReactElement, ReactNode } from 'react';
+import { ImplicitLabelListType } from '../component/LabelList';
+import { CurveType, Props as CurveProps } from '../shape/Curve';
+import { ActiveShape, AnimationDuration, EasingInput, Coordinate, DataConsumer, DataProvider, LegendType, PresentationAttributesAdaptChildEvent, SymbolType, TickItem, CartesianLayout } from '../util/types';
+import { Formatter, TooltipType } from '../component/DefaultTooltipContent';
+import { ScatterShapeProps } from '../util/ScatterUtils';
+import { InnerSymbolsProp } from '../shape/Symbols';
+import { TooltipPayload } from '../state/tooltipSlice';
+import { AxisId } from '../state/cartesianAxisSlice';
+import { BaseAxisWithScale, ZAxisWithScale } from '../state/selectors/axisSelectors';
+import { ScatterSettings } from '../state/types/ScatterSettings';
+import { AnimationInterpolateFn } from '../animation/AnimatedItems';
+import { AnimationMatchByProp } from '../animation/matchBy';
+import { ZIndexable } from '../zIndex/ZIndexLayer';
+export interface ScatterPointNode {
+    x?: number | string;
+    y?: number | string;
+    z?: number | string;
+}
+/**
+ * Scatter coordinates are nullable because sometimes the point value is out of the domain,
+ * and we can't compute a valid coordinate for it.
+ *
+ * Scatter -> Symbol ignores points with null cx or cy so those won't render if using the default shapes.
+ * However: the points are exposed via various props and can be used in custom shapes so we keep them around.
+ */
+export interface ScatterPointItem {
+    /**
+     * The x coordinate of the point center in pixels.
+     */
+    cx: number | undefined;
+    /**
+     * The y coordinate of the point center in pixels.
+     */
+    cy: number | undefined;
+    /**
+     * The x coordinate (in pixels) of the top-left corner of the rectangle that wraps the point.
+     */
+    x: number | undefined;
+    /**
+     * The y coordinate (in pixels) of the top-left corner of the rectangle that wraps the point.
+     */
+    y: number | undefined;
+    /**
+     * ScatterPointItem size is an abstract number that is used to calculate the radius of the point.
+     * It's not the radius itself, but rather a value that is used to calculate the radius.
+     * Interacts with the zAxis range.
+     */
+    size: number;
+    /**
+     * Width of the point in pixels.
+     */
+    width: number;
+    /**
+     * Height of the point in pixels.
+     */
+    height: number;
+    node: ScatterPointNode;
+    payload?: any;
+    tooltipPayload?: TooltipPayload;
+    tooltipPosition: Coordinate;
+}
+export type ScatterCustomizedShape = ActiveShape<ScatterShapeProps & InnerSymbolsProp, SVGPathElement> | SymbolType;
+/**
+ * External props, intended for end users to fill in
+ */
+interface ScatterProps<DataPointType = any, DataValueType = any> extends DataProvider<DataPointType>, DataConsumer<DataPointType, DataValueType>, ZIndexable {
+    /**
+     * Unique identifier of this component.
+     * Used as an HTML attribute `id`, and also to identify this element internally.
+     *
+     * If undefined, Recharts will generate a unique ID automatically.
+     */
+    id?: string;
+    /**
+     * The id of XAxis which is corresponding to the data. Required when there are multiple XAxes.
+     * @defaultValue 0
+     */
+    xAxisId?: AxisId;
+    /**
+     * The id of YAxis which is corresponding to the data. Required when there are multiple YAxes.
+     * @defaultValue 0
+     */
+    yAxisId?: AxisId;
+    /**
+     * The id of ZAxis which is corresponding to the data. Required when there are multiple ZAxes.
+     *
+     * ZAxis does not render directly, has no ticks and no tick line.
+     * It is used to control the size of each scatter point.
+     *
+     * @defaultValue 0
+     * @see {@link https://recharts.github.io/en-US/examples/ThreeDimScatterChart/ Scatter chart with Z axis}
+     */
+    zAxisId?: AxisId;
+    /**
+     * Renders line connecting individual points.
+     * Options:
+     * - `false`: no line is drawn.
+     * - `true`: a default line is drawn.
+     * - `ReactElement`: the option is the custom line element.
+     * - `function`: the function will be called to render customized line.
+     * - `object`: the option is the props of Curve element.
+     *
+     * Also see the `lineType` prop which controls how is this line calculated.
+     *
+     * @defaultValue false
+     * @example <Scatter line />
+     * @example <Scatter line={CustomizedLineComponent} />
+     * @example <Scatter line={{ strokeDasharray: '5 5' }} />
+     *
+     * @see {@link https://recharts.github.io/en-US/examples/JointLineScatterChart/ Scatter chart with joint line}
+     */
+    line?: ReactElement<SVGElement> | ((props: any) => ReactElement<SVGElement>) | CurveProps | boolean;
+    /**
+     * Determines calculation method of the line if the `line` prop is set.
+     * Options:
+     * - `'joint'`: line will be generated by connecting all the points.
+     * - `'fitting'`: line will be generated by fitting algorithm (linear regression).
+     *
+     * Has no effect if `line` prop is not set or is false.
+     *
+     * @defaultValue joint
+     * @example <Scatter line lineType="fitting" />
+     * @see {@link https://recharts.github.io/en-US/examples/JointLineScatterChart/ Scatter chart with joint line}
+     */
+    lineType?: 'fitting' | 'joint';
+    /**
+     * Determines the shape of joint line.
+     * Same as `type` prop on Curve, Line and Area components.
+     *
+     * Has no effect if `line` prop is not set or is false or if `lineType` is 'fitting'.
+     *
+     * @defaultValue linear
+     * @see {@link https://recharts.github.io/en-US/examples/JointLineScatterChart/ Scatter chart with joint line}
+     */
+    lineJointType?: CurveType;
+    /**
+     * The type of icon in legend.
+     * If set to 'none', no legend item will be rendered.
+     *
+     * @defaultValue 'circle'
+     * @example <Scatter legendType="diamond" />
+     */
+    legendType?: LegendType;
+    tooltipType?: TooltipType;
+    /**
+     * Formats the value displayed in the tooltip for this Scatter.
+     * When set, takes precedence over the `formatter` prop on the Tooltip component.
+     */
+    formatter?: Formatter;
+    className?: string;
+    /**
+     * The name of data.
+     * This option will be used in tooltip and legend to represent this graphical item.
+     * If no value was set to this option, the value of dataKey will be used alternatively.
+     */
+    name?: string;
+    /**
+     * This component is rendered when this graphical item is activated
+     * (could be by mouse hover, touch, keyboard, programmatically).
+     *
+     * @see {@link https://recharts.github.io/en-US/examples/SimpleScatterChart/ Scatter chart with custom active shape}
+     * @example <Scatter activeShape={{ fill: 'red' }} />
+     */
+    activeShape?: ScatterCustomizedShape;
+    /**
+     * Determines the shape of individual data points.
+     * - Can be one of the predefined shapes as a string, which will be passed to {@link Symbols} component.
+     * - If set a ReactElement, the shape of point can be customized.
+     * - If set a function, the function will be called to render customized shape.
+     * - During animations, the function shape also receives `animationElapsedTime`, `isAnimating`, and `isEntrance`.
+     * @defaultValue circle
+     *
+     * @example <Scatter shape={CustomizedShapeComponent} />
+     * @example <Scatter shape="diamond" />
+     *
+     * @see {@link https://recharts.github.io/en-US/examples/JointLineScatterChart/ Scatter chart with custom shapes}
+     */
+    shape?: ScatterCustomizedShape;
+    /**
+     * Hides the whole graphical element when true.
+     *
+     * Hiding an element is different from removing it from the chart:
+     * Hidden graphical elements are still visible in Legend,
+     * and can be included in axis domain calculations,
+     * depending on `includeHidden` props of your XAxis/YAxis.
+     *
+     * @defaultValue false
+     */
+    hide?: boolean;
+    /**
+     * Renders one label for each data point. Options:
+     * - `true`: renders default labels;
+     * - `false`: no labels are rendered;
+     * - `object`: the props of LabelList component;
+     * - `ReactElement`: a custom SVG label element, such as `<text>` or `<g>`.
+     *   HTML elements such as `<div>` are not valid inside the chart SVG and may trigger React DOM warnings.
+     * - `function`: a render function of custom label.
+     *
+     * @defaultValue false
+     */
+    label?: ImplicitLabelListType;
+    /**
+     * If set false, animation of Scatter points will be disabled.
+     * If set "auto", the animation will be disabled in SSR and will respect the user's prefers-reduced-motion system preference for accessibility.
+     * @defaultValue 'auto'
+     */
+    isAnimationActive?: boolean | 'auto';
+    /**
+     * Specifies when the animation should begin, the unit of this option is ms.
+     * @defaultValue 0
+     */
+    animationBegin?: number;
+    /**
+     * Specifies the duration of animation, the unit of this option is ms.
+     * @defaultValue 400
+     */
+    animationDuration?: AnimationDuration;
+    /**
+     * The type of easing function.
+     * @defaultValue 'linear'
+     */
+    animationEasing?: EasingInput;
+    /**
+     * Custom animation function for interpolating data items.
+     * When provided, this replaces the default animation interpolation.
+     *
+     * @param prevItems The items from the previous animation frame, or null on first render
+     * @param nextItems The target items to animate towards
+     * @param animationElapsedTime A normalized time value (0 = start, 1 = end)
+     * @returns The interpolated items at time animationElapsedTime
+     *
+     * @since 3.9
+     * @see {@link https://recharts.github.io/en-US/guide/animations/ Animations guide}
+     */
+    animationInterpolateFn?: AnimationInterpolateFn<ScatterPointItem, CartesianLayout>;
+    /**
+     * Strategy for matching previous items to next items during animation.
+     * Determines how Recharts pairs old data points with new data points
+     * to create smooth transitions.
+     *
+     * - `matchAppend` (default): match sequentially by index and treat newly appended items as new
+     * - `matchByIndex`: match by array position with proportional stretching
+     * - `matchByDataKey('someKey')`: match by a data key from the payload
+     * - Custom function `(item, index) => key`: match by the returned key
+     *
+     * @defaultValue append
+     * @see matchByIndex
+     * @see matchByDataKey
+     * @see matchAppend
+     *
+     * @since 3.9
+     * @see {@link https://recharts.github.io/en-US/guide/animations/ Animations guide}
+     */
+    animationMatchBy?: AnimationMatchByProp<ScatterPointItem>;
+    /**
+     * Z-Index of this component and its children. The higher the value,
+     * the more on top it will be rendered.
+     * Components with higher zIndex will appear in front of components with lower zIndex.
+     * If undefined or 0, the content is rendered in the default layer without portals.
+     *
+     * @since 3.4
+     * @defaultValue 600
+     * @see {@link https://recharts.github.io/en-US/guide/zIndex/ Z-Index and layers guide}
+     */
+    zIndex?: number;
+    children?: ReactNode;
+}
+/**
+ * Because of naming conflict, we are forced to ignore certain (valid) SVG attributes.
+ */
+type BaseScatterSvgProps = Omit<PresentationAttributesAdaptChildEvent<ScatterPointItem, SVGGraphicsElement>, 'points' | 'ref' | 'children' | 'dangerouslySetInnerHTML'>;
+export type Props<DataPointType = any, ValueAxisType = any> = BaseScatterSvgProps & ScatterProps<DataPointType, ValueAxisType>;
+export declare function computeScatterPoints({ displayedData, xAxis, yAxis, zAxis, scatterSettings, xAxisTicks, yAxisTicks, cells, }: {
+    displayedData: ReadonlyArray<unknown>;
+    xAxis: BaseAxisWithScale;
+    yAxis: BaseAxisWithScale;
+    zAxis: ZAxisWithScale | undefined;
+    scatterSettings: ScatterSettings;
+    xAxisTicks: ReadonlyArray<TickItem> | undefined;
+    yAxisTicks: ReadonlyArray<TickItem> | undefined;
+    cells: ReadonlyArray<ReactElement> | undefined;
+}): ReadonlyArray<ScatterPointItem>;
+export declare const defaultScatterProps: {
+    readonly xAxisId: 0;
+    readonly yAxisId: 0;
+    readonly zAxisId: 0;
+    readonly label: false;
+    readonly line: false;
+    readonly legendType: "circle";
+    readonly lineType: "joint";
+    readonly lineJointType: "linear";
+    readonly shape: "circle";
+    readonly hide: false;
+    readonly isAnimationActive: "auto";
+    readonly animationBegin: 0;
+    readonly animationDuration: 400;
+    readonly animationEasing: "linear";
+    readonly animationMatchBy: "append";
+    readonly animationInterpolateFn: AnimationInterpolateFn<ScatterPointItem, CartesianLayout>;
+    readonly zIndex: 600;
+};
+/**
+ * @provides LabelListContext
+ * @provides ErrorBarContext
+ * @provides CellReader
+ * @consumes CartesianChartContext
+ */
+export declare const Scatter: {
+    <DataPointType = any, ValueAxisType = any>(props: Props<DataPointType, ValueAxisType>): ReactElement;
+    (props: Props<any, any>): ReactElement;
+};
+export {};

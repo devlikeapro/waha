@@ -1,0 +1,473 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.RadialBar = RadialBar;
+exports.computeRadialBarDataItems = computeRadialBarDataItems;
+exports.defaultRadialBarProps = void 0;
+var _react = _interopRequireWildcard(require("react"));
+var React = _react;
+var _clsx = require("clsx");
+var _RadialBarUtils = require("../util/RadialBarUtils");
+var _Layer = require("../container/Layer");
+var _ReactUtils = require("../util/ReactUtils");
+var _LabelList = require("../component/LabelList");
+var _Cell = require("../component/Cell");
+var _DataUtils = require("../util/DataUtils");
+var _ChartUtils = require("../util/ChartUtils");
+var _types = require("../util/types");
+var _tooltipContext = require("../context/tooltipContext");
+var _SetTooltipEntrySettings = require("../state/SetTooltipEntrySettings");
+var _radialBarSelectors = require("../state/selectors/radialBarSelectors");
+var _hooks = require("../state/hooks");
+var _tooltipSelectors = require("../state/selectors/tooltipSelectors");
+var _SetLegendPayload = require("../state/SetLegendPayload");
+var _AnimatedItems = require("../animation/AnimatedItems");
+var _matchBy = require("../animation/matchBy");
+var _RegisterGraphicalItemId = require("../context/RegisterGraphicalItemId");
+var _SetGraphicalItem = require("../state/SetGraphicalItem");
+var _svgPropertiesNoEvents = require("../util/svgPropertiesNoEvents");
+var _resolveDefaultProps = require("../util/resolveDefaultProps");
+var _ZIndexLayer = require("../zIndex/ZIndexLayer");
+var _DefaultZIndexes = require("../zIndex/DefaultZIndexes");
+var _getZIndexFromUnknown = require("../zIndex/getZIndexFromUnknown");
+var _chartLayoutContext = require("../context/chartLayoutContext");
+var _excluded = ["shape", "activeShape", "cornerRadius", "id"],
+  _excluded2 = ["onMouseEnter", "onClick", "onMouseLeave"],
+  _excluded3 = ["value", "background"];
+function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function _interopRequireWildcard(e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (var _t in e) "default" !== _t && {}.hasOwnProperty.call(e, _t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, _t)) && (i.get || i.set) ? o(f, _t, i) : f[_t] = e[_t]); return f; })(e, t); }
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
+function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
+var STABLE_EMPTY_ARRAY = [];
+function RadialBarLabelListProvider(_ref) {
+  var showLabels = _ref.showLabels,
+    sectors = _ref.sectors,
+    children = _ref.children;
+  var labelListEntries = sectors.map(sector => ({
+    value: sector.value,
+    payload: sector.payload,
+    parentViewBox: undefined,
+    clockWise: false,
+    viewBox: {
+      cx: sector.cx,
+      cy: sector.cy,
+      innerRadius: sector.innerRadius,
+      outerRadius: sector.outerRadius,
+      startAngle: sector.startAngle,
+      endAngle: sector.endAngle,
+      clockWise: false
+    },
+    fill: sector.fill
+  }));
+  return /*#__PURE__*/React.createElement(_LabelList.PolarLabelListContextProvider, {
+    value: showLabels ? labelListEntries : undefined
+  }, children);
+}
+function RadialBarSectors(_ref2) {
+  var sectors = _ref2.sectors,
+    allOtherRadialBarProps = _ref2.allOtherRadialBarProps,
+    showLabels = _ref2.showLabels,
+    animationElapsedTime = _ref2.animationElapsedTime,
+    isAnimating = _ref2.isAnimating,
+    isEntrance = _ref2.isEntrance;
+  var shape = allOtherRadialBarProps.shape,
+    activeShape = allOtherRadialBarProps.activeShape,
+    cornerRadius = allOtherRadialBarProps.cornerRadius,
+    id = allOtherRadialBarProps.id,
+    others = _objectWithoutProperties(allOtherRadialBarProps, _excluded);
+  var baseProps = (0, _svgPropertiesNoEvents.svgPropertiesNoEvents)(others);
+  var activeIndex = (0, _hooks.useAppSelector)(_tooltipSelectors.selectActiveTooltipIndex);
+  var onMouseEnterFromProps = allOtherRadialBarProps.onMouseEnter,
+    onItemClickFromProps = allOtherRadialBarProps.onClick,
+    onMouseLeaveFromProps = allOtherRadialBarProps.onMouseLeave,
+    restOfAllOtherProps = _objectWithoutProperties(allOtherRadialBarProps, _excluded2);
+  var onMouseEnterFromContext = (0, _tooltipContext.useMouseEnterItemDispatch)(onMouseEnterFromProps, allOtherRadialBarProps.dataKey, id);
+  var onMouseLeaveFromContext = (0, _tooltipContext.useMouseLeaveItemDispatch)(onMouseLeaveFromProps);
+  var onClickFromContext = (0, _tooltipContext.useMouseClickItemDispatch)(onItemClickFromProps, allOtherRadialBarProps.dataKey, id);
+  if (sectors == null) {
+    return null;
+  }
+  return /*#__PURE__*/React.createElement(RadialBarLabelListProvider, {
+    showLabels: showLabels,
+    sectors: sectors
+  }, sectors.map((entry, i) => {
+    var isActive = Boolean(activeShape && activeIndex === String(i));
+    var onMouseEnter = onMouseEnterFromContext(entry, i);
+    var onMouseLeave = onMouseLeaveFromContext(entry, i);
+    var onClick = onClickFromContext(entry, i);
+    var radialBarSectorProps = _objectSpread(_objectSpread(_objectSpread(_objectSpread({}, baseProps), {}, {
+      cornerRadius: (0, _RadialBarUtils.parseCornerRadius)(cornerRadius)
+    }, entry), (0, _types.adaptEventsOfChild)(restOfAllOtherProps, entry, i)), {}, {
+      onMouseEnter,
+      onMouseLeave,
+      onClick,
+      className: "recharts-radial-bar-sector ".concat(entry.className),
+      forceCornerRadius: others.forceCornerRadius,
+      cornerIsExternal: others.cornerIsExternal,
+      animationElapsedTime,
+      isAnimating,
+      isEntrance,
+      isActive,
+      option: isActive && activeShape != null ? activeShape : shape,
+      index: i
+    });
+    if (isActive) {
+      return /*#__PURE__*/React.createElement(_ZIndexLayer.ZIndexLayer, {
+        zIndex: _DefaultZIndexes.DefaultZIndexes.activeBar,
+        key: "sector-".concat(entry.cx, "-").concat(entry.cy, "-").concat(entry.innerRadius, "-").concat(entry.outerRadius, "-").concat(entry.startAngle, "-").concat(entry.endAngle, "-").concat(i)
+      }, /*#__PURE__*/React.createElement(_RadialBarUtils.RadialBarSector, radialBarSectorProps));
+    }
+    return /*#__PURE__*/React.createElement(_RadialBarUtils.RadialBarSector, _extends({
+      key: "sector-".concat(entry.cx, "-").concat(entry.cy, "-").concat(entry.innerRadius, "-").concat(entry.outerRadius, "-").concat(entry.startAngle, "-").concat(entry.endAngle, "-").concat(i)
+    }, radialBarSectorProps));
+  }), /*#__PURE__*/React.createElement(_LabelList.LabelListFromLabelProp, {
+    label: allOtherRadialBarProps.label
+  }), allOtherRadialBarProps.children);
+}
+var defaultRadialBarAnimateItems = (items, animationElapsedTime) => {
+  if (items == null) return [];
+  if (animationElapsedTime === 1) {
+    return items.flatMap(item => item.status === 'removed' ? [] : [item.next]);
+  }
+  return items.flatMap(item => {
+    if (item.status === 'removed') return [];
+    if (item.status === 'matched') {
+      return [_objectSpread(_objectSpread({}, item.next), {}, {
+        startAngle: (0, _DataUtils.interpolate)(item.prev.startAngle, item.next.startAngle, animationElapsedTime),
+        endAngle: (0, _DataUtils.interpolate)(item.prev.endAngle, item.next.endAngle, animationElapsedTime)
+      })];
+    }
+    // added
+    return [_objectSpread(_objectSpread({}, item.next), {}, {
+      endAngle: (0, _DataUtils.interpolate)(item.next.startAngle, item.next.endAngle, animationElapsedTime)
+    })];
+  });
+};
+function SectorsWithAnimation(_ref3) {
+  var props = _ref3.props,
+    previousSectorsRef = _ref3.previousSectorsRef;
+  var sectors = props.sectors,
+    isAnimationActive = props.isAnimationActive,
+    animationBegin = props.animationBegin,
+    animationDuration = props.animationDuration,
+    animationEasing = props.animationEasing,
+    onAnimationStart = props.onAnimationStart,
+    onAnimationEnd = props.onAnimationEnd;
+  var _useAnimationCallback = (0, _AnimatedItems.useAnimationCallbacks)(onAnimationStart, onAnimationEnd),
+    isAnimating = _useAnimationCallback.isAnimating,
+    handleAnimationStart = _useAnimationCallback.handleAnimationStart,
+    handleAnimationEnd = _useAnimationCallback.handleAnimationEnd;
+  var layout = (0, _chartLayoutContext.usePolarChartLayout)();
+  if (layout == null) return null;
+  return /*#__PURE__*/React.createElement(_AnimatedItems.AnimatedItems, {
+    animationInput: props,
+    animationIdPrefix: "recharts-radialbar-",
+    items: sectors,
+    previousItemsRef: previousSectorsRef,
+    isAnimationActive: isAnimationActive,
+    animationBegin: animationBegin,
+    animationDuration: animationDuration,
+    animationEasing: animationEasing,
+    onAnimationStart: handleAnimationStart,
+    onAnimationEnd: handleAnimationEnd,
+    animationInterpolateFn: props.animationInterpolateFn,
+    animationMatchBy: props.animationMatchBy,
+    layout: layout
+  }, (stepData, animationElapsedTime, isEntrance) => /*#__PURE__*/React.createElement(RadialBarSectors, {
+    sectors: stepData,
+    allOtherRadialBarProps: props,
+    showLabels: !isAnimating,
+    animationElapsedTime: animationElapsedTime,
+    isAnimating: isAnimating || animationElapsedTime < 1,
+    isEntrance: isEntrance
+  }));
+}
+function RenderSectors(props) {
+  var previousSectorsRef = (0, _react.useRef)(null);
+  return /*#__PURE__*/React.createElement(SectorsWithAnimation, {
+    props: props,
+    previousSectorsRef: previousSectorsRef
+  });
+}
+function SetRadialBarPayloadLegend(props) {
+  var legendPayload = (0, _hooks.useAppSelector)(state => (0, _radialBarSelectors.selectRadialBarLegendPayload)(state, props.legendType));
+  return /*#__PURE__*/React.createElement(_SetLegendPayload.SetPolarLegendPayload, {
+    legendPayload: legendPayload !== null && legendPayload !== void 0 ? legendPayload : []
+  });
+}
+var SetRadialBarTooltipEntrySettings = /*#__PURE__*/React.memo(_ref4 => {
+  var dataKey = _ref4.dataKey,
+    sectors = _ref4.sectors,
+    stroke = _ref4.stroke,
+    strokeWidth = _ref4.strokeWidth,
+    name = _ref4.name,
+    hide = _ref4.hide,
+    fill = _ref4.fill,
+    tooltipType = _ref4.tooltipType,
+    formatter = _ref4.formatter,
+    id = _ref4.id;
+  var tooltipEntrySettings = {
+    dataDefinedOnItem: sectors,
+    getPosition: _DataUtils.noop,
+    settings: {
+      graphicalItemId: id,
+      stroke,
+      strokeWidth,
+      fill,
+      nameKey: undefined,
+      // RadialBar does not have nameKey, why?
+      dataKey,
+      name: (0, _ChartUtils.getTooltipNameProp)(name, dataKey),
+      hide,
+      type: tooltipType,
+      color: fill,
+      unit: '',
+      // Why does RadialBar not support unit?
+      formatter
+    }
+  };
+  return /*#__PURE__*/React.createElement(_SetTooltipEntrySettings.SetTooltipEntrySettings, {
+    tooltipEntrySettings: tooltipEntrySettings
+  });
+});
+class RadialBarWithState extends _react.PureComponent {
+  renderBackground(sectors) {
+    if (sectors == null) {
+      return null;
+    }
+    var cornerRadius = this.props.cornerRadius;
+    var backgroundProps = (0, _svgPropertiesNoEvents.svgPropertiesNoEventsFromUnknown)(this.props.background);
+    return /*#__PURE__*/React.createElement(_ZIndexLayer.ZIndexLayer, {
+      zIndex: (0, _getZIndexFromUnknown.getZIndexFromUnknown)(this.props.background, _DefaultZIndexes.DefaultZIndexes.barBackground)
+    }, sectors.map((entry, i) => {
+      var value = entry.value,
+        background = entry.background,
+        rest = _objectWithoutProperties(entry, _excluded3);
+      if (!background) {
+        return null;
+      }
+      var props = _objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread({
+        cornerRadius: (0, _RadialBarUtils.parseCornerRadius)(cornerRadius)
+      }, rest), {}, {
+        // @ts-expect-error backgroundProps is contributing unknown props
+        fill: '#eee'
+      }, background), backgroundProps), (0, _types.adaptEventsOfChild)(this.props, entry, i)), {}, {
+        index: i,
+        className: (0, _clsx.clsx)('recharts-radial-bar-background-sector', String(backgroundProps === null || backgroundProps === void 0 ? void 0 : backgroundProps.className)),
+        option: background,
+        isActive: false
+      });
+      return /*#__PURE__*/React.createElement(_RadialBarUtils.RadialBarSector, _extends({
+        key: "background-".concat(rest.cx, "-").concat(rest.cy, "-").concat(rest.innerRadius, "-").concat(rest.outerRadius, "-").concat(rest.startAngle, "-").concat(rest.endAngle, "-").concat(i)
+      }, props));
+    }));
+  }
+  render() {
+    var _this$props = this.props,
+      hide = _this$props.hide,
+      sectors = _this$props.sectors,
+      className = _this$props.className,
+      background = _this$props.background;
+    if (hide) {
+      return null;
+    }
+    var layerClass = (0, _clsx.clsx)('recharts-area', className);
+    return /*#__PURE__*/React.createElement(_ZIndexLayer.ZIndexLayer, {
+      zIndex: this.props.zIndex
+    }, /*#__PURE__*/React.createElement(_Layer.Layer, {
+      className: layerClass
+    }, background && /*#__PURE__*/React.createElement(_Layer.Layer, {
+      className: "recharts-radial-bar-background"
+    }, this.renderBackground(sectors)), /*#__PURE__*/React.createElement(_Layer.Layer, {
+      className: "recharts-radial-bar-sectors"
+    }, /*#__PURE__*/React.createElement(RenderSectors, this.props))));
+  }
+}
+function RadialBarImpl(props) {
+  var _useAppSelector;
+  var cells = React.useMemo(() => (0, _ReactUtils.findAllByType)(props.children, _Cell.Cell), [props.children]);
+  var radialBarSettings = React.useMemo(() => ({
+    data: undefined,
+    hide: false,
+    id: props.id,
+    dataKey: props.dataKey,
+    minPointSize: props.minPointSize,
+    stackId: (0, _ChartUtils.getNormalizedStackId)(props.stackId),
+    maxBarSize: props.maxBarSize,
+    barSize: props.barSize,
+    type: 'radialBar',
+    angleAxisId: props.angleAxisId,
+    radiusAxisId: props.radiusAxisId
+  }), [props.id, props.dataKey, props.minPointSize, props.stackId, props.maxBarSize, props.barSize, props.angleAxisId, props.radiusAxisId]);
+  var sectors = (_useAppSelector = (0, _hooks.useAppSelector)(state => (0, _radialBarSelectors.selectRadialBarSectors)(state, props.radiusAxisId, props.angleAxisId, radialBarSettings, cells))) !== null && _useAppSelector !== void 0 ? _useAppSelector : STABLE_EMPTY_ARRAY;
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(SetRadialBarTooltipEntrySettings, {
+    dataKey: props.dataKey,
+    sectors: sectors,
+    stroke: props.stroke,
+    strokeWidth: props.strokeWidth,
+    name: props.name,
+    hide: props.hide,
+    fill: props.fill,
+    tooltipType: props.tooltipType,
+    formatter: props.formatter,
+    id: props.id
+  }), /*#__PURE__*/React.createElement(RadialBarWithState, _extends({}, props, {
+    sectors: sectors
+  })));
+}
+var defaultRadialBarProps = exports.defaultRadialBarProps = {
+  angleAxisId: 0,
+  animationBegin: 0,
+  animationDuration: 1500,
+  animationEasing: 'ease',
+  animationMatchBy: _matchBy.matchAppend,
+  animationInterpolateFn: defaultRadialBarAnimateItems,
+  background: false,
+  cornerIsExternal: false,
+  cornerRadius: 0,
+  forceCornerRadius: false,
+  hide: false,
+  isAnimationActive: 'auto',
+  label: false,
+  legendType: 'rect',
+  minPointSize: 0,
+  radiusAxisId: 0,
+  shape: _RadialBarUtils.defaultRadialBarShape,
+  zIndex: _DefaultZIndexes.DefaultZIndexes.bar
+};
+function computeRadialBarDataItems(_ref5) {
+  var displayedData = _ref5.displayedData,
+    stackedData = _ref5.stackedData,
+    dataStartIndex = _ref5.dataStartIndex,
+    stackedDomain = _ref5.stackedDomain,
+    dataKey = _ref5.dataKey,
+    baseValue = _ref5.baseValue,
+    layout = _ref5.layout,
+    radiusAxis = _ref5.radiusAxis,
+    radiusAxisTicks = _ref5.radiusAxisTicks,
+    bandSize = _ref5.bandSize,
+    pos = _ref5.pos,
+    angleAxis = _ref5.angleAxis,
+    minPointSize = _ref5.minPointSize,
+    cx = _ref5.cx,
+    cy = _ref5.cy,
+    angleAxisTicks = _ref5.angleAxisTicks,
+    cells = _ref5.cells,
+    rootStartAngle = _ref5.startAngle,
+    rootEndAngle = _ref5.endAngle;
+  if (angleAxisTicks == null || radiusAxisTicks == null) {
+    return STABLE_EMPTY_ARRAY;
+  }
+  return (displayedData !== null && displayedData !== void 0 ? displayedData : []).map((entry, index) => {
+    var value, innerRadius, outerRadius, startAngle, endAngle, backgroundSector;
+    if (stackedData) {
+      // @ts-expect-error truncateByDomain expects only numerical domain, but it can received categorical domain too
+      value = (0, _ChartUtils.truncateByDomain)(stackedData[dataStartIndex + index], stackedDomain);
+    } else {
+      value = (0, _ChartUtils.getValueByDataKey)(entry, dataKey);
+      if (!Array.isArray(value)) {
+        value = [baseValue, value];
+      }
+    }
+    if (layout === 'radial') {
+      var _angleAxis$scale$map, _angleAxis$scale$map2;
+      startAngle = (_angleAxis$scale$map = angleAxis.scale.map(value[0])) !== null && _angleAxis$scale$map !== void 0 ? _angleAxis$scale$map : rootStartAngle;
+      endAngle = (_angleAxis$scale$map2 = angleAxis.scale.map(value[1])) !== null && _angleAxis$scale$map2 !== void 0 ? _angleAxis$scale$map2 : rootEndAngle;
+      innerRadius = (0, _ChartUtils.getCateCoordinateOfBar)({
+        axis: radiusAxis,
+        ticks: radiusAxisTicks,
+        bandSize,
+        offset: pos.offset,
+        entry,
+        index
+      });
+      if (innerRadius != null && endAngle != null && startAngle != null) {
+        outerRadius = innerRadius + pos.size;
+        var deltaAngle = endAngle - startAngle;
+        if (Math.abs(minPointSize) > 0 && Math.abs(deltaAngle) < Math.abs(minPointSize)) {
+          var delta = (0, _DataUtils.mathSign)(deltaAngle || minPointSize) * (Math.abs(minPointSize) - Math.abs(deltaAngle));
+          endAngle += delta;
+        }
+        backgroundSector = {
+          background: {
+            cx,
+            cy,
+            innerRadius,
+            outerRadius,
+            startAngle: rootStartAngle,
+            endAngle: rootEndAngle
+          }
+        };
+      }
+    } else {
+      innerRadius = radiusAxis.scale.map(value[0]);
+      outerRadius = radiusAxis.scale.map(value[1]);
+      startAngle = (0, _ChartUtils.getCateCoordinateOfBar)({
+        axis: angleAxis,
+        ticks: angleAxisTicks,
+        bandSize,
+        offset: pos.offset,
+        entry,
+        index
+      });
+      if (innerRadius != null && outerRadius != null && startAngle != null) {
+        endAngle = startAngle + pos.size;
+        var deltaRadius = outerRadius - innerRadius;
+        if (Math.abs(minPointSize) > 0 && Math.abs(deltaRadius) < Math.abs(minPointSize)) {
+          var _delta = (0, _DataUtils.mathSign)(deltaRadius || minPointSize) * (Math.abs(minPointSize) - Math.abs(deltaRadius));
+          outerRadius += _delta;
+        }
+      }
+    }
+    return _objectSpread(_objectSpread(_objectSpread({}, entry), backgroundSector), {}, {
+      payload: entry,
+      value: stackedData ? value : value[1],
+      cx,
+      cy,
+      innerRadius,
+      outerRadius,
+      startAngle,
+      // @ts-expect-error endAngle is used before assigned (?)
+      endAngle
+    }, cells && cells[index] && cells[index].props);
+  });
+}
+
+/**
+ * @consumes PolarChartContext
+ * @provides LabelListContext
+ * @provides CellReader
+ */
+function RadialBar(outsideProps) {
+  var props = (0, _resolveDefaultProps.resolveDefaultProps)(outsideProps, defaultRadialBarProps);
+  return /*#__PURE__*/React.createElement(_RegisterGraphicalItemId.RegisterGraphicalItemId, {
+    id: props.id,
+    type: "radialBar"
+  }, id => {
+    var _props$hide, _props$angleAxisId, _props$radiusAxisId;
+    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_SetGraphicalItem.SetPolarGraphicalItem, {
+      type: "radialBar",
+      id: id,
+      data: undefined // why does RadialBar not allow data defined on the item?
+      ,
+      dataKey: props.dataKey,
+      hide: (_props$hide = props.hide) !== null && _props$hide !== void 0 ? _props$hide : defaultRadialBarProps.hide,
+      angleAxisId: (_props$angleAxisId = props.angleAxisId) !== null && _props$angleAxisId !== void 0 ? _props$angleAxisId : defaultRadialBarProps.angleAxisId,
+      radiusAxisId: (_props$radiusAxisId = props.radiusAxisId) !== null && _props$radiusAxisId !== void 0 ? _props$radiusAxisId : defaultRadialBarProps.radiusAxisId,
+      stackId: (0, _ChartUtils.getNormalizedStackId)(props.stackId),
+      barSize: props.barSize,
+      minPointSize: props.minPointSize,
+      maxBarSize: props.maxBarSize
+    }), /*#__PURE__*/React.createElement(SetRadialBarPayloadLegend, props), /*#__PURE__*/React.createElement(RadialBarImpl, _extends({}, props, {
+      id: id
+    })));
+  });
+}
+RadialBar.displayName = 'RadialBar';

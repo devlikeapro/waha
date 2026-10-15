@@ -1,0 +1,71 @@
+{
+  "name": "@asamuzakjp/css-color",
+  "description": "CSS color - Resolve and convert CSS colors.",
+  "author": "asamuzaK",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asamuzaK/cssColor.git"
+  },
+  "homepage": "https://github.com/asamuzaK/cssColor#readme",
+  "bugs": {
+    "url": "https://github.com/asamuzaK/cssColor/issues"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "type": "module",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "default": "./dist/esm/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@csstools/css-calc": "^3.3.0",
+    "@csstools/css-color-parser": "^4.2.0",
+    "@csstools/css-parser-algorithms": "^4.0.0",
+    "@csstools/css-tokenizer": "^4.0.0",
+    "lru-cache": "^11.5.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "@vitest/coverage-istanbul": "^4.1.10",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.8.1",
+    "eslint-plugin-regexp": "^3.2.0",
+    "globals": "^17.11.0",
+    "knip": "^6.32.2",
+    "mitata": "^1.0.34",
+    "neostandard": "0.14.0-next",
+    "prettier": "^3.9.6",
+    "publint": "^0.3.23",
+    "rimraf": "^6.1.3",
+    "tsx": "^4.23.12",
+    "typescript": "^6.0.3",
+    "vite": "^8.2.1",
+    "vitest": "^4.1.10"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  },
+  "scripts": {
+    "bench:color": "npx tsx --expose-gc ./benchmark/bench-color.ts",
+    "build": "npm run clean && npm run test && npm run knip && vite build && npm run publint",
+    "clean": "rimraf ./coverage ./dist",
+    "knip": "knip",
+    "lint": "eslint ./src ./test --fix",
+    "prettier": "prettier . --ignore-unknown --write",
+    "publint": "publint --strict",
+    "test": "npm run prettier && npm run lint && npm run test:types && npm run test:unit",
+    "test:types": "tsc",
+    "test:unit": "vitest"
+  },
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  },
+  "version": "7.0.0"
+}

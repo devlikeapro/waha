@@ -1,0 +1,72 @@
+{
+  "name": "html-parse-stringify",
+  "description": "Parses well-formed HTML (meaning all tags closed) into an AST and back. quickly.",
+  "version": "4.0.1",
+  "author": "Henrik Joreteg <henrik@joreteg.com>",
+  "contributors": [
+    "Adriano Raiano <adriano@raiano.ch>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/i18next/html-parse-stringify",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/i18next/html-parse-stringify.git"
+  },
+  "bugs": {
+    "url": "https://github.com/i18next/html-parse-stringify/issues"
+  },
+  "funding": "https://locize.com",
+  "keywords": [
+    "ast",
+    "html",
+    "parse",
+    "stringify"
+  ],
+  "main": "./dist/cjs/html-parse-stringify.js",
+  "module": "./dist/esm/html-parse-stringify.js",
+  "types": "./index.d.ts",
+  "unpkg": "./dist/umd/html-parse-stringify.min.js",
+  "source": "src/index.js",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "types": "./index.d.mts",
+        "default": "./dist/esm/html-parse-stringify.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/html-parse-stringify.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "index.d.ts",
+    "index.d.mts"
+  ],
+  "scripts": {
+    "lint": "eslint src test",
+    "format": "prettier \"{src,test}/**/*.js\" \"*.{json,md,mjs}\" --check",
+    "format:fix": "prettier \"{src,test}/**/*.js\" \"*.{json,md,mjs}\" --write",
+    "test": "vitest --run",
+    "build": "rimraf dist && rollup -c && node -e \"require('fs').writeFileSync('dist/esm/package.json', JSON.stringify({ type: 'module' }))\"",
+    "prepublishOnly": "npm run lint && npm run test && npm run build",
+    "preversion": "npm run lint && npm run test && npm run build && git push",
+    "postversion": "git push && git push --tags"
+  },
+  "prettier": {
+    "arrowParens": "avoid",
+    "singleQuote": true,
+    "semi": false
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "1.0.0",
+    "eslint": "9.39.5",
+    "neostandard": "0.13.0",
+    "prettier": "3.9.6",
+    "rimraf": "6.1.3",
+    "rollup": "4.62.2",
+    "vitest": "4.1.10"
+  }
+}

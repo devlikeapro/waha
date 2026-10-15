@@ -1,0 +1,52 @@
+{
+  "name": "@fontsource-variable/jetbrains-mono",
+  "version": "5.3.0",
+  "description": "Self-host the JetBrains Mono font in a neatly bundled NPM package.",
+  "main": "index.css",
+  "types": "index.d.css.ts",
+  "publishConfig": {"access": "public"},
+  "keywords": [
+    "fontsource",
+    "font",
+    "font family",
+    "google fonts",
+    "jetbrains-mono",
+    "JetBrains Mono",
+    "css",
+    "sass",
+    "front-end",
+    "web",
+    "typeface",
+    "variable"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.css.ts",
+      "sass": "./index.css",
+      "default": "./index.css"
+    },
+    "./LICENSE": "./LICENSE",
+    "./*": {"sass": "./*.css", "default": "./*.css"},
+    "./*.css": {"sass": "./*.css", "default": "./*.css"},
+    "./files/*": {"sass": "./files/*", "default": "./files/*"},
+    "./files/*.woff": {"sass": "./files/*.woff", "default": "./files/*.woff"},
+    "./files/*.woff2": {
+      "sass": "./files/*.woff2",
+      "default": "./files/*.woff2"
+    },
+    "./package.json": "./package.json",
+    "./metadata.json": "./metadata.json",
+    "./unicode.json": "./unicode.json",
+    "./scss": {"sass": "./scss/metadata.scss"}
+  },
+  "author": "Google Inc.",
+  "license": "OFL-1.1",
+  "homepage": "https://fontsource.org/fonts/jetbrains-mono",
+  "funding": "https://github.com/sponsors/ayuhito",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fontsource/font-files.git",
+    "directory": "fonts/variable/jetbrains-mono"
+  },
+  "publishHash": "af43b6a14a9a1f19"
+}

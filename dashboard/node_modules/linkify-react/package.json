@@ -1,0 +1,40 @@
+{
+  "name": "linkify-react",
+  "type": "module",
+  "version": "4.3.3",
+  "description": "React element interface for linkifyjs",
+  "main": "dist/linkify-react.cjs",
+  "module": "dist/linkify-react.mjs",
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "clean": "rm -rf lib dist *.tgz *.d.ts",
+    "prepack": "run-s clean build tsc",
+    "tsc": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nfrasser/linkifyjs.git",
+    "directory": "packages/linkify-react"
+  },
+  "keywords": [
+    "link",
+    "autolink",
+    "url",
+    "email",
+    "react"
+  ],
+  "author": "Nick Frasser (https://nfrasser.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nfrasser/linkifyjs/issues"
+  },
+  "homepage": "https://linkify.js.org",
+  "peerDependencies": {
+    "linkifyjs": "==4.3.3",
+    "react": ">= 15.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.3"
+  }
+}
