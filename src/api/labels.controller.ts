@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { WhatsappSession } from '@waha/core/abc/session.abc';
+import { findLabelByName } from '@waha/core/utils/labels';
 import { ChatIdApiParam } from '@waha/nestjs/params/ChatIdApiParam';
 import {
   SessionApiParam,
@@ -74,7 +75,7 @@ export class LabelsController {
       throw new UnprocessableEntityException('Maximum 20 labels allowed');
     }
 
-    const labelByName = lodash.find(labels, { name: labelDto.name });
+    const labelByName = findLabelByName(labels, labelDto.name);
     if (labelByName) {
       throw new UnprocessableEntityException(
         `Label with '${labelByName.name}' already exists, id: ${labelByName.id}`,
@@ -102,8 +103,9 @@ export class LabelsController {
     const labelDto = body.toDTO();
     const labels = await session.getLabels();
 
-    const labelByName = lodash.find(labels, { name: labelDto.name });
-    if (labelByName) {
+    // Renaming to its own name (e.g. color only change) is fine
+    const labelByName = findLabelByName(labels, labelDto.name);
+    if (labelByName && labelByName.id !== label.id) {
       throw new UnprocessableEntityException(
         `Label with '${labelByName.name}' already exists, id: ${labelByName.id}`,
       );
