@@ -7087,6 +7087,145 @@ export namespace messages {
             return RevokeMessageRequest.deserialize(bytes);
         }
     }
+    export class DeleteMessagesForMeRequest extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            session?: Session;
+            jid?: string;
+            messageIds?: string[];
+            deleteMedia?: boolean;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("session" in data && data.session != undefined) {
+                    this.session = data.session;
+                }
+                if ("jid" in data && data.jid != undefined) {
+                    this.jid = data.jid;
+                }
+                if ("messageIds" in data && data.messageIds != undefined) {
+                    this.messageIds = data.messageIds;
+                }
+                if ("deleteMedia" in data && data.deleteMedia != undefined) {
+                    this.deleteMedia = data.deleteMedia;
+                }
+            }
+        }
+        get session() {
+            return pb_1.Message.getWrapperField(this, Session, 1) as Session;
+        }
+        set session(value: Session) {
+            pb_1.Message.setWrapperField(this, 1, value);
+        }
+        get has_session() {
+            return pb_1.Message.getField(this, 1) != null;
+        }
+        get jid() {
+            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+        }
+        set jid(value: string) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        get messageIds() {
+            return pb_1.Message.getFieldWithDefault(this, 3, []) as string[];
+        }
+        set messageIds(value: string[]) {
+            pb_1.Message.setField(this, 3, value);
+        }
+        get deleteMedia() {
+            return pb_1.Message.getFieldWithDefault(this, 4, false) as boolean;
+        }
+        set deleteMedia(value: boolean) {
+            pb_1.Message.setField(this, 4, value);
+        }
+        static fromObject(data: {
+            session?: ReturnType<typeof Session.prototype.toObject>;
+            jid?: string;
+            messageIds?: string[];
+            deleteMedia?: boolean;
+        }): DeleteMessagesForMeRequest {
+            const message = new DeleteMessagesForMeRequest({});
+            if (data.session != null) {
+                message.session = Session.fromObject(data.session);
+            }
+            if (data.jid != null) {
+                message.jid = data.jid;
+            }
+            if (data.messageIds != null) {
+                message.messageIds = data.messageIds;
+            }
+            if (data.deleteMedia != null) {
+                message.deleteMedia = data.deleteMedia;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                session?: ReturnType<typeof Session.prototype.toObject>;
+                jid?: string;
+                messageIds?: string[];
+                deleteMedia?: boolean;
+            } = {};
+            if (this.session != null) {
+                data.session = this.session.toObject();
+            }
+            if (this.jid != null) {
+                data.jid = this.jid;
+            }
+            if (this.messageIds != null) {
+                data.messageIds = this.messageIds;
+            }
+            if (this.deleteMedia != null) {
+                data.deleteMedia = this.deleteMedia;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.has_session)
+                writer.writeMessage(1, this.session, () => this.session.serialize(writer));
+            if (this.jid.length)
+                writer.writeString(2, this.jid);
+            if (this.messageIds.length)
+                writer.writeRepeatedString(3, this.messageIds);
+            if (this.deleteMedia != false)
+                writer.writeBool(4, this.deleteMedia);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): DeleteMessagesForMeRequest {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new DeleteMessagesForMeRequest();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        reader.readMessage(message.session, () => message.session = Session.deserialize(reader));
+                        break;
+                    case 2:
+                        message.jid = reader.readString();
+                        break;
+                    case 3:
+                        pb_1.Message.addToRepeatedField(message, 3, reader.readString());
+                        break;
+                    case 4:
+                        message.deleteMedia = reader.readBool();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): DeleteMessagesForMeRequest {
+            return DeleteMessagesForMeRequest.deserialize(bytes);
+        }
+    }
     export class EditMessageRequest extends pb_1.Message {
         #one_of_decls: number[][] = [];
         constructor(data?: any[] | {
@@ -11969,6 +12108,15 @@ export namespace messages {
                 responseSerialize: (message: MessageResponse) => Buffer.from(message.serialize()),
                 responseDeserialize: (bytes: Buffer) => MessageResponse.deserialize(new Uint8Array(bytes))
             },
+            DeleteMessagesForMe: {
+                path: "/messages.MessageService/DeleteMessagesForMe",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: DeleteMessagesForMeRequest) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => DeleteMessagesForMeRequest.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: Empty) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => Empty.deserialize(new Uint8Array(bytes))
+            },
             SendButtonReply: {
                 path: "/messages.MessageService/SendButtonReply",
                 requestStream: false,
@@ -12244,6 +12392,7 @@ export namespace messages {
         abstract MarkRead(call: grpc_1.ServerUnaryCall<MarkReadRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
         abstract EditMessage(call: grpc_1.ServerUnaryCall<EditMessageRequest, MessageResponse>, callback: grpc_1.sendUnaryData<MessageResponse>): void;
         abstract RevokeMessage(call: grpc_1.ServerUnaryCall<RevokeMessageRequest, MessageResponse>, callback: grpc_1.sendUnaryData<MessageResponse>): void;
+        abstract DeleteMessagesForMe(call: grpc_1.ServerUnaryCall<DeleteMessagesForMeRequest, Empty>, callback: grpc_1.sendUnaryData<Empty>): void;
         abstract SendButtonReply(call: grpc_1.ServerUnaryCall<ButtonReplyRequest, MessageResponse>, callback: grpc_1.sendUnaryData<MessageResponse>): void;
         abstract GetSubscribedNewsletters(call: grpc_1.ServerUnaryCall<NewsletterListRequest, NewsletterList>, callback: grpc_1.sendUnaryData<NewsletterList>): void;
         abstract GetNewsletterInfo(call: grpc_1.ServerUnaryCall<NewsletterInfoRequest, Newsletter>, callback: grpc_1.sendUnaryData<Newsletter>): void;
@@ -12417,6 +12566,9 @@ export namespace messages {
         };
         RevokeMessage: GrpcUnaryServiceInterface<RevokeMessageRequest, MessageResponse> = (message: RevokeMessageRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<MessageResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<MessageResponse>, callback?: grpc_1.requestCallback<MessageResponse>): grpc_1.ClientUnaryCall => {
             return super.RevokeMessage(message, metadata, options, callback);
+        };
+        DeleteMessagesForMe: GrpcUnaryServiceInterface<DeleteMessagesForMeRequest, Empty> = (message: DeleteMessagesForMeRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<Empty>, options?: grpc_1.CallOptions | grpc_1.requestCallback<Empty>, callback?: grpc_1.requestCallback<Empty>): grpc_1.ClientUnaryCall => {
+            return super.DeleteMessagesForMe(message, metadata, options, callback);
         };
         SendButtonReply: GrpcUnaryServiceInterface<ButtonReplyRequest, MessageResponse> = (message: ButtonReplyRequest, metadata: grpc_1.Metadata | grpc_1.CallOptions | grpc_1.requestCallback<MessageResponse>, options?: grpc_1.CallOptions | grpc_1.requestCallback<MessageResponse>, callback?: grpc_1.requestCallback<MessageResponse>): grpc_1.ClientUnaryCall => {
             return super.SendButtonReply(message, metadata, options, callback);
