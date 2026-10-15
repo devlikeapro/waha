@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BooleanString } from '@waha/nestjs/validation/BooleanString';
+import { TrimString } from '@waha/nestjs/validation/TrimString';
 import { Transform } from 'class-transformer';
 import {
   IsArray,
@@ -151,7 +152,7 @@ export class DescriptionRequest {
 }
 
 export class SubjectRequest {
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @Transform(TrimString)
   @IsString()
   @IsNotEmpty()
   subject: string;
