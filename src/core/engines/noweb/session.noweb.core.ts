@@ -1942,6 +1942,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       color: label.color,
       deleted: false,
       predefinedId: undefined,
+      type: label.type,
+      isActive: label.isActive,
     };
     await this.sock.addLabel(undefined, labelAction);
     return label;
