@@ -2863,6 +2863,8 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         id: label.id,
         name: label.name,
         color: label.color,
+        type: label.type,
+        isActive: label.isActive,
       }),
     });
     await promisify(this.client.UpsertLabel)(request);
