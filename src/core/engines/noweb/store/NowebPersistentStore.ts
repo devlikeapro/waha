@@ -783,4 +783,18 @@ export class NowebPersistentStore implements INowebStore {
   findLidByPN(pn: string): Promise<string | null> {
     return this.lidRepo.findLidByPN(pn);
   }
+
+  saveLids(lids: LidToPhoneNumber[]): Promise<void> {
+    return this.withLock('lids', async () => {
+      const contacts: Partial<Contact>[] = lids.map((value) => {
+        return { id: value.pn, lid: value.lid };
+      });
+      const saved = await this.handleLidPNUpdates(contacts);
+      this.logger.debug(
+        `Save lids - '${saved.length}' synced lid to pn mapping`,
+      );
+    }).catch((error) => {
+      this.logger.warn(`Failed to save lid to pn mapping: ${error}`);
+    });
+  }
 }

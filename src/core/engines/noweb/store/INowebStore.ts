@@ -73,4 +73,6 @@ export interface INowebStore {
   findPNByLid(lid: string): Promise<string | null>;
 
   findLidByPN(pn: string): Promise<string | null>;
+
+  saveLids(lids: LidToPhoneNumber[]): Promise<void>;
 }

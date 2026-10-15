@@ -178,4 +178,8 @@ export class NowebInMemoryStore implements INowebStore {
   getLidsCount(): Promise<number> {
     throw new BadRequestException(this.errorMessage);
   }
+
+  async saveLids(lids: LidToPhoneNumber[]): Promise<void> {
+    return;
+  }
 }

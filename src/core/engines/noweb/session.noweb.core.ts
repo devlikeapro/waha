@@ -43,6 +43,7 @@ import type {
 } from '@adiwajshing/baileys/lib/Types';
 import { ILogger } from '@adiwajshing/baileys/lib/Utils/logger';
 import { isLidUser } from '@adiwajshing/baileys/lib/WABinary/jid-utils';
+import { LidMappingKeyStore } from '@waha/core/engines/noweb/LidMappingKeyStore';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { parseMessageCapping } from '@waha/core/abc/capping';
 import {
@@ -449,11 +450,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         this.sessionStore,
         this.name,
       );
+      const keys = new LidMappingKeyStore(store.state.keys);
+      keys.lids$.subscribe((lids) => this.store.saveLids(lids));
       /** caching makes the store faster to send/recv messages */
-      store.state.keys = makeCacheableSignalKeyStore(
-        store.state.keys,
-        this.engineLogger,
-      );
+      store.state.keys = makeCacheableSignalKeyStore(keys, this.engineLogger);
       this.authNOWEBStore = store;
     }
     const { state, saveCreds } = this.authNOWEBStore;
