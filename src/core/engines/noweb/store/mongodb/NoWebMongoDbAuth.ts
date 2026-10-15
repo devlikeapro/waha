@@ -153,7 +153,7 @@ export class NoWebMongoDbAuth {
                 let value = await this.readData(`${type}-${id}`);
                 if (type === 'app-state-sync-key' && value) {
                   value =
-                    esm.b.WAProto.Message.AppStateSyncKeyData.create(value);
+                    esm.b.WAProto.Message.AppStateSyncKeyData.fromObject(value);
                 }
                 data[id] = value;
               }),
