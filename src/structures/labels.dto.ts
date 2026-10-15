@@ -110,6 +110,22 @@ export class Label {
   })
   colorHex: string;
 
+  @ApiProperty({
+    example: 5,
+    required: false,
+    description:
+      'WhatsApp list type. User labels: 5 CUSTOM, 4 PREDEFINED, 16 LEAD. ' +
+      'Built-in lists: 1 UNREAD, 2 GROUPS, 3 FAVORITES and others.',
+  })
+  type?: number;
+
+  @ApiProperty({
+    example: true,
+    required: false,
+    description: 'false for lists the user turned off',
+  })
+  isActive?: boolean;
+
   static toHex(color: number) {
     if (color >= Colors.length) {
       return '#000000';

@@ -1995,6 +1995,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       name: label.name,
       color: color,
       colorHex: Label.toHex(color),
+      type: label.type,
+      isActive: label.isActive,
     };
   }
 
