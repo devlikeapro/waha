@@ -1,7 +1,16 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
+import { TrimString } from '@waha/nestjs/validation/TrimString';
 import { ChatIdProperty } from '@waha/structures/properties.dto';
-import { IsHexColor, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsHexColor,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 
 const Colors = [
   '#ff9485',
@@ -31,7 +40,10 @@ export class LabelBody {
     example: 'Lead',
     description: 'Label name',
   })
+  @Transform(TrimString)
   @IsString()
+  @IsNotEmpty()
+  @MaxLength(100)
   name: string;
 
   @ApiProperty({
