@@ -53,14 +53,8 @@ Assuming you have installed [Docker](https://docs.docker.com/get-docker/), let's
 docker pull devlikeapro/waha
 ```
 
-
-```bash
-docker login -u devlikeapro -p {KEY}
-docker pull devlikeapro/waha-plus
-docker logout
-```
-
-Read more about how to get `PASSWORD` for [**➕ WAHA Plus**](https://waha.devlike.pro/docs/how-to/waha-plus/)
+Looking for **WAHA Plus**? It's now part of the main `devlikeapro/waha` image - all Plus features are included.
+Read more: [WAHA 2026.6 - Plus is now Core](https://waha.devlike.pro/blog/waha-2026-6/)
 
 ### 2. Run WhatsApp HTTP API
 
@@ -98,7 +92,7 @@ The example payload:
 ```
 
 
-By using the request with `name` values you can start multiple session (WhatsApp accounts) inside the single docker container in Plus
+By using the request with different `name` values you can start multiple sessions (WhatsApp accounts) inside the single docker container.
 
 
 ### 4. Get and scan QR
