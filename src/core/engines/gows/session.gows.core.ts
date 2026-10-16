@@ -37,6 +37,11 @@ import {
 } from '@waha/core/engines/gows/helpers';
 import { parseMessageCapping } from '@waha/core/abc/capping';
 import { parseGowsReachoutTimelock } from '@waha/core/engines/gows/reachouttimelock';
+import {
+  parseGowsConnectFailure,
+  parseGowsLoggedOut,
+  parseGowsTemporaryBan,
+} from '@waha/core/engines/gows/failurereason';
 import { GowsAuthFactoryCore } from '@waha/core/engines/gows/store/GowsAuthFactoryCore';
 import {
   extractBody,
@@ -155,6 +160,7 @@ import {
   ProxyConfig,
   ReachoutTimelockData,
   SessionConfig,
+  SessionFailureReasonType,
 } from '@waha/structures/sessions.dto';
 import {
   BROADCAST_ID,
@@ -259,6 +265,10 @@ enum WhatsMeowEvent {
   CHAT_PRESENCE = 'events.ChatPresence',
   PUSH_NAME_SETTING = 'events.PushNameSetting',
   LOGGED_OUT = 'events.LoggedOut',
+  TEMPORARY_BAN = 'events.TemporaryBan',
+  CONNECT_FAILURE = 'events.ConnectFailure',
+  STREAM_REPLACED = 'events.StreamReplaced',
+  CLIENT_OUTDATED = 'events.ClientOutdated',
   NOTIFY_ACCOUNT_REACHOUT_TIMELOCK = 'events.NotifyAccountReachoutTimelock',
   MESSAGE_CAPPING = 'gows.MessageCapping',
   // Groups
@@ -496,9 +506,41 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     events.on(WhatsMeowEvent.PUSH_NAME_SETTING, (data) => {
       this.me = { ...this.me, pushName: data.Action.name };
     });
-    events.on(WhatsMeowEvent.LOGGED_OUT, () => {
-      this.logger.error('Logged out');
-      this.status = WAHASessionStatus.FAILED;
+    events.on(WhatsMeowEvent.LOGGED_OUT, (data) => {
+      const reason = parseGowsLoggedOut(data);
+      this.logger.error({ reason }, 'Logged out');
+      this.setStatus(WAHASessionStatus.FAILED, { reason });
+    });
+    // whatsmeow does not reconnect after the events below, so without them
+    // the session silently stops working while keeping its previous status
+    events.on(WhatsMeowEvent.TEMPORARY_BAN, (data) => {
+      const reason = parseGowsTemporaryBan(data);
+      this.logger.error({ reason }, 'Account is temporarily banned');
+      this.setStatus(WAHASessionStatus.FAILED, { reason });
+    });
+    events.on(WhatsMeowEvent.CONNECT_FAILURE, (data) => {
+      const reason = parseGowsConnectFailure(data);
+      this.logger.error({ reason }, 'Connect failure');
+      this.setStatus(WAHASessionStatus.FAILED, { reason });
+    });
+    events.on(WhatsMeowEvent.STREAM_REPLACED, () => {
+      const reason = {
+        type: SessionFailureReasonType.STREAM_REPLACED,
+        code: null,
+      };
+      this.logger.error(
+        { reason },
+        'Another client connected with the same session',
+      );
+      this.setStatus(WAHASessionStatus.FAILED, { reason });
+    });
+    events.on(WhatsMeowEvent.CLIENT_OUTDATED, () => {
+      const reason = {
+        type: SessionFailureReasonType.CLIENT_OUTDATED,
+        code: 405,
+      };
+      this.logger.error({ reason }, 'WhatsApp rejected the client version');
+      this.setStatus(WAHASessionStatus.FAILED, { reason });
     });
     events.on(WhatsMeowEvent.NOTIFY_ACCOUNT_REACHOUT_TIMELOCK, (data) => {
       this.reachoutTimelock.update(parseGowsReachoutTimelock(data));

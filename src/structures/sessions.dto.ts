@@ -402,6 +402,73 @@ export class ReachoutTimelockData {
 }
 
 /**
+ * Why WhatsApp ended the session, as reported by the engine.
+ * The engine may report new values - treat it as an open set.
+ */
+export enum SessionFailureReasonType {
+  // Unpaired from the phone (Linked Devices) or the session was logged out
+  LOGGED_OUT = 'LOGGED_OUT',
+  // The account is temporarily banned - see 'banCode' and 'banExpiresAt'
+  TEMPORARY_BAN = 'TEMPORARY_BAN',
+  // Primary device logged out / switched ("LOCKED" in WhatsApp Web) - seen for both bans and phone changes
+  MAIN_DEVICE_GONE = 'MAIN_DEVICE_GONE',
+  // Logged out for an unknown reason ("BANNED" in WhatsApp Web)
+  UNKNOWN_LOGOUT = 'UNKNOWN_LOGOUT',
+  // Another client connected with the same session
+  STREAM_REPLACED = 'STREAM_REPLACED',
+  // WhatsApp rejected the client version
+  CLIENT_OUTDATED = 'CLIENT_OUTDATED',
+  // Any other connect failure - see 'code' and 'message'
+  CONNECT_FAILURE = 'CONNECT_FAILURE',
+}
+
+export class SessionFailureReason {
+  @ApiProperty({
+    example: SessionFailureReasonType.TEMPORARY_BAN,
+    enum: SessionFailureReasonType,
+  })
+  type: SessionFailureReasonType;
+
+  @ApiProperty({
+    example: 402,
+    nullable: true,
+    description: 'Raw WhatsApp connect failure code (401, 402, 403, 406...).',
+  })
+  code: number | null;
+
+  @ApiProperty({
+    example: 102,
+    nullable: true,
+    required: false,
+    description:
+      'TEMPORARY_BAN only - raw WhatsApp ban reason code: ' +
+      '101 - sent too many messages to people who do not have you in their address books, ' +
+      '102 - too many people blocked you, ' +
+      '103 - created too many groups with people who do not have you in their address books, ' +
+      '104 - sent the same message to too many people, ' +
+      '106 - sent too many messages to a broadcast list. ' +
+      'WhatsApp may introduce new values.',
+  })
+  banCode?: number | null;
+
+  @ApiProperty({
+    example: 1784477333,
+    nullable: true,
+    required: false,
+    description:
+      'TEMPORARY_BAN only - Unix timestamp (seconds) when the ban ends.',
+  })
+  banExpiresAt?: number | null;
+
+  @ApiProperty({
+    example: null,
+    nullable: true,
+    required: false,
+  })
+  message?: string | null;
+}
+
+/**
  * Capping status for the per-cycle new-chat message quota.
  * WhatsApp may introduce new values at any time - treat it as an open set.
  */

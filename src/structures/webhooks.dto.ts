@@ -136,7 +136,10 @@ export class WASessionStatusBody {
       'PASSKEY_CONFIRMATION_REQUIRED - { code } - the code to verify against the phone.\n' +
       'WORKING - { reachoutTimelock } - present when WhatsApp restricts the account ' +
       'from messaging new contacts (the cause of 463 errors on send); ' +
-      'the session stays connected and the restriction lifts automatically.',
+      'the session stays connected and the restriction lifts automatically.\n' +
+      'FAILED - { reason } - why WhatsApp ended the session (GOWS): logged out, ' +
+      'temporary ban (with the ban reason and when it ends), main device gone, ' +
+      'replaced by another client... See SessionFailureReason.',
     example: null,
   })
   data?: any;
