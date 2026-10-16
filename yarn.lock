@@ -12922,7 +12922,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socks-proxy-agent@npm:^8.0.3":
+"socks-proxy-agent@npm:^8.0.3, socks-proxy-agent@npm:^8.0.5":
   version: 8.0.5
   resolution: "socks-proxy-agent@npm:8.0.5"
   dependencies:
@@ -14257,6 +14257,7 @@ __metadata:
     rxjs: "npm:^7.8.1"
     sharp: "npm:^0.34.5"
     shell-quote: "npm:^1.8.3"
+    socks-proxy-agent: "npm:^8.0.5"
     sqlite3: "npm:^5.1.7"
     supertest: "npm:^4.0.2"
     swagger-ui-express: "npm:^4.1.4"

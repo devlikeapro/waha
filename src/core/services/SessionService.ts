@@ -4,6 +4,7 @@ import {
   AppsService,
   IAppsService,
 } from '@waha/apps/app_sdk/services/IAppsService';
+import { WhatsappConfigService } from '@waha/config.service';
 import { generatePrefixedId } from '@waha/utils/ids';
 import { SessionManager } from '@waha/core/abc/manager.abc';
 import { WhatsappSession } from '@waha/core/abc/session.abc';
@@ -13,6 +14,7 @@ import {
   SessionDTO,
   SessionInfo,
   SessionLogoutRequest,
+  SessionProxy,
   SessionUpdateRequest,
 } from '@waha/structures/sessions.dto';
 
@@ -21,6 +23,7 @@ export class SessionService {
   constructor(
     private readonly manager: SessionManager,
     @Inject(AppsService) private readonly appsService: IAppsService,
+    private readonly config: WhatsappConfigService,
   ) {}
 
   async getSessions(all: boolean): Promise<SessionInfo[]> {
@@ -43,6 +46,13 @@ export class SessionService {
 
   getSessionMe(session: WhatsappSession): MeInfo | null {
     return session.getSessionMeInfo();
+  }
+
+  checkSessionProxy(session: WhatsappSession): Promise<SessionProxy> {
+    return session.checkProxy({
+      timeoutMs: this.config.proxyCheckTimeoutSeconds * 1000,
+      ipUrl: this.config.proxyCheckIpUrl,
+    });
   }
 
   async createSession(request: SessionCreateRequest): Promise<SessionDTO> {

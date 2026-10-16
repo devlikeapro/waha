@@ -15,6 +15,7 @@ import { UnprocessableEntityException } from '@nestjs/common/exceptions/unproces
 import {
   ApiBody,
   ApiOAuth2,
+  ApiOkResponse,
   ApiOperation,
   ApiSecurity,
   ApiTags,
@@ -42,6 +43,7 @@ import {
   SessionInfo,
   SessionInfoQuery,
   SessionLogoutRequest,
+  SessionProxy,
   SessionUpdateRequest,
 } from '../structures/sessions.dto';
 import { SessionExamples } from './sessions.examples';
@@ -132,6 +134,24 @@ class SessionsController {
     @SessionParam session: WhatsappSession,
   ): Promise<ReachoutTimelockData> {
     return session.fetchReachoutTimelock();
+  }
+
+  @Get(':session/proxy')
+  @SessionApiParam
+  @ApiOperation({
+    summary: 'Check the session proxy',
+    description:
+      'Reach WhatsApp through the proxy the session uses and report whether it ' +
+      'works, the latency and the exit IP (the address WhatsApp sees). ' +
+      'The same value is also available under proxy in the session info. ' +
+      'Returns 422 when the session uses no proxy. The credentials are never ' +
+      'returned. The exit IP is read from WAHA_PROXY_CHECK_IP_URL through the ' +
+      'proxy - set it empty to skip that lookup.',
+  })
+  @ApiOkResponse({ type: SessionProxy })
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
+  checkProxy(@SessionParam session: WhatsappSession): Promise<SessionProxy> {
+    return this.sessionService.checkSessionProxy(session);
   }
 
   @Post('')
