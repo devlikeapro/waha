@@ -60,6 +60,9 @@ export class SessionInfoQuery extends SessionExpandQuery {}
 export class ProxyConfig {
   @ApiProperty({
     example: 'localhost:3128',
+    description:
+      'Proxy address, http:// when no scheme is given. ' +
+      'GOWS and NOWEB also accept https:// and socks5://.',
   })
   @IsString()
   server: string;
@@ -73,6 +76,10 @@ export class ProxyConfig {
 
   @ApiProperty({
     example: null,
+    description:
+      'Session responses return it masked as ********. Send the mask back ' +
+      'on update to keep the saved password - only while the server and ' +
+      'username stay the same.',
   })
   @IsString()
   @IsOptional()
@@ -466,6 +473,100 @@ export class MessageCappingData {
   oteStatus: string | null;
 }
 
+export enum ProxySource {
+  SESSION = 'session',
+  ENVIRONMENT = 'environment',
+}
+
+export enum ProxyErrorCode {
+  INVALID = 'PROXY_INVALID',
+  AUTH_FAILED = 'PROXY_AUTH_FAILED',
+  CONNECTION_REFUSED = 'PROXY_CONNECTION_REFUSED',
+  HOST_NOT_FOUND = 'PROXY_HOST_NOT_FOUND',
+  TIMEOUT = 'PROXY_TIMEOUT',
+  REJECTED = 'PROXY_REJECTED',
+  FAILED = 'PROXY_FAILED',
+}
+
+export class ProxyCheckError {
+  @ApiProperty({
+    example: ProxyErrorCode.AUTH_FAILED,
+    enum: ProxyErrorCode,
+  })
+  code: ProxyErrorCode;
+
+  @ApiProperty({
+    example: 'The proxy refused the username or password (407)',
+  })
+  message: string;
+}
+
+export class ProxyCheck {
+  @ApiProperty({
+    example: true,
+    description: 'WhatsApp is reachable through the proxy.',
+  })
+  ok: boolean;
+
+  @ApiProperty({
+    example: 230,
+    nullable: true,
+    description: 'Time to reach WhatsApp through the proxy, in milliseconds.',
+  })
+  latency: number | null;
+
+  @ApiProperty({
+    example: '203.0.113.10',
+    nullable: true,
+    description:
+      'The proxy exit IP, the address WhatsApp sees. Null when ' +
+      'WAHA_PROXY_CHECK_IP_URL is empty or the lookup failed.',
+  })
+  ip: string | null;
+
+  @ApiProperty({
+    type: ProxyCheckError,
+    nullable: true,
+    description: 'Why WhatsApp is not reachable through the proxy.',
+  })
+  error: ProxyCheckError | null;
+
+  @ApiProperty({
+    example: 1792166322030,
+    description: 'Unix timestamp (milliseconds) of the check.',
+  })
+  timestamp: number;
+}
+
+export class SessionProxy {
+  @ApiProperty({
+    example: 'http://proxy.example.com:3128',
+    nullable: true,
+    description:
+      'The proxy the session connects through, without credentials. ' +
+      'Null when the address cannot be parsed.',
+  })
+  server: string | null;
+
+  @ApiProperty({
+    example: ProxySource.SESSION,
+    enum: ProxySource,
+    description:
+      'Where the proxy comes from: the session config, or the ' +
+      'WHATSAPP_PROXY_SERVER / WHATSAPP_PROXY_SERVER_LIST environment variables.',
+  })
+  source: ProxySource;
+
+  @ApiProperty({
+    type: ProxyCheck,
+    nullable: true,
+    description:
+      'The last proxy check. Null until the proxy has been checked ' +
+      '(GET /api/sessions/{session}/proxy).',
+  })
+  check: ProxyCheck | null;
+}
+
 export class MeInfo {
   @ChatIdProperty()
   id: string;
@@ -504,6 +605,16 @@ export class MeInfo {
 
 export class SessionInfo extends SessionDTO {
   me?: MeInfo;
+
+  @ApiProperty({
+    type: SessionProxy,
+    required: false,
+    nullable: true,
+    description:
+      'The proxy the session connects through. Null when it uses none.',
+  })
+  proxy?: SessionProxy | null;
+
   assignedWorker?: string;
   // Timestamp of the last activity in milliseconds
   presence: WAHAPresenceStatus.ONLINE | WAHAPresenceStatus.OFFLINE | null;

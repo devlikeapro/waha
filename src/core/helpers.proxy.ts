@@ -1,4 +1,6 @@
+import * as https from 'https';
 import { HttpsProxyAgent } from 'https-proxy-agent';
+import { SocksProxyAgent } from 'socks-proxy-agent';
 import { URL } from 'url';
 
 import { WhatsappConfigService } from '../config.service';
@@ -43,20 +45,47 @@ export function getProxyConfig(
   return undefined;
 }
 
-function getAuthenticatedUrl(
-  url: string,
-  username: string,
-  password: string,
-): string {
-  const hasSchema = url.startsWith('http://') || url.startsWith('https://');
-  if (!hasSchema) {
-    url = `http://${url}`;
+// Encodes a lone "%" and keeps a %XX already encoded by hand
+function escapeLonePercent(value: string): string {
+  return value.replace(/%(?![0-9a-fA-F]{2})/g, '%25');
+}
+
+// Keeps the server scheme (http by default) and percent-encodes the credentials
+export function buildProxyUrl(config: ProxyConfig): string {
+  let server = config.server.trim();
+  if (!server.includes('://')) {
+    server = `http://${server}`;
   }
-  const parsedUrl = new URL(url);
-  parsedUrl.protocol = parsedUrl.protocol || 'http';
-  parsedUrl.username = username;
-  parsedUrl.password = password;
-  return parsedUrl.toString();
+  let url: URL;
+  try {
+    url = new URL(server);
+  } catch (err) {
+    // Never echo the server: it may carry credentials
+    throw new Error('Invalid proxy server address');
+  }
+  if (config.username) {
+    url.username = escapeLonePercent(config.username);
+  }
+  if (config.password) {
+    url.password = escapeLonePercent(config.password);
+  }
+  return url.toString();
+}
+
+/**
+ * The proxy address without the credentials - safe to log and to return.
+ */
+export function describeProxy(proxyUrl: string): string {
+  const url = new URL(proxyUrl);
+  return `${url.protocol}//${url.host}`;
+}
+
+function createProxyAgent(proxyUrl: string): https.Agent {
+  const url = new URL(proxyUrl);
+  if (url.protocol.startsWith('socks')) {
+    return new SocksProxyAgent(url);
+  }
+  return new HttpsProxyAgent(url);
 }
 
 /**
@@ -64,16 +93,12 @@ function getAuthenticatedUrl(
  * @param proxyConfig
  */
 export function createAgentProxy(proxyConfig: ProxyConfig): Agents | undefined {
-  const url = getAuthenticatedUrl(
-    proxyConfig.server,
-    proxyConfig.username || '',
-    proxyConfig.password || '',
-  );
+  const url = buildProxyUrl(proxyConfig);
 
-  const socketAgent = new HttpsProxyAgent(url);
+  const socketAgent = createProxyAgent(url);
   // Baileys media upload uses Node.js https.request in Node runtime,
   // so fetchAgent must be a Node https.Agent (ProxyAgent from undici won't work).
-  const fetchAgent = new HttpsProxyAgent(url);
+  const fetchAgent = createProxyAgent(url);
 
   return { socket: socketAgent, fetch: fetchAgent };
 }

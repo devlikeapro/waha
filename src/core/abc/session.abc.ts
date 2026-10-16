@@ -1,3 +1,4 @@
+import { UnprocessableEntityException } from '@nestjs/common';
 import { MessageCappingTracker } from '@waha/core/abc/MessageCappingTracker';
 import { ReachoutTimelockTracker } from '@waha/core/abc/ReachoutTimelockTracker';
 import { getBrowserExecutablePath as getBrowserExecutablePathAutodetect } from '@waha/core/abc/session.browser';
@@ -123,10 +124,14 @@ import {
   MeInfo,
   MessageCappingData,
   MessageCappingStatus,
+  ProxyCheck,
   ProxyConfig,
+  ProxyErrorCode,
+  ProxySource,
   ReachoutTimelockData,
   SessionConfig,
   SessionInfo,
+  SessionProxy,
 } from '../../structures/sessions.dto';
 import {
   DeleteStatusRequest,
@@ -147,6 +152,8 @@ import { IMediaManager, MediaDownloadOptions } from '../media/IMediaManager';
 import { QR } from '../QR';
 import { DataStore } from './DataStore';
 import { fetchBuffer } from '@waha/utils/fetch';
+import { buildProxyUrl, describeProxy } from '@waha/core/helpers.proxy';
+import { checkProxy, ProxyCheckOptions } from '@waha/core/helpers.proxy.check';
 import { SessionHooks } from './session.hooks';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -215,6 +222,7 @@ export abstract class WhatsappSession {
   private _statusData: any = null;
   protected reachoutTimelock: ReachoutTimelockTracker;
   protected messageCapping: MessageCappingTracker;
+  private proxyCheck: ProxyCheck | null = null;
   private _presence:
     | WAHAPresenceStatus.ONLINE
     | WAHAPresenceStatus.OFFLINE
@@ -547,6 +555,62 @@ export abstract class WhatsappSession {
 
   public fetchReachoutTimelock(): Promise<ReachoutTimelockData> {
     throw new NotImplementedByEngineError();
+  }
+
+  // The proxy in use with its last check, no network call; null without a proxy
+  public getProxyInfo(): SessionProxy | null {
+    if (!this.proxyConfig?.server) {
+      return null;
+    }
+    let source = ProxySource.ENVIRONMENT;
+    if (this.sessionConfig?.proxy?.server) {
+      source = ProxySource.SESSION;
+    }
+    let server: string | null = null;
+    try {
+      server = describeProxy(buildProxyUrl(this.proxyConfig));
+    } catch (err) {
+      server = null;
+    }
+    return { server: server, source: source, check: this.proxyCheck };
+  }
+
+  // Checks the proxy URL the engine connects with and keeps the result in the session info
+  public async checkProxy(options: ProxyCheckOptions): Promise<SessionProxy> {
+    if (!this.proxyConfig?.server) {
+      throw new UnprocessableEntityException(
+        'The session does not use a proxy',
+      );
+    }
+    let proxyUrl: string;
+    try {
+      proxyUrl = buildProxyUrl(this.proxyConfig);
+    } catch (err) {
+      this.proxyCheck = {
+        ok: false,
+        latency: null,
+        ip: null,
+        error: { code: ProxyErrorCode.INVALID, message: err.message },
+        timestamp: Date.now(),
+      };
+      return this.getProxyInfo();
+    }
+    const result = await checkProxy(proxyUrl, options);
+    if (result.ipError) {
+      this.logger.warn(
+        `Proxy ${describeProxy(proxyUrl)}: could not read the exit IP - ${
+          result.ipError
+        }`,
+      );
+    }
+    this.proxyCheck = {
+      ok: result.ok,
+      latency: result.latency,
+      ip: result.ip,
+      error: result.error,
+      timestamp: Date.now(),
+    };
+    return this.getProxyInfo();
   }
 
   /**
