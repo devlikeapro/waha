@@ -10,6 +10,7 @@ import { SessionManager } from '@waha/core/abc/manager.abc';
 import { WhatsappSession } from '@waha/core/abc/session.abc';
 import {
   MeInfo,
+  SessionConfig,
   SessionCreateRequest,
   SessionDTO,
   SessionInfo,
@@ -17,6 +18,31 @@ import {
   SessionProxy,
   SessionUpdateRequest,
 } from '@waha/structures/sessions.dto';
+
+export const PROXY_PASSWORD_MASK = '********';
+
+const PROXY_MASK_WITHOUT_PASSWORD =
+  'The proxy password is the mask from a session response, but there is no saved password - send the real password.';
+
+const PROXY_MASK_ON_CHANGE =
+  'The proxy server or username changed - send the real password instead of the mask.';
+
+/**
+ * Session responses never carry the proxy password, only the mask.
+ */
+export function hideProxyPassword<T extends SessionDTO>(session: T): T {
+  const proxy = session?.config?.proxy;
+  if (!proxy?.password) {
+    return session;
+  }
+  return {
+    ...session,
+    config: {
+      ...session.config,
+      proxy: { ...proxy, password: PROXY_PASSWORD_MASK },
+    },
+  };
+}
 
 @Injectable()
 export class SessionService {
@@ -27,7 +53,8 @@ export class SessionService {
   ) {}
 
   async getSessions(all: boolean): Promise<SessionInfo[]> {
-    return this.manager.getSessions(all);
+    const sessions = await this.manager.getSessions(all);
+    return sessions.map((session) => hideProxyPassword(session));
   }
 
   async expandSessionApps(sessions: SessionInfo[]): Promise<void> {
@@ -41,7 +68,7 @@ export class SessionService {
     if (!session) {
       throw new NotFoundException('Session not found');
     }
-    return session;
+    return hideProxyPassword(session);
   }
 
   getSessionMe(session: WhatsappSession): MeInfo | null {
@@ -57,6 +84,9 @@ export class SessionService {
 
   async createSession(request: SessionCreateRequest): Promise<SessionDTO> {
     const name = request.name || generatePrefixedId('session');
+    if (request.config?.proxy?.password === PROXY_PASSWORD_MASK) {
+      throw new UnprocessableEntityException(PROXY_MASK_WITHOUT_PASSWORD);
+    }
     await this.manager.withLock(name, async () => {
       if (await this.manager.exists(name)) {
         throw new UnprocessableEntityException(
@@ -76,7 +106,7 @@ export class SessionService {
         await this.manager.start(name);
       }
     });
-    const session = await this.manager.getSessionInfo(name);
+    const session = hideProxyPassword(await this.manager.getSessionInfo(name));
     if (request.apps) {
       session.apps = await this.appsService.list(this.manager, name);
     }
@@ -91,6 +121,7 @@ export class SessionService {
       if (!(await this.manager.exists(name))) {
         throw new NotFoundException('Session not found');
       }
+      await this.keepSavedProxyPassword(name, request.config);
       const isRunning = this.manager.isRunning(name);
       await this.manager.stop(name, true);
       await this.manager.upsert(name, request.config);
@@ -105,7 +136,7 @@ export class SessionService {
         await this.manager.start(name);
       }
     });
-    const session = await this.manager.getSessionInfo(name);
+    const session = hideProxyPassword(await this.manager.getSessionInfo(name));
     if (request.apps) {
       session.apps = await this.appsService.list(this.manager, name);
     }
@@ -130,7 +161,7 @@ export class SessionService {
       await this.manager.assign(name);
       await this.manager.start(name);
     });
-    return this.manager.getSessionInfo(name);
+    return hideProxyPassword(await this.manager.getSessionInfo(name));
   }
 
   async stopSession(name: string): Promise<SessionDTO> {
@@ -138,7 +169,7 @@ export class SessionService {
       await this.manager.unassign(name);
       await this.manager.stop(name, false);
     });
-    return this.manager.getSessionInfo(name);
+    return hideProxyPassword(await this.manager.getSessionInfo(name));
   }
 
   async logoutSession(
@@ -160,12 +191,12 @@ export class SessionService {
         await this.manager.start(name);
       }
     });
-    return this.manager.getSessionInfo(name);
+    return hideProxyPassword(await this.manager.getSessionInfo(name));
   }
 
   async restartSession(name: string): Promise<SessionDTO> {
     await this.manager.restart(name);
-    return this.manager.getSessionInfo(name);
+    return hideProxyPassword(await this.manager.getSessionInfo(name));
   }
 
   isSessionRunning(name: string): boolean {
@@ -174,9 +205,36 @@ export class SessionService {
 
   async upsertAndStartSession(name: string, config: any): Promise<SessionDTO> {
     return this.manager.withLock(name, async () => {
+      await this.keepSavedProxyPassword(name, config);
       await this.manager.upsert(name, config);
       await this.manager.assign(name);
-      return this.manager.start(name);
+      return hideProxyPassword(await this.manager.start(name));
     });
+  }
+
+  /**
+   * The mask sent back from a session response means "keep the saved password".
+   */
+  private async keepSavedProxyPassword(
+    name: string,
+    config?: SessionConfig,
+  ): Promise<void> {
+    if (config?.proxy?.password !== PROXY_PASSWORD_MASK) {
+      return;
+    }
+    const saved = await this.manager.getSessionInfo(name);
+    const savedProxy = saved?.config?.proxy;
+    if (!savedProxy?.password) {
+      throw new UnprocessableEntityException(PROXY_MASK_WITHOUT_PASSWORD);
+    }
+    // Never hand the saved password to another proxy or account
+    const sameServer =
+      (config.proxy.server ?? '').trim() === (savedProxy.server ?? '').trim();
+    const sameUser =
+      (config.proxy.username ?? '') === (savedProxy.username ?? '');
+    if (!sameServer || !sameUser) {
+      throw new UnprocessableEntityException(PROXY_MASK_ON_CHANGE);
+    }
+    config.proxy.password = savedProxy.password;
   }
 }

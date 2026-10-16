@@ -76,6 +76,10 @@ export class ProxyConfig {
 
   @ApiProperty({
     example: null,
+    description:
+      'Session responses return it masked as ********. Send the mask back ' +
+      'on update to keep the saved password - only while the server and ' +
+      'username stay the same.',
   })
   @IsString()
   @IsOptional()
