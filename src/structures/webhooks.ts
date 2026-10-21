@@ -2,6 +2,7 @@ import {
   WebhookGroupV2Join,
   WebhookGroupV2Leave,
   WebhookGroupV2ParticipantsJoinRequest,
+  WebhookGroupV2ParticipantsTag,
   WebhookGroupV2Participants,
   WebhookGroupV2Update,
 } from '@waha/structures/groups.webhooks.dto';
@@ -47,6 +48,7 @@ const WAHA_WEBHOOKS = [
   WebhookGroupV2Update,
   WebhookGroupV2Participants,
   WebhookGroupV2ParticipantsJoinRequest,
+  WebhookGroupV2ParticipantsTag,
   WAHAWebhookPresenceUpdate,
   WAHAWebhookPollVote,
   WAHAWebhookPollVoteFailed,

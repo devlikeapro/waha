@@ -12,6 +12,7 @@ import {
   isJidNewsletter,
   isNullJid,
   JidFilter,
+  toCusFormat,
 } from '@waha/core/utils/jids';
 import {
   Channel,
@@ -111,6 +112,7 @@ import {
   GroupJoinRequest,
   GroupJoinRequestResult,
   GroupParticipant,
+  GroupParticipantTag,
   GroupsListFields,
   ParticipantsRequest,
   SettingsMemberAddMode,
@@ -999,6 +1001,43 @@ export abstract class WhatsappSession {
   }
 
   public getGroupParticipants(id: string): Promise<GroupParticipant[]> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public getGroupParticipantTags(id: string): Promise<GroupParticipantTag[]> {
+    throw new NotImplementedByEngineError();
+  }
+
+  public async getGroupParticipantTag(
+    id: string,
+    participantId: string,
+  ): Promise<GroupParticipantTag> {
+    participantId = toCusFormat(participantId);
+    const tags = await this.getGroupParticipantTags(id);
+    const found = tags.find((tag) => tag.id === participantId);
+    if (found) {
+      return found;
+    }
+    return {
+      id: participantId,
+      tag: null,
+      timestamp: null,
+    };
+  }
+
+  public getMyGroupParticipantTag(id: string): Promise<GroupParticipantTag> {
+    const me = this.getSessionMeInfo();
+    if (!me) {
+      throw new Error('Session is not connected, my id is unknown');
+    }
+    return this.getGroupParticipantTag(id, this.getMyParticipantId(me));
+  }
+
+  protected getMyParticipantId(me: MeInfo): string {
+    throw new NotImplementedByEngineError();
+  }
+
+  public setGroupMemberTag(id: string, tag: string): Promise<boolean> {
     throw new NotImplementedByEngineError();
   }
 

@@ -13,6 +13,7 @@ import type { Label } from '@adiwajshing/baileys/lib/Types/Label';
 import type { LabelAssociation } from '@adiwajshing/baileys/lib/Types/LabelAssociation';
 import {
   getParticipantId,
+  getParticipantIds,
   participantsIncludeMe,
 } from '@waha/core/engines/noweb/groups.noweb';
 import { IGroupRepository } from '@waha/core/engines/noweb/store/IGroupRepository';
@@ -43,12 +44,18 @@ import { Logger } from 'pino';
 import { IChatRepository } from './IChatRepository';
 import { IContactRepository } from './IContactRepository';
 import { IMessagesRepository } from './IMessagesRepository';
+import {
+  GroupMemberTag,
+  GroupMemberTagId,
+  INowebGroupMemberTagsRepository,
+} from './INowebGroupMemberTagsRepository';
 import { INowebLidPNRepository, LidToPN } from './INowebLidPNRepository';
 import { INowebStorage } from './INowebStorage';
 import { INowebStore } from './INowebStore';
 import { LabelAssociationType } from '../labels/LabelAssociationType';
 import esm from '@waha/vendor/esm';
 import { StatusStringToStatus } from '@waha/core/utils/acks';
+import { IsGroupMemberTagMessage } from '@waha/core/utils/pwa';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const AsyncLock = require('async-lock');
@@ -65,6 +72,7 @@ export class NowebPersistentStore implements INowebStore {
   private labelsRepo: ILabelsRepository;
   private labelAssociationsRepo: ILabelAssociationRepository;
   private lidRepo: INowebLidPNRepository;
+  private groupMemberTagsRepo: INowebGroupMemberTagsRepository;
   public presences: any;
 
   private lock: any = new AsyncLock({
@@ -95,6 +103,7 @@ export class NowebPersistentStore implements INowebStore {
     this.labelsRepo = storage.getLabelsRepository();
     this.labelAssociationsRepo = storage.getLabelAssociationRepository();
     this.lidRepo = storage.getLidPNRepository();
+    this.groupMemberTagsRepo = storage.getGroupMemberTagsRepository();
     this.presences = {};
   }
 
@@ -108,6 +117,7 @@ export class NowebPersistentStore implements INowebStore {
     // Messages
     ev.on('messages.upsert', (data) => {
       this.withLock('messages', () => this.onMessagesUpsert(data));
+      this.onMessagesUpsertMemberTags(data.messages || []);
       this.withNoLock('lids', async () => {
         const messages: WAMessage[] = data.messages;
         if (!messages) {
@@ -249,7 +259,74 @@ export class NowebPersistentStore implements INowebStore {
       }),
       this.withLock('chats', () => this.onChatUpsert(chats)),
       this.withLock('messages', () => this.syncMessagesHistory(messages)),
+      this.onHistoryMemberTags(chats, messages),
     ]);
+  }
+
+  private async onMessagesUpsertMemberTags(messages: WAMessage[]) {
+    const tags = this.memberTagsFromMessages(messages);
+    if (tags.length === 0) {
+      return;
+    }
+    await this.saveGroupMemberTags(tags);
+  }
+
+  // Member tags travel as protocol messages in the group, the sender is the tagged member
+  private memberTagsFromMessages(messages: WAMessage[]): GroupMemberTag[] {
+    const tags: GroupMemberTag[] = [];
+    for (const message of messages || []) {
+      const groupId = message.key?.remoteJid;
+      if (!groupId || !esm.b.isJidGroup(groupId)) {
+        continue;
+      }
+      if (!this.jids.include(groupId)) {
+        continue;
+      }
+      if (!IsGroupMemberTagMessage(message.message)) {
+        continue;
+      }
+      const memberLabel = esm.b.normalizeMessageContent(message.message)
+        .protocolMessage.memberLabel;
+      const labelTimestamp = longToNumber(memberLabel.labelTimestamp);
+      tags.push({
+        id: null,
+        groupId: groupId,
+        memberId: message.key.participant,
+        tag: memberLabel.label || '',
+        timestamp: labelTimestamp || longToNumber(message.messageTimestamp),
+      });
+    }
+    return tags;
+  }
+
+  // Tags set before pairing come from the conversation participants and the tag messages in history
+  private async onHistoryMemberTags(chats: Chat[], messages: WAMessage[]) {
+    const tags: GroupMemberTag[] = [];
+    for (const chat of chats || []) {
+      if (!esm.b.isJidGroup(chat.id) || !this.jids.include(chat.id)) {
+        continue;
+      }
+      for (const participant of chat.participant || []) {
+        if (!participant.memberLabel) {
+          continue;
+        }
+        tags.push({
+          id: null,
+          groupId: chat.id,
+          memberId: participant.userJid,
+          tag: participant.memberLabel.label || '',
+          timestamp: longToNumber(participant.memberLabel.labelTimestamp),
+        });
+      }
+    }
+    tags.push(...this.memberTagsFromMessages(messages));
+    if (tags.length === 0) {
+      return;
+    }
+    await this.saveGroupMemberTags(tags);
+    this.logger.info(
+      `history sync - '${tags.length}' synced group member tags`,
+    );
   }
 
   private async syncMessagesHistory(messages) {
@@ -348,6 +425,10 @@ export class NowebPersistentStore implements INowebStore {
   }
 
   private async onChatUpsert(chats: Chat[]) {
+    // Filter out NON_BLOCKING_DATA history chunks
+    // It carries participants-only entries (member tags), not chat updates
+    chats = lodash.reject(chats, isParticipantsOnlyChat);
+
     for (const chat of chats) {
       delete chat['messages'];
       chat.conversationTimestamp = toNumber(chat.conversationTimestamp) || null;
@@ -393,7 +474,14 @@ export class NowebPersistentStore implements INowebStore {
       const me = this.socket?.authState?.creds?.me;
       if (me && participantsIncludeMe(me, participants)) {
         await this.groupRepo.deleteById(id);
+        await this.deleteGroupMemberTags(id);
         return;
+      }
+      // Members who left take their tags with them
+      for (const participant of participants) {
+        for (const memberId of getParticipantIds(participant)) {
+          await this.deleteGroupMemberTag(id, memberId);
+        }
       }
     }
 
@@ -797,4 +885,81 @@ export class NowebPersistentStore implements INowebStore {
       this.logger.warn(`Failed to save lid to pn mapping: ${error}`);
     });
   }
+
+  //
+  // Group member tags
+  //
+  async getGroupMemberTags(groupId: string): Promise<GroupMemberTag[]> {
+    const tags = await this.groupMemberTagsRepo.getAllByGroup(groupId);
+    // Removed tags stay as tombstones for the last-write-wins check
+    return tags.filter((tag) => !!tag.tag);
+  }
+
+  async getGroupMemberTag(
+    groupId: string,
+    memberId: string,
+  ): Promise<GroupMemberTag | null> {
+    const tag = await this.groupMemberTagsRepo.getById(
+      GroupMemberTagId(groupId, memberId),
+    );
+    if (!tag?.tag) {
+      return null;
+    }
+    return tag;
+  }
+
+  saveGroupMemberTag(tag: GroupMemberTag): Promise<void> {
+    return this.saveGroupMemberTags([tag]);
+  }
+
+  // Last write wins - live messages and history sync can arrive in either order
+  private saveGroupMemberTags(tags: GroupMemberTag[]): Promise<void> {
+    return this.withLock('group-member-tags', async () => {
+      const fresh: GroupMemberTag[] = [];
+      for (const tag of tags) {
+        const memberId = esm.b.jidNormalizedUser(tag.memberId);
+        if (!memberId) {
+          continue;
+        }
+        const id = GroupMemberTagId(tag.groupId, memberId);
+        const existing = await this.groupMemberTagsRepo.getById(id);
+        if (existing && existing.timestamp > tag.timestamp) {
+          continue;
+        }
+        fresh.push({ ...tag, id: id, memberId: memberId });
+      }
+      if (fresh.length === 0) {
+        return;
+      }
+      await this.groupMemberTagsRepo.upsertMany(fresh);
+    }).catch((error) => {
+      this.logger.warn(`Failed to save group member tags: ${error}`);
+    });
+  }
+
+  private deleteGroupMemberTag(
+    groupId: string,
+    memberId: string,
+  ): Promise<void> {
+    return this.groupMemberTagsRepo.deleteById(
+      GroupMemberTagId(groupId, esm.b.jidNormalizedUser(memberId)),
+    );
+  }
+
+  private deleteGroupMemberTags(groupId: string): Promise<void> {
+    return this.groupMemberTagsRepo.deleteByGroup(groupId);
+  }
+}
+
+function isParticipantsOnlyChat(chat: Chat): boolean {
+  return Object.keys(chat).every(
+    (key) => key === 'id' || key === 'participant',
+  );
+}
+
+function longToNumber(value: any): number {
+  if (typeof value?.toNumber === 'function') {
+    return value.toNumber();
+  }
+  return toNumber(value);
 }

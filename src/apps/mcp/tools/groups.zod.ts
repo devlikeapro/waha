@@ -3,6 +3,7 @@ import { DtoToZod } from '@waha/apps/mcp/schemas/DtoToZod';
 import {
   CreateGroupRequest,
   DescriptionRequest,
+  GroupMemberTagRequest,
   GroupsListFields,
   GroupsPaginationParams,
   JoinGroupRequest,
@@ -79,4 +80,25 @@ export const GroupMemberShareHistoryInput = DtoToZod(
 ).extend({
   session: SessionField,
   id: GroupIdField,
+});
+
+export const GroupParticipantIdInput = GroupIdInput.extend({
+  participantId: z
+    .string()
+    .describe(
+      'Participant ID as reported in messages and participants (e.g. 123456789@lid or 123456789@c.us)',
+    ),
+});
+
+export const GroupMemberTagInput = DtoToZod(GroupMemberTagRequest).extend({
+  session: SessionField,
+  id: GroupIdField,
+  // DtoToZod drops the nullable part of `string | null`
+  tag: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      'Your member tag in the group (2-30 characters). Empty or null removes it.',
+    ),
 });

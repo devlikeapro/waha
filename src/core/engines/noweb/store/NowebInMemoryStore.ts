@@ -2,6 +2,7 @@ import type { Chat, Contact, GroupMetadata, proto } from '@adiwajshing/baileys';
 import type makeWASocket from '@adiwajshing/baileys';
 import type { Label } from '@adiwajshing/baileys/lib/Types/Label';
 import { BadRequestException } from '@nestjs/common';
+import { GroupMemberTag } from '@waha/core/engines/noweb/store/INowebGroupMemberTagsRepository';
 import { AckToStatus } from '@waha/core/utils/acks';
 import {
   GetChatMessagesFilter,
@@ -180,6 +181,24 @@ export class NowebInMemoryStore implements INowebStore {
   }
 
   async saveLids(lids: LidToPhoneNumber[]): Promise<void> {
+    return;
+  }
+
+  //
+  // Group member tags
+  //
+  getGroupMemberTags(groupId: string): Promise<GroupMemberTag[]> {
+    throw new BadRequestException(this.errorMessage);
+  }
+
+  getGroupMemberTag(
+    groupId: string,
+    memberId: string,
+  ): Promise<GroupMemberTag | null> {
+    throw new BadRequestException(this.errorMessage);
+  }
+
+  async saveGroupMemberTag(tag: GroupMemberTag): Promise<void> {
     return;
   }
 }

@@ -7,7 +7,7 @@ __metadata:
 
 "@adiwajshing/baileys@github:devlikeapro/Baileys#fork-master-2026-04-28":
   version: 7.0.0-rc14
-  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=b6ac0a9447bb4bdabd1aada4705e6999c8f3f520"
+  resolution: "@adiwajshing/baileys@https://github.com/devlikeapro/Baileys.git#commit=f6bf3cfdf9c9acab637e9807d0d069209aa83b7e"
   dependencies:
     "@cacheable/node-cache": "npm:^1.4.0"
     "@hapi/boom": "npm:^9.1.3"
@@ -32,7 +32,7 @@ __metadata:
       optional: true
     link-preview-js:
       optional: true
-  checksum: 10/577ee8dc8f9728dd9cb0f2a0a420dfaf8c09fbe4e4122d7465a51f51e0b384dfc1332abef739e218c5a44c1d6d468249b8cdfb180d9c73491c35e8aa85b5e78a
+  checksum: 10/ed0c0b5e87fbf4e04b618a861cd4291067ff6a19698799df3bbc0188574a3d8294ce21f64547b03a0d057fba8c6918944dc840a4130f16c78ea2dd47ff8e6917
   languageName: node
   linkType: hard
 
@@ -5623,7 +5623,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"b4a@npm:^1.6.4, b4a@npm:^1.8.1":
+"b4a@npm:^1.6.4, b4a@npm:^1.8.1, b4a@npm:^1.9.0":
   version: 1.9.0
   resolution: "b4a@npm:1.9.0"
   peerDependencies:
@@ -5733,9 +5733,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bare-fs@npm:^4.5.5":
-  version: 4.8.1
-  resolution: "bare-fs@npm:4.8.1"
+"bare-fs@npm:^4.8.2":
+  version: 4.8.4
+  resolution: "bare-fs@npm:4.8.4"
   dependencies:
     bare-events: "npm:^2.5.4"
     bare-path: "npm:^3.0.0"
@@ -5747,7 +5747,7 @@ __metadata:
   peerDependenciesMeta:
     bare-buffer:
       optional: true
-  checksum: 10/e6797ff2ed0581f8270b8da4998a3ddf77a65ffa8bac49b315c38c39c6c17df1a9a0db5f5e33b320f0c72cfa1cfc41a3d2ebe0d9b7f6528202ea7e74cd5326b1
+  checksum: 10/b3bc1f2122aca3d63899c2b5d007e22e72636573be3dd2cc3a8c31c9fcc27a5b1e2fe7cc7db013cac7eea31835ca9dfd3b27156320c05085a736702413aa09b2
   languageName: node
   linkType: hard
 
@@ -5781,11 +5781,11 @@ __metadata:
   linkType: hard
 
 "bare-url@npm:^2.2.2":
-  version: 2.5.4
-  resolution: "bare-url@npm:2.5.4"
+  version: 2.5.5
+  resolution: "bare-url@npm:2.5.5"
   dependencies:
     bare-path: "npm:^3.0.0"
-  checksum: 10/f7ce85745089999350a94c7b5bcc5f0f68b46f12fbd7e080913ae95498928ca06f0fbd6621d232cdd8901e202bde730824d41fdf767c048c79896bcee032d724
+  checksum: 10/2fd1218cd2d23179879cee1780aea6d07ac2cd8064986f812766fc2f43377d28a2872c45a333060538df5a5a1c0c5ded57037f325ab1fd1264cd99188d0897fa
   languageName: node
   linkType: hard
 
@@ -7723,7 +7723,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-fifo@npm:^1.2.0, fast-fifo@npm:^1.3.2":
+"fast-fifo@npm:^1.3.2":
   version: 1.3.2
   resolution: "fast-fifo@npm:1.3.2"
   checksum: 10/6bfcba3e4df5af7be3332703b69a7898a8ed7020837ec4395bb341bd96cc3a6d86c3f6071dd98da289618cf2234c70d84b2a6f09a33dd6f988b1ff60d8e54275
@@ -10035,9 +10035,9 @@ __metadata:
   linkType: hard
 
 "lru-cache@npm:^11.1.0":
-  version: 11.5.2
-  resolution: "lru-cache@npm:11.5.2"
-  checksum: 10/122789c66605ddf29df58ff279e9e2c9499499d0b80b895ec524496f14bcde045d1582e3e38008f3457226d98067556719573b352119d6be8bdb1f8849f85681
+  version: 11.5.3
+  resolution: "lru-cache@npm:11.5.3"
+  checksum: 10/824394f43827de37e961e9e344d4f0d2afb0347106ddafae620d0035c36337bc64e64cddbc17f6c630a73c9db34cf3f81211e3d43699a32e9f3641f391415b82
   languageName: node
   linkType: hard
 
@@ -10720,8 +10720,8 @@ __metadata:
   linkType: hard
 
 "music-metadata@npm:^11.12.3":
-  version: 11.15.0
-  resolution: "music-metadata@npm:11.15.0"
+  version: 11.16.1
+  resolution: "music-metadata@npm:11.16.1"
   dependencies:
     "@borewit/text-codec": "npm:^0.2.2"
     "@tokenizer/token": "npm:^0.3.0"
@@ -10733,7 +10733,7 @@ __metadata:
     token-types: "npm:^6.1.2"
     uint8array-extras: "npm:^1.5.0"
     win-guid: "npm:^0.2.1"
-  checksum: 10/326ef44c4953395abfe85fed3a1b4452700fae7c552adb41adaf3e627444a63f385b2c0d9a31b7d0e30224e5c40779c2af7481b55faefa38c09ae3e31381ef3e
+  checksum: 10/02a12356e843af7fabb3e033bb1738672c6967061a2ebb9029181ec9ca4b67642e8fec07c4bf443b4507e48babaf683d67c6beb4d06e2da09fe250567bdfa427
   languageName: node
   linkType: hard
 
@@ -11221,12 +11221,12 @@ __metadata:
   linkType: hard
 
 "p-queue@npm:^9.0.0":
-  version: 9.3.3
-  resolution: "p-queue@npm:9.3.3"
+  version: 9.3.5
+  resolution: "p-queue@npm:9.3.5"
   dependencies:
     eventemitter3: "npm:^5.0.4"
     p-timeout: "npm:^7.0.0"
-  checksum: 10/2bab74e87ed806ae2dd7ec10f1e0d0423eb4c07419e35947dc66f8b6d3f2d89e978b76b3940d5a41e1b54fda82b716eb2c1bacb63bd95286f0852413628d43b3
+  checksum: 10/79e6b9b7735d3ca8d8020aa52f872da67ea58c0d982bcbf7323a44a50b075fe6568c9b11d2a8e63a53abd6ec320aa63864104cc6566ac2ebf3896918a4d290b5
   languageName: node
   linkType: hard
 
@@ -13109,7 +13109,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"streamx@npm:^2.12.5, streamx@npm:^2.15.0, streamx@npm:^2.25.0":
+"streamx@npm:^2.12.5, streamx@npm:^2.25.0, streamx@npm:^2.28.1":
   version: 2.28.1
   resolution: "streamx@npm:2.28.1"
   dependencies:
@@ -13270,11 +13270,11 @@ __metadata:
   linkType: hard
 
 "strtok3@npm:^10.3.4, strtok3@npm:^10.3.5":
-  version: 10.3.5
-  resolution: "strtok3@npm:10.3.5"
+  version: 10.6.2
+  resolution: "strtok3@npm:10.6.2"
   dependencies:
     "@tokenizer/token": "npm:^0.3.0"
-  checksum: 10/7279dc97a7207a5664ea07cf5304b94968db4f02d64d2732be8e7a3a31a876375126749cd36a00d0bd54c891875f3e47175f8194d40c64118f3265dbc241aaca
+  checksum: 10/f2f2a75898b7ed0e8a7bb9c9824e6e64938221594b9d0893b582a532729fafb8bc30ad1c3c925af675269c83cd8d53941c49c064c9562de8c2b82b92eadb33f3
   languageName: node
   linkType: hard
 
@@ -13431,14 +13431,14 @@ __metadata:
   linkType: hard
 
 "tar-stream@npm:^3.0.0":
-  version: 3.2.1
-  resolution: "tar-stream@npm:3.2.1"
+  version: 3.2.2
+  resolution: "tar-stream@npm:3.2.2"
   dependencies:
-    b4a: "npm:^1.6.4"
-    bare-fs: "npm:^4.5.5"
-    fast-fifo: "npm:^1.2.0"
-    streamx: "npm:^2.15.0"
-  checksum: 10/1a09f857e0789489476d99fb716fa6d209e7d19aa73b7a4b23f40eeba46792d5007ca62fde4fca8f643ed71ace1c526a293c655718a0409275a45a8aa86b562a
+    b4a: "npm:^1.9.0"
+    bare-fs: "npm:^4.8.2"
+    fast-fifo: "npm:^1.3.2"
+    streamx: "npm:^2.28.1"
+  checksum: 10/9fdb4bf39adc37dcb42fdd458c79075930b98e3bd2ec5165365c936100eb4f40b149e5135cb6eb8f8f37a89e9df1ebd096fb6ce08fc06ba7d4e2d98438a37718
   languageName: node
   linkType: hard
 
@@ -13927,9 +13927,9 @@ __metadata:
   linkType: hard
 
 "uint8array-extras@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "uint8array-extras@npm:1.5.0"
-  checksum: 10/94fd56a2dda6a7445f5176f301f491814c87757d38e4b3c932299ab54d69ec504830e5d5c18ffa20cf694a69a210315be8b4a2c9952c6334da817ea2d2e1dce0
+  version: 1.6.0
+  resolution: "uint8array-extras@npm:1.6.0"
+  checksum: 10/485927269f68809fb9b37f17effcf9094b2f4c332d8468c7488d259e662ec0ad5c5bba66ca5500e1f5d8de8cf29c83db9148600b3633d444f1a1bc6b734145da
   languageName: node
   linkType: hard
 
@@ -14381,7 +14381,7 @@ __metadata:
 
 "whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-2026-06-26":
   version: 1.34.7
-  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=55f699766af20ed42a17389440b686f7459db6d7"
+  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=e2c7fdea6a2efad1e786c422e59f534eb45ab44c"
   dependencies:
     archiver: "npm:7.0.1"
     fluent-ffmpeg: "npm:2.1.3"
@@ -14398,7 +14398,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 10/71f29ec8a5e308da648f5227e22555f23b24640008a9cc41031bc2ba830cc8e9e0c39ed31445e5e1de51b6f9ec941c857b5c9e019d8bdd1f7b55f58685edd3aa
+  checksum: 10/efe696a7c5db011f97f33f635d9665927f922506d49e6048dc56dacbd3d591b4a1e13a874790520b7bed45c65c98bc6f94a933b95393d078555bee356c67e159
   languageName: node
   linkType: hard
 

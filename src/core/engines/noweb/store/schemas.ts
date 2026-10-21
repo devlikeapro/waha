@@ -74,6 +74,20 @@ export const NowebLidMapSchema = new Schema(
   ],
 );
 
+export const NowebGroupMemberTagsSchema = new Schema(
+  'group_member_tags',
+  [
+    new Field('id', 'TEXT'),
+    new Field('groupId', 'TEXT'),
+    new Field('memberId', 'TEXT'),
+    new Field('data', 'TEXT'),
+  ],
+  [
+    new Index('group_member_tags_id_index', ['id']),
+    new Index('group_member_tags_group_index', ['groupId']),
+  ],
+);
+
 export const NOWEB_STORE_SCHEMA = [
   NowebContactSchema,
   NowebChatSchema,
@@ -82,6 +96,7 @@ export const NOWEB_STORE_SCHEMA = [
   NowebLabelsSchema,
   NowebLabelAssociationsSchema,
   NowebLidMapSchema,
+  NowebGroupMemberTagsSchema,
 ];
 
 export const Migrations: string[] = [
@@ -114,4 +129,8 @@ export const Migrations: string[] = [
   'CREATE TABLE IF NOT EXISTS lid_map (id TEXT PRIMARY KEY, pn TEXT, data TEXT)',
   'CREATE UNIQUE INDEX IF NOT EXISTS lid_map_id_index ON lid_map (id)',
   'CREATE INDEX IF NOT EXISTS lid_map_pn_index ON lid_map (pn)',
+  // Group member tags
+  'CREATE TABLE IF NOT EXISTS group_member_tags (id TEXT PRIMARY KEY, "groupId" TEXT, "memberId" TEXT, data TEXT)',
+  'CREATE UNIQUE INDEX IF NOT EXISTS group_member_tags_id_index ON group_member_tags (id)',
+  'CREATE INDEX IF NOT EXISTS group_member_tags_group_index ON group_member_tags ("groupId")',
 ];

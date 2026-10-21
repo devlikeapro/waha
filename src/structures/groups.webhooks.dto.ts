@@ -4,6 +4,7 @@ import {
   GroupV2JoinEvent,
   GroupV2LeaveEvent,
   GroupV2ParticipantsJoinRequestEvent,
+  GroupV2ParticipantsTagEvent,
   GroupV2ParticipantsEvent,
   GroupV2UpdateEvent,
 } from '@waha/structures/groups.events.dto';
@@ -52,4 +53,14 @@ export class WebhookGroupV2ParticipantsJoinRequest extends WAHAWebhook {
   event = WAHAEvents.GROUP_V2_PARTICIPANTS_JOIN_REQUEST;
 
   payload: GroupV2ParticipantsJoinRequestEvent;
+}
+
+export class WebhookGroupV2ParticipantsTag extends WAHAWebhook {
+  @ApiProperty({
+    description:
+      'When a participant sets or removes their member tag in a group',
+  })
+  event = WAHAEvents.GROUP_V2_PARTICIPANTS_TAG;
+
+  payload: GroupV2ParticipantsTagEvent;
 }

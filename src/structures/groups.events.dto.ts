@@ -120,3 +120,41 @@ export class GroupV2ParticipantsJoinRequestEvent {
 
   _data: any;
 }
+
+export class GroupParticipantId {
+  @ApiProperty({
+    example: '123456789@lid',
+  })
+  id: string;
+
+  @ApiProperty({
+    description: 'Phone number ID of the participant, if known',
+    example: '123456789@c.us',
+    nullable: true,
+  })
+  pn: string | null;
+}
+
+/**
+ * Happens when a participant sets or removes their member tag in a group.
+ */
+export class GroupV2ParticipantsTagEvent {
+  group: GroupId;
+
+  participant: GroupParticipantId;
+
+  @ApiProperty({
+    description: 'The new member tag, null when removed',
+    example: 'Manager',
+    nullable: true,
+  })
+  tag: string | null;
+
+  @ApiProperty({
+    description: 'Unix timestamp',
+    example: 1666943582,
+  })
+  timestamp: number;
+
+  _data: any;
+}

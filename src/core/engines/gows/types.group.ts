@@ -130,3 +130,11 @@ export interface GOWSGroupParticipantRequest {
   JID: JID;
   RequestedAt: string;
 }
+
+// GetGroupMemberLabels RPC result item
+export interface GOWSGroupMemberLabel {
+  groupJid: JID;
+  memberJid: JID; // LID in LID-addressed groups, phone number otherwise
+  label: string;
+  timestamp: string;
+}

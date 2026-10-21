@@ -60,6 +60,8 @@ import {
   ToGroupV2ParticipantsJoinRequestEvent,
   ToGroupV2Participants,
   ToGroupV2UpdateEvent,
+  ToGroupParticipantTag,
+  ToGroupV2ParticipantsTagEvent,
 } from '@waha/core/engines/noweb/groups.noweb';
 import { sendButtonMessage } from '@waha/core/engines/noweb/noweb.buttons';
 import {
@@ -89,6 +91,7 @@ import {
   jidsFromKey,
   toCusFormat,
   toJID,
+  isJidGroup,
 } from '@waha/core/utils/jids';
 import { DistinctAck, DistinctMessages } from '@waha/core/utils/reactive';
 import {
@@ -172,7 +175,9 @@ import {
   SettingsMemberShareHistoryMode,
   SettingsMembershipApproval,
   SettingsSecurityChangeInfo,
+  GroupParticipantTag,
 } from '@waha/structures/groups.dto';
+import { GroupV2ParticipantsTagEvent } from '@waha/structures/groups.events.dto';
 import {
   Label,
   LabelChatAssociation,
@@ -237,6 +242,7 @@ import {
   partition,
   share,
   tap,
+  Subject,
 } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
 
@@ -250,6 +256,7 @@ import {
   IsEditedMessage,
   IsHistorySyncNotification,
   IsSecretEncryptedMessageEdit,
+  IsGroupMemberTagMessage,
 } from '@waha/core/utils/pwa';
 import {
   decryptSecretEncryptedMessageEditProto,
@@ -389,7 +396,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
 
   getSocketConfig(agents: Agents | undefined, state): Partial<SocketConfig> {
     // Detect browser
-    let browser = ['Ubuntu', 'Chrome', '22.04.4'] as WABrowserDescription;
+    let browser = ['Ubuntu', 'Chrome', '22.0.4'] as WABrowserDescription;
     let deviceName =
       this.sessionConfig?.client?.deviceName ?? WAHA_CLIENT_DEVICE_NAME;
     let browserName =
@@ -397,7 +404,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     if (browserName && !deviceName) {
       browser = Browsers.appropriate(browserName);
     } else if (!browserName && deviceName) {
-      browser = [deviceName, 'Chrome', '22.04.4'];
+      browser = [deviceName, 'Chrome', '22.0.4'];
     } else if (browserName && deviceName) {
       switch (deviceName) {
         case 'Mac OS':
@@ -952,6 +959,8 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       this.logger.warn(`Failed to terminate WebSocket: ${err}`);
     }
   }
+
+  private myMemberTag$ = new Subject<GroupV2ParticipantsTagEvent>();
 
   getSessionMeInfo(): MeInfo | null {
     const me = this.sock?.authState?.creds?.me;
@@ -2260,6 +2269,60 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     return true;
   }
 
+  public async getGroupParticipantTags(
+    id: string,
+  ): Promise<GroupParticipantTag[]> {
+    const tags = await this.store.getGroupMemberTags(toJID(id));
+    return tags.map(ToGroupParticipantTag);
+  }
+
+  public async getGroupParticipantTag(
+    id: string,
+    participantId: string,
+  ): Promise<GroupParticipantTag> {
+    const tag = await this.store.getGroupMemberTag(
+      toJID(id),
+      toJID(participantId),
+    );
+    if (!tag) {
+      return {
+        id: toCusFormat(participantId),
+        tag: null,
+        timestamp: null,
+      };
+    }
+    return ToGroupParticipantTag(tag);
+  }
+
+  protected getMyParticipantId(me: MeInfo): string {
+    return me.lid ?? me.id;
+  }
+
+  @Activity()
+  public async setGroupMemberTag(id: string, tag: string): Promise<boolean> {
+    const groupId = toJID(id);
+    await this.sock.updateMemberLabel(groupId, tag);
+    // Own sends are not echoed back, keep the store and the event in sync here
+    const me = this.getSessionMeInfo();
+    const memberId = this.getMyParticipantId(me);
+    const timestamp = Math.floor(Date.now() / 1000);
+    await this.store.saveGroupMemberTag({
+      id: null,
+      groupId: groupId,
+      memberId: toJID(memberId),
+      tag: tag,
+      timestamp: timestamp,
+    });
+    this.myMemberTag$.next({
+      group: { id: id },
+      participant: { id: memberId, pn: me.id },
+      tag: tag || null,
+      timestamp: timestamp,
+      _data: null,
+    });
+    return true;
+  }
+
   public async getMembershipApprovalMode(
     id: string,
   ): Promise<SettingsMembershipApproval> {
@@ -2915,6 +2978,16 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       }),
     );
     this.events2.get(WAHAEvents.MESSAGE_EDITED).switch(messagesEdited$);
+
+    // Group member tags
+    const groupV2ParticipantsTag$ = messagesUpsert$.pipe(
+      filter((message) => isJidGroup(message.key?.remoteJid)),
+      filter((message) => IsGroupMemberTagMessage(message.message)),
+      map(ToGroupV2ParticipantsTagEvent),
+    );
+    this.events2
+      .get(WAHAEvents.GROUP_V2_PARTICIPANTS_TAG)
+      .switch(merge(groupV2ParticipantsTag$, this.myMemberTag$));
 
     //
     // Message Reactions

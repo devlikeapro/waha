@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BooleanString } from '@waha/nestjs/validation/BooleanString';
+import { IsGroupMemberTag } from '@waha/nestjs/validation/IsGroupMemberTag';
 import { TrimString } from '@waha/nestjs/validation/TrimString';
 import { Transform } from 'class-transformer';
 import {
@@ -158,6 +159,18 @@ export class SubjectRequest {
   subject: string;
 }
 
+export class GroupMemberTagRequest {
+  @ApiProperty({
+    description: 'Your member tag in the group. Empty or null removes it.',
+    example: 'Manager',
+    nullable: true,
+  })
+  @Transform(TrimString)
+  @IsOptional()
+  @IsGroupMemberTag()
+  tag: string | null;
+}
+
 export class CreateGroupRequest {
   @IsString()
   name: string;
@@ -239,6 +252,28 @@ export class GroupParticipant {
     example: GroupParticipantRole.PARTICIPANT,
   })
   role: GroupParticipantRole;
+}
+
+export class GroupParticipantTag {
+  @ApiProperty({
+    example: '123456789@lid',
+  })
+  id: string;
+
+  @ApiProperty({
+    description:
+      'Member tag the participant set for themselves in the group, null when none',
+    example: 'Manager',
+    nullable: true,
+  })
+  tag: string | null;
+
+  @ApiProperty({
+    description: 'Unix timestamp of the last tag change, null when none',
+    example: 1666943582,
+    nullable: true,
+  })
+  timestamp: number | null;
 }
 
 export class GroupId {

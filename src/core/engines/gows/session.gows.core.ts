@@ -27,6 +27,7 @@ import {
 import {
   GOWSGroupParticipant,
   GOWSGroupParticipantRequest,
+  GOWSGroupMemberLabel,
 } from '@waha/core/engines/gows/types.group';
 import { messages } from '@waha/core/engines/gows/grpc/gows';
 import {
@@ -56,7 +57,9 @@ import {
   isJidBroadcast,
   isJidGroup,
   isJidNewsletter,
+  isPnUser,
   toCusFormat,
+  toJID,
 } from '@waha/core/utils/jids';
 import {
   PasskeyChallenge,
@@ -129,6 +132,7 @@ import {
   GroupJoinRequest,
   GroupJoinRequestResult,
   GroupParticipant,
+  GroupParticipantTag,
   GroupSortField,
   Participant,
   ParticipantsRequest,
@@ -137,6 +141,7 @@ import {
   SettingsMembershipApproval,
   SettingsSecurityChangeInfo,
 } from '@waha/structures/groups.dto';
+import { GroupV2ParticipantsTagEvent } from '@waha/structures/groups.events.dto';
 import { ReplyToMessage } from '@waha/structures/message.dto';
 import { PaginationParams, SortOrder } from '@waha/structures/pagination.dto';
 import {
@@ -212,7 +217,7 @@ import {
   BuildMessageServiceClient,
 } from '@waha/core/engines/gows/clients';
 import esm from '@waha/vendor/esm';
-import { IsEditedMessage } from '@waha/core/utils/pwa';
+import { IsEditedMessage, IsGroupMemberTagMessage } from '@waha/core/utils/pwa';
 import { GoToJSWAProto } from '@waha/core/engines/gows/waproto';
 import { extractWALocation } from '@waha/core/engines/waproto/locaiton';
 import { extractVCards } from '@waha/core/engines/waproto/vcards';
@@ -663,6 +668,31 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       }),
     );
     this.events2.get(WAHAEvents.MESSAGE_EDITED).switch(messagesEdited$);
+
+    // Member tags travel as protocol messages in the group, the sender is the tagged member
+    const groupV2ParticipantsTag$ = messages$.pipe(
+      filter((message) => !!message?.Info?.IsGroup),
+      filter((message) => IsGroupMemberTagMessage(message.Message)),
+      map((message): GroupV2ParticipantsTagEvent => {
+        const info = message.Info;
+        const content = normalizeMessageContent(message.Message);
+        const id = toCusFormat(info.Sender);
+        let pn = toCusFormat(info.SenderAlt) || null;
+        if (isPnUser(info.Sender)) {
+          pn = id;
+        }
+        return {
+          group: { id: toCusFormat(info.Chat) },
+          participant: { id: id, pn: pn },
+          tag: content.protocolMessage.memberLabel.label || null,
+          timestamp: parseTimestampToSeconds(info.Timestamp),
+          _data: message,
+        };
+      }),
+    );
+    this.events2
+      .get(WAHAEvents.GROUP_V2_PARTICIPANTS_TAG)
+      .switch(groupV2ParticipantsTag$);
 
     const receipt$ = all$.pipe(
       onlyEvent(WhatsMeowEvent.RECEIPT),
@@ -1751,6 +1781,43 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     return ToGroupParticipants(group.Participants);
   }
 
+  public async getGroupParticipantTags(
+    id: string,
+  ): Promise<GroupParticipantTag[]> {
+    const req = new messages.JidRequest({
+      session: this.session,
+      jid: id,
+    });
+    const response = await promisify(this.client.GetGroupMemberLabels)(req);
+    const labels: GOWSGroupMemberLabel[] = parseJsonList(response);
+    return labels.map(toGroupParticipantTag);
+  }
+
+  protected getMyParticipantId(me: MeInfo): string {
+    return me.lid ?? me.id;
+  }
+
+  public async getGroupParticipantTag(
+    id: string,
+    participantId: string,
+  ): Promise<GroupParticipantTag> {
+    const req = new messages.GroupMemberRequest({
+      session: this.session,
+      jid: id,
+      member: toJID(participantId),
+    });
+    const response = await promisify(this.client.GetGroupMemberLabel)(req);
+    const label: GOWSGroupMemberLabel | null = parseJson(response);
+    if (!label) {
+      return {
+        id: toCusFormat(participantId),
+        tag: null,
+        timestamp: null,
+      };
+    }
+    return toGroupParticipantTag(label);
+  }
+
   public async getInfoAdminsOnly(id): Promise<SettingsSecurityChangeInfo> {
     const group = await this.getGroup(id);
     return {
@@ -1826,6 +1893,17 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       value: value,
     });
     await promisify(this.client.SetGroupMemberShareHistoryMode)(req);
+    return true;
+  }
+
+  @Activity()
+  public async setGroupMemberTag(id: string, tag: string): Promise<boolean> {
+    const req = new messages.JidStringRequest({
+      session: this.session,
+      jid: id,
+      value: tag,
+    });
+    await promisify(this.client.SetGroupMemberLabel)(req);
     return true;
   }
 
@@ -3482,6 +3560,16 @@ export class GOWSEngineMediaProcessor implements IMediaEngineProcessor<any> {
     const content = extractMediaContent(message.Message);
     return content?.fileName;
   }
+}
+
+function toGroupParticipantTag(
+  label: GOWSGroupMemberLabel,
+): GroupParticipantTag {
+  return {
+    id: toCusFormat(label.memberJid),
+    tag: label.label,
+    timestamp: parseTimestampToSeconds(label.timestamp),
+  };
 }
 
 function isMine(message) {

@@ -15,3 +15,11 @@ export interface WebJSPresenceUpdate {
   id: string;
   presences: WebJSPresence[];
 }
+
+export interface WebJSGroupMemberTag {
+  group: string;
+  participant: string;
+  pn: string | null;
+  tag: string | null;
+  timestamp: number;
+}

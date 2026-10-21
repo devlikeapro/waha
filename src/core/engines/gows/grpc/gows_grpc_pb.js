@@ -257,6 +257,17 @@ function deserialize_messages_GroupCodeRequest(buffer_arg) {
   return gows_pb.GroupCodeRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_messages_GroupMemberRequest(arg) {
+  if (!(arg instanceof gows_pb.GroupMemberRequest)) {
+    throw new Error('Expected argument of type messages.GroupMemberRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_messages_GroupMemberRequest(buffer_arg) {
+  return gows_pb.GroupMemberRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_messages_JidBoolRequest(arg) {
   if (!(arg instanceof gows_pb.JidBoolRequest)) {
     throw new Error('Expected argument of type messages.JidBoolRequest');
@@ -1085,6 +1096,42 @@ setGroupMemberShareHistoryMode: {
     responseDeserialize: deserialize_messages_Empty,
   },
   // who can share message history with new members - true - all members, false - admins only
+getGroupMemberLabels: {
+    path: '/messages.MessageService/GetGroupMemberLabels',
+    requestStream: false,
+    responseStream: false,
+    requestType: gows_pb.JidRequest,
+    responseType: gows_pb.JsonList,
+    requestSerialize: serialize_messages_JidRequest,
+    requestDeserialize: deserialize_messages_JidRequest,
+    responseSerialize: serialize_messages_JsonList,
+    responseDeserialize: deserialize_messages_JsonList,
+  },
+  // member tags the participants set for themselves
+getGroupMemberLabel: {
+    path: '/messages.MessageService/GetGroupMemberLabel',
+    requestStream: false,
+    responseStream: false,
+    requestType: gows_pb.GroupMemberRequest,
+    responseType: gows_pb.Json,
+    requestSerialize: serialize_messages_GroupMemberRequest,
+    requestDeserialize: deserialize_messages_GroupMemberRequest,
+    responseSerialize: serialize_messages_Json,
+    responseDeserialize: deserialize_messages_Json,
+  },
+  // one member's tag, null when none
+setGroupMemberLabel: {
+    path: '/messages.MessageService/SetGroupMemberLabel',
+    requestStream: false,
+    responseStream: false,
+    requestType: gows_pb.JidStringRequest,
+    responseType: gows_pb.Empty,
+    requestSerialize: serialize_messages_JidStringRequest,
+    requestDeserialize: deserialize_messages_JidStringRequest,
+    responseSerialize: serialize_messages_Empty,
+    responseDeserialize: deserialize_messages_Empty,
+  },
+  // my member tag in the group, empty value clears it
 updateGroupParticipants: {
     path: '/messages.MessageService/UpdateGroupParticipants',
     requestStream: false,

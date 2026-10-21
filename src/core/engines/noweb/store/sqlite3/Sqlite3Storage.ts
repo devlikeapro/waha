@@ -1,6 +1,8 @@
 import { ILabelAssociationRepository } from '@waha/core/engines/noweb/store/ILabelAssociationsRepository';
 import { ILabelsRepository } from '@waha/core/engines/noweb/store/ILabelsRepository';
+import { INowebGroupMemberTagsRepository } from '@waha/core/engines/noweb/store/INowebGroupMemberTagsRepository';
 import { INowebLidPNRepository } from '@waha/core/engines/noweb/store/INowebLidPNRepository';
+import { Sqlite3GroupMemberTagsRepository } from '@waha/core/engines/noweb/store/sqlite3/Sqlite3GroupMemberTagsRepository';
 import { Sqlite3GroupRepository } from '@waha/core/engines/noweb/store/sqlite3/Sqlite3GroupRepository';
 import { Sqlite3LabelAssociationsRepository } from '@waha/core/engines/noweb/store/sqlite3/Sqlite3LabelAssociationsRepository';
 import { Sqlite3LabelsRepository } from '@waha/core/engines/noweb/store/sqlite3/Sqlite3LabelsRepository';
@@ -86,6 +88,10 @@ export class Sqlite3Storage extends INowebStorage {
 
   getMessagesRepository() {
     return new Sqlite3MessagesRepository(this.knex, this.getLidRepository());
+  }
+
+  getGroupMemberTagsRepository(): INowebGroupMemberTagsRepository {
+    return new Sqlite3GroupMemberTagsRepository(this.knex);
   }
 
   getLidPNRepository(): INowebLidPNRepository {

@@ -5,6 +5,7 @@ import { ILabelsRepository } from '@waha/core/engines/noweb/store/ILabelsReposit
 import { IChatRepository } from './IChatRepository';
 import { IContactRepository } from './IContactRepository';
 import { IMessagesRepository } from './IMessagesRepository';
+import { INowebGroupMemberTagsRepository } from './INowebGroupMemberTagsRepository';
 import { INowebLidPNRepository } from './INowebLidPNRepository';
 
 export abstract class INowebStorage {
@@ -17,6 +18,8 @@ export abstract class INowebStorage {
   abstract getChatRepository(): IChatRepository;
 
   abstract getGroupRepository(): IGroupRepository;
+
+  abstract getGroupMemberTagsRepository(): INowebGroupMemberTagsRepository;
 
   abstract getMessagesRepository(): IMessagesRepository;
 

@@ -10,6 +10,8 @@ import {
   GroupJoinInput,
   GroupMembershipApprovalInput,
   GroupMemberShareHistoryInput,
+  GroupMemberTagInput,
+  GroupParticipantIdInput,
   GroupParticipantsInput,
   GroupPictureInput,
   GroupsListInput,
@@ -556,6 +558,87 @@ export class GroupTools extends McpController {
     return this.textRequest({
       method: 'GET',
       url: `/api/${session}/groups/${id}/participants/v2`,
+    });
+  }
+
+  @Tool('groups-get-member-tags', {
+    title: 'Get group member tags',
+    description:
+      'Get the tags participants set for themselves in the group. Only members with a tag are listed.',
+    inputSchema: GroupIdInput,
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+    },
+  })
+  async getMemberTags({ session, id }: z.infer<typeof GroupIdInput>) {
+    return this.textRequest({
+      method: 'GET',
+      url: `/api/${session}/groups/${id}/participants/v2/tags`,
+    });
+  }
+
+  @Tool('groups-get-member-tag', {
+    title: 'Get group member tag',
+    description:
+      'Get the member tag of one participant in the group. Returns tag: null when the participant has no tag.',
+    inputSchema: GroupParticipantIdInput,
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+    },
+  })
+  async getMemberTag({
+    session,
+    id,
+    participantId,
+  }: z.infer<typeof GroupParticipantIdInput>) {
+    return this.textRequest({
+      method: 'GET',
+      url: `/api/${session}/groups/${id}/participants/v2/tags/${participantId}`,
+    });
+  }
+
+  @Tool('groups-get-my-member-tag', {
+    title: 'Get my group member tag',
+    description:
+      'Get your own member tag in the group. Returns tag: null when you have no tag.',
+    inputSchema: GroupIdInput,
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+    },
+  })
+  async getMyMemberTag({ session, id }: z.infer<typeof GroupIdInput>) {
+    return this.textRequest({
+      method: 'GET',
+      url: `/api/${session}/groups/${id}/participants/v2/tags/my`,
+    });
+  }
+
+  @Tool('groups-set-my-member-tag', {
+    title: 'Set my group member tag',
+    description:
+      'Set your own member tag in the group (2-30 characters). Empty or null tag removes it.',
+    inputSchema: GroupMemberTagInput,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+    },
+  })
+  async setMyMemberTag({
+    session,
+    id,
+    ...body
+  }: z.infer<typeof GroupMemberTagInput>) {
+    return this.textRequest({
+      method: 'PUT',
+      url: `/api/${session}/groups/${id}/participants/v2/tags/my`,
+      data: body,
     });
   }
 

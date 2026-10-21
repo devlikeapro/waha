@@ -1,4 +1,5 @@
 import { WebjsClientCore } from '@waha/core/engines/webjs/WebjsClientCore';
+import { WebJSGroupMemberTag } from '@waha/core/engines/webjs/types';
 import {
   GroupId,
   GroupInfo,
@@ -7,6 +8,7 @@ import {
   GroupParticipant,
   GroupParticipantRole,
   NormalizeJoinRequestMethod,
+  GroupParticipantTag,
 } from '@waha/structures/groups.dto';
 import {
   GroupParticipantsJoinRequestAction,
@@ -16,6 +18,7 @@ import {
   GroupV2ParticipantsJoinRequestEvent,
   GroupV2ParticipantsEvent,
   GroupV2UpdateEvent,
+  GroupV2ParticipantsTagEvent,
 } from '@waha/structures/groups.events.dto';
 import {
   GroupChat,
@@ -218,5 +221,35 @@ export function ToGroupV2ParticipantsEvent(
     timestamp: notification.timestamp,
     participants: participants,
     _data: notification,
+  };
+}
+
+// GroupChat.getMemberTags() item
+export interface WEBJSMemberTag {
+  id: string;
+  lid: string;
+  tag: string;
+  timestamp: number;
+}
+
+export function ToGroupParticipantTag(
+  tag: WEBJSMemberTag,
+): GroupParticipantTag {
+  return {
+    id: tag.id,
+    tag: tag.tag,
+    timestamp: tag.timestamp,
+  };
+}
+
+export function ToGroupV2ParticipantsTagEvent(
+  data: WebJSGroupMemberTag,
+): GroupV2ParticipantsTagEvent {
+  return {
+    group: { id: data.group },
+    participant: { id: data.participant, pn: data.pn },
+    tag: data.tag,
+    timestamp: data.timestamp,
+    _data: data,
   };
 }

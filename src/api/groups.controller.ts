@@ -13,7 +13,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { GroupIdApiParam } from '@waha/nestjs/params/ChatIdApiParam';
 import { WAHAValidationPipe } from '@waha/nestjs/pipes/WAHAValidationPipe';
 import {
@@ -35,7 +35,9 @@ import {
   GroupField,
   GroupJoinRequest,
   GroupJoinRequestResult,
+  GroupMemberTagRequest,
   GroupParticipant,
+  GroupParticipantTag,
   GroupsListFields,
   GroupsPaginationParams,
   JoinGroupRequest,
@@ -520,6 +522,77 @@ export class GroupsController {
     @Param('id') id: string,
   ): Promise<GroupParticipant[]> {
     return session.getGroupParticipants(id);
+  }
+
+  @Get(':id/participants/v2/tags')
+  @GroupIdApiParam
+  @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
+  @ApiOperation({
+    summary: 'Get member tags',
+    description:
+      'Tags the participants set for themselves in the group. Only members with a tag are listed.',
+  })
+  getGroupParticipantTags(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+  ): Promise<GroupParticipantTag[]> {
+    return session.getGroupParticipantTags(id);
+  }
+
+  @Get(':id/participants/v2/tags/my')
+  @GroupIdApiParam
+  @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
+  @ApiOperation({
+    summary: 'Get my member tag in the group',
+    description: 'Returns tag: null when you have no tag in the group.',
+  })
+  getMyGroupParticipantTag(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+  ): Promise<GroupParticipantTag> {
+    return session.getMyGroupParticipantTag(id);
+  }
+
+  @Get(':id/participants/v2/tags/:participantId')
+  @GroupIdApiParam
+  @SessionApiParam
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
+  @ApiOperation({
+    summary: 'Get member tag of one participant',
+    description:
+      'Returns tag: null when the participant has no tag. Use the participant id as reported in messages and participants (@lid in most groups).',
+  })
+  @ApiParam({
+    name: 'participantId',
+    example: '123456789@lid',
+  })
+  getGroupParticipantTag(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+    @Param('participantId') participantId: string,
+  ): Promise<GroupParticipantTag> {
+    return session.getGroupParticipantTag(id, participantId);
+  }
+
+  @Put(':id/participants/v2/tags/my')
+  @SessionApiParam
+  @GroupIdApiParam
+  @CheckPolicies(CanSession(Action.Send, FromParam('session')))
+  @ApiOperation({
+    summary: 'Set my member tag in the group',
+    description:
+      'Sets the tag shown next to your name in the group participants list. ' +
+      'Members can only tag themselves. Send an empty or null tag to remove it.',
+  })
+  @UsePipes(new WAHAValidationPipe())
+  setGroupMemberTag(
+    @WorkingSessionParam session: WhatsappSession,
+    @Param('id') id: string,
+    @Body() request: GroupMemberTagRequest,
+  ): Promise<boolean> {
+    return session.setGroupMemberTag(id, request.tag ?? '');
   }
 
   @Post(':id/participants/add')

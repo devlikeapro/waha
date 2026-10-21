@@ -10,6 +10,7 @@ import {
   GetChatMessagesFilter,
   OverviewFilter,
 } from '@waha/structures/chats.dto';
+import { GroupMemberTag } from '@waha/core/engines/noweb/store/INowebGroupMemberTagsRepository';
 import { LidToPhoneNumber } from '@waha/structures/lids.dto';
 import {
   LimitOffsetParams,
@@ -75,4 +76,14 @@ export interface INowebStore {
   findLidByPN(pn: string): Promise<string | null>;
 
   saveLids(lids: LidToPhoneNumber[]): Promise<void>;
+
+  // Group member tags
+  getGroupMemberTags(groupId: string): Promise<GroupMemberTag[]>;
+
+  getGroupMemberTag(
+    groupId: string,
+    memberId: string,
+  ): Promise<GroupMemberTag | null>;
+
+  saveGroupMemberTag(tag: GroupMemberTag): Promise<void>;
 }

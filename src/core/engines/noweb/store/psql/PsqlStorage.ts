@@ -4,7 +4,9 @@ import { IGroupRepository } from '@waha/core/engines/noweb/store/IGroupRepositor
 import { ILabelAssociationRepository } from '@waha/core/engines/noweb/store/ILabelAssociationsRepository';
 import { ILabelsRepository } from '@waha/core/engines/noweb/store/ILabelsRepository';
 import { IMessagesRepository } from '@waha/core/engines/noweb/store/IMessagesRepository';
+import { INowebGroupMemberTagsRepository } from '@waha/core/engines/noweb/store/INowebGroupMemberTagsRepository';
 import { INowebLidPNRepository } from '@waha/core/engines/noweb/store/INowebLidPNRepository';
+import { PsqlGroupMemberTagsRepository } from '@waha/core/engines/noweb/store/psql/PsqlGroupMemberTagsRepository';
 import { INowebStorage } from '@waha/core/engines/noweb/store/INowebStorage';
 import { Migrations } from '@waha/core/engines/noweb/store/schemas';
 import { PsqlChatRepository } from '@waha/core/engines/noweb/store/psql/PsqlChatRepository';
@@ -63,6 +65,10 @@ export class PsqlStorage extends INowebStorage {
 
   getLabelAssociationRepository(): ILabelAssociationRepository {
     return new PsqlLabelAssociationsRepository(this.knex);
+  }
+
+  getGroupMemberTagsRepository(): INowebGroupMemberTagsRepository {
+    return new PsqlGroupMemberTagsRepository(this.knex);
   }
 
   getLidPNRepository(): INowebLidPNRepository {

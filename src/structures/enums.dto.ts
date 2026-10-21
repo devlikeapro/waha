@@ -18,6 +18,7 @@ export enum WAHAEvents {
   GROUP_V2_UPDATE = 'group.v2.update',
   GROUP_V2_PARTICIPANTS = 'group.v2.participants',
   GROUP_V2_PARTICIPANTS_JOIN_REQUEST = 'group.v2.participants.join-request',
+  GROUP_V2_PARTICIPANTS_TAG = 'group.v2.participants.tag',
   PRESENCE_UPDATE = 'presence.update',
   POLL_VOTE = 'poll.vote',
   POLL_VOTE_FAILED = 'poll.vote.failed',

@@ -1,6 +1,7 @@
 import { IGroupRepository } from '@waha/core/engines/noweb/store/IGroupRepository';
 import { ILabelAssociationRepository } from '@waha/core/engines/noweb/store/ILabelAssociationsRepository';
 import { ILabelsRepository } from '@waha/core/engines/noweb/store/ILabelsRepository';
+import { INowebGroupMemberTagsRepository } from '@waha/core/engines/noweb/store/INowebGroupMemberTagsRepository';
 import { INowebLidPNRepository } from '@waha/core/engines/noweb/store/INowebLidPNRepository';
 import { INowebStorage } from '@waha/core/engines/noweb/store/INowebStorage';
 import {
@@ -12,6 +13,7 @@ import { Schema } from '@waha/core/storage/Schema';
 import { MongoGroupRepository } from '@waha/core/engines/noweb/store/mongodb/MongoGroupRepository';
 import { MongoLabelAssociationsRepository } from '@waha/core/engines/noweb/store/mongodb/MongoLabelAssociationsRepository';
 import { MongoLabelsRepository } from '@waha/core/engines/noweb/store/mongodb/MongoLabelsRepository';
+import { MongoGroupMemberTagsRepository } from '@waha/core/engines/noweb/store/mongodb/MongoGroupMemberTagsRepository';
 import { MongoLidPNRepository } from '@waha/core/engines/noweb/store/mongodb/MongoLidPNRepository';
 import { Db } from 'mongodb';
 
@@ -93,6 +95,11 @@ export class MongoStorage extends INowebStorage {
     await this.db
       .collection('labelAssociations')
       .createIndex({ type: 1, messageId: 1 });
+    // Group member tags
+    await this.db
+      .collection('group_member_tags')
+      .createIndex({ id: 1 }, { unique: true });
+    await this.db.collection('group_member_tags').createIndex({ groupId: 1 });
 
     return;
   }
@@ -143,5 +150,12 @@ export class MongoStorage extends INowebStorage {
 
   getLidPNRepository(): INowebLidPNRepository {
     return new MongoLidPNRepository(this.db, this.getSchema('lid_map'));
+  }
+
+  getGroupMemberTagsRepository(): INowebGroupMemberTagsRepository {
+    return new MongoGroupMemberTagsRepository(
+      this.db,
+      this.getSchema('group_member_tags'),
+    );
   }
 }

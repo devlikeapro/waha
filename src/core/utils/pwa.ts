@@ -22,6 +22,23 @@ export function IsEditedMessage(message: proto.IMessage): boolean {
   return true;
 }
 
+export function IsGroupMemberTagMessage(message: proto.IMessage): boolean {
+  message = normalizeMessageContent(message);
+  if (!message) {
+    return false;
+  }
+  if (
+    message?.protocolMessage?.type !==
+    proto.Message.ProtocolMessage.Type.GROUP_MEMBER_LABEL_CHANGE
+  ) {
+    return false;
+  }
+  if (message?.protocolMessage?.memberLabel == null) {
+    return false;
+  }
+  return true;
+}
+
 export function IsSecretEncryptedMessageEdit(
   message: proto.IMessage | null | undefined,
 ): boolean {

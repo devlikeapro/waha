@@ -1,6 +1,7 @@
 import {
   WebJSPresence,
   WebJSPresenceUpdate,
+  WebJSGroupMemberTag,
 } from '@waha/core/engines/webjs/types';
 import { GetSerialized } from '@waha/core/utils/serialized';
 import { GetChatMessagesFilter } from '@waha/structures/chats.dto';
@@ -195,7 +196,16 @@ export class WebjsClientCore extends Client {
         return;
       },
     );
+    await exposeFunctionIfAbsent(
+      this.pupPage,
+      'onGroupMemberTag',
+      (data: WebJSGroupMemberTag) => {
+        this.events.emit('group.member-tag', data);
+        return;
+      },
+    );
     await this.attachPresenceEvents();
+    await this.attachMemberTagEvents();
     if (this.tags) {
       await this.attachTagsEvents();
     }
@@ -289,6 +299,45 @@ export class WebjsClientCore extends Client {
           pending.add(presence);
         },
       );
+    });
+  }
+
+  async attachMemberTagEvents() {
+    await this.pupPage.evaluate(() => {
+      // @ts-ignore
+      if (window.memberTagEventsOn) {
+        return;
+      }
+      // @ts-ignore
+      window.memberTagEventsOn = true;
+
+      const d = require;
+      // @ts-ignore
+      const collection = window.WWebJS.getMemberLabelCollection();
+      const { createWid } = d('WAWebWidFactory');
+      const { toPn } = d('WAWebLidMigrationUtils');
+
+      // Members are keyed by lid, participants are reported by phone number when known
+      const emit = (model, tag) => {
+        const memberWid = createWid(model.id.member);
+        const pn = toPn(memberWid);
+        // @ts-ignore
+        window.onGroupMemberTag({
+          // @ts-ignore
+          group: window.WWebJS.GetSerialized(createWid(model.id.chatId)),
+          // @ts-ignore
+          participant: window.WWebJS.GetSerialized(pn ?? memberWid),
+          // @ts-ignore
+          pn: pn ? window.WWebJS.GetSerialized(pn) : null,
+          tag: tag,
+          timestamp: model.lastEditTimestamp,
+        });
+      };
+      // A removed tag arrives as an empty label
+      collection.on('add change:label', (model) =>
+        emit(model, model.label || null),
+      );
+      collection.on('remove', (model) => emit(model, null));
     });
   }
 

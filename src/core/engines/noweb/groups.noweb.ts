@@ -1,4 +1,5 @@
-import type { GroupMetadata } from '@adiwajshing/baileys';
+import type { GroupMetadata, WAMessage } from '@adiwajshing/baileys';
+import { GroupMemberTag } from '@waha/core/engines/noweb/store/INowebGroupMemberTagsRepository';
 import type { Contact } from '@adiwajshing/baileys/lib/Types/Contact';
 import type {
   GroupParticipant as NOWEBGroupParticipant,
@@ -12,6 +13,7 @@ import {
   GroupParticipant,
   GroupParticipantRole,
   NormalizeJoinRequestMethod,
+  GroupParticipantTag,
 } from '@waha/structures/groups.dto';
 import {
   GroupParticipantsJoinRequestAction,
@@ -21,6 +23,7 @@ import {
   GroupV2ParticipantsJoinRequestEvent,
   GroupV2ParticipantsEvent,
   GroupV2UpdateEvent,
+  GroupV2ParticipantsTagEvent,
 } from '@waha/structures/groups.events.dto';
 import { isPnUser, toCusFormat } from '@waha/core/utils/jids';
 import esm from '@waha/vendor/esm';
@@ -91,7 +94,7 @@ function getParticipantPn(
   return participant?.phoneNumber || null;
 }
 
-function getParticipantIds(
+export function getParticipantIds(
   participant: string | NOWEBGroupParticipant,
 ): string[] {
   if (typeof participant === 'string') {
@@ -272,5 +275,36 @@ export function ToGroupV2LeaveEvent(
       id: toCusFormat(update.id),
     },
     _data: update,
+  };
+}
+
+export function ToGroupParticipantTag(
+  tag: GroupMemberTag,
+): GroupParticipantTag {
+  return {
+    id: toCusFormat(tag.memberId),
+    tag: tag.tag,
+    timestamp: tag.timestamp,
+  };
+}
+
+export function ToGroupV2ParticipantsTagEvent(
+  message: WAMessage,
+): GroupV2ParticipantsTagEvent {
+  // Member tags travel as protocol messages in the group, the sender is the tagged member
+  const memberLabel = esm.b.normalizeMessageContent(message.message)
+    .protocolMessage.memberLabel;
+  const id = toCusFormat(message.key.participant);
+  let pn = toCusFormat(message.key.participantAlt) || null;
+  if (isPnUser(message.key.participant)) {
+    pn = id;
+  }
+  const labelTimestamp = Number(memberLabel.labelTimestamp) || 0;
+  return {
+    group: { id: toCusFormat(message.key.remoteJid) },
+    participant: { id: id, pn: pn },
+    tag: memberLabel.label || null,
+    timestamp: labelTimestamp || Number(message.messageTimestamp),
+    _data: message,
   };
 }
