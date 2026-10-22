@@ -154,6 +154,7 @@ import {
   WAMessageReaction,
 } from '@waha/structures/responses.dto';
 import { CallData } from '@waha/structures/calls.dto';
+import { buildProxyUrl, describeProxy } from '@waha/core/helpers.proxy';
 import {
   MeInfo,
   MessageCappingData,
@@ -375,10 +376,9 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     if (!config || !config.server) {
       return '';
     }
-    const { server, username, password } = config;
-    const auth = username && password ? `${username}:${password}@` : '';
-    const schema = 'http';
-    return `${schema}://${auth}${server}`;
+    const url = buildProxyUrl(config);
+    this.logger.info(`Connecting through proxy ${describeProxy(url)}`);
+    return url;
   }
 
   buildStreams() {

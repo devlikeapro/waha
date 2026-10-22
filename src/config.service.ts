@@ -151,6 +151,28 @@ export class WhatsappConfigService {
     return this.configService.get('WHATSAPP_PROXY_SERVER_PASSWORD', undefined);
   }
 
+  /**
+   * Where the proxy check reads the exit IP. Empty disables the lookup.
+   */
+  get proxyCheckIpUrl(): string {
+    return this.configService.get(
+      'WAHA_PROXY_CHECK_IP_URL',
+      'https://www.cloudflare.com/cdn-cgi/trace',
+    );
+  }
+
+  get proxyCheckTimeoutSeconds(): number {
+    const value = this.configService.get(
+      'WAHA_PROXY_CHECK_TIMEOUT_SECONDS',
+      '10',
+    );
+    const seconds = parseInt(value, 10);
+    if (!seconds || seconds <= 0) {
+      return 10;
+    }
+    return seconds;
+  }
+
   getSessionMongoUrl(): string | undefined {
     return this.configService.get('WHATSAPP_SESSIONS_MONGO_URL', undefined);
   }
