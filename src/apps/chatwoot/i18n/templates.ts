@@ -28,6 +28,7 @@ export enum TKey {
   MESSAGE_REMOVED_IN_WHATSAPP = 'message.removed.in.whatsapp',
   MESSAGE_EDITED_IN_WHATSAPP = 'message.edited.in.whatsapp',
   WHATSAPP_GROUP_MESSAGE = 'whatsapp.group.message',
+  WHATSAPP_GROUP_MESSAGE_FROM_ME = 'whatsapp.group.message.from.me',
   WHATSAPP_REACTION_ADDED = 'whatsapp.reaction.added',
   WHATSAPP_REACTION_REMOVED = 'whatsapp.reaction.removed',
 
@@ -142,11 +143,16 @@ export type TemplatePayloads = {
   [TKey.LOCALE_NAME]: void;
   [TKey.APP_INBOX_CONTACT_NAME]: void;
   [TKey.APP_INBOX_CONTACT_AVATAR_URL]: void;
-  [TKey.MESSAGE_FROM_WHATSAPP]: { text: string };
-  [TKey.MESSAGE_FROM_API]: { text: string };
+  [TKey.MESSAGE_FROM_WHATSAPP]: { text: string; tag?: string };
+  [TKey.MESSAGE_FROM_API]: { text: string; tag?: string };
   [TKey.MESSAGE_REMOVED_IN_WHATSAPP]: void;
   [TKey.MESSAGE_EDITED_IN_WHATSAPP]: { text: string };
-  [TKey.WHATSAPP_GROUP_MESSAGE]: { text: string; participant: string };
+  [TKey.WHATSAPP_GROUP_MESSAGE]: {
+    text: string;
+    participant: string;
+    tag?: string;
+  };
+  [TKey.WHATSAPP_GROUP_MESSAGE_FROM_ME]: { text: string; tag?: string };
   [TKey.WHATSAPP_REACTION_ADDED]: { emoji: string };
   [TKey.WHATSAPP_REACTION_REMOVED]: void;
   [TKey.WHATSAPP_MESSAGE_SENDING_ERROR]: void;

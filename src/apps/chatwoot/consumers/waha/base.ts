@@ -366,21 +366,39 @@ export abstract class MessageBaseHandler<
     const message = await this.getMessage(payload);
     let content = message.content;
 
+    const chatId = EngineHelper.ChatID(payload);
+    const manyParticipants = isJidGroup(chatId) || isJidBroadcast(chatId);
+
+    let tag: string | undefined;
+    if (payload.fromMe && manyParticipants) {
+      // My member tag in that group (if any)
+      const myTag: any = await this.session
+        .getMyGroupParticipantTag(chatId)
+        .catch(() => null);
+      tag = myTag?.tag || undefined;
+    }
+
     // Format the content if the message from me
-    if (payload.fromMe && this.shouldAddFromTag) {
-      if (payload.source === MessageSource.APP) {
-        const key = TKey.MESSAGE_FROM_WHATSAPP;
-        content = this.l.key(key).render({ text: content });
-      } else if (payload.source === MessageSource.API) {
-        const key = TKey.MESSAGE_FROM_API;
-        content = this.l.key(key).render({ text: content });
+    if (payload.fromMe) {
+      if (this.shouldAddFromTag) {
+        // Live messages - "Sent from / my tag / text"
+        if (payload.source === MessageSource.APP) {
+          const key = TKey.MESSAGE_FROM_WHATSAPP;
+          content = this.l.key(key).render({ text: content, tag: tag });
+        } else if (payload.source === MessageSource.API) {
+          const key = TKey.MESSAGE_FROM_API;
+          content = this.l.key(key).render({ text: content, tag: tag });
+        }
+      } else if (manyParticipants) {
+        // History pull - just "my tag / text", no "Sent from" (we don't know where actually from)
+        content = this.l.key(TKey.WHATSAPP_GROUP_MESSAGE_FROM_ME).render({
+          text: content,
+          tag: tag,
+        });
       }
     }
 
-    const chatId = EngineHelper.ChatID(payload);
-
     // Add participant name to group messages
-    const manyParticipants = isJidGroup(chatId) || isJidBroadcast(chatId);
     if (!payload.fromMe && manyParticipants) {
       const key = parseMessageIdSerialized(payload.id, true);
       let participant = toCusFormat(
@@ -388,12 +406,17 @@ export abstract class MessageBaseHandler<
       );
       const contact: any = await this.session.getContact(participant);
       const name = contact?.name || contact?.pushName || contact?.pushname;
+      // Do not block the message on member tag
+      const memberTag: any = await this.session
+        .getGroupParticipantTag(chatId, participant)
+        .catch(() => null);
       if (name) {
         participant = `${name} (${participant})`;
       }
       content = this.l.key(TKey.WHATSAPP_GROUP_MESSAGE).render({
         text: content,
         participant: participant,
+        tag: memberTag?.tag || undefined,
       });
     }
     const replyTo = await this.getReplyToChatWootMessageID(payload).catch(

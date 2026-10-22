@@ -57,11 +57,17 @@ job.scheduled.error.header: فشل تنفيذ المهمة المجدولة
 
 message.from.whatsapp: |-
   *📱 أرسلت من واتساب*
+  {{#tag}}
+  `{{{tag}}}`
+  {{/tag}}
 
   {{{text}}}
 
 message.from.api: |-
   *📱 أرسلت عبر API*
+  {{#tag}}
+  `{{{tag}}}`
+  {{/tag}}
 
   {{{text}}}
 
@@ -75,7 +81,17 @@ message.edited.in.whatsapp: |-
 
 whatsapp.group.message: |-
   👥 *{{{participant}}}*
+  {{#tag}}
+  `{{{tag}}}`
+  {{/tag}}
 
+  {{{text}}}
+
+whatsapp.group.message.from.me: |-
+  {{#tag}}
+  `{{{tag}}}`
+
+  {{/tag}}
   {{{text}}}
 
 whatsapp.reaction.added: |-

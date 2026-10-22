@@ -56,11 +56,17 @@ job.scheduled.error.header: Scheduled job failed to execute
 
 message.from.whatsapp: |-
   *📱 Sent from WhatsApp*
+  {{#tag}}
+  `{{{tag}}}`
+  {{/tag}}
 
   {{{text}}}
 
 message.from.api: |-
   *📱 Sent via API*
+  {{#tag}}
+  `{{{tag}}}`
+  {{/tag}}
 
   {{{text}}}
 
@@ -74,7 +80,17 @@ message.edited.in.whatsapp: |-
 
 whatsapp.group.message: |-
   👥 *{{{participant}}}*
+  {{#tag}}
+  `{{{tag}}}`
+  {{/tag}}
 
+  {{{text}}}
+
+whatsapp.group.message.from.me: |-
+  {{#tag}}
+  `{{{tag}}}`
+
+  {{/tag}}
   {{{text}}}
 
 whatsapp.history.message.wrapper: |-

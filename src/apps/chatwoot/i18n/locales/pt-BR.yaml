@@ -58,11 +58,17 @@ job.scheduled.error.header: Falha ao executar tarefa agendada
 
 message.from.whatsapp: |-
   *📱 Enviado do WhatsApp*
+  {{#tag}}
+  `{{{tag}}}`
+  {{/tag}}
 
   {{{text}}}
 
 message.from.api: |-
   *📱 Enviado via API*
+  {{#tag}}
+  `{{{tag}}}`
+  {{/tag}}
 
   {{{text}}}
 
@@ -76,7 +82,17 @@ message.edited.in.whatsapp: |-
 
 whatsapp.group.message: |-
   👥 *{{{participant}}}*
+  {{#tag}}
+  `{{{tag}}}`
+  {{/tag}}
 
+  {{{text}}}
+
+whatsapp.group.message.from.me: |-
+  {{#tag}}
+  `{{{tag}}}`
+
+  {{/tag}}
   {{{text}}}
 
 whatsapp.reaction.added: |-

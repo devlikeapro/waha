@@ -1,4 +1,5 @@
 import { i18n } from '@waha/apps/chatwoot/i18n/index';
+import { TKey } from '@waha/apps/chatwoot/i18n/templates';
 
 const enLocale = i18n.locale('en-US');
 // @ts-ignore
@@ -81,6 +82,61 @@ describe('Locale', () => {
 
       expect(todayResult).toBe('Hoje, 15 de mar. • 07:30 BRT');
       expect(yesterdayResult).toBe('Ontem, 14 de mar. • 07:30 BRT');
+    });
+  });
+
+  describe('whatsapp.group.message', () => {
+    it('renders the member tag under the participant', () => {
+      const result = enLocale.key(TKey.WHATSAPP_GROUP_MESSAGE).render({
+        text: 'Hello',
+        participant: 'John (123456789@lid)',
+        tag: 'Manager',
+      });
+
+      expect(result).toBe('👥 *John (123456789@lid)*\n`Manager`\n\nHello');
+    });
+
+    it('renders my member tag under the from line', () => {
+      const result = enLocale.key(TKey.MESSAGE_FROM_WHATSAPP).render({
+        text: 'Hello',
+        tag: 'Manager',
+      });
+
+      expect(result).toBe('*📱 Sent from WhatsApp*\n`Manager`\n\nHello');
+    });
+
+    it('renders the from line without a tag as before', () => {
+      const result = enLocale.key(TKey.MESSAGE_FROM_WHATSAPP).render({
+        text: 'Hello',
+      });
+
+      expect(result).toBe('*📱 Sent from WhatsApp*\n\nHello');
+    });
+
+    it('renders my member tag above my message', () => {
+      const result = enLocale.key(TKey.WHATSAPP_GROUP_MESSAGE_FROM_ME).render({
+        text: 'Hello',
+        tag: 'Manager',
+      });
+
+      expect(result).toBe('`Manager`\n\nHello');
+    });
+
+    it('renders my message as is without a member tag', () => {
+      const result = enLocale.key(TKey.WHATSAPP_GROUP_MESSAGE_FROM_ME).render({
+        text: 'Hello',
+      });
+
+      expect(result).toBe('Hello');
+    });
+
+    it('renders no tag line without a member tag', () => {
+      const result = enLocale.key(TKey.WHATSAPP_GROUP_MESSAGE).render({
+        text: 'Hello',
+        participant: 'John (123456789@lid)',
+      });
+
+      expect(result).toBe('👥 *John (123456789@lid)*\n\nHello');
     });
   });
 });

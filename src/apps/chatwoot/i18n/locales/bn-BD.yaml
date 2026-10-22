@@ -57,11 +57,17 @@ job.scheduled.error.header: নির্ধারিত কাজ সম্প�
 
 message.from.whatsapp: |-
   *📱 হোয়াটসঅ্যাপ থেকে পাঠানো হয়েছে*
+  {{#tag}}
+  `{{{tag}}}`
+  {{/tag}}
 
   {{{text}}}
 
 message.from.api: |-
   *📱 API এর মাধ্যমে পাঠানো হয়েছে*
+  {{#tag}}
+  `{{{tag}}}`
+  {{/tag}}
 
   {{{text}}}
 
@@ -75,7 +81,17 @@ message.edited.in.whatsapp: |-
 
 whatsapp.group.message: |-
   👥 *{{{participant}}}*
+  {{#tag}}
+  `{{{tag}}}`
+  {{/tag}}
 
+  {{{text}}}
+
+whatsapp.group.message.from.me: |-
+  {{#tag}}
+  `{{{tag}}}`
+
+  {{/tag}}
   {{{text}}}
 
 whatsapp.reaction.added: |-

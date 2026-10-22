@@ -57,11 +57,17 @@ job.scheduled.error.header: Запланированная задача не в�
 
 message.from.whatsapp: |-
   *📱 Отправлено из WhatsApp*
+  {{#tag}}
+  `{{{tag}}}`
+  {{/tag}}
 
   {{{text}}}
 
 message.from.api: |-
   *📱 Отправлено через API*
+  {{#tag}}
+  `{{{tag}}}`
+  {{/tag}}
 
   {{{text}}}
 
@@ -75,7 +81,17 @@ message.edited.in.whatsapp: |-
 
 whatsapp.group.message: |-
   👥 *{{{participant}}}*
+  {{#tag}}
+  `{{{tag}}}`
+  {{/tag}}
 
+  {{{text}}}
+
+whatsapp.group.message.from.me: |-
+  {{#tag}}
+  `{{{tag}}}`
+
+  {{/tag}}
   {{{text}}}
 
 whatsapp.reaction.added: |-
