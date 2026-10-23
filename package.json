@@ -26,7 +26,8 @@
     "test:all": "yarn test:unit && yarn test:e8e",
     "gows:proto:fetch": "node scripts/gows-proto.js fetch",
     "gows:proto:build": "node scripts/gows-proto.js build",
-    "gows:proto": "yarn gows:proto:fetch && yarn gows:proto:build"
+    "gows:proto": "yarn gows:proto:fetch && yarn gows:proto:build",
+    "test:files-runtime": "yarn build && node --test tests/files-runtime.test.cjs"
   },
   "dependencies": {
     "@adiwajshing/baileys": "github:devlikeapro/Baileys#fork-master-2026-04-28",
@@ -83,7 +84,7 @@
     "commander": "^14.0.1",
     "del": "^8.0.0",
     "express-basic-auth": "^1.2.1",
-    "file-type": "16.5.4",
+    "file-type": "21.3.4",
     "fs-extra": "^11.2.0",
     "google-protobuf": "^3.21.4",
     "https-proxy-agent": "^7.0.0",
@@ -142,7 +143,8 @@
     "whatwg-url": "13.0.0",
     "axios": "^1.19.0",
     "whatsapp-rust-bridge": "npm:@devlikeapro/whatsapp-rust-bridge@0.5.2",
-    "sharp": "0.35.3"
+    "sharp": "0.35.3",
+    "file-type@npm:21.0.0": "21.3.4"
   },
   "devDependencies": {
     "@grpc/grpc-js": "^1.14.1",
