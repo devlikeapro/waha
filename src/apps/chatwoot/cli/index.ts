@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { CommanderError } from 'commander';
 import { parse } from 'shell-quote';
 import { BufferedOutput } from '@waha/apps/chatwoot/cli/utils/BufferedOutput';
@@ -23,6 +24,9 @@ export async function runText(
   const output = new BufferedOutput();
   const program = BuildProgram(commands, ctx, output);
   const argv = parse(text);
+  if (!argv.every((argument) => typeof argument === 'string')) {
+    throw new BadRequestException('Shell operators are not supported');
+  }
   try {
     await program.parseAsync(argv, { from: 'user' });
   } catch (err) {
