@@ -118,7 +118,7 @@
     "rimraf": "^4.3.0",
     "rxjs": "^7.8.1",
     "sharp": "^0.34.5",
-    "shell-quote": "^1.8.3",
+    "shell-quote": "^1.12.0",
     "sqlite3": "^5.1.7",
     "swagger-ui-express": "^4.1.4",
     "tapable": "^2.2.2",
