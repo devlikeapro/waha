@@ -19,6 +19,7 @@ export interface GatewayEnv {
   WAHA_API_KEY: string;
   WAHA_DISABLED_DASHBOARD_PASSWORD: string;
   WAHA_DISABLED_SWAGGER_PASSWORD: string;
+  WAHA_PUBLIC_BASE_URL: string;
   WAHA_QR_ENABLED: string;
   WAHA_QR_TOKEN: string;
   WHATSAPP_SESSIONS_POSTGRESQL_URL: string;
@@ -91,6 +92,7 @@ export function buildContainerEnvironment(
   return {
     NODE_OPTIONS: '--max-old-space-size=3072',
     WAHA_API_DOWNLOAD_MEDIA: 'False',
+    WAHA_BASE_URL: env.WAHA_PUBLIC_BASE_URL,
     WAHA_API_KEY: env.WAHA_API_KEY,
     WAHA_DASHBOARD_ENABLED: 'False',
     WAHA_DASHBOARD_PASSWORD: env.WAHA_DISABLED_DASHBOARD_PASSWORD,
@@ -154,6 +156,9 @@ function isValidRuntimeConfig(env: GatewayEnv): boolean {
   if (env.WAHA_QR_ENABLED !== 'true' && env.WAHA_QR_ENABLED !== 'false') {
     return false;
   }
+  if (!isValidPublicBaseUrl(env.WAHA_PUBLIC_BASE_URL)) {
+    return false;
+  }
   try {
     const url = new URL(env.WHATSAPP_SESSIONS_POSTGRESQL_URL);
     const sslMode = url.searchParams.get('sslmode')?.toLowerCase();
@@ -164,6 +169,23 @@ function isValidRuntimeConfig(env: GatewayEnv): boolean {
       Boolean(url.password) &&
       url.pathname.length > 1 &&
       sslMode === 'require'
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isValidPublicBaseUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return (
+      url.protocol === 'https:' &&
+      url.username === '' &&
+      url.password === '' &&
+      url.pathname === '/' &&
+      url.search === '' &&
+      url.hash === '' &&
+      value === url.origin
     );
   } catch {
     return false;

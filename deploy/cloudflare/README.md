@@ -69,6 +69,13 @@ state to PostgreSQL; WEBJS and WPP remote auth use periodic snapshots and can
 lose recent state. Local disk is still ephemeral, so automatic media downloads
 are disabled. Cloudflare Container snapshots are not used as session storage.
 
+`WAHA_PUBLIC_BASE_URL` is a non-secret exact HTTPS origin and is passed to the
+Container as `WAHA_BASE_URL`. This keeps on-demand media URLs on the protected
+Worker route instead of exposing the internal `0.0.0.0` listener. Any isolated
+Preview must use its own public route. This does not make media bytes durable:
+event downloads remain disabled and session PostgreSQL storage is not media
+storage.
+
 ### Engine scope
 
 The live application did not expose a `WHATSAPP_DEFAULT_ENGINE` variable name,
@@ -86,6 +93,15 @@ operations. Confirm every endpoint and event required by the integration
 against the WAHA engine tables before approving this engine change. If a
 browser-only feature is mandatory, revisit WEBJS together with its higher
 resource use and snapshot/recovery trade-off.
+
+There is no documented single engine that combines complete chat and channel
+coverage, every event, and this deployment's persistence requirement. NOWEB is
+closer if chat archive/pin or channel history/delete is mandatory, but it
+requires its store to be enabled and a full-sync decision before QR pairing;
+some channel claims also differ between current docs and source. Keep GOWS only
+for the bounded endpoint/event manifest in `ACCEPTANCE.md`, or choose and test a
+different engine before linking the isolated test account. Do not present any
+of these choices as full WAHA coverage.
 
 The Worker labels a started Container with an opaque HMAC fingerprint of its
 runtime revision and Container secrets. The fingerprint changes when the WAHA
@@ -112,6 +128,7 @@ Docker is required only for a full `wrangler dev` Container test.
 cd deploy/cloudflare
 npm ci
 npm test
+npm run test:lifecycle
 npm run typecheck
 npm run cf:types
 npm run cf:dry-run
@@ -125,6 +142,9 @@ package override resolves it to `7.30.1`, the patched 7.x release for the three
 October 2026 advisories. This is development tooling and is not bundled into the
 deployed Worker, but the override keeps clean installs and `npm audit` clean.
 Re-test before removing it when Wrangler's dependency graph advances.
+
+The current acceptance status and the approval gates for any isolated live test
+are tracked in [ACCEPTANCE.md](./ACCEPTANCE.md).
 
 Create `.dev.vars` from `.dev.vars.example` only for local testing. Empty or
 short credentials fail closed. Never commit `.dev.vars` or paste secrets into
@@ -148,9 +168,12 @@ Do not run `wrangler deploy` until all of these have explicit approval:
 4. Verify the PostgreSQL provider supports encrypted TLS, outbound Cloudflare
    access, enough connections, and `CREATE DATABASE`. Include
    `sslmode=require`; WAHA creates a main database and a database per session.
-5. Decide whether encrypted-but-unverified database TLS is acceptable for the
-   initial rollout or require a reviewed custom image that validates the CA and
-   hostname. Do not describe the pinned upstream image as certificate-verified.
+5. Resolve database and webhook TLS validation before any Preview or production
+   rollout. Use a future upstream image that validates CA and hostname for both
+   clients, or build and review a custom image with those fixes and pin its
+   digest. The image must also reject HTTP/private webhook destinations unless
+   they match an explicit user-owned HTTPS allowlist. Do not use the current
+   encrypted-but-unverified behavior as the deployment default.
 6. During the approved rollout window, stage distinct `ADMIN_TOKEN`, plaintext
    `WAHA_API_KEY`, `WAHA_QR_TOKEN`, `WAHA_DISABLED_DASHBOARD_PASSWORD`,
    `WAHA_DISABLED_SWAGGER_PASSWORD`, and

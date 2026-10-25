@@ -35,6 +35,7 @@
   },
   "vars": {
     "WAHA_CONFIG_REVISION": "gows-postgresql-v1",
+    "WAHA_PUBLIC_BASE_URL": "https://indexes-waha.helalalfqih.workers.dev",
     "WAHA_QR_ENABLED": "false"
   },
   "secrets": {

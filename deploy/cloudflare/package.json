@@ -13,6 +13,7 @@
     "cf:types:generate": "wrangler types",
     "pretypecheck": "npm run cf:types:generate",
     "test": "vitest run",
+    "test:lifecycle": "vitest run -t 'Container lifecycle'",
     "typecheck": "tsc --noEmit && tsc --project tsconfig.test.json --noEmit"
   },
   "devDependencies": {

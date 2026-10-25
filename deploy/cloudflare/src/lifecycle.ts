@@ -74,6 +74,7 @@ export async function computeRuntimeFingerprint(
     env.WAHA_CONFIG_REVISION,
     env.WAHA_DISABLED_DASHBOARD_PASSWORD,
     env.WAHA_DISABLED_SWAGGER_PASSWORD,
+    env.WAHA_PUBLIC_BASE_URL,
     env.WHATSAPP_SESSIONS_POSTGRESQL_URL,
   ].join('\u0000');
   const signature = await crypto.subtle.sign(

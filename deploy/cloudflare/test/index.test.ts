@@ -28,6 +28,7 @@ function createEnv(overrides: Partial<GatewayEnv> = {}): GatewayEnv {
     WAHA_API_KEY: WAHA_API_KEY,
     WAHA_DISABLED_DASHBOARD_PASSWORD: DASHBOARD_PASSWORD,
     WAHA_DISABLED_SWAGGER_PASSWORD: SWAGGER_PASSWORD,
+    WAHA_PUBLIC_BASE_URL: 'https://indexes-waha.helalalfqih.workers.dev',
     WAHA_QR_ENABLED: 'false',
     WAHA_QR_TOKEN: QR_TOKEN,
     WHATSAPP_SESSIONS_POSTGRESQL_URL:
@@ -160,6 +161,22 @@ describe('gateway policy', () => {
       name: 'disabled UI and upstream credentials are reused',
       override: { WAHA_DISABLED_DASHBOARD_PASSWORD: WAHA_API_KEY },
     },
+    {
+      name: 'the public base URL is not HTTPS',
+      override: { WAHA_PUBLIC_BASE_URL: 'http://127.0.0.1:3000' },
+    },
+    {
+      name: 'the public base URL includes credentials',
+      override: { WAHA_PUBLIC_BASE_URL: 'https://user@example.test' },
+    },
+    {
+      name: 'the public base URL includes a path',
+      override: { WAHA_PUBLIC_BASE_URL: 'https://example.test/media' },
+    },
+    {
+      name: 'the public base URL is malformed',
+      override: { WAHA_PUBLIC_BASE_URL: 'not-a-url' },
+    },
   ])('fails closed when $name', async ({ override }) => {
     const forwarder = vi.fn<ContainerForwarder>();
     const response = await handleRequest(
@@ -276,6 +293,9 @@ describe('WAHA runtime environment', () => {
     expect(environment.WAHA_PRINT_QR).toBe('False');
     expect(environment.WAHA_API_DOWNLOAD_MEDIA).toBe('False');
     expect(environment.WAHA_EVENTS_DOWNLOAD_MEDIA).toBe('False');
+    expect(environment.WAHA_BASE_URL).toBe(
+      'https://indexes-waha.helalalfqih.workers.dev',
+    );
     expect(environment.WHATSAPP_API_HOSTNAME).toBe('0.0.0.0');
     expect(environment.WAHA_WORKER_RESTART_SESSIONS).toBe('True');
     expect(CONTAINER_NAME).toBe('default');
@@ -350,15 +370,20 @@ describe('Container lifecycle', () => {
     );
   });
 
-  it('changes the opaque fingerprint when a runtime secret changes', async () => {
+  it('changes the opaque fingerprint when runtime configuration changes', async () => {
     const original = await computeRuntimeFingerprint(createEnv());
-    const changed = await computeRuntimeFingerprint(
+    const changedSecret = await computeRuntimeFingerprint(
       createEnv({ WAHA_API_KEY: 'z'.repeat(48) }),
+    );
+    const changedPublicUrl = await computeRuntimeFingerprint(
+      createEnv({ WAHA_PUBLIC_BASE_URL: 'https://preview.example.test' }),
     );
 
     expect(original).toMatch(/^[a-f0-9]{64}$/);
-    expect(changed).toMatch(/^[a-f0-9]{64}$/);
-    expect(changed).not.toBe(original);
+    expect(changedSecret).toMatch(/^[a-f0-9]{64}$/);
+    expect(changedSecret).not.toBe(original);
+    expect(changedPublicUrl).toMatch(/^[a-f0-9]{64}$/);
+    expect(changedPublicUrl).not.toBe(original);
   });
 
   it('keeps the runtime label name within the Cloudflare limit', () => {

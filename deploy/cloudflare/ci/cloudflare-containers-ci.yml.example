@@ -1,0 +1,44 @@
+# Inert review template: this file is intentionally outside .github/workflows.
+# Moving it there enables GitHub Actions and requires separate approval.
+name: Cloudflare Containers CI
+
+on:
+  pull_request:
+    branches: [core]
+    paths:
+      - .github/workflows/cloudflare-containers-ci.yml
+      - deploy/cloudflare/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-containers-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: deploy/cloudflare
+    env:
+      WRANGLER_SEND_METRICS: "false"
+      XDG_CONFIG_HOME: ${{ runner.temp }}/wrangler
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: deploy/cloudflare/package-lock.json
+      - run: npm ci
+      - run: npm audit --audit-level=high
+      - run: npm test
+      - run: npm run test:lifecycle
+      - run: npm run typecheck
+      - run: npm run cf:types
+      - run: npm run cf:dry-run
