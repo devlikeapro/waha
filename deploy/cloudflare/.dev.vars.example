@@ -1,0 +1,11 @@
+# Keep every value empty until you provide a local-only test credential.
+# Never commit deploy/cloudflare/.dev.vars.
+ADMIN_TOKEN=
+WAHA_API_KEY=
+WAHA_DISABLED_DASHBOARD_PASSWORD=
+WAHA_DISABLED_SWAGGER_PASSWORD=
+WAHA_QR_TOKEN=
+WHATSAPP_SESSIONS_POSTGRESQL_URL=
+
+# QR stays blocked because wrangler.jsonc sets WAHA_QR_ENABLED=false.
+# Enable it only in a reviewed, staged pairing deployment.

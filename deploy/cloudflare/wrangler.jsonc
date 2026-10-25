@@ -1,0 +1,50 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "indexes-waha",
+  "account_id": "34dad04466d97745f2c9f8214c81c0f2",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-24",
+  "workers_dev": true,
+  "preview_urls": false,
+  "containers": [
+    {
+      "name": "indexes-waha",
+      "class_name": "WahaContainer",
+      "scheduling_policy": "default",
+      "image": "docker.io/devlikeapro/waha@sha256:ecadb467ff9af107e7c235a955cab99ef5a1c13656cbc78aeb3e6b4d30fae7e4",
+      "instance_type": "standard-1",
+      "max_instances": 1
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "WAHA",
+        "class_name": "WahaContainer"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["WahaContainer"]
+    }
+  ],
+  "triggers": {
+    "crons": ["*/5 * * * *"]
+  },
+  "vars": {
+    "WAHA_CONFIG_REVISION": "gows-postgresql-v1",
+    "WAHA_QR_ENABLED": "false"
+  },
+  "secrets": {
+    "required": [
+      "ADMIN_TOKEN",
+      "WAHA_API_KEY",
+      "WAHA_DISABLED_DASHBOARD_PASSWORD",
+      "WAHA_DISABLED_SWAGGER_PASSWORD",
+      "WAHA_QR_TOKEN",
+      "WHATSAPP_SESSIONS_POSTGRESQL_URL"
+    ]
+  }
+}

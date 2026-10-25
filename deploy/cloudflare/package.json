@@ -1,0 +1,24 @@
+{
+  "name": "waha-cloudflare-deployment",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "overrides": {
+    "undici": "7.30.1"
+  },
+  "scripts": {
+    "cf:dry-run": "wrangler deploy --dry-run --outdir .wrangler/dry-run",
+    "cf:types": "wrangler types --check",
+    "cf:types:generate": "wrangler types",
+    "pretypecheck": "npm run cf:types:generate",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit && tsc --project tsconfig.test.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5",
+    "wrangler": "4.152.0"
+  }
+}

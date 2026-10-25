@@ -3,6 +3,9 @@ tmp/*
 src/core/engines/gows/proto
 .env
 .envs/*
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
 *.heapsnapshot
 .yarn
 example.ts
