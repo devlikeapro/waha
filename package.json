@@ -117,7 +117,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^4.3.0",
     "rxjs": "^7.8.1",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.5",
     "shell-quote": "^1.8.3",
     "sqlite3": "^5.1.7",
     "swagger-ui-express": "^4.1.4",
@@ -142,7 +142,7 @@
     "whatwg-url": "13.0.0",
     "axios": "^1.19.0",
     "whatsapp-rust-bridge": "npm:@devlikeapro/whatsapp-rust-bridge@0.5.2",
-    "sharp": "0.35.3"
+    "sharp": "0.35.5"
   },
   "devDependencies": {
     "@grpc/grpc-js": "^1.14.1",
