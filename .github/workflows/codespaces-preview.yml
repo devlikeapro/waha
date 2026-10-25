@@ -1,0 +1,28 @@
+name: Codespaces preview validation
+on:
+  push:
+    branches: [codex/waha-dashboard-isolated-preview]
+    paths: ['.devcontainer/**', '.github/workflows/codespaces-preview.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    if: github.repository == 'helalalfqih-sketch/waha'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          python3 .devcontainer/preview/check.py
+          python3 -m compileall -q .devcontainer/preview
+          bash -n .devcontainer/preview/start.sh
+          python3 .devcontainer/preview/init.py
+          docker compose -f .devcontainer/preview/compose.json config --quiet
+      - name: Start isolated Core and check authentication without WhatsApp pairing
+        run: |
+          docker compose -f .devcontainer/preview/compose.json up -d
+          python3 .devcontainer/preview/smoke.py
+      - name: Remove CI test containers and volumes
+        if: always()
+        run: docker compose -f .devcontainer/preview/compose.json down -v

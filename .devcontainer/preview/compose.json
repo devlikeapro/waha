@@ -1,0 +1,41 @@
+{
+  "name": "waha-codespaces-test",
+  "services": {
+    "waha": {
+      "image": "devlikeapro/waha:latest",
+      "restart": "no",
+      "ports": [
+        "127.0.0.1:3000:3000"
+      ],
+      "env_file": [
+        "runtime.env"
+      ],
+      "environment": {
+        "WAHA_DASHBOARD_ENABLED": "true",
+        "WHATSAPP_SWAGGER_ENABLED": "false",
+        "WHATSAPP_DEFAULT_ENGINE": "WEBJS",
+        "WHATSAPP_RESTART_ALL_SESSIONS": "false",
+        "WAHA_PRINT_QR": "false",
+        "WAHA_LOG_LEVEL": "warn",
+        "WAHA_NAMESPACE": "codespaces-test",
+        "WAHA_MEDIA_STORAGE": "LOCAL",
+        "WHATSAPP_FILES_FOLDER": "/app/.media"
+      },
+      "volumes": [
+        "test-sessions:/app/.sessions",
+        "test-media:/app/.media"
+      ],
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "2"
+        }
+      }
+    }
+  },
+  "volumes": {
+    "test-sessions": {},
+    "test-media": {}
+  }
+}
