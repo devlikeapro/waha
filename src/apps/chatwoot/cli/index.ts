@@ -23,6 +23,10 @@ export async function runText(
   const output = new BufferedOutput();
   const program = BuildProgram(commands, ctx, output);
   const argv = parse(text);
+  if (!argv.every((argument) => typeof argument === 'string')) {
+    output.writeErr('Shell operators are not supported');
+    return output;
+  }
   try {
     await program.parseAsync(argv, { from: 'user' });
   } catch (err) {
