@@ -46,6 +46,7 @@ function buildSession(): TestSession {
     sessionConfig: null,
     engineConfig: null,
     ignore: {},
+    media: { api: {}, events: {} },
   });
 }
 
