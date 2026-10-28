@@ -19,6 +19,19 @@ describe('buildProxyUrl', () => {
     expect(https.host).toEqual('proxy.local:3129');
   });
 
+  it('keeps a socks5 server as socks5', () => {
+    expect(buildProxyUrl({ server: 'socks5://proxy.local:1080' })).toEqual(
+      'socks5://proxy.local:1080',
+    );
+    expect(
+      buildProxyUrl({
+        server: 'socks5://proxy.local:1080',
+        username: 'user',
+        password: 'p@ss',
+      }),
+    ).toEqual('socks5://user:p%40ss@proxy.local:1080');
+  });
+
   it('adds the credentials after the scheme', () => {
     const url = new URL(
       buildProxyUrl({

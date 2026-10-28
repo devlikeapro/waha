@@ -69,7 +69,7 @@ function escapeLonePercent(value: string): string {
  */
 export function buildProxyUrl(config: ProxyConfig): string {
   let server = config.server.trim();
-  if (!/^https?:\/\//.test(server)) {
+  if (!server.includes('://')) {
     server = `http://${server}`;
   }
   let url: URL;
