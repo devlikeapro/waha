@@ -1,0 +1,1 @@
+export var selectTooltipAxisId = state => state.tooltip.settings.axisId;

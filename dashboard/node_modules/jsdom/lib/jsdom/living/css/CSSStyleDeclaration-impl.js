@@ -1,0 +1,901 @@
+"use strict";
+
+const DOMException = require("../../../generated/idl/DOMException.js");
+const idlUtils = require("../../../generated/idl/utils.js");
+const computedValueResolvers = require("../../../generated/css-property-computed-value-resolvers");
+const propertyDefinitions = require("../../../generated/css-property-definitions");
+const propertyDescriptors = require("../../../generated/css-property-descriptors");
+const propertyMetadata = require("../../../generated/css-property-metadata");
+const resolvedValueResolvers = require("../../../generated/css-property-resolved-value-resolvers");
+const { asciiLowercase } = require("../helpers/strings");
+const computedStyle = require("./helpers/computed-style");
+const cssValues = require("./helpers/css-values");
+const csstree = require("./helpers/patched-csstree");
+const fontSizes = require("./helpers/font-sizes");
+const {
+  borderProperties,
+  getPositionValue,
+  normalizeProperties,
+  prepareBorderProperties,
+  prepareProperties,
+  shorthandProperties
+} = require("./helpers/shorthand-properties");
+const { systemColors } = require("./helpers/system-colors");
+
+class CSSStyleDeclarationImpl {
+  // https://drafts.csswg.org/cssom/#css-declaration-blocks
+  // `_priorities` and `#values` together represent the spec's "declarations".
+  _computed;
+  _readonly = false;
+  _priorities = new Map();
+  #values = new Map();
+  parentRule;
+  #ownerNode;
+  #updating = false;
+  #pendingStyleUpdate = false;
+
+  // Internal private fields.
+  #computedValueOpts = new Map();
+  #cachedPropertyValues = new Map();
+  #cachedCssText = null;
+
+  constructor(globalObject, args, { computed, ownerNode, parentRule } = {}) {
+    this._globalObject = globalObject;
+    this._computed = Boolean(computed);
+    this.parentRule = parentRule || null;
+    this.#ownerNode = ownerNode || null;
+  }
+
+  _copyDeclarationsFrom(source) {
+    for (const [property, value] of source.#values) {
+      this.#values.set(property, value);
+    }
+    for (const [property, priority] of source._priorities) {
+      this._priorities.set(property, priority);
+    }
+  }
+
+  /**
+   * Returns the textual representation of the declaration block.
+   *
+   * @returns {string} The serialized CSS text.
+   */
+  get cssText() {
+    if (this._computed) {
+      return "";
+    }
+    if (this.#cachedCssText !== null) {
+      return this.#cachedCssText;
+    }
+    const properties = new Set();
+    for (const property of this.#values.keys()) {
+      if (shorthandProperties.has(property)) {
+        const priority = this._priorities.get(property) ?? "";
+        const { shorthandFor } = shorthandProperties.get(property);
+        for (const [longhand] of shorthandFor) {
+          if (priority || !this._priorities.get(longhand)) {
+            properties.delete(longhand);
+          }
+        }
+      }
+      properties.add(property);
+    }
+    const normalizedProperties = normalizeProperties(properties);
+    const parts = [];
+    for (const property of normalizedProperties) {
+      const value = this.getPropertyValue(property);
+      const priority = this._priorities.get(property) ?? "";
+      if (priority) {
+        parts.push(`${property}: ${value} !${priority};`);
+      } else {
+        parts.push(`${property}: ${value};`);
+      }
+    }
+    this.#cachedCssText = parts.join(" ");
+    return this.#cachedCssText;
+  }
+
+  /**
+   * Sets the textual representation of the declaration block.
+   * This clears all existing properties and parses the new CSS text.
+   *
+   * @param {string} text - The new CSS text.
+   */
+  set cssText(text) {
+    if (this._readonly) {
+      throw DOMException.create(this._globalObject, [
+        "cssText can not be modified.",
+        "NoModificationAllowedError"
+      ]);
+    }
+    this.#cachedCssText = null;
+    this.#values.clear();
+    this._priorities.clear();
+    this.#updating = true;
+    text = cssValues.preprocessValue(text);
+    const valueObj = csstree.parse(text, { context: "declarationList", parseValue: false });
+    if (valueObj?.children) {
+      const properties = new Map();
+      let shouldSkipNext = false;
+      for (const item of valueObj.children) {
+        if (item.type === "Atrule") {
+          continue;
+        }
+        if (item.type === "Rule") {
+          shouldSkipNext = true;
+          continue;
+        }
+        if (shouldSkipNext === true) {
+          shouldSkipNext = false;
+          continue;
+        }
+        const {
+          important,
+          property,
+          value: { value }
+        } = item;
+        if (typeof property === "string" && typeof value === "string") {
+          const priority = important ? "important" : "";
+          const isCustomProperty = property.startsWith("--");
+          if (isCustomProperty || cssValues.hasVarFunc(value)) {
+            if (properties.has(property)) {
+              const { priority: itemPriority } = properties.get(property);
+              if (!itemPriority) {
+                properties.set(property, { property, value, priority });
+              }
+            } else {
+              properties.set(property, { property, value, priority });
+            }
+          } else {
+            const parsedValue = cssValues.parsePropertyValue(property, value);
+            if (parsedValue) {
+              if (properties.has(property)) {
+                const { priority: itemPriority } = properties.get(property);
+                if (!itemPriority) {
+                  properties.set(property, { property, value, priority });
+                }
+              } else {
+                properties.set(property, { property, value, priority });
+              }
+            } else {
+              this.removeProperty(property);
+            }
+          }
+        }
+      }
+      const parsedProperties = prepareProperties(properties);
+      for (const [property, item] of parsedProperties) {
+        const { priority, value } = item;
+        this._priorities.set(property, priority);
+        this.setProperty(property, value, priority);
+      }
+    }
+    this.#updating = false;
+    this.#updateStyleAttribute();
+  }
+
+  /**
+   * Returns the number of properties in the declaration block.
+   *
+   * @returns {number} The property count.
+   */
+  get length() {
+    return this.#values.size;
+  }
+
+  /**
+   * Returns the priority of the specified property (e.g. "important").
+   *
+   * @param {string} property - The property name.
+   * @returns {string} The priority string, or empty string if not set.
+   */
+  getPropertyPriority(property) {
+    return this._priorities.get(property) || "";
+  }
+
+  /**
+   * Returns the value of the specified property.
+   *
+   * For a computed style declaration this is the resolved value
+   * (https://drafts.csswg.org/cssom/#resolved-value), which is the computed value except for the
+   * properties in `resolvedValueResolvers`.
+   *
+   * @param {string} property - The property name.
+   * @returns {string} The property value, or empty string if not set.
+   */
+  getPropertyValue(property) {
+    if (this._computed) {
+      const computedValue = this._getComputedPropertyValue(property);
+      const getResolvedValue = resolvedValueResolvers.get(property);
+      if (getResolvedValue) {
+        return getResolvedValue(computedValue, {
+          getComputedValue: otherProperty => this._getComputedPropertyValue(otherProperty)
+        });
+      }
+      return computedValue;
+    }
+    return this.#values.get(property) ?? "";
+  }
+
+  /**
+   * Returns the computed value (https://drafts.csswg.org/css-cascade/#computed) of the specified
+   * property. Only meaningful on a computed style declaration.
+   *
+   * This is the value inheritance transfers, as opposed to the resolved value that
+   * `getPropertyValue()` returns: a child inherits the 5px of `border-top: 5px none`, while the
+   * resolved value is 0px.
+   *
+   * @param {string} property - The property name.
+   * @returns {string} The computed value, or empty string if not set.
+   */
+  _getComputedPropertyValue(property) {
+    const value = this.#values.get(property) ?? "";
+    if (this.#cachedPropertyValues.has(property)) {
+      const cachedValue = this.#cachedPropertyValues.get(property);
+      // Return the cached computed value if the specified value haven't changed.
+      if (value === cachedValue.value) {
+        return cachedValue.computedValue;
+      }
+    }
+    const computedValue = this.#getComputedValue(property, value);
+    if (propertyDefinitions.has(property)) {
+      const { longhands } = propertyDefinitions.get(property);
+      if (!longhands) {
+        this.#cachedPropertyValues.set(property, { computedValue, value });
+      }
+    }
+    return computedValue;
+  }
+
+  /**
+   * Returns the property name at the specified index.
+   *
+   * @param {number} index - The index.
+   * @returns {string} The property name, or empty string if index is invalid.
+   */
+  item(index) {
+    if (index >= this.#values.size) {
+      return "";
+    }
+    let i = 0;
+    for (const key of this.#values.keys()) {
+      if (i === index) {
+        return key;
+      }
+      i++;
+    }
+    return "";
+  }
+
+  /**
+   * Removes the specified property from the declaration block.
+   *
+   * @param {string} property - The property name to remove.
+   * @returns {string} The value of the removed property.
+   */
+  removeProperty(property) {
+    if (this._readonly) {
+      throw DOMException.create(this._globalObject, [
+        `Property ${property} can not be modified.`,
+        "NoModificationAllowedError"
+      ]);
+    }
+    if (!this.#values.has(property)) {
+      return "";
+    }
+    const prevValue = this.#values.get(property);
+    this.#cachedCssText = null;
+    this.#values.delete(property);
+    this._priorities.delete(property);
+    this.#updateStyleAttribute();
+    return prevValue;
+  }
+
+  /**
+   * Sets a property value with an optional priority.
+   *
+   * @param {string} property - The property name.
+   * @param {string} value - The property value.
+   * @param {string} [priority=""] - The priority (e.g. "important").
+   */
+  setProperty(property, value, priority = "") {
+    this._updateStyle(() => this._setPropertyValue(property, value, priority));
+  }
+
+  _setPropertyValue(property, value, priority) {
+    if (this._readonly) {
+      throw DOMException.create(this._globalObject, [
+        `Property ${property} can not be modified.`,
+        "NoModificationAllowedError"
+      ]);
+    }
+    value = cssValues.preprocessValue(value).trim();
+    if (value === "") {
+      if (Object.hasOwn(propertyDescriptors, property)) {
+        // TODO: Refactor handlers to not require `.call()`.
+        propertyDescriptors[property].set.call(this, value);
+      }
+      this.removeProperty(property);
+      return;
+    }
+    // Custom property.
+    if (property.startsWith("--")) {
+      this._setProperty(property, value, priority);
+      return;
+    }
+    property = asciiLowercase(property);
+    if (!Object.hasOwn(propertyDescriptors, property)) {
+      return;
+    }
+    this.#cachedCssText = null;
+    if (priority) {
+      this._priorities.set(property, priority);
+    } else {
+      this._priorities.delete(property);
+    }
+    propertyDescriptors[property].set.call(this, value);
+  }
+
+  get [idlUtils.supportedPropertyIndices]() {
+    return Array(this.#values.size).keys();
+  }
+
+  [idlUtils.supportsPropertyIndex](index) {
+    return index >= 0 && index < this.#values.size;
+  }
+
+  _updateStyle(update) {
+    if (this.#updating || !this.#ownerNode) {
+      update();
+      return;
+    }
+    const originalText = this.cssText;
+    this.#updating = true;
+    this.#pendingStyleUpdate = false;
+    try {
+      update();
+    } finally {
+      this.#updating = false;
+      if (this.#pendingStyleUpdate && this.cssText !== originalText) {
+        this.#updateStyleAttribute();
+      }
+    }
+  }
+
+  // https://drafts.csswg.org/cssom/#update-style-attribute-for
+  #updateStyleAttribute() {
+    if (this.#updating) {
+      this.#pendingStyleUpdate = true;
+      return;
+    }
+    if (this._computed || !this.#ownerNode || this.#ownerNode._settingCssText) {
+      return;
+    }
+    this.#ownerNode._settingCssText = true;
+    this.#ownerNode.setAttributeNS(null, "style", this.cssText);
+    this.#ownerNode._settingCssText = false;
+  }
+
+  _setProperty(property, value, priority) {
+    if (typeof value !== "string") {
+      return;
+    }
+    if (value === "") {
+      this.removeProperty(property);
+      return;
+    }
+
+    let originalText = "";
+    if (this.#ownerNode && !this.#updating) {
+      originalText = this.cssText;
+    }
+
+    if (priority === "important") {
+      this._priorities.set(property, priority);
+    } else {
+      this._priorities.delete(property);
+    }
+
+    this.#cachedCssText = null;
+    this.#values.set(property, value);
+
+    if (this.#updating) {
+      this.#pendingStyleUpdate = true;
+    } else if (this.#ownerNode && this.cssText !== originalText) {
+      this.#updateStyleAttribute();
+    }
+  }
+
+  #getComputedValue(property, value) {
+    // Invalid or unsupported property.
+    if (!propertyDefinitions.has(property) && !property.startsWith("--")) {
+      return "";
+    }
+
+    const { inherited, initial = "", longhands } = cssValues.getPropertyDefinition(property);
+    const { caseSensitive, dimensionTypes = {}, functionTypes = {} } = this.#getPropertyMetadata(property);
+    const isColor = Boolean(functionTypes.color || functionTypes.paint);
+
+    if (!value || cssValues.isGlobalKeyword(value)) {
+      value = computedStyle.replaceEmptyValueAndKeywords(
+        property,
+        value,
+        this.#ownerNode,
+        { inherit: inherited === "yes", initial, isColor, longhands }
+      );
+    }
+
+    if (property === "color" && /currentcolor/i.test(value)) {
+      value = computedStyle.getInheritedPropertyValue(
+        property,
+        this.#ownerNode,
+        { inherit: true, initial, isColor }
+      );
+    }
+
+    if (cssValues.hasVarFunc(value)) {
+      // TODO: Resolve css var().
+    }
+
+    if (longhands) {
+      if (isColor) {
+        value = asciiLowercase(value);
+      }
+      return this.#resolveShorthand(property, value);
+    }
+
+    return this.#resolveLonghand(property, value, { caseSensitive, dimensionTypes, isColor });
+  }
+
+  #getPropertyMetadata(property) {
+    if (propertyMetadata.has(property)) {
+      return propertyMetadata.get(property);
+    }
+
+    const value = this.#values.get(property) ?? "";
+    // TODO: Also check if all or part of the value is quoted.
+    const caseSensitive = (cssValues.hasVarFunc(value) || value.startsWith("--")) ? true : undefined;
+
+    return { caseSensitive };
+  }
+
+  #resolveShorthand(property, value) {
+    // TODO: resolve other shorthands e.g. background, flex etc.
+    switch (property) {
+      case "margin":
+      case "padding": {
+        return this.#resolvePositionShorthand(property);
+      }
+      case "border":
+      case "border-top":
+      case "border-right":
+      case "border-bottom":
+      case "border-left":
+      case "border-width":
+      case "border-style":
+      case "border-color": {
+        return this.#resolveBorderShorthands(property);
+      }
+      default: {
+        return value;
+      }
+    }
+  }
+
+  #resolvePositionShorthand(property) {
+    const shorthandItem = shorthandProperties.get(property);
+    if (!shorthandItem || !shorthandItem.shorthandFor) {
+      return "";
+    }
+    const longhandValues = [];
+    for (const [longhandProperty] of shorthandItem.shorthandFor) {
+      longhandValues.push(this.getPropertyValue(longhandProperty));
+    }
+    return getPositionValue(longhandValues);
+  }
+
+  #resolveLonghand(property, value, metadata) {
+    const resolveDefault = valueToResolve => this.#resolveLonghandDefault(property, valueToResolve, metadata);
+    const resolveComputedValue = computedValueResolvers.get(property);
+    if (resolveComputedValue) {
+      return resolveComputedValue(value, {
+        getInheritedValue: (inheritedProperty, options) => {
+          return computedStyle.getInheritedPropertyValue(inheritedProperty, this.#ownerNode, options);
+        },
+        resolveDefault
+      });
+    }
+
+    return resolveDefault(value);
+  }
+
+  #resolveLonghandDefault(property, value, { caseSensitive, dimensionTypes, isColor }) {
+    const { length: lengthType } = dimensionTypes;
+    let options = { format: "computedValue" };
+
+    // Color and dimension options resolve inherited styles, so only prepare them when needed.
+    if (isColor || lengthType) {
+      options = this.#prepareComputedValueOpts();
+    }
+
+    const parsedValue = cssValues.parsePropertyValue(property, value, {
+      caseSensitive,
+      ...options
+    });
+
+    if (isColor) {
+      const resolvedValue = cssValues.serializeColor(parsedValue, options);
+      if (resolvedValue) {
+        return resolvedValue;
+      }
+    } else if (lengthType) {
+      const isFontSize = property === "font-size";
+      const { documentElement } = this.#ownerNode._ownerDocument;
+      const dimension = {};
+      if (this.#ownerNode !== documentElement) {
+        Object.assign(dimension, options.dimension);
+      }
+
+      // Use the element's own font-size for em units if the property is not "font-size".
+      if (!isFontSize) {
+        const ownFontSize = this.getPropertyValue("font-size");
+        if (ownFontSize) {
+          const parsedOwnFontSize = parseFloat(ownFontSize);
+          if (!Number.isNaN(parsedOwnFontSize)) {
+            dimension.em = parsedOwnFontSize;
+          }
+        }
+      }
+      const resolvedValue =
+        fontSizes.resolveLengthInPixels(this.#ownerNode, value, dimension, isFontSize);
+      if (typeof resolvedValue === "number" && !Number.isNaN(resolvedValue)) {
+        return `${Number(resolvedValue.toPrecision(6))}px`;
+      }
+      // A percentage prevents the math function from being fully reduced, e.g.
+      // width: calc(100% - 1rem) computes to calc(100% - 16px). Only serialize the partially
+      // reduced string when the math function is the whole value, because reducing it
+      // lowercases the value, which would destroy case-sensitive tokens surrounding it, e.g.
+      // the line names in grid-template-rows: [Foo] minmax(1rem, calc(100% - 2rem)) [Bar].
+      if (
+        typeof resolvedValue === "string" && resolvedValue &&
+        Array.isArray(parsedValue) && parsedValue.length === 1 &&
+        parsedValue[0].type === cssValues.AST_TYPES.CALC
+      ) {
+        return resolvedValue;
+      }
+    }
+
+    // TODO: Resolve special cases other than color.
+
+    return value;
+  }
+
+  #resolveBorderShorthands(property) {
+    switch (property) {
+      case "border": {
+        const values = [];
+        for (const item of ["top", "right", "bottom", "left"]) {
+          const value = this.getPropertyValue(`border-${item}`);
+          if (!value) {
+            return "";
+          }
+          values.push(value);
+        }
+        const [top, right, bottom, left] = values;
+        if (top === right && top === bottom && top === left) {
+          return top;
+        }
+        return "";
+      }
+      case "border-top":
+      case "border-right":
+      case "border-bottom":
+      case "border-left": {
+        const values = [];
+        for (const item of ["width", "style", "color"]) {
+          const value = this.getPropertyValue(`${property}-${item}`);
+          if (!value) {
+            return "";
+          }
+          values.push(value);
+        }
+        return values.join(" ");
+      }
+      // border-width, border-style, border-color
+      default: {
+        return this.#resolvePositionShorthand(property);
+      }
+    }
+  }
+
+  // Options are used when resolving relative values or specified values.
+  #prepareComputedValueOpts() {
+    if (!this.#computedValueOpts.has("options")) {
+      this.#computedValueOpts.set("options", { format: "computedValue" });
+    }
+    const options = this.#computedValueOpts.get("options");
+
+    // Return the cached options if the specified raw values haven't changed.
+    const rawColorScheme = this.#values.get("color-scheme") ?? "";
+    const rawColor = this.#values.get("color") ?? "";
+    const rawFontSize = this.#values.get("font-size") ?? "";
+    if (
+      this.#computedValueOpts.get("rawColorScheme") === rawColorScheme &&
+      this.#computedValueOpts.get("rawColor") === rawColor &&
+      this.#computedValueOpts.get("rawFontSize") === rawFontSize
+    ) {
+      return options;
+    }
+    // Store current raw values for future cache validation.
+    this.#computedValueOpts.set("rawColorScheme", rawColorScheme);
+    this.#computedValueOpts.set("rawColor", rawColor);
+    this.#computedValueOpts.set("rawFontSize", rawFontSize);
+
+    // Prepare color-scheme.
+    const colorScheme = computedStyle.replaceEmptyValueAndKeywords(
+      "color-scheme",
+      rawColorScheme,
+      this.#ownerNode,
+      { inherit: true, initial: "normal" }
+    );
+    this.#cachedPropertyValues.set("color-scheme", {
+      computedValue: colorScheme,
+      value: rawColorScheme
+    });
+    options.colorScheme = colorScheme;
+
+    // Prepare current color.
+    let currentColor = computedStyle.replaceEmptyValueAndKeywords(
+      "color",
+      rawColor,
+      this.#ownerNode,
+      { inherit: true, initial: "canvastext" }
+    );
+    currentColor = asciiLowercase(currentColor);
+    // Replace currentcolor keyword.
+    if (currentColor === "currentcolor") {
+      currentColor = computedStyle.getInheritedPropertyValue(
+        "color",
+        this.#ownerNode,
+        { inherit: true, initial: "canvastext", isColor: true }
+      );
+    }
+    // Resolve system colors.
+    if (systemColors.has(currentColor)) {
+      currentColor = cssValues.resolveSystemColorValue(currentColor, colorScheme);
+    } else {
+      // Resolve named colors.
+      if (/^[a-z]+$/.test(currentColor)) {
+        currentColor = cssValues.resolveColor(currentColor, { format: "computedValue" });
+      }
+      this.#cachedPropertyValues.set("color", {
+        computedValue: currentColor,
+        value: rawColor
+      });
+    }
+    options.currentColor = currentColor;
+
+    // Prepare dimension.
+    let rem, em;
+    if (this.#ownerNode._ownerDocument.documentElement.firstElementChild) {
+      const rootFontSize = computedStyle.getInheritedPropertyValue(
+        "font-size",
+        this.#ownerNode._ownerDocument.documentElement.firstElementChild,
+        { inherit: true, initial: "medium" }
+      );
+      rem = fontSizes.resolveFontSizeInPixels(this.#ownerNode, rootFontSize);
+    } else {
+      rem = fontSizes.resolveFontSizeInPixels(this.#ownerNode, "medium");
+    }
+    if (this.#ownerNode.parentElement) {
+      em = computedStyle.getParentFontSizeInPixels(this.#ownerNode);
+    } else {
+      em = rem;
+    }
+    const dimension = {
+      em,
+      rem,
+      vh: this._globalObject.innerHeight / 100,
+      vw: this._globalObject.innerWidth / 100
+    };
+    options.dimension = dimension;
+
+    // TODO: Add customProperty etc.
+
+    // Store options.
+    this.#computedValueOpts.set("options", options);
+
+    return options;
+  }
+
+  /**
+   * Helper to handle border property expansion.
+   *
+   * @private
+   * @param {string} property - The property name (e.g. "border").
+   * @param {object|Array|string} value - The value to set.
+   * @param {string} priority - The priority.
+   */
+  _borderSetter(property, value, priority) {
+    const properties = new Map();
+    if (typeof priority !== "string") {
+      priority = this._priorities.get(property) ?? "";
+    }
+    if (property === "border") {
+      properties.set(property, { property, value, priority });
+    } else {
+      for (const itemProperty of this.#values.keys()) {
+        if (borderProperties.has(itemProperty)) {
+          const itemValue = this.#values.get(itemProperty) ?? "";
+          const longhandPriority = this._priorities.get(itemProperty) ?? "";
+          let itemPriority = longhandPriority;
+          if (itemProperty === property) {
+            itemPriority = priority;
+          }
+          properties.set(itemProperty, {
+            property: itemProperty,
+            value: itemValue,
+            priority: itemPriority
+          });
+        }
+      }
+    }
+    const parsedProperties = prepareBorderProperties(property, value, priority, properties);
+    for (const [itemProperty, item] of parsedProperties) {
+      const { priority: itemPriority, value: itemValue } = item;
+      this._setProperty(itemProperty, itemValue, itemPriority);
+    }
+  }
+
+  /**
+   * Helper to handle flexbox shorthand expansion.
+   *
+   * @private
+   * @param {string} property - The property name.
+   * @param {string} value - The property value.
+   * @param {string} priority - The priority.
+   * @param {string} shorthandProperty - The shorthand property name.
+   */
+  _flexBoxSetter(property, value, priority, shorthandProperty) {
+    if (!shorthandProperty || !shorthandProperties.has(shorthandProperty)) {
+      return;
+    }
+    const shorthandPriority = this._priorities.get(shorthandProperty);
+    this.removeProperty(shorthandProperty);
+    if (typeof priority !== "string") {
+      priority = this._priorities.get(property) ?? "";
+    }
+    this.removeProperty(property);
+    if (shorthandPriority && priority) {
+      this._setProperty(property, value);
+    } else {
+      this._setProperty(property, value, priority);
+    }
+    if (value && !cssValues.hasVarFunc(value)) {
+      const longhandValues = [];
+      const shorthandItem = shorthandProperties.get(shorthandProperty);
+      let hasGlobalKeyword = false;
+      for (const [longhandProperty] of shorthandItem.shorthandFor) {
+        if (longhandProperty === property) {
+          if (cssValues.isGlobalKeyword(value)) {
+            hasGlobalKeyword = true;
+          }
+          longhandValues.push(value);
+        } else {
+          const longhandValue = this.#values.get(longhandProperty) ?? "";
+          const longhandPriority = this._priorities.get(longhandProperty) ?? "";
+          if (!longhandValue || longhandPriority !== priority) {
+            break;
+          }
+          if (cssValues.isGlobalKeyword(longhandValue)) {
+            hasGlobalKeyword = true;
+          }
+          longhandValues.push(longhandValue);
+        }
+      }
+      if (longhandValues.length === shorthandItem.shorthandFor.size) {
+        if (hasGlobalKeyword) {
+          const [firstValue, ...restValues] = longhandValues;
+          if (restValues.every(val => val === firstValue)) {
+            this._setProperty(shorthandProperty, firstValue, priority);
+          }
+        } else {
+          const parsedValue = shorthandItem.parse(longhandValues.join(" "));
+          const shorthandValue = Object.values(parsedValue).join(" ");
+          this._setProperty(shorthandProperty, shorthandValue, priority);
+        }
+      }
+    }
+  }
+
+  /**
+   * Helper to handle position shorthand expansion.
+   *
+   * @private
+   * @param {string} property - The property name.
+   * @param {Array|string} value - The property value.
+   * @param {string} priority - The priority.
+   */
+  _positionShorthandSetter(property, value, priority) {
+    if (!shorthandProperties.has(property)) {
+      return;
+    }
+    const shorthandValues = [];
+    if (Array.isArray(value)) {
+      shorthandValues.push(...value);
+    } else if (typeof value === "string") {
+      shorthandValues.push(value);
+    } else {
+      return;
+    }
+    if (typeof priority !== "string") {
+      priority = this._priorities.get(property) ?? "";
+    }
+    const { position, shorthandFor } = shorthandProperties.get(property);
+    let hasPriority = false;
+    for (const [longhandProperty, longhandItem] of shorthandFor) {
+      const { position: longhandPosition } = longhandItem;
+      const longhandValue = getPositionValue(shorthandValues, longhandPosition);
+      if (priority) {
+        this._setProperty(longhandProperty, longhandValue, priority);
+      } else {
+        const longhandPriority = this._priorities.get(longhandProperty) ?? "";
+        if (longhandPriority) {
+          hasPriority = true;
+        } else {
+          this._setProperty(longhandProperty, longhandValue, priority);
+        }
+      }
+    }
+    if (hasPriority) {
+      this.removeProperty(property);
+    } else {
+      const shorthandValue = getPositionValue(shorthandValues, position);
+      this._setProperty(property, shorthandValue, priority);
+    }
+  }
+
+  /**
+   * Helper to handle position longhand updates affecting shorthands.
+   *
+   * @private
+   * @param {string} property - The property name.
+   * @param {string} value - The property value.
+   * @param {string} priority - The priority.
+   * @param {string} shorthandProperty - The shorthand property name.
+   */
+  _positionLonghandSetter(property, value, priority, shorthandProperty) {
+    if (!shorthandProperty || !shorthandProperties.has(shorthandProperty)) {
+      return;
+    }
+    const shorthandPriority = this._priorities.get(shorthandProperty);
+    this.removeProperty(shorthandProperty);
+    if (typeof priority !== "string") {
+      priority = this._priorities.get(property) ?? "";
+    }
+    this.removeProperty(property);
+    if (shorthandPriority && priority) {
+      this._setProperty(property, value);
+    } else {
+      this._setProperty(property, value, priority);
+    }
+    if (value && !cssValues.hasVarFunc(value)) {
+      const longhandValues = [];
+      const { shorthandFor, position: shorthandPosition } = shorthandProperties.get(shorthandProperty);
+      for (const [longhandProperty] of shorthandFor) {
+        const longhandValue = this.#values.get(longhandProperty) ?? "";
+        const longhandPriority = this._priorities.get(longhandProperty) ?? "";
+        if (!longhandValue || longhandPriority !== priority) {
+          return;
+        }
+        longhandValues.push(longhandValue);
+      }
+      if (longhandValues.length === shorthandFor.size) {
+        const replacedValue = getPositionValue(longhandValues, shorthandPosition);
+        this._setProperty(shorthandProperty, replacedValue);
+      }
+    }
+  }
+}
+
+exports.implementation = CSSStyleDeclarationImpl;

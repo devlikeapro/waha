@@ -1,0 +1,26 @@
+import * as React from 'react';
+import { CSSProperties } from 'react';
+import { AllowInDimension, AnimationDuration, EasingInput, CartesianViewBox, Coordinate, PolarCoordinate } from '../util/types';
+import { ElementOffset, SetElementOffset } from '../util/useElementOffset';
+export type TooltipBoundingBoxProps = {
+    active: boolean;
+    allowEscapeViewBox: AllowInDimension;
+    animationDuration: AnimationDuration;
+    animationEasing: EasingInput;
+    children: React.ReactNode;
+    coordinate: Coordinate | PolarCoordinate | undefined;
+    hasPayload: boolean;
+    isAnimationActive: boolean | 'auto';
+    offset: number | Coordinate;
+    position: Partial<Coordinate> | undefined;
+    reverseDirection: AllowInDimension;
+    useTranslate3d: boolean;
+    viewBox: CartesianViewBox;
+    wrapperStyle: CSSProperties;
+    lastBoundingBox: ElementOffset | null;
+    innerRef: SetElementOffset;
+    hasPortalFromProps: boolean;
+};
+declare function TooltipBoundingBoxImpl(props: TooltipBoundingBoxProps): React.JSX.Element;
+export declare const TooltipBoundingBox: React.MemoExoticComponent<typeof TooltipBoundingBoxImpl>;
+export {};

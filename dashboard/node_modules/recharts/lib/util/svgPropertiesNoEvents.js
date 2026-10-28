@@ -1,0 +1,83 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.isDataAttribute = isDataAttribute;
+exports.isSvgElementPropKey = isSvgElementPropKey;
+exports.svgPropertiesNoEvents = svgPropertiesNoEvents;
+exports.svgPropertiesNoEventsFromUnknown = svgPropertiesNoEventsFromUnknown;
+var _react = require("react");
+var SVGElementPropKeys = ['aria-activedescendant', 'aria-atomic', 'aria-autocomplete', 'aria-busy', 'aria-checked', 'aria-colcount', 'aria-colindex', 'aria-colspan', 'aria-controls', 'aria-current', 'aria-describedby', 'aria-details', 'aria-disabled', 'aria-errormessage', 'aria-expanded', 'aria-flowto', 'aria-haspopup', 'aria-hidden', 'aria-invalid', 'aria-keyshortcuts', 'aria-label', 'aria-labelledby', 'aria-level', 'aria-live', 'aria-modal', 'aria-multiline', 'aria-multiselectable', 'aria-orientation', 'aria-owns', 'aria-placeholder', 'aria-posinset', 'aria-pressed', 'aria-readonly', 'aria-relevant', 'aria-required', 'aria-roledescription', 'aria-rowcount', 'aria-rowindex', 'aria-rowspan', 'aria-selected', 'aria-setsize', 'aria-sort', 'aria-valuemax', 'aria-valuemin', 'aria-valuenow', 'aria-valuetext', 'className', 'color', 'height', 'id', 'lang', 'max', 'media', 'method', 'min', 'name', 'style',
+/*
+ * removed 'type' SVGElementPropKey because we do not currently use any SVG elements
+ * that can use it, and it conflicts with the recharts prop 'type'
+ * https://github.com/recharts/recharts/pull/3327
+ * https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/type
+ */
+// 'type',
+'target', 'width', 'role', 'tabIndex', 'accentHeight', 'accumulate', 'additive', 'alignmentBaseline', 'allowReorder', 'alphabetic', 'amplitude', 'arabicForm', 'ascent', 'attributeName', 'attributeType', 'autoReverse', 'azimuth', 'baseFrequency', 'baselineShift', 'baseProfile', 'bbox', 'begin', 'bias', 'by', 'calcMode', 'capHeight', 'clip', 'clipPath', 'clipPathUnits', 'clipRule', 'colorInterpolation', 'colorInterpolationFilters', 'colorProfile', 'colorRendering', 'contentScriptType', 'contentStyleType', 'cursor', 'cx', 'cy', 'd', 'decelerate', 'descent', 'diffuseConstant', 'direction', 'display', 'divisor', 'dominantBaseline', 'dur', 'dx', 'dy', 'edgeMode', 'elevation', 'enableBackground', 'end', 'exponent', 'externalResourcesRequired', 'fill', 'fillOpacity', 'fillRule', 'filter', 'filterRes', 'filterUnits', 'floodColor', 'floodOpacity', 'focusable', 'fontFamily', 'fontSize', 'fontSizeAdjust', 'fontStretch', 'fontStyle', 'fontVariant', 'fontWeight', 'format', 'from', 'fx', 'fy', 'g1', 'g2', 'glyphName', 'glyphOrientationHorizontal', 'glyphOrientationVertical', 'glyphRef', 'gradientTransform', 'gradientUnits', 'hanging', 'horizAdvX', 'horizOriginX', 'href', 'ideographic', 'imageRendering', 'in2', 'in', 'intercept', 'k1', 'k2', 'k3', 'k4', 'k', 'kernelMatrix', 'kernelUnitLength', 'kerning', 'keyPoints', 'keySplines', 'keyTimes', 'lengthAdjust', 'letterSpacing', 'lightingColor', 'limitingConeAngle', 'local', 'markerEnd', 'markerHeight', 'markerMid', 'markerStart', 'markerUnits', 'markerWidth', 'mask', 'maskContentUnits', 'maskUnits', 'mathematical', 'mode', 'numOctaves', 'offset', 'opacity', 'operator', 'order', 'orient', 'orientation', 'origin', 'overflow', 'overlinePosition', 'overlineThickness', 'paintOrder', 'panose1', 'pathLength', 'patternContentUnits', 'patternTransform', 'patternUnits', 'pointerEvents', 'pointsAtX', 'pointsAtY', 'pointsAtZ', 'preserveAlpha', 'preserveAspectRatio', 'primitiveUnits', 'r', 'radius', 'refX', 'refY', 'renderingIntent', 'repeatCount', 'repeatDur', 'requiredExtensions', 'requiredFeatures', 'restart', 'result', 'rotate', 'rx', 'ry', 'seed', 'shapeRendering', 'slope', 'spacing', 'specularConstant', 'specularExponent', 'speed', 'spreadMethod', 'startOffset', 'stdDeviation', 'stemh', 'stemv', 'stitchTiles', 'stopColor', 'stopOpacity', 'strikethroughPosition', 'strikethroughThickness', 'string', 'stroke', 'strokeDasharray', 'strokeDashoffset', 'strokeLinecap', 'strokeLinejoin', 'strokeMiterlimit', 'strokeOpacity', 'strokeWidth', 'surfaceScale', 'systemLanguage', 'tableValues', 'targetX', 'targetY', 'textAnchor', 'textDecoration', 'textLength', 'textRendering', 'to', 'transform', 'u1', 'u2', 'underlinePosition', 'underlineThickness', 'unicode', 'unicodeBidi', 'unicodeRange', 'unitsPerEm', 'vAlphabetic', 'values', 'vectorEffect', 'version', 'vertAdvY', 'vertOriginX', 'vertOriginY', 'vHanging', 'vIdeographic', 'viewTarget', 'visibility', 'vMathematical', 'widths', 'wordSpacing', 'writingMode', 'x1', 'x2', 'x', 'xChannelSelector', 'xHeight', 'xlinkActuate', 'xlinkArcrole', 'xlinkHref', 'xlinkRole', 'xlinkShow', 'xlinkTitle', 'xlinkType', 'xmlBase', 'xmlLang', 'xmlns', 'xmlnsXlink', 'xmlSpace', 'y1', 'y2', 'y', 'yChannelSelector', 'z', 'zoomAndPan', 'ref', 'key', 'angle'];
+var SVGElementPropKeySet = new Set(SVGElementPropKeys);
+function isSvgElementPropKey(key) {
+  if (typeof key !== 'string') {
+    return false;
+  }
+  return SVGElementPropKeySet.has(key);
+}
+/**
+ * Checks if the property is a data attribute.
+ * @param key The property key.
+ * @returns True if the key starts with 'data-', false otherwise.
+ */
+function isDataAttribute(key) {
+  return typeof key === 'string' && key.startsWith('data-');
+}
+
+/**
+ * Filters an object to only include SVG properties. Removes all event handlers too.
+ * @param obj - The object to filter
+ * @returns A new object containing only valid SVG properties, excluding event handlers.
+ */
+function svgPropertiesNoEvents(obj) {
+  if (typeof obj !== 'object' || obj === null) {
+    return {};
+  }
+  var result = {};
+  for (var key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      if (isSvgElementPropKey(key) || isDataAttribute(key)) {
+        result[key] = obj[key];
+      }
+    }
+  }
+  return result;
+}
+
+/**
+ * Function to filter SVG properties from various input types.
+ * The input types can be:
+ * - A record of string keys to any values, in which case it returns a record of only SVG properties
+ * - A React element, in which case it returns the props of the element filtered to only SVG properties
+ * - Anything else, in which case it returns null
+ *
+ * This function has a wide-open return type, because it will read and filter the props of an arbitrary React element.
+ * This can be SVG, HTML, whatnot, with arbitrary values, so we can't type it more specifically.
+ *
+ * If you wish to have a type-safe version, use svgPropertiesNoEvents directly with a typed object.
+ *
+ * @param input - The input to filter, which can be a record, a React element, or other types.
+ * @returns A record of SVG properties if the input is a record or React element, otherwise null.
+ */
+function svgPropertiesNoEventsFromUnknown(input) {
+  if (input == null) {
+    return null;
+  }
+  if (/*#__PURE__*/(0, _react.isValidElement)(input) && typeof input.props === 'object' && input.props !== null) {
+    var p = input.props;
+    return svgPropertiesNoEvents(p);
+  }
+  if (typeof input === 'object' && !Array.isArray(input)) {
+    return svgPropertiesNoEvents(input);
+  }
+  return null;
+}

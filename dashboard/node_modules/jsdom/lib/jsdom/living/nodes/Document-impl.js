@@ -1,0 +1,1187 @@
+"use strict";
+
+const { CookieJar } = require("tough-cookie");
+const { DOMSelector } = require("@asamuzakjp/dom-selector");
+
+const NodeImpl = require("./Node-impl").implementation;
+const idlUtils = require("../../../generated/idl/utils");
+const NODE_TYPE = require("../node-type");
+const { mixin } = require("../../utils");
+const { firstChildWithLocalName, firstChildWithLocalNames, firstDescendantWithLocalName } =
+  require("../helpers/traversal");
+const whatwgURL = require("whatwg-url");
+const StyleSheetList = require("../../../generated/idl/StyleSheetList.js");
+const eventAccessors = require("../helpers/create-event-accessor");
+const { asciiLowercase, stripAndCollapseASCIIWhitespace } = require("../helpers/strings");
+const { childTextContent } = require("../helpers/text");
+const { HTML_NS, SVG_NS } = require("../helpers/namespaces");
+const DOMException = require("../../../generated/idl/DOMException");
+const { parseIntoDocument } = require("../../browser/parser");
+const History = require("../../../generated/idl/History");
+const Location = require("../../../generated/idl/Location");
+const HTMLCollection = require("../../../generated/idl/HTMLCollection");
+const NodeList = require("../../../generated/idl/NodeList");
+const {
+  attributeLocalName: validateAttributeLocalName,
+  elementLocalName: validateElementLocalName,
+  validateAndExtract,
+  xmlName: validateXMLName
+} = require("../helpers/validate-names");
+const { fireAnEvent } = require("../helpers/events");
+const { enqueueCECallbackReaction } = require("../helpers/custom-elements");
+const { createElement, internalCreateElementNSSteps } = require("../helpers/create-element");
+const IterableWeakSet = require("../helpers/iterable-weak-set");
+const WeakValueMap = require("../helpers/weak-value-map");
+
+const DocumentOrShadowRootImpl = require("./DocumentOrShadowRoot-impl").implementation;
+const GlobalEventHandlersImpl = require("./GlobalEventHandlers-impl").implementation;
+const NonElementParentNodeImpl = require("./NonElementParentNode-impl").implementation;
+const ParentNodeImpl = require("./ParentNode-impl").implementation;
+
+const { clone } = require("../node");
+const generatedAttr = require("../../../generated/idl/Attr");
+const Comment = require("../../../generated/idl/Comment");
+const ProcessingInstruction = require("../../../generated/idl/ProcessingInstruction");
+const CDATASection = require("../../../generated/idl/CDATASection");
+const Text = require("../../../generated/idl/Text");
+const DocumentFragment = require("../../../generated/idl/DocumentFragment");
+const DOMImplementation = require("../../../generated/idl/DOMImplementation");
+const TreeWalker = require("../../../generated/idl/TreeWalker");
+const NodeIterator = require("../../../generated/idl/NodeIterator");
+const ShadowRoot = require("../../../generated/idl/ShadowRoot");
+const Range = require("../../../generated/idl/Range");
+const documents = require("../documents.js");
+
+const BeforeUnloadEvent = require("../../../generated/idl/BeforeUnloadEvent");
+const CompositionEvent = require("../../../generated/idl/CompositionEvent");
+const CustomEvent = require("../../../generated/idl/CustomEvent");
+const DeviceMotionEvent = require("../../../generated/idl/DeviceMotionEvent");
+const DeviceOrientationEvent = require("../../../generated/idl/DeviceOrientationEvent");
+const Event = require("../../../generated/idl/Event");
+const FocusEvent = require("../../../generated/idl/FocusEvent");
+const HashChangeEvent = require("../../../generated/idl/HashChangeEvent");
+const KeyboardEvent = require("../../../generated/idl/KeyboardEvent");
+const MessageEvent = require("../../../generated/idl/MessageEvent");
+const MouseEvent = require("../../../generated/idl/MouseEvent");
+const StorageEvent = require("../../../generated/idl/StorageEvent");
+const TouchEvent = require("../../../generated/idl/TouchEvent");
+const UIEvent = require("../../../generated/idl/UIEvent");
+
+const RequestManager = require("../../browser/resources/request-manager");
+const AsyncResourceQueue = require("../../browser/resources/async-resource-queue");
+const ResourceQueue = require("../../browser/resources/resource-queue");
+const PerDocumentResourceLoader = require("../../browser/resources/per-document-resource-loader");
+const ByIdCache = require("../helpers/by-id-cache");
+
+function clearChildNodes(node) {
+  for (let child = node.firstChild; child; child = node.firstChild) {
+    node.removeChild(child);
+  }
+}
+
+// The elements that can contribute a document's named properties.
+// https://html.spec.whatwg.org/multipage/dom.html#dom-document-nameditem-filter
+// For object and embed elements, we intentionally follow Firefox by not filtering on exposedness.
+// https://github.com/whatwg/html/issues/12787
+const NAMED_PROPERTY_LOCAL_NAMES = new Set(["embed", "form", "iframe", "img", "object"]);
+
+/** Can this node contribute to its document's named properties at all? */
+function isNamedPropertyElement(node) {
+  return node.nodeType === NODE_TYPE.ELEMENT_NODE &&
+    node._namespaceURI === HTML_NS &&
+    NAMED_PROPERTY_LOCAL_NAMES.has(node._localName);
+}
+
+function hasNonemptyAttribute(element, name) {
+  const value = element.getAttributeNS(null, name);
+  return value !== null && value !== "";
+}
+
+function canContributeIdToNamedProperties(element, hasName) {
+  return element._localName === "object" || (element._localName === "img" && hasName);
+}
+
+function attributeAffectsNamedProperties(element, name, value, oldValue) {
+  if (element._namespaceURI !== HTML_NS || !element._isInDocumentTree || value === oldValue) {
+    return false;
+  }
+
+  const hasChangedValue = (value !== null && value !== "") || (oldValue !== null && oldValue !== "");
+  if (!hasChangedValue) {
+    return false;
+  }
+
+  if (name === "name") {
+    return NAMED_PROPERTY_LOCAL_NAMES.has(element._localName);
+  }
+
+  if (name !== "id") {
+    return false;
+  }
+
+  const hasName = hasNonemptyAttribute(element, "name");
+  return canContributeIdToNamedProperties(element, hasName);
+}
+
+function pad(number) {
+  if (number < 10) {
+    return "0" + number;
+  }
+  return number;
+}
+
+function toLastModifiedString(date) {
+  return pad(date.getMonth() + 1) +
+    "/" + pad(date.getDate()) +
+    "/" + date.getFullYear() +
+    " " + pad(date.getHours()) +
+    ":" + pad(date.getMinutes()) +
+    ":" + pad(date.getSeconds());
+}
+
+const eventInterfaceTable = {
+  beforeunloadevent: BeforeUnloadEvent,
+  compositionevent: CompositionEvent,
+  customevent: CustomEvent,
+  devicemotionevent: DeviceMotionEvent,
+  deviceorientationevent: DeviceOrientationEvent,
+  event: Event,
+  events: Event,
+  focusevent: FocusEvent,
+  hashchangeevent: HashChangeEvent,
+  htmlevents: Event,
+  keyboardevent: KeyboardEvent,
+  messageevent: MessageEvent,
+  mouseevent: MouseEvent,
+  mouseevents: MouseEvent,
+  storageevent: StorageEvent,
+  svgevents: Event,
+  touchevent: TouchEvent,
+  uievent: UIEvent,
+  uievents: UIEvent
+};
+
+class DocumentImpl extends NodeImpl {
+  #domSelector = null;
+  #namedPropertyCollections;
+  #namedPropertyElementsCache = null;
+
+  constructor(globalObject, args, privateData) {
+    super(globalObject, args, privateData);
+
+    this._initGlobalEvents();
+
+    this._ownerDocument = this;
+    this.nodeType = NODE_TYPE.DOCUMENT_NODE;
+    if (!privateData.options) {
+      privateData.options = {};
+    }
+    if (!privateData.options.parsingMode) {
+      privateData.options.parsingMode = "xml";
+    }
+    if (!privateData.options.encoding) {
+      privateData.options.encoding = "UTF-8";
+    }
+    if (!privateData.options.contentType) {
+      privateData.options.contentType = privateData.options.parsingMode === "xml" ? "application/xml" : "text/html";
+    }
+
+    this._parsingMode = privateData.options.parsingMode;
+
+    this._implementation = DOMImplementation.createImpl(this._globalObject, [], {
+      ownerDocument: this
+    });
+
+    this._defaultView = privateData.options.defaultView || null;
+    this._global = privateData.options.global;
+    this._byIdCache = new ByIdCache(this);
+    this._isInDocumentTree = true;
+    this._currentScript = null;
+    this._pageShowingFlag = false;
+    this._cookieJar = privateData.options.cookieJar;
+    this._parseOptions = privateData.options.parseOptions || {};
+    this._scriptingDisabled = privateData.options.scriptingDisabled;
+    if (this._cookieJar === undefined) {
+      this._cookieJar = new CookieJar(null, { looseMode: true });
+    }
+
+    if (this._scriptingDisabled) {
+      this._parseOptions.scriptingEnabled = false;
+    }
+
+    this.contentType = privateData.options.contentType;
+    this._encoding = privateData.options.encoding;
+
+    const urlOption = privateData.options.url === undefined ? "about:blank" : privateData.options.url;
+    const parsed = whatwgURL.parseURL(urlOption);
+    if (parsed === null) {
+      throw new TypeError(`Could not parse "${urlOption}" as a URL`);
+    }
+
+    this._URL = parsed;
+    this._origin = urlOption === "about:blank" && privateData.options.parentOrigin ?
+      privateData.options.parentOrigin :
+      whatwgURL.serializeURLOrigin(this._URL);
+
+    this._location = Location.createImpl(this._globalObject, [], { relevantDocument: this });
+    this._history = History.createImpl(this._globalObject, [], {
+      window: this._defaultView,
+      document: this,
+      actAsIfLocationReloadCalled: () => this._location.reload()
+    });
+
+    this._workingNodeIterators = new IterableWeakSet();
+
+    this._referrer = privateData.options.referrer || "";
+    this._lastModified = toLastModifiedString(privateData.options.lastModified || new Date());
+    this._asyncQueue = new AsyncResourceQueue();
+    this._queue = new ResourceQueue({ asyncQueue: this._asyncQueue, paused: false });
+    this._deferQueue = new ResourceQueue({ paused: true });
+    this._requestManager = new RequestManager();
+    // Set when destruction begins, before reentrant cleanup. This is not `window.closed` or the inverse of
+    // "fully active": an inactive document need not be destroyed.
+    // https://html.spec.whatwg.org/multipage/document-lifecycle.html#destroy-a-document
+    this._isDestroyed = false;
+    this._childDocuments = new Set();
+    this._parentDocument = null;
+    this._currentDocumentReadiness = privateData.options.readyState || "complete";
+
+    this._lastFocusedElement = null;
+
+    this._resourceLoader = new PerDocumentResourceLoader(this);
+
+    // Each Document in a browsing context can also have a latest entry. This is the entry for that Document
+    // to which the browsing context's session history was most recently traversed. When a Document is created,
+    // it initially has no latest entry.
+    this._latestEntry = null;
+
+    // https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#throw-on-dynamic-markup-insertion-counter
+    this._throwOnDynamicMarkupInsertionCounter = 0;
+
+    // Cache of computed element styles
+    this._styleCache = new WeakMap();
+
+    // Cache of document base URL
+    this._baseURLCache = null;
+    this._baseURLSerializedCache = null;
+  }
+
+  _clearStyleCache() {
+    this._styleCache = new WeakMap();
+  }
+
+  // The `DOMSelector` instance is lazily created, as it is somewhat expensive to create and not always needed.
+  _getDOMSelector() {
+    if (!this.#domSelector) {
+      this.#domSelector = new DOMSelector(this._globalObject, this._ownerDocument, {
+        idlUtils
+      });
+    }
+    return this.#domSelector;
+  }
+
+  _clearDOMSelector() {
+    this.#domSelector?.clear();
+  }
+
+  _clearBaseURLCache() {
+    this._baseURLCache = null;
+    this._baseURLSerializedCache = null;
+  }
+
+  // https://html.spec.whatwg.org/multipage/infrastructure.html#document-base-url
+  baseURL() {
+    if (this._baseURLCache) {
+      return this._baseURLCache;
+    }
+
+    const firstBase = this.querySelector("base[href]");
+
+    this._baseURLCache = firstBase === null ?
+      this._fallbackBaseURL() :
+      this._frozenBaseURL(firstBase, this._fallbackBaseURL());
+    return this._baseURLCache;
+  }
+
+  baseURLSerialized() {
+    if (this._baseURLSerializedCache) {
+      return this._baseURLSerializedCache;
+    }
+
+    const result = whatwgURL.serializeURL(this.baseURL());
+    this._baseURLSerializedCache = result;
+    return result;
+  }
+
+  // https://html.spec.whatwg.org/#encoding-parsing-a-url
+  encodingParseAURL(url) {
+    return whatwgURL.parseURL(url, { baseURL: this.baseURL(), encoding: this._encoding });
+  }
+
+  // https://html.spec.whatwg.org/#frozen-base-url
+  _frozenBaseURL(baseElement, fallbackBaseURL) {
+    // The spec is eager (setting the frozen base URL when things change); we are lazy (getting it when we need to).
+    //
+    // There is a slight difference, which is when history.pushState() is involved. The frozen base URL does not get
+    // updated in response to history.pushState() per spec, but since we're lazy, it will get updated.
+    //
+    // The test in to-port-to-wpts/history.js checks for the current jsdom behavior (which is incorrect).
+    // We could make it pass by not invalidating the base URL cache, actually. But that would just make the fallback
+    // base URL case use the stale base URL.
+    //
+    // TODO: implement, with tests for all code paths, the spec's behavior.
+
+    const baseHrefAttribute = baseElement.getAttributeNS(null, "href");
+    const urlRecord = whatwgURL.parseURL(baseHrefAttribute, { baseURL: fallbackBaseURL });
+
+    // data: and javascript: URLs are never usable as a base URL, so the fallback base URL is used
+    // instead. Note this does not fall through to any later base element: the document base URL is
+    // the first base element with an href, whether or not that element's URL turns out to be usable.
+    //
+    // We don't implement the "Is base allowed for Document?" CSP check.
+    if (urlRecord === null || urlRecord.scheme === "data" || urlRecord.scheme === "javascript") {
+      return fallbackBaseURL;
+    }
+
+    return urlRecord;
+  }
+
+  // https://html.spec.whatwg.org/#fallback-base-url
+  _fallbackBaseURL() {
+    if (this.URL === "about:blank" && this._defaultView &&
+      this._defaultView._parent !== this._defaultView) {
+      return this._defaultView._parent._document.baseURL();
+    }
+
+    return this._URL;
+  }
+
+  _getTheParent(event) {
+    if (event.type === "load" || !this._defaultView) {
+      return null;
+    }
+
+    return idlUtils.implForWrapper(this._defaultView);
+  }
+
+  get compatMode() {
+    return this._parsingMode === "xml" || this.doctype ? "CSS1Compat" : "BackCompat";
+  }
+  get charset() {
+    return this._encoding;
+  }
+  get characterSet() {
+    return this._encoding;
+  }
+  get inputEncoding() {
+    return this._encoding;
+  }
+  get doctype() {
+    for (const childNode of this._children()) {
+      if (childNode.nodeType === NODE_TYPE.DOCUMENT_TYPE_NODE) {
+        return childNode;
+      }
+    }
+    return null;
+  }
+  get URL() {
+    return whatwgURL.serializeURL(this._URL);
+  }
+  get documentURI() {
+    return whatwgURL.serializeURL(this._URL);
+  }
+  get location() {
+    return this._defaultView ? this._location : null;
+  }
+
+  // https://dom.spec.whatwg.org/#dom-document-documentelement
+  get documentElement() {
+    return this.firstElementChild;
+  }
+
+  get implementation() {
+    return this._implementation;
+  }
+  set implementation(implementation) {
+    this._implementation = implementation;
+  }
+
+  get defaultView() {
+    return this._defaultView;
+  }
+
+  get currentScript() {
+    return this._currentScript;
+  }
+
+  get readyState() {
+    return this._currentDocumentReadiness;
+  }
+
+  set readyState(state) {
+    this._currentDocumentReadiness = state;
+    fireAnEvent("readystatechange", this);
+  }
+
+  hasFocus() {
+    return Boolean(this._lastFocusedElement);
+  }
+
+  _clearNamedPropertyCache() {
+    this.#namedPropertyElementsCache = null;
+  }
+
+  write(...args) {
+    let text = "";
+    for (let i = 0; i < args.length; ++i) {
+      text += args[i];
+    }
+
+    if (this._parsingMode === "xml") {
+      throw DOMException.create(this._globalObject, [
+        "Cannot use document.write on XML documents",
+        "InvalidStateError"
+      ]);
+    }
+
+    if (this._throwOnDynamicMarkupInsertionCounter > 0) {
+      throw DOMException.create(this._globalObject, [
+        "Cannot use document.write while a custom element upgrades",
+        "InvalidStateError"
+      ]);
+    }
+
+    if (this._writeAfterElement) {
+      // If called from an script element directly (during the first tick),
+      // the new elements are inserted right after that element.
+      const tempDiv = this.createElement("div");
+      tempDiv.innerHTML = text;
+
+      let child = tempDiv.firstChild;
+      let previous = this._writeAfterElement;
+      const parent = this._writeAfterElement.parentNode;
+
+      while (child) {
+        const node = child;
+        child = child.nextSibling;
+
+        node._isMovingDueToDocumentWrite = true; // hack for script execution
+        parent.insertBefore(node, previous.nextSibling);
+        node._isMovingDueToDocumentWrite = false;
+
+        previous = node;
+      }
+    } else if (this.readyState === "loading") {
+      // During page loading, document.write appends to the current element
+      // Find the last child that has been added to the document.
+      if (this.lastChild) {
+        let node = this;
+        while (node.lastChild && node.lastChild.nodeType === NODE_TYPE.ELEMENT_NODE) {
+          node = node.lastChild;
+        }
+        node.innerHTML = text;
+      } else {
+        clearChildNodes(this);
+        parseIntoDocument(text, this);
+      }
+    } else if (text) {
+      clearChildNodes(this);
+      parseIntoDocument(text, this);
+    }
+  }
+
+  writeln(...args) {
+    this.write(...args, "\n");
+  }
+
+  // This is implemented separately for Document (which has a _byIdCache) and DocumentFragment (which does not).
+  getElementById(id) {
+    return this._byIdCache.get(id);
+  }
+
+  get referrer() {
+    return this._referrer || "";
+  }
+  get lastModified() {
+    return this._lastModified;
+  }
+  get images() {
+    return this.getElementsByTagName("IMG");
+  }
+  get embeds() {
+    return this.getElementsByTagName("EMBED");
+  }
+  get plugins() {
+    return this.embeds;
+  }
+  get links() {
+    return HTMLCollection.createImpl(this._globalObject, [], {
+      element: this,
+      query: () => this._descendantsToArray(node => {
+        return (node._localName === "a" || node._localName === "area") &&
+          node.hasAttributeNS(null, "href") && node._namespaceURI === HTML_NS;
+      })
+    });
+  }
+  get forms() {
+    return this.getElementsByTagName("FORM");
+  }
+  get scripts() {
+    return this.getElementsByTagName("SCRIPT");
+  }
+  get anchors() {
+    return HTMLCollection.createImpl(this._globalObject, [], {
+      element: this,
+      query: () => this._descendantsToArray(node => {
+        return node._localName === "a" && node.hasAttributeNS(null, "name") && node._namespaceURI === HTML_NS;
+      })
+    });
+  }
+
+  // The applets attribute must return an
+  // HTMLCollection rooted at the Document node,
+  // whose filter matches nothing.
+  // (It exists for historical reasons.)
+  get applets() {
+    return HTMLCollection.createImpl(this._globalObject, [], {
+      element: this,
+      query: () => []
+    });
+  }
+
+  open() {
+    let child = this.firstChild;
+    while (child) {
+      this.removeChild(child);
+      child = this.firstChild;
+    }
+    this._invalidateCaches();
+    return this;
+  }
+  close(noQueue) {
+    if (this._isDestroyed) {
+      return Promise.resolve();
+    }
+    // In some cases like when creating an empty iframe, I want to emit the
+    // events right away to avoid problems if later I asign the property src.
+    if (noQueue) {
+      this.readyState = "complete";
+
+      fireAnEvent("DOMContentLoaded", this, undefined, { bubbles: true });
+      fireAnEvent("load", this);
+
+      return Promise.resolve();
+    }
+    this._queue.resume();
+
+    const dummyPromise = Promise.resolve();
+    const { promise: completion, resolve: complete } = Promise.withResolvers();
+
+    const onDOMContentLoad = () => {
+      const doc = this;
+      function dispatchEvent() {
+        if (doc._isDestroyed) {
+          return;
+        }
+        // https://html.spec.whatwg.org/#the-end
+        doc.readyState = "interactive";
+        fireAnEvent("DOMContentLoaded", doc, undefined, { bubbles: true });
+      }
+
+      return new Promise(resolve => {
+        if (!this._deferQueue.tail) {
+          dispatchEvent();
+          resolve();
+          return;
+        }
+
+        this._deferQueue.setListener(() => {
+          dispatchEvent();
+          resolve();
+        });
+
+        this._deferQueue.resume();
+      });
+    };
+
+    const onLoad = () => {
+      const doc = this;
+      function dispatchEvent() {
+        if (!doc._isDestroyed) {
+          doc.readyState = "complete";
+          fireAnEvent("load", doc);
+        }
+        complete();
+      }
+
+      return new Promise(resolve => {
+        if (this._asyncQueue.count() === 0) {
+          dispatchEvent();
+          resolve();
+          return;
+        }
+
+        this._asyncQueue.setListener(() => {
+          dispatchEvent();
+          resolve();
+        });
+      });
+    };
+
+    this._queue.push(dummyPromise, onDOMContentLoad, null);
+    // Complete after all resources, even when destruction suppresses the load event: frame loading must not wait
+    // on an event that will never fire.
+    this._queue.push(dummyPromise, onLoad, null, true);
+    return completion;
+  }
+
+  // Queue document-associated work, discarding it on destruction. Callers can also pass an operation's signal;
+  // stopping fetches must not discard unrelated tasks. The promise settles even when the task is discarded, so
+  // callers can release resources in `finally`. This does not model task sources or waiting for a document to
+  // become fully active.
+  // https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task
+  _queueATask(steps, { signal } = {}) {
+    return new Promise((resolve, reject) => {
+      setImmediate(() => {
+        if (this._isDestroyed || signal?.aborted) {
+          resolve();
+          return;
+        }
+        try {
+          resolve(steps());
+        } catch (error) {
+          reject(error);
+        }
+      });
+    });
+  }
+
+  /**
+   * Named property name to the elements contributing it, in tree order. Tree insertions and removals always discard
+   * this cache; attribute changes do so only when they can change the map.
+   *
+   * https://html.spec.whatwg.org/multipage/dom.html#dom-document-nameditem-filter
+   */
+  get #namedPropertyElements() {
+    if (this.#namedPropertyElementsCache === null) {
+      const map = new Map();
+
+      function add(name, element) {
+        const elements = map.get(name);
+        if (elements === undefined) {
+          map.set(name, [element]);
+        } else if (elements[elements.length - 1] !== element) {
+          // Guards against an element whose id and name are equal contributing twice.
+          elements.push(element);
+        }
+      }
+
+      for (const element of this._descendantsToArray(isNamedPropertyElement)) {
+        const name = element.getAttributeNS(null, "name");
+        const hasName = name !== null && name !== "";
+        const id = element.getAttributeNS(null, "id");
+
+        // An object element contributes its id; an img element only alongside a non-empty name.
+        // The id is added first: the standard orders values from id attributes before values from
+        // name attributes when the same element contributes both.
+        if (id !== null && id !== "" && canContributeIdToNamedProperties(element, hasName)) {
+          add(id, element);
+        }
+
+        if (hasName) {
+          add(name, element);
+        }
+      }
+
+      this.#namedPropertyElementsCache = map;
+    }
+
+    return this.#namedPropertyElementsCache;
+  }
+
+  _namedPropertyElementAttributeModified(element, name, value, oldValue) {
+    if (this.#namedPropertyElementsCache !== null && attributeAffectsNamedProperties(element, name, value, oldValue)) {
+      this.#namedPropertyElementsCache = null;
+    }
+  }
+
+  get [idlUtils.supportedPropertyNames]() {
+    return this.#namedPropertyElements.keys();
+  }
+
+  [idlUtils.supportsPropertyName](name) {
+    return this.#namedPropertyElements.has(name);
+  }
+
+  // https://html.spec.whatwg.org/multipage/dom.html#dom-document-nameditem
+  [idlUtils.namedGet](name) {
+    const elements = this.#namedPropertyElements.get(name);
+
+    if (elements === undefined) {
+      return undefined;
+    }
+
+    if (elements.length === 1) {
+      const [element] = elements;
+
+      // A lone iframe answers with its content window rather than the element.
+      if (element._localName === "iframe") {
+        const { contentWindow } = element;
+        if (contentWindow !== null) {
+          return contentWindow;
+        }
+      }
+
+      return element;
+    }
+
+    // Collections are per name and outlive the cache above, since the standard hands out the same
+    // collection each time. The query reads the current map, so the collection stays live.
+    this.#namedPropertyCollections ??= new WeakValueMap();
+    let collection = this.#namedPropertyCollections.get(name);
+    if (collection === undefined) {
+      collection = HTMLCollection.createImpl(this._globalObject, [], {
+        element: this,
+        query: () => this.#namedPropertyElements.get(name) ?? []
+      });
+      this.#namedPropertyCollections.set(name, collection);
+    }
+
+    return collection;
+  }
+
+  getElementsByName(elementName) {
+    return NodeList.createImpl(this._globalObject, [], {
+      element: this,
+      query: () => this._descendantsToArray(node => {
+        return node.getAttributeNS && node.getAttributeNS(null, "name") === elementName;
+      })
+    });
+  }
+
+  get title() {
+    const { documentElement } = this;
+    let value = "";
+
+    if (documentElement && documentElement._localName === "svg") {
+      const svgTitleElement = firstChildWithLocalName(documentElement, "title", SVG_NS);
+
+      if (svgTitleElement) {
+        value = childTextContent(svgTitleElement);
+      }
+    } else {
+      const titleElement = firstDescendantWithLocalName(this, "title");
+
+      if (titleElement) {
+        value = childTextContent(titleElement);
+      }
+    }
+
+    value = stripAndCollapseASCIIWhitespace(value);
+
+    return value;
+  }
+
+  set title(value) {
+    const { documentElement } = this;
+    let element;
+
+    if (documentElement && documentElement._localName === "svg") {
+      element = firstChildWithLocalName(documentElement, "title", SVG_NS);
+
+      if (!element) {
+        element = this.createElementNS(SVG_NS, "title");
+
+        this._insert(element, documentElement.firstChild);
+      }
+
+      element.textContent = value;
+    } else if (documentElement && documentElement._namespaceURI === HTML_NS) {
+      const titleElement = firstDescendantWithLocalName(this, "title");
+      const headElement = this.head;
+
+      if (titleElement === null && headElement === null) {
+        return;
+      }
+
+      if (titleElement !== null) {
+        element = titleElement;
+      } else {
+        element = this.createElement("title");
+        headElement._append(element);
+      }
+
+      element.textContent = value;
+    }
+  }
+
+  get dir() {
+    return this.documentElement ? this.documentElement.dir : "";
+  }
+  set dir(value) {
+    if (this.documentElement) {
+      this.documentElement.dir = value;
+    }
+  }
+
+  get head() {
+    return this.documentElement ? firstChildWithLocalName(this.documentElement, "head") : null;
+  }
+
+  get body() {
+    const { documentElement } = this;
+    if (!documentElement || documentElement._localName !== "html" ||
+        documentElement._namespaceURI !== HTML_NS) {
+      return null;
+    }
+
+    return firstChildWithLocalNames(this.documentElement, new Set(["body", "frameset"]));
+  }
+
+  set body(value) {
+    if (value === null ||
+        value._namespaceURI !== HTML_NS ||
+        (value._localName !== "body" && value._localName !== "frameset")) {
+      throw DOMException.create(this._globalObject, [
+        "Cannot set the body to null or a non-body/frameset element",
+        "HierarchyRequestError"
+      ]);
+    }
+
+    const bodyElement = this.body;
+    if (value === bodyElement) {
+      return;
+    }
+
+    if (bodyElement !== null) {
+      bodyElement.parentNode._replace(value, bodyElement);
+      return;
+    }
+
+    const { documentElement } = this;
+    if (documentElement === null) {
+      throw DOMException.create(this._globalObject, [
+        "Cannot set the body when there is no document element",
+        "HierarchyRequestError"
+      ]);
+    }
+
+    documentElement._append(value);
+  }
+
+  createEvent(type) {
+    const typeLower = type.toLowerCase();
+    const eventWrapper = eventInterfaceTable[typeLower] || null;
+
+    if (!eventWrapper) {
+      throw DOMException.create(this._globalObject, [
+        "The provided event type (\"" + type + "\") is invalid",
+        "NotSupportedError"
+      ]);
+    }
+
+    const impl = eventWrapper.createImpl(this._globalObject, [""]);
+    impl._initializedFlag = false;
+    return impl;
+  }
+
+  createRange() {
+    return Range.createImpl(this._globalObject, [], {
+      start: { node: this, offset: 0 },
+      end: { node: this, offset: 0 }
+    });
+  }
+
+  createProcessingInstruction(target, data) {
+    validateXMLName(this._globalObject, target);
+
+    if (data.includes("?>")) {
+      throw DOMException.create(this._globalObject, [
+        "Processing instruction data cannot contain the string \"?>\"",
+        "InvalidCharacterError"
+      ]);
+    }
+
+    return this._createProcessingInstruction(target, data);
+  }
+
+  // Cloning existing processing instructions bypasses `createProcessingInstruction()`'s validation.
+  _createProcessingInstruction(target, data) {
+    return ProcessingInstruction.createImpl(this._globalObject, [], {
+      ownerDocument: this,
+      target,
+      data
+    });
+  }
+
+  // https://dom.spec.whatwg.org/#dom-document-createcdatasection
+  createCDATASection(data) {
+    if (this._parsingMode === "html") {
+      throw DOMException.create(this._globalObject, [
+        "Cannot create CDATA sections in HTML documents",
+        "NotSupportedError"
+      ]);
+    }
+
+    if (data.includes("]]>")) {
+      throw DOMException.create(this._globalObject, [
+        "CDATA section data cannot contain the string \"]]>\"",
+        "InvalidCharacterError"
+      ]);
+    }
+
+    return this._createCDATASection(data);
+  }
+
+  // Cloning existing CDATA sections bypasses `createCDATASection()`'s document and data restrictions.
+  _createCDATASection(data) {
+    return CDATASection.createImpl(this._globalObject, [], {
+      ownerDocument: this,
+      data
+    });
+  }
+
+  createTextNode(data) {
+    return Text.createImpl(this._globalObject, [], {
+      ownerDocument: this,
+      data
+    });
+  }
+
+  createComment(data) {
+    return Comment.createImpl(this._globalObject, [], {
+      ownerDocument: this,
+      data
+    });
+  }
+
+  // https://dom.spec.whatwg.org/#dom-document-createelement
+  createElement(localName, options) {
+    validateElementLocalName(this._globalObject, localName);
+
+    if (this._parsingMode === "html") {
+      localName = asciiLowercase(localName);
+    }
+
+    let isValue = null;
+    if (options && options.is !== undefined) {
+      isValue = options.is;
+    }
+
+    const namespace = this._parsingMode === "html" || this.contentType === "application/xhtml+xml" ? HTML_NS : null;
+
+    return createElement(this, localName, namespace, null, isValue, true);
+  }
+
+  // https://dom.spec.whatwg.org/#dom-document-createelementns
+  createElementNS(namespace, qualifiedName, options) {
+    return internalCreateElementNSSteps(this, namespace, qualifiedName, options);
+  }
+
+  createDocumentFragment() {
+    return DocumentFragment.createImpl(this._globalObject, [], { ownerDocument: this });
+  }
+
+  // https://dom.spec.whatwg.org/#dom-document-createattribute
+  createAttribute(localName) {
+    validateAttributeLocalName(this._globalObject, localName);
+
+    if (this._parsingMode === "html") {
+      localName = asciiLowercase(localName);
+    }
+
+    return this._createAttribute({ localName });
+  }
+
+  // https://dom.spec.whatwg.org/#dom-document-createattributens
+  createAttributeNS(namespace, name) {
+    if (namespace === undefined) {
+      namespace = null;
+    }
+    namespace = namespace !== null ? String(namespace) : namespace;
+
+    const extracted = validateAndExtract(this._globalObject, namespace, name, "attribute");
+    return this._createAttribute({
+      namespace: extracted.namespace,
+      namespacePrefix: extracted.prefix,
+      localName: extracted.localName
+    });
+  }
+
+  // Using this helper function rather than directly calling generatedAttr.createImpl may be preferred in some files,
+  // to avoid introducing a potentially cyclic dependency on generated/Attr.js.
+  _createAttribute({
+    localName,
+    value,
+    namespace,
+    namespacePrefix
+  }) {
+    return generatedAttr.createImpl(this._globalObject, [], {
+      localName,
+      value,
+      namespace,
+      namespacePrefix,
+      ownerDocument: this
+    });
+  }
+
+  createTreeWalker(root, whatToShow, filter) {
+    return TreeWalker.createImpl(this._globalObject, [], { root, whatToShow, filter });
+  }
+
+  createNodeIterator(root, whatToShow, filter) {
+    const nodeIterator = NodeIterator.createImpl(this._globalObject, [], { root, whatToShow, filter });
+    this._workingNodeIterators.add(nodeIterator);
+    return nodeIterator;
+  }
+
+  importNode(node, deep) {
+    if (node.nodeType === NODE_TYPE.DOCUMENT_NODE) {
+      throw DOMException.create(this._globalObject, [
+        "Cannot import a document node",
+        "NotSupportedError"
+      ]);
+    } else if (ShadowRoot.isImpl(node)) {
+      throw DOMException.create(this._globalObject, [
+        "Cannot adopt a shadow root",
+        "NotSupportedError"
+      ]);
+    }
+
+    return clone(node, this, deep);
+  }
+
+  // https://dom.spec.whatwg.org/#dom-document-adoptnode
+  adoptNode(node) {
+    if (node.nodeType === NODE_TYPE.DOCUMENT_NODE) {
+      throw DOMException.create(this._globalObject, [
+        "Cannot adopt a document node",
+        "NotSupportedError"
+      ]);
+    } else if (ShadowRoot.isImpl(node)) {
+      throw DOMException.create(this._globalObject, [
+        "Cannot adopt a shadow root",
+        "HierarchyRequestError"
+      ]);
+    }
+
+    this._adoptNode(node);
+
+    return node;
+  }
+
+  // https://dom.spec.whatwg.org/#concept-node-adopt
+  _adoptNode(node) {
+    const newDocument = this;
+    const oldDocument = node._ownerDocument;
+
+    const parent = node.parentNode;
+    if (parent) {
+      parent._remove(node);
+    }
+
+    if (oldDocument !== newDocument) {
+      for (const inclusiveDescendant of node._shadowIncludingInclusiveDescendants()) {
+        inclusiveDescendant._ownerDocument = newDocument;
+
+        if (inclusiveDescendant.nodeType === NODE_TYPE.ELEMENT_NODE) {
+          for (const attribute of inclusiveDescendant._attributeList) {
+            attribute._ownerDocument = newDocument;
+          }
+        }
+
+        // Collections built before the move captured the old document's HTML-ness, and the spec
+        // keeps those working. A fresh call has to see the new document, so clear the memoized ones.
+        // It is this subtree that changed document; the old parent's collections are unaffected by the move.
+        inclusiveDescendant._clearMemoizedQueries();
+
+        if (inclusiveDescendant._ceState === "custom") {
+          enqueueCECallbackReaction(inclusiveDescendant, "adoptedCallback", [
+            idlUtils.wrapperForImpl(oldDocument),
+            idlUtils.wrapperForImpl(newDocument)
+          ]);
+        }
+
+        if (inclusiveDescendant._adoptingSteps) {
+          inclusiveDescendant._adoptingSteps(oldDocument);
+        }
+      }
+    }
+  }
+
+  get cookie() {
+    return this._cookieJar.getCookieStringSync(this.URL, { http: false });
+  }
+  set cookie(cookieStr) {
+    cookieStr = String(cookieStr);
+    this._cookieJar.setCookieSync(cookieStr, this.URL, {
+      http: false,
+      ignoreError: true
+    });
+  }
+
+  // The clear(), captureEvents(), and releaseEvents() methods must do nothing
+  clear() {}
+
+  captureEvents() {}
+
+  releaseEvents() {}
+
+  get styleSheets() {
+    if (!this._styleSheets) {
+      this._styleSheets = StyleSheetList.createImpl(this._globalObject);
+    }
+
+    // TODO: each style and link element should register its sheet on creation
+    // and remove it on removal.
+    return this._styleSheets;
+  }
+
+  get hidden() {
+    if (this._defaultView && this._defaultView._pretendToBeVisual) {
+      return false;
+    }
+
+    return true;
+  }
+
+  get visibilityState() {
+    if (this._defaultView && this._defaultView._pretendToBeVisual) {
+      return "visible";
+    }
+
+    return "prerender";
+  }
+
+  // https://w3c.github.io/selection-api/#extensions-to-document-interface
+  getSelection() {
+    return this._defaultView ? this._defaultView._selection : null;
+  }
+
+  // Needed to ensure that the resulting document has the correct prototype chain:
+  // https://dom.spec.whatwg.org/#concept-node-clone says "that implements the same interfaces as node".
+  _cloneDocument() {
+    const copy = documents.createImpl(
+      this._globalObject,
+      {
+        contentType: this.contentType,
+        encoding: this._encoding,
+        parsingMode: this._parsingMode
+      }
+    );
+
+    copy._URL = this._URL;
+    copy._origin = this._origin;
+    return copy;
+  }
+}
+
+eventAccessors.createEventAccessor(DocumentImpl.prototype, "readystatechange");
+mixin(DocumentImpl.prototype, DocumentOrShadowRootImpl.prototype);
+mixin(DocumentImpl.prototype, GlobalEventHandlersImpl.prototype);
+mixin(DocumentImpl.prototype, NonElementParentNodeImpl.prototype);
+mixin(DocumentImpl.prototype, ParentNodeImpl.prototype);
+
+module.exports = {
+  implementation: DocumentImpl
+};

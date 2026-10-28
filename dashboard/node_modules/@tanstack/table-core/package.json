@@ -1,0 +1,62 @@
+{
+  "name": "@tanstack/table-core",
+  "version": "9.2.4",
+  "description": "Headless UI for building powerful tables & datagrids for TS/JS.",
+  "author": "Tanner Linsley",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TanStack/table.git",
+    "directory": "packages/table-core"
+  },
+  "homepage": "https://tanstack.com/table",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/tannerlinsley"
+  },
+  "keywords": [
+    "react",
+    "vue",
+    "solid",
+    "svelte",
+    "lit",
+    "angular",
+    "table",
+    "table-core",
+    "datagrid",
+    "tanstack-intent"
+  ],
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./experimental-worker-plugin": "./dist/experimental-worker-plugin.js",
+    "./flex-render": "./dist/flex-render.js",
+    "./reactivity": "./dist/reactivity.js",
+    "./static-functions": "./dist/static-functions.js",
+    "./store-reactivity-bindings": "./dist/store-reactivity-bindings.js",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "dist",
+    "skills"
+  ],
+  "dependencies": {
+    "@tanstack/store": "^0.11.1"
+  },
+  "scripts": {
+    "clean": "rimraf ./build && rimraf ./dist",
+    "lint:fix": "eslint ./src --fix",
+    "test:eslint": "eslint ./src",
+    "test:coverage": "vitest run --coverage",
+    "test:lib": "vitest",
+    "test:lib:dev": "pnpm test:lib --watch",
+    "test:types": "tsc && tsc -p tests/tsconfig.declaration-emit.json",
+    "test:build": "publint --strict",
+    "build": "tsdown && node ../../scripts/rewrite-table-core-dts.mjs"
+  }
+}

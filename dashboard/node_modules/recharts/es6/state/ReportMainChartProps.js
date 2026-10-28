@@ -1,0 +1,38 @@
+import { memo, useEffect } from 'react';
+import { useIsPanorama } from '../context/PanoramaContext';
+import { setLayout, setMargin } from './layoutSlice';
+import { useAppDispatch } from './hooks';
+import { propsAreEqual } from '../util/propsAreEqual';
+
+/**
+ * "Main" props are props that are only accepted on the main chart,
+ * as opposed to the small panorama chart inside a Brush.
+ */
+
+function ReportMainChartPropsImpl(_ref) {
+  var layout = _ref.layout,
+    margin = _ref.margin;
+  var dispatch = useAppDispatch();
+
+  /*
+   * Skip dispatching properties in panorama chart for two reasons:
+   * 1. The root chart should be deciding on these properties, and
+   * 2. Brush reads these properties from redux store, and so they must remain stable
+   *      to avoid circular dependency and infinite re-rendering.
+   */
+  var isPanorama = useIsPanorama();
+  /*
+   * useEffect here is required to avoid the "Cannot update a component while rendering a different component" error.
+   * https://github.com/facebook/react/issues/18178
+   *
+   * Reported in https://github.com/recharts/recharts/issues/5514
+   */
+  useEffect(() => {
+    if (!isPanorama) {
+      dispatch(setLayout(layout));
+      dispatch(setMargin(margin));
+    }
+  }, [dispatch, isPanorama, layout, margin]);
+  return null;
+}
+export var ReportMainChartProps = /*#__PURE__*/memo(ReportMainChartPropsImpl, propsAreEqual);
