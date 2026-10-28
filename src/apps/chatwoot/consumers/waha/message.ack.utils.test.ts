@@ -1,8 +1,11 @@
+import { requireModule } from '@waha/__tests__/esm';
 import type { WAHAEngine, WAHAEvents } from '@waha/structures/enums.dto';
 import {
   ShouldMarkAsReadInChatWoot,
   ShouldProcessAckInChatWoot,
 } from '@waha/apps/chatwoot/consumers/waha/message.ack.utils';
+
+jest.mock('@adiwajshing/baileys', () => requireModule('@adiwajshing/baileys'));
 
 interface TestParam {
   name: string;

@@ -1,8 +1,11 @@
+import { requireModule } from '@waha/__tests__/esm';
 import { PixMessage } from '@waha/apps/chatwoot/messages/to/chatwoot/PixMessage';
 import { resolveProtoMessage } from '@waha/apps/chatwoot/messages/to/chatwoot';
 import { WAMessage } from '@waha/structures/responses.dto';
 import { JestLogger } from '@waha/apps/app_sdk/jest/JestLogger';
 import { i18n } from '@waha/apps/chatwoot/i18n';
+
+jest.mock('@adiwajshing/baileys', () => requireModule('@adiwajshing/baileys'));
 
 describe('PixMessage - pt-BR', () => {
   const locale = i18n.locale('pt-BR');
