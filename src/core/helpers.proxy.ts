@@ -60,6 +60,19 @@ function getAuthenticatedUrl(
 }
 
 /**
+ * Proxy URL that keeps the server scheme (http by default)
+ */
+export function buildProxyUrl(config: ProxyConfig): string {
+  const { server, username, password } = config;
+  const auth = username && password ? `${username}:${password}@` : '';
+  const match = server.match(/^(https?):\/\/(.+)$/);
+  if (match) {
+    return `${match[1]}://${auth}${match[2]}`;
+  }
+  return `http://${auth}${server}`;
+}
+
+/**
  * Return https Agent proxy for the config
  * @param proxyConfig
  */
