@@ -193,7 +193,7 @@ cli.cmd.contacts.description: |-
   👤 运行 `contacts pull` 启动同步，或运行 `contacts status` 查看进度。
 
 cli.cmd.contacts.action.description: |-
-  使用 `start` 开始拉取联系人，或使用 `status` 查看进行中的任务。
+  使用 `pull` 开始拉取联系人，或使用 `status` 查看进行中的任务。
 
 cli.cmd.contacts.pull.description: |-
   开始将 WhatsApp 联系人拉取到此收件箱。
@@ -208,7 +208,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   在联系人批次之间的延迟。
 
 cli.cmd.contacts.pull.option.avatar: |-
-  选择如何拉取联系人头像：`skip`、`if-missing` 或 `update`。
+  如何拉取头像：`if-missing` - 仅为没有头像的联系人拉取，`update` - 为每个联系人刷新。未设置此选项时不拉取头像。
 
 cli.cmd.contacts.pull.option.update-names: |-
   如何更新已有联系人的名称：`no` - 不改动名称，只有新联系人会获得名称（通讯录、push name 或电话号码）。`if-raw` - 保留手动设置的名称，占位名称（电话号码、push name）从通讯录解析。`always` - 以通讯录为准，替换任何名称。
@@ -594,16 +594,18 @@ cli.cmd.messages.pull.option.channels: 拉取历史时包含 WhatsApp 频道。
 cli.cmd.messages.pull.option.status: 拉取历史时包含 WhatsApp 状态更新。
 cli.cmd.messages.pull.option.broadcast: 拉取历史时包含群发列表。
 cli.cmd.messages.pull.option.media: 拉取历史时下载媒体附件（图片、视频、文件）。
-cli.cmd.messages.pull.option.pause:
-  将拉取任务以暂停状态加入队列，并在完成前暂停新的 WhatsApp 消息处理。
+cli.cmd.messages.pull.option.pause: |-
+  在拉取期间暂停收件箱和 WhatsApp 队列，完成前不处理新消息。
 cli.cmd.messages.pull.option.resolve-conversations: 在处理完所有历史消息后将会话标记为已解决。
 cli.cmd.messages.pull.error.pause-no-queue:
   ⛔ 无法使用 `--pause`，因为此配置中 **queue** 命令已禁用。
 cli.cmd.queue.description: 管理队列。
 cli.cmd.queue.summary: 对队列执行操作。
-cli.cmd.queue.action.description: 选择一个操作。
+cli.cmd.queue.action.description: |-
+  `status` 查看队列状态，`start` 恢复队列，`stop` 暂停队列。
 cli.cmd.queue.status.description: 显示队列状态。
-cli.cmd.queue.argument.name: 队列名称：`inbox` 或 `whatsapp`（可选）。
+cli.cmd.queue.argument.name: |-
+  队列组（`inbox` 或 `whatsapp`）或具体队列名称。默认为所有队列。
 cli.cmd.queue.start.description: 按名称启动队列。
 cli.cmd.queue.stop.description: 按名称停止队列。
 cli.cmd.queue.paused: ⚪🧩 队列已暂停。发送 `queue status` 查看状态。

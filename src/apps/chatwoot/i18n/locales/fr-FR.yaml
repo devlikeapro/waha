@@ -193,7 +193,7 @@ cli.cmd.contacts.description: |-
   👤 Exécutez `contacts pull` pour lancer une synchronisation ou `contacts status` pour suivre la progression.
 
 cli.cmd.contacts.action.description: |-
-  Utilisez `start` pour démarrer l'import de contacts ou `status` pour consulter la tâche active.
+  Utilisez `pull` pour démarrer l'import de contacts ou `status` pour consulter la tâche active.
 
 cli.cmd.contacts.pull.description: |-
   Commencez à importer les contacts WhatsApp dans la boîte de réception.
@@ -208,7 +208,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   Délai entre les lots de contacts.
 
 cli.cmd.contacts.pull.option.avatar: |-
-  Choisissez comment charger les avatars des contacts : `skip`, `if-missing` ou `update`.
+  Comment charger les avatars : `if-missing` - uniquement pour les contacts sans avatar, `update` - rafraîchir pour chaque contact. Sans cette option, aucun avatar n'est chargé.
 
 cli.cmd.contacts.pull.option.update-names: |-
   Comment mettre à jour les noms des contacts existants : `no` - ne pas toucher aux noms, seuls les nouveaux contacts en reçoivent un (carnet d'adresses, push name ou numéro de téléphone). `if-raw` - conserver les noms saisis à la main, résoudre les noms génériques (numéro de téléphone, push name) depuis le carnet d'adresses. `always` - le carnet d'adresses fait foi, remplacer tout nom.
@@ -613,9 +613,8 @@ cli.cmd.messages.pull.option.broadcast:
 cli.cmd.messages.pull.option.media:
   Télécharge les pièces jointes (images, vidéos, fichiers) lors de la
   récupération.
-cli.cmd.messages.pull.option.pause:
-  Met la tâche de récupération en file d’attente à l’arrêt, suspendant les
-  nouveaux messages WhatsApp jusqu’à la fin.
+cli.cmd.messages.pull.option.pause: |-
+  Met en pause les files inbox et WhatsApp pendant la récupération, afin qu'aucun nouveau message ne soit traité avant la fin.
 cli.cmd.messages.pull.option.resolve-conversations:
   Marque les conversations comme résolues après le traitement de tout
   l’historique.
@@ -624,10 +623,11 @@ cli.cmd.messages.pull.error.pause-no-queue:
   dans cette configuration.
 cli.cmd.queue.description: Gérer les files.
 cli.cmd.queue.summary: Effectuer des actions sur les files.
-cli.cmd.queue.action.description: Choisissez une action.
+cli.cmd.queue.action.description: |-
+  `status` pour afficher l'état des files, `start` pour les reprendre ou `stop` pour les mettre en pause.
 cli.cmd.queue.status.description: Affiche l’état d’une file.
-cli.cmd.queue.argument.name:
-  'Nom de la file : `inbox` ou `whatsapp` (facultatif).'
+cli.cmd.queue.argument.name: |-
+  Groupe de files (`inbox` ou `whatsapp`) ou nom d'une file précise. Par défaut : toutes les files.
 cli.cmd.queue.start.description: Démarre une file par son nom.
 cli.cmd.queue.stop.description: Arrête une file par son nom.
 cli.cmd.queue.paused:

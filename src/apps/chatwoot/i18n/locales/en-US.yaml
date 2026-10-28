@@ -475,7 +475,7 @@ cli.cmd.messages.pull.option.media: |-
   Fetch media attachments (images, videos, files) when pulling history.
 
 cli.cmd.messages.pull.option.pause: |-
-  Enqueue the messages pull job in a paused state, halting new WhatsApp message processing until the pull completes.
+  Pause the inbox and WhatsApp queues while the pull runs, so no new messages are processed until it completes.
 
 cli.cmd.messages.pull.option.resolve-conversations: |-
   Mark the conversations as resolved after all history messages are processed.
@@ -490,13 +490,13 @@ cli.cmd.queue.summary: |-
   Perform queue actions.
 
 cli.cmd.queue.action.description: |-
-  Choose an action.
+  `status` to show queue state, `start` to resume or `stop` to pause queues.
 
 cli.cmd.queue.status.description: |-
   Show the status of a queue.
 
 cli.cmd.queue.argument.name: |-
-  Queue name: `inbox` or `whatsapp` (optional).
+  Queue group (`inbox` or `whatsapp`) or a specific queue name. Defaults to all queues.
 
 cli.cmd.queue.start.description: |-
   Start a queue by name.
@@ -505,10 +505,10 @@ cli.cmd.queue.stop.description: |-
   Stop a queue by name.
 
 cli.cmd.queue.paused: |-
-  ⚪🧩 Queues has been paused. Send `queue status` to check the status.
+  ⚪🧩 Queues have been paused. Send `queue status` to check the status.
 
 cli.cmd.queue.resumed: |-
-  🟢🧩 Queues has been resumed. Send `queue status` to check the status.
+  🟢🧩 Queues have been resumed. Send `queue status` to check the status.
 
 cli.cmd.queue.status.result: |-
   📊 Queue Status:
@@ -543,7 +543,7 @@ cli.cmd.contacts.description: |-
   👤 Run `contacts pull` to launch a sync or `contacts status` to inspect progress.
 
 cli.cmd.contacts.action.description: |-
-  `start` to launch a contact pull or `status` to inspect the active job.
+  `pull` to start a contact pull or `status` to inspect the active job.
 
 cli.cmd.contacts.pull.description: |-
   Start pulling WhatsApp contacts into the inbox.
@@ -561,7 +561,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   Delay between batches of contacts.
 
 cli.cmd.contacts.pull.option.avatar: |-
-  Choose how to pull avatars for contacts.
+  How to pull avatars: `if-missing` - only for contacts without one, `update` - refresh for every contact. Avatars are not pulled unless this option is set.
 
 cli.cmd.contacts.pull.option.update-names: |-
   How to update names of existing contacts: `no` - do not touch names, only new contacts get one (phone book, push name or phone number). `if-raw` - keep names set by hand, replace raw names (phone number, push name) from the phone book. `always` - the phone book is the source of truth, replace any name.

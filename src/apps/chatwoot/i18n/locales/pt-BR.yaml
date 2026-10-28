@@ -194,7 +194,7 @@ cli.cmd.contacts.description: |-
   👤 Execute `contacts pull` para iniciar uma sincronização ou `contacts status` para acompanhar o progresso.
 
 cli.cmd.contacts.action.description: |-
-  Use `start` para iniciar a busca de contatos ou `status` para conferir o trabalho ativo.
+  Use `pull` para iniciar a busca de contatos ou `status` para conferir o trabalho ativo.
 
 cli.cmd.contacts.pull.description: |-
   Comece a importar contatos do WhatsApp para esta caixa de entrada.
@@ -209,7 +209,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   Atraso entre os lotes de contatos.
 
 cli.cmd.contacts.pull.option.avatar: |-
-  Escolha como buscar os avatares dos contatos: `skip`, `if-missing` ou `update`.
+  Como buscar avatares: `if-missing` - apenas para contatos sem avatar, `update` - atualizar para todos os contatos. Sem esta opção, nenhum avatar é buscado.
 
 cli.cmd.contacts.pull.option.update-names: |-
   Como atualizar os nomes de contatos existentes: `no` - não mexer nos nomes, só contatos novos recebem um (agenda, push name ou número de telefone). `if-raw` - manter nomes definidos manualmente, resolver os genéricos (número de telefone, push name) a partir da agenda. `always` - a agenda é a fonte da verdade, substituir qualquer nome.
@@ -611,9 +611,8 @@ cli.cmd.messages.pull.option.broadcast:
   Inclui listas de transmissão ao buscar o histórico.
 cli.cmd.messages.pull.option.media:
   Baixa anexos de mídia (imagens, vídeos, arquivos) ao buscar o histórico.
-cli.cmd.messages.pull.option.pause:
-  Enfileira o trabalho de busca de mensagens em estado pausado, interrompendo o
-  processamento de novos WhatsApp até finalizar.
+cli.cmd.messages.pull.option.pause: |-
+  Pausa as filas da caixa de entrada e do WhatsApp enquanto a busca é executada, para que nenhuma mensagem nova seja processada até ela terminar.
 cli.cmd.messages.pull.option.resolve-conversations:
   Marca as conversas como resolvidas depois que todas as mensagens do histórico
   forem processadas.
@@ -622,9 +621,11 @@ cli.cmd.messages.pull.error.pause-no-queue:
   nesta configuração.
 cli.cmd.queue.description: Gerencie filas.
 cli.cmd.queue.summary: Execute ações nas filas.
-cli.cmd.queue.action.description: Escolha uma ação.
+cli.cmd.queue.action.description: |-
+  `status` para mostrar o estado das filas, `start` para retomá-las ou `stop` para pausá-las.
 cli.cmd.queue.status.description: Mostra o status de uma fila.
-cli.cmd.queue.argument.name: 'Nome da fila: `inbox` ou `whatsapp` (opcional).'
+cli.cmd.queue.argument.name: |-
+  Grupo de filas (`inbox` ou `whatsapp`) ou o nome de uma fila específica. Padrão: todas as filas.
 cli.cmd.queue.start.description: Inicia uma fila pelo nome.
 cli.cmd.queue.stop.description: Para uma fila pelo nome.
 cli.cmd.queue.paused:

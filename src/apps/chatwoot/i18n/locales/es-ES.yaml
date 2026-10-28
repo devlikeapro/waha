@@ -193,7 +193,7 @@ cli.cmd.contacts.description: |-
   👤 Ejecuta `contacts pull` para iniciar una sincronización o `contacts status` para revisar el progreso.
 
 cli.cmd.contacts.action.description: |-
-  Usa `start` para comenzar la extracción de contactos o `status` para revisar el trabajo activo.
+  Usa `pull` para iniciar la extracción de contactos o `status` para revisar el trabajo activo.
 
 cli.cmd.contacts.pull.description: |-
   Empieza a importar contactos de WhatsApp en la bandeja de entrada.
@@ -208,7 +208,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   Retraso entre los lotes de contactos.
 
 cli.cmd.contacts.pull.option.avatar: |-
-  Elige cómo obtener los avatares de los contactos: `skip`, `if-missing` o `update`.
+  Cómo obtener los avatares: `if-missing` - solo para contactos sin avatar, `update` - actualizar el de todos los contactos. Si no se indica esta opción, no se obtienen avatares.
 
 cli.cmd.contacts.pull.option.update-names: |-
   Cómo actualizar los nombres de contactos existentes: `no` - no tocar los nombres, solo los contactos nuevos reciben uno (agenda, push name o número de teléfono). `if-raw` - conservar los nombres puestos a mano, resolver los de relleno (número de teléfono, push name) desde la agenda. `always` - la agenda es la fuente de verdad, reemplazar cualquier nombre.
@@ -614,9 +614,8 @@ cli.cmd.messages.pull.option.broadcast:
 cli.cmd.messages.pull.option.media:
   Descarga archivos multimedia (imágenes, videos, archivos) al extraer el
   historial.
-cli.cmd.messages.pull.option.pause:
-  Encola el trabajo de extracción de mensajes en estado pausado, deteniendo el
-  procesamiento de nuevos mensajes de WhatsApp hasta que finalice.
+cli.cmd.messages.pull.option.pause: |-
+  Pausa las colas de la bandeja de entrada y de WhatsApp mientras se ejecuta la extracción, de modo que no se procesen mensajes nuevos hasta que termine.
 cli.cmd.messages.pull.option.resolve-conversations:
   Marca las conversaciones como resueltas después de procesar todo el historial.
 cli.cmd.messages.pull.error.pause-no-queue:
@@ -624,10 +623,11 @@ cli.cmd.messages.pull.error.pause-no-queue:
   en esta configuración de la aplicación.
 cli.cmd.queue.description: Gestiona las colas.
 cli.cmd.queue.summary: Realiza acciones sobre las colas.
-cli.cmd.queue.action.description: Elige una acción.
+cli.cmd.queue.action.description: |-
+  `status` para ver el estado de las colas, `start` para reanudarlas o `stop` para pausarlas.
 cli.cmd.queue.status.description: Muestra el estado de una cola.
-cli.cmd.queue.argument.name:
-  'Nombre de la cola: `inbox` o `whatsapp` (opcional).'
+cli.cmd.queue.argument.name: |-
+  Grupo de colas (`inbox` o `whatsapp`) o el nombre de una cola concreta. Por defecto, todas las colas.
 cli.cmd.queue.start.description: Inicia una cola por nombre.
 cli.cmd.queue.stop.description: Detiene una cola por nombre.
 cli.cmd.queue.paused:

@@ -193,7 +193,7 @@ cli.cmd.contacts.description: |-
   👤 شغِّل `contacts pull` لبدء المزامنة أو `contacts status` لمتابعة التقدم.
 
 cli.cmd.contacts.action.description: |-
-  استخدم `start` لبدء سحب جهات الاتصال أو `status` لمراجعة المهمة النشطة.
+  استخدم `pull` لبدء سحب جهات الاتصال أو `status` لمراجعة المهمة النشطة.
 
 cli.cmd.contacts.pull.description: |-
   ابدأ بسحب جهات اتصال واتساب إلى الصندوق الوارد.
@@ -208,7 +208,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   التأخير بين دفعات جهات الاتصال.
 
 cli.cmd.contacts.pull.option.avatar: |-
-  اختر كيفية سحب الصور الرمزية: `skip` أو `if-missing` أو `update`.
+  كيفية سحب الصور الرمزية: `if-missing` - فقط لجهات الاتصال التي لا تملك صورة، `update` - تحديث الصورة لكل جهة اتصال. لا يتم سحب الصور الرمزية ما لم يتم تعيين هذا الخيار.
 
 cli.cmd.contacts.pull.option.update-names: |-
   كيفية تحديث أسماء جهات الاتصال الموجودة: `no` - عدم تغيير الأسماء، جهات الاتصال الجديدة فقط تحصل على اسم (دفتر الهاتف أو push name أو رقم الهاتف). `if-raw` - الاحتفاظ بالأسماء المدخلة يدويًا، واستبدال الأسماء المؤقتة (رقم الهاتف، push name) من دفتر الهاتف. `always` - دفتر الهاتف هو المصدر الموثوق، استبدال أي اسم.
@@ -597,19 +597,19 @@ cli.cmd.messages.pull.option.status: تضمين حالات واتساب أثنا
 cli.cmd.messages.pull.option.broadcast: تضمين قوائم البث أثناء سحب السجل.
 cli.cmd.messages.pull.option.media:
   تنزيل المرفقات (صور، فيديوهات، ملفات) أثناء سحب السجل.
-cli.cmd.messages.pull.option.pause:
-  وضع مهمة سحب الرسائل في قائمة الانتظار وهي متوقفة مؤقتًا وإيقاف معالجة رسائل
-  واتساب الجديدة حتى تكتمل.
+cli.cmd.messages.pull.option.pause: |-
+  إيقاف قوائم انتظار صندوق الوارد وواتساب مؤقتًا أثناء تشغيل السحب، بحيث لا تتم معالجة رسائل جديدة حتى اكتماله.
 cli.cmd.messages.pull.option.resolve-conversations:
   وضع علامة على المحادثات كمحلولة بعد معالجة كل رسائل السجل.
 cli.cmd.messages.pull.error.pause-no-queue:
   ⛔ لا يمكن استخدام `--pause` لأن أمر **queue** معطَّل في هذا التكوين.
 cli.cmd.queue.description: إدارة قوائم الانتظار.
 cli.cmd.queue.summary: تنفيذ إجراءات على قوائم الانتظار.
-cli.cmd.queue.action.description: اختر إجراءً.
+cli.cmd.queue.action.description: |-
+  `status` لعرض حالة قوائم الانتظار، و`start` لاستئنافها، و`stop` لإيقافها مؤقتًا.
 cli.cmd.queue.status.description: عرض حالة قائمة الانتظار.
-cli.cmd.queue.argument.name:
-  'اسم قائمة الانتظار: `inbox` أو `whatsapp` (اختياري).'
+cli.cmd.queue.argument.name: |-
+  مجموعة قوائم الانتظار (`inbox` أو `whatsapp`) أو اسم قائمة انتظار محددة. الافتراضي هو جميع قوائم الانتظار.
 cli.cmd.queue.start.description: بدء قائمة الانتظار بالاسم.
 cli.cmd.queue.stop.description: إيقاف قائمة الانتظار بالاسم.
 cli.cmd.queue.paused:

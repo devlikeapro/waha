@@ -193,7 +193,7 @@ cli.cmd.contacts.description: |-
   👤 Запустіть `contacts pull`, щоб почати синхронізацію, або `contacts status`, щоб відстежити прогрес.
 
 cli.cmd.contacts.action.description: |-
-  Використайте `start`, щоб почати отримання контактів, або `status`, щоб перевірити активне завдання.
+  Використайте `pull`, щоб почати отримання контактів, або `status`, щоб перевірити активне завдання.
 
 cli.cmd.contacts.pull.description: |-
   Почніть імпортувати контакти WhatsApp у ці вхідні.
@@ -208,7 +208,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   Затримка між партіями контактів.
 
 cli.cmd.contacts.pull.option.avatar: |-
-  Виберіть, як завантажувати аватари контактів: `skip`, `if-missing` чи `update`.
+  Як завантажувати аватари: `if-missing` - лише для контактів без аватара, `update` - оновити для кожного контакту. Без цієї опції аватари не завантажуються.
 
 cli.cmd.contacts.pull.option.update-names: |-
   Як оновлювати імена наявних контактів: `no` - не чіпати імена, ім'я отримують лише нові контакти (телефонна книга, push name або номер телефону). `if-raw` - зберігати імена, задані вручну, заповнювачі (номер телефону, push name) замінювати з телефонної книги. `always` - телефонна книга є джерелом істини, замінювати будь-яке ім'я.
@@ -603,9 +603,8 @@ cli.cmd.messages.pull.option.broadcast:
   Включати списки розсилки під час отримання історії.
 cli.cmd.messages.pull.option.media:
   Завантажувати медіафайли (зображення, відео, файли) під час отримання історії.
-cli.cmd.messages.pull.option.pause:
-  Поставити завдання отримання повідомлень у чергу на паузі й зупинити обробку
-  нових WhatsApp до завершення.
+cli.cmd.messages.pull.option.pause: |-
+  Призупиняє черги inbox і WhatsApp на час отримання, щоб нові повідомлення не оброблялися до його завершення.
 cli.cmd.messages.pull.option.resolve-conversations:
   Позначає розмови як завершені після обробки всієї історії повідомлень.
 cli.cmd.messages.pull.error.pause-no-queue:
@@ -613,10 +612,11 @@ cli.cmd.messages.pull.error.pause-no-queue:
   цієї конфігурації.
 cli.cmd.queue.description: Керування чергами.
 cli.cmd.queue.summary: Дії з чергами.
-cli.cmd.queue.action.description: Оберіть дію.
+cli.cmd.queue.action.description: |-
+  `status` - показати стан черг, `start` - поновити, `stop` - призупинити черги.
 cli.cmd.queue.status.description: Показати стан черги.
-cli.cmd.queue.argument.name:
-  'Назва черги: `inbox` або `whatsapp` (необов’язково).'
+cli.cmd.queue.argument.name: |-
+  Група черг (`inbox` або `whatsapp`) або назва конкретної черги. За умовчанням - усі черги.
 cli.cmd.queue.start.description: Запустити чергу за назвою.
 cli.cmd.queue.stop.description: Зупинити чергу за назвою.
 cli.cmd.queue.paused:

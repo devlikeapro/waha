@@ -193,7 +193,7 @@ cli.cmd.contacts.description: |-
   👤 `contacts pull` را اجرا کنید تا همگام‌سازی آغاز شود یا `contacts status` را برای بررسی پیشرفت اجرا کنید.
 
 cli.cmd.contacts.action.description: |-
-  از `start` برای آغاز دریافت مخاطبان یا از `status` برای بررسی کار فعال استفاده کنید.
+  از `pull` برای آغاز دریافت مخاطبان یا از `status` برای بررسی کار فعال استفاده کنید.
 
 cli.cmd.contacts.pull.description: |-
   دریافت مخاطبان واتساپ را به این صندوق ورودی آغاز کنید.
@@ -208,7 +208,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   تأخیر بین دسته‌های مخاطبان.
 
 cli.cmd.contacts.pull.option.avatar: |-
-  نحوه دریافت آواتار مخاطبان را انتخاب کنید: `skip`، `if-missing` یا `update`.
+  نحوه دریافت آواتارها: `if-missing` - فقط برای مخاطبان بدون آواتار، `update` - به‌روزرسانی برای همه مخاطبان. بدون این گزینه آواتاری دریافت نمی‌شود.
 
 cli.cmd.contacts.pull.option.update-names: |-
   نحوه به‌روزرسانی نام مخاطبان موجود: `no` - نام‌ها دست نخورده بمانند، فقط مخاطبان جدید نام می‌گیرند (دفترچه تلفن، push name یا شماره تلفن). `if-raw` - نام‌های دستی حفظ شوند، نام‌های جایگزین (شماره تلفن، push name) از دفترچه تلفن تعیین شوند. `always` - دفترچه تلفن منبع اصلی است، هر نامی جایگزین شود.
@@ -605,9 +605,8 @@ cli.cmd.messages.pull.option.broadcast:
 cli.cmd.messages.pull.option.media:
   هنگام دریافت تاریخچه، پیوست‌های رسانه‌ای (تصویر، ویدیو، فایل) را دانلود
   می‌کند.
-cli.cmd.messages.pull.option.pause:
-  کار دریافت پیام‌ها را در حالت توقف در صف قرار می‌دهد و پردازش پیام‌های جدید
-  واتساپ را تا پایان متوقف می‌کند.
+cli.cmd.messages.pull.option.pause: |-
+  صف‌های صندوق ورودی و واتساپ را در حین اجرای دریافت متوقف می‌کند تا پیام جدیدی تا پایان کار پردازش نشود.
 cli.cmd.messages.pull.option.resolve-conversations:
   پس از پردازش تمام پیام‌های تاریخچه، مکالمه‌ها را به‌عنوان حل‌شده علامت‌گذاری
   می‌کند.
@@ -616,9 +615,11 @@ cli.cmd.messages.pull.error.pause-no-queue:
   غیرفعال است.
 cli.cmd.queue.description: مدیریت صف‌ها.
 cli.cmd.queue.summary: اعمال روی صف‌ها را انجام دهید.
-cli.cmd.queue.action.description: یک عمل را انتخاب کنید.
+cli.cmd.queue.action.description: |-
+  `status` برای نمایش وضعیت صف‌ها، `start` برای ادامه و `stop` برای توقف صف‌ها.
 cli.cmd.queue.status.description: وضعیت یک صف را نشان می‌دهد.
-cli.cmd.queue.argument.name: 'نام صف: `inbox` یا `whatsapp` (اختیاری).'
+cli.cmd.queue.argument.name: |-
+  گروه صف (`inbox` یا `whatsapp`) یا نام یک صف مشخص. به‌صورت پیش‌فرض همه صف‌ها.
 cli.cmd.queue.start.description: صف را بر اساس نام شروع کنید.
 cli.cmd.queue.stop.description: صف را بر اساس نام متوقف کنید.
 cli.cmd.queue.paused:

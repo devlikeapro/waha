@@ -196,7 +196,7 @@ cli.cmd.contacts.description: |-
   👤 Führen Sie `contacts pull` aus, um eine Synchronisierung zu starten, oder `contacts status`, um den Fortschritt zu prüfen.
 
 cli.cmd.contacts.action.description: |-
-  Mit `start` den Abruf beginnen oder mit `status` den aktiven Auftrag prüfen.
+  Mit `pull` den Kontaktabruf starten oder mit `status` den aktiven Auftrag prüfen.
 
 cli.cmd.contacts.pull.description: |-
   Beginnen Sie, WhatsApp-Kontakte in die Inbox zu importieren.
@@ -211,7 +211,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   Verzögerung zwischen Kontakt-Batches.
 
 cli.cmd.contacts.pull.option.avatar: |-
-  Legen Sie fest, wie Avatare geladen werden: `skip`, `if-missing` oder `update`.
+  Wie Avatare geladen werden: `if-missing` - nur für Kontakte ohne Avatar, `update` - für jeden Kontakt aktualisieren. Ohne diese Option werden keine Avatare geladen.
 
 cli.cmd.contacts.pull.option.update-names: |-
   Wie Namen vorhandener Kontakte aktualisiert werden: `no` - Namen nicht anfassen, nur neue Kontakte erhalten einen (Telefonbuch, Push-Name oder Telefonnummer). `if-raw` - manuell gesetzte Namen behalten, Platzhalter (Telefonnummer, Push-Name) aus dem Telefonbuch auflösen. `always` - das Telefonbuch ist die Quelle der Wahrheit, jeden Namen ersetzen.
@@ -617,9 +617,8 @@ cli.cmd.messages.pull.option.broadcast:
   Bezieht Broadcast-Listen beim Abrufen mit ein.
 cli.cmd.messages.pull.option.media:
   Lädt Medienanhänge (Bilder, Videos, Dateien) beim Abrufen herunter.
-cli.cmd.messages.pull.option.pause:
-  Stellt den Nachrichtenabruf in der Warteschlange auf Pause und stoppt neue
-  WhatsApp-Verarbeitung bis zum Abschluss.
+cli.cmd.messages.pull.option.pause: |-
+  Pausiert die Inbox- und WhatsApp-Warteschlangen, während der Abruf läuft, sodass bis zum Abschluss keine neuen Nachrichten verarbeitet werden.
 cli.cmd.messages.pull.option.resolve-conversations:
   Markiert die Gespräche nach Abschluss aller historischen Nachrichten als
   erledigt.
@@ -628,10 +627,11 @@ cli.cmd.messages.pull.error.pause-no-queue:
   Konfiguration deaktiviert ist.
 cli.cmd.queue.description: Warteschlangen verwalten.
 cli.cmd.queue.summary: Aktionen für Warteschlangen durchführen.
-cli.cmd.queue.action.description: Wählen Sie eine Aktion.
+cli.cmd.queue.action.description: |-
+  `status` zeigt den Zustand der Warteschlangen, `start` setzt sie fort, `stop` pausiert sie.
 cli.cmd.queue.status.description: Zeigt den Status einer Warteschlange an.
-cli.cmd.queue.argument.name:
-  'Name der Warteschlange: `inbox` oder `whatsapp` (optional).'
+cli.cmd.queue.argument.name: |-
+  Warteschlangengruppe (`inbox` oder `whatsapp`) oder der Name einer bestimmten Warteschlange. Standard: alle Warteschlangen.
 cli.cmd.queue.start.description: Startet eine Warteschlange anhand des Namens.
 cli.cmd.queue.stop.description: Stoppt eine Warteschlange anhand des Namens.
 cli.cmd.queue.paused:

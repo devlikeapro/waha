@@ -193,7 +193,7 @@ cli.cmd.contacts.description: |-
   👤 ਸਿੰਕ ਸ਼ੁਰੂ ਕਰਨ ਲਈ `contacts pull` ਚਲਾਓ ਜਾਂ ਤਰੱਕੀ ਦੇਖਣ ਲਈ `contacts status` ਚਲਾਓ।
 
 cli.cmd.contacts.action.description: |-
-  `start` ਨਾਲ ਸੰਪਰਕ ਖਿੱਚਣਾ ਸ਼ੁਰੂ ਕਰੋ ਜਾਂ `status` ਨਾਲ ਸਰਗਰਮ ਕੰਮ ਦੀ ਜਾਂਚ ਕਰੋ।
+  `pull` ਨਾਲ ਸੰਪਰਕ ਖਿੱਚਣਾ ਸ਼ੁਰੂ ਕਰੋ ਜਾਂ `status` ਨਾਲ ਸਰਗਰਮ ਕੰਮ ਦੀ ਜਾਂਚ ਕਰੋ।
 
 cli.cmd.contacts.pull.description: |-
   ਵਟਸਐਪ ਸੰਪਰਕਾਂ ਨੂੰ ਇਸ ਇਨਬਾਕਸ ਵਿੱਚ ਲਿਆਉਣਾ ਸ਼ੁਰੂ ਕਰੋ।
@@ -208,7 +208,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   ਸੰਪਰਕ ਬੈਚਾਂ ਦੇ ਵਿਚਕਾਰ ਦੇਰੀ।
 
 cli.cmd.contacts.pull.option.avatar: |-
-  ਚੁਣੋ ਕਿ ਅਵਤਾਰ ਕਿਵੇਂ ਖਿੱਚਣੇ ਹਨ: `skip`, `if-missing`, ਜਾਂ `update`।
+  ਅਵਤਾਰ ਕਿਵੇਂ ਖਿੱਚਣੇ ਹਨ: `if-missing` - ਸਿਰਫ਼ ਉਹਨਾਂ ਸੰਪਰਕਾਂ ਲਈ ਜਿਨ੍ਹਾਂ ਦਾ ਅਵਤਾਰ ਨਹੀਂ, `update` - ਹਰ ਸੰਪਰਕ ਲਈ ਤਾਜ਼ਾ ਕਰੋ। ਇਹ ਵਿਕਲਪ ਦਿੱਤੇ ਬਿਨਾਂ ਅਵਤਾਰ ਨਹੀਂ ਖਿੱਚੇ ਜਾਂਦੇ।
 
 cli.cmd.contacts.pull.option.update-names: |-
   ਮੌਜੂਦਾ ਸੰਪਰਕਾਂ ਦੇ ਨਾਮ ਕਿਵੇਂ ਅੱਪਡੇਟ ਕਰਨੇ ਹਨ: `no` - ਨਾਮਾਂ ਨੂੰ ਨਾ ਛੂਹੋ, ਸਿਰਫ਼ ਨਵੇਂ ਸੰਪਰਕਾਂ ਨੂੰ ਨਾਮ ਮਿਲਦਾ ਹੈ (ਫ਼ੋਨ ਬੁੱਕ, push name ਜਾਂ ਫ਼ੋਨ ਨੰਬਰ)। `if-raw` - ਹੱਥੀਂ ਰੱਖੇ ਨਾਮ ਰੱਖੋ, ਪਲੇਸਹੋਲਡਰ (ਫ਼ੋਨ ਨੰਬਰ, push name) ਫ਼ੋਨ ਬੁੱਕ ਤੋਂ ਹੱਲ ਕਰੋ। `always` - ਫ਼ੋਨ ਬੁੱਕ ਹੀ ਸੱਚ ਦਾ ਸਰੋਤ ਹੈ, ਕੋਈ ਵੀ ਨਾਮ ਬਦਲ ਦਿਓ।
@@ -603,9 +603,8 @@ cli.cmd.messages.pull.option.broadcast:
   ਇਤਿਹਾਸ ਖਿੱਚਦੇ ਸਮੇਂ ਪ੍ਰਸਾਰਣ ਸੂਚੀਆਂ ਸ਼ਾਮਲ ਕਰੋ।
 cli.cmd.messages.pull.option.media:
   ਇਤਿਹਾਸ ਖਿੱਚਦੇ ਸਮੇਂ ਮੀਡੀਆ (ਤਸਵੀਰਾਂ, ਵੀਡੀਓ, ਫਾਈਲਾਂ) ਡਾਊਨਲੋਡ ਕਰੋ।
-cli.cmd.messages.pull.option.pause:
-  ਸੁਨੇਹੇ ਖਿੱਚਣ ਦਾ ਕੰਮ ਠਹਿਰੇ ਹੋਏ ਹਾਲਤ ਵਿੱਚ ਕਤਾਰ ਵਿੱਚ ਪਾਓ ਅਤੇ ਮੁਕੰਮਲ ਹੋਣ ਤੱਕ ਨਵੇਂ
-  WhatsApp ਸੁਨੇਹਿਆਂ ਦੀ ਪ੍ਰਕਿਰਿਆ ਰੋਕੋ।
+cli.cmd.messages.pull.option.pause: |-
+  ਖਿੱਚਣ ਦੇ ਦੌਰਾਨ ਇਨਬਾਕਸ ਅਤੇ WhatsApp ਕਤਾਰਾਂ ਨੂੰ ਰੋਕਦਾ ਹੈ, ਤਾਂ ਜੋ ਮੁਕੰਮਲ ਹੋਣ ਤੱਕ ਕੋਈ ਨਵਾਂ ਸੁਨੇਹਾ ਪ੍ਰੋਸੈਸ ਨਾ ਹੋਵੇ।
 cli.cmd.messages.pull.option.resolve-conversations:
   ਸਾਰੇ ਇਤਿਹਾਸਿਕ ਸੁਨੇਹੇ ਪ੍ਰਕਿਰਿਆ ਕਰਨ ਤੋਂ ਬਾਅਦ ਗੱਲਬਾਤਾਂ ਨੂੰ ਹੱਲ ਹੋਇਆ ਚਿੰਨ੍ਹਤ ਕਰਦਾ
   ਹੈ।
@@ -613,9 +612,11 @@ cli.cmd.messages.pull.error.pause-no-queue:
   ⛔ `--pause` ਵਰਤ ਨਹੀਂ ਸਕਦੇ ਕਿਉਂਕਿ ਇਸ ਸੰਰਚਨਾ ਵਿੱਚ **queue** ਹੁਕਮ ਅਸਮਰੱਥ ਹੈ।
 cli.cmd.queue.description: ਕਤਾਰਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ।
 cli.cmd.queue.summary: ਕਤਾਰਾਂ ’ਤੇ ਕਾਰਵਾਈਆਂ ਕਰੋ।
-cli.cmd.queue.action.description: ਇੱਕ ਕਾਰਵਾਈ ਚੁਣੋ।
+cli.cmd.queue.action.description: |-
+  `status` ਨਾਲ ਕਤਾਰਾਂ ਦੀ ਸਥਿਤੀ ਦੇਖੋ, `start` ਨਾਲ ਮੁੜ ਚਾਲੂ ਕਰੋ ਜਾਂ `stop` ਨਾਲ ਰੋਕੋ।
 cli.cmd.queue.status.description: ਕਤਾਰ ਦੀ ਸਥਿਤੀ ਦਿਖਾਓ।
-cli.cmd.queue.argument.name: 'ਕਤਾਰ ਦਾ ਨਾਮ: `inbox` ਜਾਂ `whatsapp` (ਵਿਕਲਪਿਕ)।'
+cli.cmd.queue.argument.name: |-
+  ਕਤਾਰ ਸਮੂਹ (`inbox` ਜਾਂ `whatsapp`) ਜਾਂ ਕਿਸੇ ਖਾਸ ਕਤਾਰ ਦਾ ਨਾਮ। ਡਿਫੌਲਟ ਤੌਰ 'ਤੇ ਸਾਰੀਆਂ ਕਤਾਰਾਂ।
 cli.cmd.queue.start.description: ਨਾਂ ਦੁਆਰਾ ਕਤਾਰ ਸ਼ੁਰੂ ਕਰੋ।
 cli.cmd.queue.stop.description: ਨਾਂ ਦੁਆਰਾ ਕਤਾਰ ਰੋਕੋ।
 cli.cmd.queue.paused:

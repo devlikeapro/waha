@@ -193,7 +193,7 @@ cli.cmd.contacts.description: |-
   👤 সিঙ্ক শুরু করতে `contacts pull` চালান বা অগ্রগতি দেখতে `contacts status` চালান।
 
 cli.cmd.contacts.action.description: |-
-  `start` দিয়ে কনট্যাক্ট টানা শুরু করুন বা `status` দিয়ে সক্রিয় কাজ পরীক্ষা করুন।
+  `pull` দিয়ে কনট্যাক্ট টানা শুরু করুন বা `status` দিয়ে সক্রিয় কাজ পরীক্ষা করুন।
 
 cli.cmd.contacts.pull.description: |-
   হোয়াটসঅ্যাপ কনট্যাক্টস ইনবক্সে আনা শুরু করুন।
@@ -208,7 +208,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   প্রতিটি ব্যাচের মাঝে বিলম্ব।
 
 cli.cmd.contacts.pull.option.avatar: |-
-  কনট্যাক্টের অ্যাভাটার কীভাবে টানবেন নির্ধারণ করুন: `skip`, `if-missing`, অথবা `update`।
+  অ্যাভাটার কীভাবে টানা হবে: `if-missing` - শুধু যাদের অ্যাভাটার নেই, `update` - প্রতিটি কনট্যাক্টের অ্যাভাটার রিফ্রেশ করুন। এই অপশন না দিলে অ্যাভাটার টানা হয় না।
 
 cli.cmd.contacts.pull.option.update-names: |-
   বিদ্যমান কন্টাক্টের নাম কীভাবে আপডেট করবেন: `no` - নাম স্পর্শ করবেন না, শুধু নতুন কন্টাক্ট নাম পাবে (ফোন বুক, push name বা ফোন নম্বর)। `if-raw` - হাতে দেওয়া নাম রাখুন, প্লেসহোল্ডার (ফোন নম্বর, push name) ফোন বুক থেকে সমাধান করুন। `always` - ফোন বুকই সত্যের উৎস, যেকোনো নাম প্রতিস্থাপন করুন।
@@ -602,9 +602,8 @@ cli.cmd.messages.pull.option.broadcast:
   ইতিহাস টানার সময় ব্রডকাস্ট তালিকা অন্তর্ভুক্ত করুন।
 cli.cmd.messages.pull.option.media:
   ইতিহাস টানার সময় মিডিয়া (ছবি, ভিডিও, ফাইল) ডাউনলোড করুন।
-cli.cmd.messages.pull.option.pause:
-  বার্তা টানার কাজটিকে বিরতি অবস্থায় কিউতে রাখে এবং শেষ না হওয়া পর্যন্ত নতুন
-  WhatsApp বার্তার প্রসেসিং বন্ধ রাখে।
+cli.cmd.messages.pull.option.pause: |-
+  টানার কাজ চলাকালীন ইনবক্স ও WhatsApp কিউ বিরতিতে রাখে, যাতে কাজ শেষ না হওয়া পর্যন্ত নতুন কোনো বার্তা প্রক্রিয়া করা না হয়।
 cli.cmd.messages.pull.option.resolve-conversations:
   সমস্ত ইতিহাস বার্তা প্রক্রিয়ার পর কথোপকথনগুলোকে সমাধান হয়েছে হিসেবে চিহ্নিত
   করে।
@@ -613,9 +612,11 @@ cli.cmd.messages.pull.error.pause-no-queue:
   নিষ্ক্রিয়।
 cli.cmd.queue.description: কিউ পরিচালনা করুন।
 cli.cmd.queue.summary: কিউ-তে কর্ম সম্পাদন করুন।
-cli.cmd.queue.action.description: একটি কর্ম নির্বাচন করুন।
+cli.cmd.queue.action.description: |-
+  `status` দিয়ে কিউর অবস্থা দেখুন, `start` দিয়ে কিউ আবার চালু করুন বা `stop` দিয়ে বিরতিতে রাখুন।
 cli.cmd.queue.status.description: কিউ-র অবস্থা দেখুন।
-cli.cmd.queue.argument.name: 'কিউ নাম: `inbox` বা `whatsapp` (ঐচ্ছিক)।'
+cli.cmd.queue.argument.name: |-
+  কিউ গ্রুপ (`inbox` বা `whatsapp`) অথবা নির্দিষ্ট কিউর নাম। ডিফল্টভাবে সব কিউ।
 cli.cmd.queue.start.description: নামের ভিত্তিতে কিউ শুরু করুন।
 cli.cmd.queue.stop.description: নামের ভিত্তিতে কিউ বন্ধ করুন।
 cli.cmd.queue.paused: ⚪🧩 কিউ বিরতিতে আছে। অবস্থা দেখতে `queue status` পাঠান।

@@ -193,7 +193,7 @@ cli.cmd.contacts.description: |-
   👤 सिंक शुरू करने के लिए `contacts pull` चलाएँ या प्रगति देखने के लिए `contacts status` चलाएँ।
 
 cli.cmd.contacts.action.description: |-
-  `start` से संपर्क खींचना शुरू करें या `status` से सक्रिय कार्य जांचें।
+  `pull` से संपर्क खींचना शुरू करें या `status` से सक्रिय कार्य जांचें।
 
 cli.cmd.contacts.pull.description: |-
   व्हाट्सएप संपर्कों को इस इनबॉक्स में लाना शुरू करें।
@@ -208,7 +208,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   संपर्क बैचों के बीच देरी।
 
 cli.cmd.contacts.pull.option.avatar: |-
-  संपर्क अवतार कैसे खींचें चुनें: `skip`, `if-missing`, या `update`।
+  अवतार कैसे खींचें: `if-missing` - केवल उन संपर्कों के लिए जिनका अवतार नहीं है, `update` - हर संपर्क के लिए ताज़ा करें। यह विकल्प दिए बिना अवतार नहीं खींचे जाते।
 
 cli.cmd.contacts.pull.option.update-names: |-
   मौजूदा संपर्कों के नाम कैसे अपडेट करें: `no` - नामों को न छुएँ, केवल नए संपर्कों को नाम मिलेगा (फ़ोन बुक, push name या फ़ोन नंबर)। `if-raw` - हाथ से रखे नाम रखें, प्लेसहोल्डर (फ़ोन नंबर, push name) फ़ोन बुक से हल करें। `always` - फ़ोन बुक ही सत्य का स्रोत है, कोई भी नाम बदल दें।
@@ -603,9 +603,8 @@ cli.cmd.messages.pull.option.broadcast:
   इतिहास खींचते समय प्रसारण सूचियाँ शामिल करें।
 cli.cmd.messages.pull.option.media:
   इतिहास खींचते समय मीडिया (छवियाँ, वीडियो, फाइलें) डाउनलोड करें।
-cli.cmd.messages.pull.option.pause:
-  संदेश खींचने के कार्य को रोके गए अवस्था में कतार में डालें और पूरा होने तक नए
-  WhatsApp संदेशों की प्रोसेसिंग रोकें।
+cli.cmd.messages.pull.option.pause: |-
+  खींचने के दौरान इनबॉक्स और WhatsApp क्यू को रोक देता है, ताकि पूरा होने तक कोई नया संदेश प्रोसेस न हो।
 cli.cmd.messages.pull.option.resolve-conversations:
   सभी इतिहास संदेश संसाधित होने के बाद बातचीत को हल किया हुआ चिह्नित करता है।
 cli.cmd.messages.pull.error.pause-no-queue:
@@ -613,9 +612,11 @@ cli.cmd.messages.pull.error.pause-no-queue:
   कमांड अक्षम है।
 cli.cmd.queue.description: क्यू प्रबंधित करें।
 cli.cmd.queue.summary: क्यू पर क्रियाएँ चलाएँ।
-cli.cmd.queue.action.description: एक क्रिया चुनें।
+cli.cmd.queue.action.description: |-
+  `status` से क्यू की स्थिति देखें, `start` से क्यू फिर से शुरू करें या `stop` से रोकें।
 cli.cmd.queue.status.description: किसी क्यू की स्थिति दिखाएँ।
-cli.cmd.queue.argument.name: 'क्यू का नाम: `inbox` या `whatsapp` (वैकल्पिक)।'
+cli.cmd.queue.argument.name: |-
+  क्यू समूह (`inbox` या `whatsapp`) या किसी विशेष क्यू का नाम। डिफ़ॉल्ट रूप से सभी क्यू।
 cli.cmd.queue.start.description: नाम से क्यू शुरू करें।
 cli.cmd.queue.stop.description: नाम से क्यू बंद करें।
 cli.cmd.queue.paused:

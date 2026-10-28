@@ -193,7 +193,7 @@ cli.cmd.contacts.description: |-
   👤 Выполните `contacts pull`, чтобы запустить синхронизацию, или `contacts status`, чтобы проверить прогресс.
 
 cli.cmd.contacts.action.description: |-
-  Используйте `start`, чтобы начать загрузку контактов, или `status`, чтобы проверить активное задание.
+  Используйте `pull`, чтобы начать загрузку контактов, или `status`, чтобы проверить активное задание.
 
 cli.cmd.contacts.pull.description: |-
   Начните импорт контактов WhatsApp в inbox.
@@ -208,7 +208,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   Задержка между партиями контактов.
 
 cli.cmd.contacts.pull.option.avatar: |-
-  Выберите, как загружать аватары контактов: `skip`, `if-missing` или `update`.
+  Как загружать аватары: `if-missing` - только для контактов без аватара, `update` - обновить у каждого контакта. Без этой опции аватары не загружаются.
 
 cli.cmd.contacts.pull.option.update-names: |-
   Как обновлять имена существующих контактов: `no` - не трогать имена, имя получают только новые контакты (телефонная книга, push name или номер телефона). `if-raw` - сохранять имена, заданные вручную, заглушки (номер телефона, push name) заменять из телефонной книги. `always` - телефонная книга является источником истины, заменять любое имя.
@@ -603,9 +603,8 @@ cli.cmd.messages.pull.option.broadcast:
   Включать списки рассылок при загрузке истории.
 cli.cmd.messages.pull.option.media:
   Скачивать медиафайлы (изображения, видео, документы) при загрузке истории.
-cli.cmd.messages.pull.option.pause:
-  Поставить задачу загрузки сообщений в очередь на паузу и остановить обработку
-  новых сообщений WhatsApp до завершения.
+cli.cmd.messages.pull.option.pause: |-
+  Ставит очереди inbox и WhatsApp на паузу на время загрузки, чтобы новые сообщения не обрабатывались до её завершения.
 cli.cmd.messages.pull.option.resolve-conversations:
   Отмечает беседы как завершённые после обработки всей истории сообщений.
 cli.cmd.messages.pull.error.pause-no-queue:
@@ -613,10 +612,11 @@ cli.cmd.messages.pull.error.pause-no-queue:
   этой конфигурации.
 cli.cmd.queue.description: Управление очередями.
 cli.cmd.queue.summary: Действия с очередями.
-cli.cmd.queue.action.description: Выберите действие.
+cli.cmd.queue.action.description: |-
+  `status` - показать состояние очередей, `start` - возобновить, `stop` - поставить очереди на паузу.
 cli.cmd.queue.status.description: Показать состояние очереди.
-cli.cmd.queue.argument.name:
-  'Название очереди: `inbox` или `whatsapp` (необязательно).'
+cli.cmd.queue.argument.name: |-
+  Группа очередей (`inbox` или `whatsapp`) или название конкретной очереди. По умолчанию - все очереди.
 cli.cmd.queue.start.description: Запустить очередь по имени.
 cli.cmd.queue.stop.description: Остановить очередь по имени.
 cli.cmd.queue.paused:

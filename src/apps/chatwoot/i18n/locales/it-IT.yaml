@@ -475,7 +475,7 @@ cli.cmd.messages.pull.option.media: |-
   Recupera allegati media (immagini, video, file) durante il recupero.
 
 cli.cmd.messages.pull.option.pause: |-
-  Accoda il job in stato di pausa, bloccando la ricezione di nuovi messaggi finché non termina.
+  Mette in pausa le code inbox e WhatsApp durante il recupero, così nessun nuovo messaggio viene elaborato finché non termina.
 
 cli.cmd.messages.pull.option.resolve-conversations: |-
   Segna le conversazioni come risolte dopo l'elaborazione della cronologia.
@@ -490,13 +490,13 @@ cli.cmd.queue.summary: |-
   Esegui azioni sulle code.
 
 cli.cmd.queue.action.description: |-
-  Scegli un'azione.
+  `status` per mostrare lo stato delle code, `start` per riprenderle o `stop` per metterle in pausa.
 
 cli.cmd.queue.status.description: |-
   Mostra lo stato di una coda.
 
 cli.cmd.queue.argument.name: |-
-  Nome coda: `inbox` o `whatsapp` (opzionale).
+  Gruppo di code (`inbox` o `whatsapp`) o nome di una coda specifica. Predefinito: tutte le code.
 
 cli.cmd.queue.start.description: |-
   Avvia una coda per nome.
@@ -543,7 +543,7 @@ cli.cmd.contacts.description: |-
   👤 Esegui `contacts pull` per avviare la sincronizzazione o `contacts status` per verificarne l'avanzamento.
 
 cli.cmd.contacts.action.description: |-
-  `start` per avviare il recupero contatti o `status` per ispezionare il job attivo.
+  `pull` per avviare il recupero contatti o `status` per ispezionare il job attivo.
 
 cli.cmd.contacts.pull.description: |-
   Avvia il recupero dei contatti WhatsApp nell'inbox.
@@ -561,7 +561,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   Ritardo tra i batch di contatti.
 
 cli.cmd.contacts.pull.option.avatar: |-
-  Scegli come recuperare gli avatar dei contatti.
+  Come recuperare gli avatar: `if-missing` - solo per i contatti senza avatar, `update` - aggiorna per ogni contatto. Senza questa opzione gli avatar non vengono recuperati.
 
 cli.cmd.contacts.pull.option.update-names: |-
   Come aggiornare i nomi dei contatti esistenti: `no` - non toccare i nomi, solo i nuovi contatti ne ricevono uno (rubrica, push name o numero di telefono). `if-raw` - mantieni i nomi inseriti a mano, risolvi i segnaposto (numero di telefono, push name) dalla rubrica. `always` - la rubrica è la fonte di verità, sostituisci qualsiasi nome.

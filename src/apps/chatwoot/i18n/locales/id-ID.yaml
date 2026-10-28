@@ -193,7 +193,7 @@ cli.cmd.contacts.description: |-
   👤 Jalankan `contacts pull` untuk memulai sinkronisasi atau `contacts status` untuk melihat progres.
 
 cli.cmd.contacts.action.description: |-
-  Gunakan `start` untuk mulai menarik kontak atau `status` untuk memeriksa pekerjaan aktif.
+  Gunakan `pull` untuk mulai menarik kontak atau `status` untuk memeriksa pekerjaan aktif.
 
 cli.cmd.contacts.pull.description: |-
   Mulai menarik kontak WhatsApp ke kotak masuk ini.
@@ -208,7 +208,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   Jeda antar batch kontak.
 
 cli.cmd.contacts.pull.option.avatar: |-
-  Pilih cara mengambil avatar kontak: `skip`, `if-missing`, atau `update`.
+  Cara mengambil avatar: `if-missing` - hanya untuk kontak yang belum punya avatar, `update` - perbarui untuk setiap kontak. Avatar tidak diambil jika opsi ini tidak disetel.
 
 cli.cmd.contacts.pull.option.update-names: |-
   Cara memperbarui nama kontak yang sudah ada: `no` - jangan ubah nama, hanya kontak baru yang mendapat nama (buku telepon, push name, atau nomor telepon). `if-raw` - pertahankan nama yang diisi manual, ganti placeholder (nomor telepon, push name) dari buku telepon. `always` - buku telepon adalah sumber kebenaran, ganti nama apa pun.
@@ -603,9 +603,8 @@ cli.cmd.messages.pull.option.broadcast:
   Sertakan daftar siaran saat menarik riwayat.
 cli.cmd.messages.pull.option.media:
   Unduh lampiran media (gambar, video, file) saat menarik riwayat.
-cli.cmd.messages.pull.option.pause:
-  Masukkan pekerjaan penarikan pesan ke antrian dalam keadaan jeda dan hentikan
-  pemrosesan pesan WhatsApp baru sampai selesai.
+cli.cmd.messages.pull.option.pause: |-
+  Menjeda antrian inbox dan WhatsApp selama penarikan berjalan, sehingga tidak ada pesan baru yang diproses sampai selesai.
 cli.cmd.messages.pull.option.resolve-conversations:
   Menandai percakapan sebagai selesai setelah semua pesan riwayat diproses.
 cli.cmd.messages.pull.error.pause-no-queue:
@@ -613,9 +612,11 @@ cli.cmd.messages.pull.error.pause-no-queue:
   pada konfigurasi ini.
 cli.cmd.queue.description: Kelola antrian.
 cli.cmd.queue.summary: Jalankan tindakan pada antrian.
-cli.cmd.queue.action.description: Pilih sebuah tindakan.
+cli.cmd.queue.action.description: |-
+  `status` untuk menampilkan keadaan antrian, `start` untuk melanjutkan, atau `stop` untuk menjeda antrian.
 cli.cmd.queue.status.description: Tampilkan status sebuah antrian.
-cli.cmd.queue.argument.name: 'Nama antrian: `inbox` atau `whatsapp` (opsional).'
+cli.cmd.queue.argument.name: |-
+  Grup antrian (`inbox` atau `whatsapp`) atau nama antrian tertentu. Bawaan: semua antrian.
 cli.cmd.queue.start.description: Mulai antrian berdasarkan nama.
 cli.cmd.queue.stop.description: Hentikan antrian berdasarkan nama.
 cli.cmd.queue.paused:

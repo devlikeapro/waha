@@ -193,7 +193,7 @@ cli.cmd.contacts.description: |-
   👤 הרץ `contacts pull` כדי להתחיל סנכרון או `contacts status` כדי לבדוק את ההתקדמות.
 
 cli.cmd.contacts.action.description: |-
-  השתמש ב-`start` כדי להתחיל למשוך אנשי קשר או ב-`status` כדי לבדוק את המשימה הפעילה.
+  השתמשו ב-`pull` כדי להתחיל למשוך אנשי קשר או ב-`status` כדי לבדוק את המשימה הפעילה.
 
 cli.cmd.contacts.pull.description: |-
   התחל למשוך אנשי קשר של וואטסאפ אל תיבת הדואר הנכנס.
@@ -208,7 +208,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   השהיה בין אצוות של אנשי קשר.
 
 cli.cmd.contacts.pull.option.avatar: |-
-  בחר כיצד למשוך תמונות פרופיל: `skip`, `if-missing` או `update`.
+  כיצד למשוך תמונות פרופיל: `if-missing` - רק לאנשי קשר ללא תמונה, `update` - רענון לכל איש קשר. ללא אפשרות זו לא נמשכות תמונות פרופיל.
 
 cli.cmd.contacts.pull.option.update-names: |-
   כיצד לעדכן שמות של אנשי קשר קיימים: `no` - לא לגעת בשמות, רק אנשי קשר חדשים מקבלים שם (ספר טלפונים, push name או מספר טלפון). `if-raw` - לשמור שמות שהוזנו ידנית, לפתור שמות זמניים (מספר טלפון, push name) מספר הטלפונים. `always` - ספר הטלפונים הוא מקור האמת, להחליף כל שם.
@@ -597,18 +597,19 @@ cli.cmd.messages.pull.option.status:
 cli.cmd.messages.pull.option.broadcast: הכללת רשימות שידור בעת משיכת ההיסטוריה.
 cli.cmd.messages.pull.option.media:
   הורדת קבצי מדיה (תמונות, סרטונים, קבצים) בעת משיכת ההיסטוריה.
-cli.cmd.messages.pull.option.pause:
-  הכנסת משימת המשיכה לתור במצב מושהה ועצירת עיבוד הודעות WhatsApp חדשות עד
-  לסיום.
+cli.cmd.messages.pull.option.pause: |-
+  משהה את תורי האינבוקס ו-WhatsApp בזמן המשיכה, כך שלא יעובדו הודעות חדשות עד לסיומה.
 cli.cmd.messages.pull.option.resolve-conversations:
   מסמן את השיחות כפתורות לאחר שכל הודעות ההיסטוריה עובדו.
 cli.cmd.messages.pull.error.pause-no-queue:
   ⛔ לא ניתן להשתמש ב-`--pause` כי הפקודה **queue** מושבתת בתצורה זו.
 cli.cmd.queue.description: ניהול תורים.
 cli.cmd.queue.summary: ביצוע פעולות על תורים.
-cli.cmd.queue.action.description: בחרו פעולה.
+cli.cmd.queue.action.description: |-
+  `status` להצגת מצב התורים, `start` לחידושם או `stop` להשהייתם.
 cli.cmd.queue.status.description: הצגת מצב התור.
-cli.cmd.queue.argument.name: 'שם התור: `inbox` או `whatsapp` (רשות).'
+cli.cmd.queue.argument.name: |-
+  קבוצת תורים (`inbox` או `whatsapp`) או שם של תור מסוים. כברירת מחדל: כל התורים.
 cli.cmd.queue.start.description: הפעלת תור לפי שם.
 cli.cmd.queue.stop.description: עצירת תור לפי שם.
 cli.cmd.queue.paused: ⚪🧩 התורים הושהו. שלחו `queue status` כדי לבדוק את המצב.

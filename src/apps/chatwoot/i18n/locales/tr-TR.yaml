@@ -193,7 +193,7 @@ cli.cmd.contacts.description: |-
   👤 `contacts pull` komutunu çalıştırarak bir eşitleme başlatın veya `contacts status` ile ilerlemeyi kontrol edin.
 
 cli.cmd.contacts.action.description: |-
-  `start` ile kişi çekmeyi başlatın veya `status` ile etkin görevi kontrol edin.
+  `pull` ile kişi çekmeyi başlatın veya `status` ile etkin görevi kontrol edin.
 
 cli.cmd.contacts.pull.description: |-
   WhatsApp kişilerini bu gelen kutusuna çekmeye başlayın.
@@ -208,7 +208,7 @@ cli.cmd.contacts.pull.option.delay-batch: |-
   Kişi partileri arasındaki bekleme süresi.
 
 cli.cmd.contacts.pull.option.avatar: |-
-  Kişi avatarlarının nasıl çekileceğini seçin: `skip`, `if-missing` veya `update`.
+  Avatarların nasıl çekileceği: `if-missing` - yalnızca avatarı olmayan kişiler için, `update` - her kişi için yenile. Bu seçenek verilmezse avatar çekilmez.
 
 cli.cmd.contacts.pull.option.update-names: |-
   Mevcut kişilerin adlarının nasıl güncelleneceği: `no` - adlara dokunma, yalnızca yeni kişiler ad alır (rehber, push name veya telefon numarası). `if-raw` - elle girilen adları koru, yer tutucuları (telefon numarası, push name) rehberden çöz. `always` - rehber doğruluk kaynağıdır, her adı değiştir.
@@ -602,19 +602,19 @@ cli.cmd.messages.pull.option.broadcast:
   Geçmişi çekerken yayın listelerini dahil eder.
 cli.cmd.messages.pull.option.media:
   Geçmişi çekerken medya eklerini (görseller, videolar, dosyalar) indirir.
-cli.cmd.messages.pull.option.pause:
-  Mesaj çekme işini duraklatılmış olarak kuyruklar ve tamamlanana kadar yeni
-  WhatsApp mesajlarının işlenmesini durdurur.
+cli.cmd.messages.pull.option.pause: |-
+  Çekme işlemi sürerken gelen kutusu ve WhatsApp kuyruklarını duraklatır; işlem bitene kadar yeni mesaj işlenmez.
 cli.cmd.messages.pull.option.resolve-conversations:
   Tüm geçmiş mesajlar işlendiğinde konuşmaları çözüldü olarak işaretler.
 cli.cmd.messages.pull.error.pause-no-queue:
   ⛔ `--pause` kullanılamaz çünkü **queue** komutu bu yapılandırmada devre dışı.
 cli.cmd.queue.description: Kuyrukları yönetin.
 cli.cmd.queue.summary: Kuyruklarda işlemler gerçekleştirin.
-cli.cmd.queue.action.description: Bir eylem seçin.
+cli.cmd.queue.action.description: |-
+  `status` kuyruk durumunu gösterir, `start` kuyrukları devam ettirir, `stop` duraklatır.
 cli.cmd.queue.status.description: Bir kuyruğun durumunu gösterir.
-cli.cmd.queue.argument.name:
-  'Kuyruk adı: `inbox` veya `whatsapp` (isteğe bağlı).'
+cli.cmd.queue.argument.name: |-
+  Kuyruk grubu (`inbox` veya `whatsapp`) ya da belirli bir kuyruğun adı. Varsayılan: tüm kuyruklar.
 cli.cmd.queue.start.description: Adı verilen kuyruğu başlatın.
 cli.cmd.queue.stop.description: Adı verilen kuyruğu durdurun.
 cli.cmd.queue.paused:
