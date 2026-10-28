@@ -44,6 +44,15 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then \
     fi
 
 #
+# Unit tests
+# Not part of the release chain, run with:
+# docker build --target test .
+#
+FROM build AS test
+ENV CI=true
+RUN yarn test
+
+#
 # Dashboard
 #
 FROM node:${NODE_IMAGE_TAG} AS dashboard

@@ -15,6 +15,9 @@ build-noweb:
 build-gows:
 	docker build . -t devlikeapro/waha-plus:gows --build-arg USE_BROWSER=none --build-arg WHATSAPP_DEFAULT_ENGINE=GOWS
 
+test-docker:
+	docker build . --target test
+
 build-ssh:
 	# check IMAGE provided
 	@[ "${IMAGE}" ]  || ( echo "Add APP: make build-ssh image=devlikeapro/waha"; exit 1 );
