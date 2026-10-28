@@ -15,6 +15,9 @@ export class SessionRuntimeInfoPlugin extends SessionPlugin {
       status: this.session.status,
       config: this.session.sessionConfig,
       me: this.session.getSessionMeInfo(),
+      runtime: {
+        proxy: this.session.getProxyInfo(),
+      },
       presence: this.session.presence,
       timestamps: {
         activity: null,

@@ -211,4 +211,23 @@ export class SessionTools extends McpController {
       url: `/api/sessions/${session}/timelock`,
     });
   }
+
+  @Tool('sessions-proxy', {
+    title: 'Check session proxy',
+    description:
+      'Check the proxy the session connects through: whether WhatsApp is ' +
+      'reachable over it, the latency and the exit IP. Credentials are never returned.',
+    inputSchema: SessionNameInput,
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+    },
+  })
+  async proxy({ session }: z.infer<typeof SessionNameInput>) {
+    return this.textRequest({
+      method: 'GET',
+      url: `/api/sessions/${session}/proxy`,
+    });
+  }
 }

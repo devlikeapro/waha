@@ -45,7 +45,7 @@ import {
 } from '@waha/core/engines/noweb/session.noweb.core';
 import { extractMediaContent } from '@waha/core/engines/noweb/utils';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
-import { buildProxyUrl } from '@waha/core/helpers.proxy';
+import { buildProxyUrl, describeProxy } from '@waha/core/helpers.proxy';
 import {
   IMediaEngineProcessor,
   MediaContent,
@@ -383,7 +383,9 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     if (!config || !config.server) {
       return '';
     }
-    return buildProxyUrl(config);
+    const url = buildProxyUrl(config);
+    this.logger.info(`Connecting through proxy ${describeProxy(url)}`);
+    return url;
   }
 
   buildStreams() {

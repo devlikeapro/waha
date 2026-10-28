@@ -1,4 +1,4 @@
-import { buildProxyUrl } from '@waha/core/helpers.proxy';
+import { buildProxyUrl, describeProxy } from '@waha/core/helpers.proxy';
 
 describe('buildProxyUrl', () => {
   it('uses http when the server has no scheme', () => {
@@ -81,5 +81,16 @@ describe('buildProxyUrl', () => {
     expect(() => buildProxyUrl({ server: 'http://user:secret@' })).toThrow(
       'Invalid proxy server address',
     );
+  });
+});
+
+describe('describeProxy', () => {
+  it('drops the credentials', () => {
+    const url = buildProxyUrl({
+      server: 'socks5://proxy.local:1080',
+      username: 'user',
+      password: 'secret',
+    });
+    expect(describeProxy(url)).toEqual('socks5://proxy.local:1080');
   });
 });
