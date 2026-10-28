@@ -59,17 +59,33 @@ function getAuthenticatedUrl(
   return parsedUrl.toString();
 }
 
+// Encodes a lone "%" and keeps a %XX already encoded by hand
+function escapeLonePercent(value: string): string {
+  return value.replace(/%(?![0-9a-fA-F]{2})/g, '%25');
+}
+
 /**
- * Proxy URL that keeps the server scheme (http by default)
+ * Proxy URL that keeps the server scheme (http by default) and encodes the credentials
  */
 export function buildProxyUrl(config: ProxyConfig): string {
-  const { server, username, password } = config;
-  const auth = username && password ? `${username}:${password}@` : '';
-  const match = server.match(/^(https?):\/\/(.+)$/);
-  if (match) {
-    return `${match[1]}://${auth}${match[2]}`;
+  let server = config.server.trim();
+  if (!/^https?:\/\//.test(server)) {
+    server = `http://${server}`;
   }
-  return `http://${auth}${server}`;
+  let url: URL;
+  try {
+    url = new URL(server);
+  } catch (err) {
+    // Never echo the server: it may carry credentials
+    throw new Error('Invalid proxy server address');
+  }
+  if (config.username) {
+    url.username = escapeLonePercent(config.username);
+  }
+  if (config.password) {
+    url.password = escapeLonePercent(config.password);
+  }
+  return url.toString();
 }
 
 /**
