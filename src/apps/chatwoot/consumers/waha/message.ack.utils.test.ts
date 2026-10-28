@@ -6,6 +6,7 @@ import {
 } from '@waha/apps/chatwoot/consumers/waha/message.ack.utils';
 
 jest.mock('@adiwajshing/baileys', () => requireModule('@adiwajshing/baileys'));
+jest.mock('file-type', () => requireModule('file-type'), { virtual: true });
 
 interface TestParam {
   name: string;

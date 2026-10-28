@@ -18,7 +18,7 @@ export async function detectMimetype(
   buffer: Buffer,
   fallback = 'application/octet-stream',
 ): Promise<string> {
-  const result = await fileType.fromBuffer(buffer);
+  const result = await fileType.fileTypeFromBuffer(buffer);
   return result?.mime ?? fallback;
 }
 

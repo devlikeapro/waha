@@ -6,6 +6,7 @@ import { JestLogger } from '@waha/apps/app_sdk/jest/JestLogger';
 import { i18n } from '@waha/apps/chatwoot/i18n';
 
 jest.mock('@adiwajshing/baileys', () => requireModule('@adiwajshing/baileys'));
+jest.mock('file-type', () => requireModule('file-type'), { virtual: true });
 
 describe('PixMessage - pt-BR', () => {
   const locale = i18n.locale('pt-BR');

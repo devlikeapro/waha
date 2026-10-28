@@ -83,7 +83,7 @@
     "commander": "^14.0.1",
     "del": "^8.0.0",
     "express-basic-auth": "^1.2.1",
-    "file-type": "16.5.4",
+    "file-type": "^22.2.0",
     "fs-extra": "^11.2.0",
     "google-protobuf": "^3.21.4",
     "https-proxy-agent": "^7.0.0",
