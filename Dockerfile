@@ -1,4 +1,4 @@
-ARG NODE_IMAGE_TAG=24.11-bookworm-slim
+ARG NODE_IMAGE_TAG=24.22-bookworm-slim
 ARG GOLANG_IMAGE_TAG=1.24-bookworm
 
 #
