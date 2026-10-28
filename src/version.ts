@@ -48,7 +48,7 @@ function getPlatform() {
 }
 
 export const VERSION: WAHAEnvironment = {
-  version: '2026.10.1',
+  version: '2026.11.1',
   engine: getEngineName(),
   tier: getWAHAVersion(),
   browser: getBrowser(),
