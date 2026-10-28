@@ -16,7 +16,7 @@ describe('PhoneNumbersCacheRepository', () => {
 
   beforeAll(async () => {
     db = knex({
-      client: 'sqlite3',
+      client: 'better-sqlite3',
       connection: { filename: ':memory:' },
       useNullAsDefault: true,
     });
