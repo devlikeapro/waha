@@ -263,7 +263,14 @@ enum WhatsMeowEvent {
   PRESENCE = 'events.Presence',
   CHAT_PRESENCE = 'events.ChatPresence',
   PUSH_NAME_SETTING = 'events.PushNameSetting',
+  // Connection failure
   LOGGED_OUT = 'events.LoggedOut',
+  TEMPORARY_BAN = 'events.TemporaryBan',
+  CLIENT_OUTDATED = 'events.ClientOutdated',
+  CONNECT_FAILURE = 'events.ConnectFailure',
+  CAT_REFRESH_ERROR = 'events.CATRefreshError',
+  STREAM_REPLACED = 'events.StreamReplaced',
+  //
   NOTIFY_ACCOUNT_REACHOUT_TIMELOCK = 'events.NotifyAccountReachoutTimelock',
   MESSAGE_CAPPING = 'gows.MessageCapping',
   // Groups
@@ -501,9 +508,41 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     events.on(WhatsMeowEvent.PUSH_NAME_SETTING, (data) => {
       this.me = { ...this.me, pushName: data.Action.name };
     });
-    events.on(WhatsMeowEvent.LOGGED_OUT, () => {
-      this.logger.error('Logged out');
-      this.status = WAHASessionStatus.FAILED;
+    events.on(WhatsMeowEvent.LOGGED_OUT, (data) => {
+      const reason = { ...data, event: 'LoggedOut' };
+      this.logger.error(reason, 'Logged out');
+      this.setStatus(WAHASessionStatus.FAILED, { reason: reason });
+    });
+    events.on(WhatsMeowEvent.TEMPORARY_BAN, (data) => {
+      const reason = { ...data, event: 'TemporaryBan' };
+      this.logger.error(reason, 'Temporary ban');
+      this.setStatus(WAHASessionStatus.FAILED, { reason: reason });
+    });
+    events.on(WhatsMeowEvent.CLIENT_OUTDATED, (data) => {
+      const reason = { ...data, event: 'ClientOutdated' };
+      this.logger.error(
+        reason,
+        'Client outdated - update to the latest version',
+      );
+      this.setStatus(WAHASessionStatus.FAILED, { reason: reason });
+    });
+    events.on(WhatsMeowEvent.CONNECT_FAILURE, (data) => {
+      const reason = { ...data, event: 'ConnectFailure' };
+      this.logger.error(reason, 'Connect failure');
+      this.setStatus(WAHASessionStatus.FAILED, { reason: reason });
+    });
+    events.on(WhatsMeowEvent.CAT_REFRESH_ERROR, (data) => {
+      const reason = { ...data, event: 'CATRefreshError' };
+      this.logger.error(reason, 'Failed to refresh CAT');
+      this.setStatus(WAHASessionStatus.FAILED, { reason: reason });
+    });
+    events.on(WhatsMeowEvent.STREAM_REPLACED, (data) => {
+      const reason = { ...data, event: 'StreamReplaced' };
+      this.logger.error(
+        reason,
+        'Stream replaced - connected from another client or a race condition',
+      );
+      this.setStatus(WAHASessionStatus.FAILED, { reason: reason });
     });
     events.on(WhatsMeowEvent.NOTIFY_ACCOUNT_REACHOUT_TIMELOCK, (data) => {
       this.reachoutTimelock.update(parseGowsReachoutTimelock(data));
