@@ -79,6 +79,8 @@ import {
 import {
   ChatSortField,
   ChatSummary,
+  DeleteMessagesForMeRequest,
+  DeleteMessagesForMeResponse,
   GetChatMessageQuery,
   GetChatMessagesFilter,
   GetChatMessagesQuery,
@@ -197,6 +199,10 @@ import { promisify } from 'util';
 import * as gows from './types';
 import { MessageStatus } from './types';
 import { isFromFullSync } from '@waha/core/engines/gows/appstate';
+import {
+  toDeleteForMeError,
+  toDeleteForMeMessageIds,
+} from '@waha/core/engines/gows/deleteForMe';
 import { parseVCardV3, toVcardV3 } from '@waha/core/vcard';
 import { AckToStatus } from '@waha/core/utils/acks';
 import { ParseEventResponseType } from '@waha/core/utils/events';
@@ -1317,6 +1323,29 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     const response = await promisify(this.client.RevokeMessage)(message);
     const data = response.toObject();
     return this.messageResponse(jid, data);
+  }
+
+  @Activity()
+  public async deleteMessagesForMe(
+    chatId: string,
+    request: DeleteMessagesForMeRequest,
+  ): Promise<DeleteMessagesForMeResponse> {
+    const jid = await this.hooks.wid.chat.promise(
+      chatId,
+      'deleteMessagesForMe',
+    );
+    const message = new messages.DeleteMessagesForMeRequest({
+      session: this.session,
+      jid: jid,
+      messageIds: toDeleteForMeMessageIds(request.messageIds),
+      deleteMedia: request.deleteMedia ?? false,
+    });
+    try {
+      await promisify(this.client.DeleteMessagesForMe)(message);
+    } catch (error) {
+      throw toDeleteForMeError(error);
+    }
+    return { ids: request.messageIds };
   }
 
   protected async prepareJidsForStatus(contacts: string[]) {

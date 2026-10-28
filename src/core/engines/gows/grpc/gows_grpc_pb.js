@@ -114,6 +114,17 @@ function deserialize_messages_DeleteLabelRequest(buffer_arg) {
   return gows_pb.DeleteLabelRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_messages_DeleteMessagesForMeRequest(arg) {
+  if (!(arg instanceof gows_pb.DeleteMessagesForMeRequest)) {
+    throw new Error('Expected argument of type messages.DeleteMessagesForMeRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_messages_DeleteMessagesForMeRequest(buffer_arg) {
+  return gows_pb.DeleteMessagesForMeRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_messages_DownloadMediaRequest(arg) {
   if (!(arg instanceof gows_pb.DownloadMediaRequest)) {
     throw new Error('Expected argument of type messages.DownloadMediaRequest');
@@ -1340,6 +1351,17 @@ generateNewMessageID: {
     requestDeserialize: deserialize_messages_RevokeMessageRequest,
     responseSerialize: serialize_messages_MessageResponse,
     responseDeserialize: deserialize_messages_MessageResponse,
+  },
+  deleteMessagesForMe: {
+    path: '/messages.MessageService/DeleteMessagesForMe',
+    requestStream: false,
+    responseStream: false,
+    requestType: gows_pb.DeleteMessagesForMeRequest,
+    responseType: gows_pb.Empty,
+    requestSerialize: serialize_messages_DeleteMessagesForMeRequest,
+    requestDeserialize: deserialize_messages_DeleteMessagesForMeRequest,
+    responseSerialize: serialize_messages_Empty,
+    responseDeserialize: deserialize_messages_Empty,
   },
   sendButtonReply: {
     path: '/messages.MessageService/SendButtonReply',
