@@ -47,7 +47,7 @@ export abstract class PhoneNumbersCacheController {
       'Entries from the in-memory cache tier of the running session, ' +
       'sorted by key. The session must be running.',
   })
-  @CheckPolicies(CanSession(Action.Control, FromParam('session')))
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @UsePipes(new WAHAValidationPipe())
   async memory(
     @Param('session') session: string,
@@ -73,7 +73,7 @@ export abstract class PhoneNumbersCacheController {
       'Entries from the persistent (database) cache tier, sorted by id. ' +
       'Works even when the session is stopped.',
   })
-  @CheckPolicies(CanSession(Action.Control, FromParam('session')))
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @UsePipes(new WAHAValidationPipe())
   async db(
     @Param('session') session: string,
@@ -98,7 +98,7 @@ export abstract class PhoneNumbersCacheController {
       'Stats for both cache tiers. "memory" is null when the session is not running, ' +
       '"db" is null when the persistent cache is disabled.',
   })
-  @CheckPolicies(CanSession(Action.Control, FromParam('session')))
+  @CheckPolicies(CanSession(Action.Read, FromParam('session')))
   @UsePipes(new WAHAValidationPipe())
   async stats(
     @Param('session') session: string,
@@ -121,7 +121,7 @@ export abstract class PhoneNumbersCacheController {
       'Removes ALL persistent cache entries and clears the in-memory tier ' +
       '(the in-memory tier only when the session is running).',
   })
-  @CheckPolicies(CanSession(Action.Control, FromParam('session')))
+  @CheckPolicies(CanSession(Action.App, FromParam('session')))
   @UsePipes(new WAHAValidationPipe())
   async purge(
     @Param('session') session: string,
