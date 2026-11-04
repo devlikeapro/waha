@@ -10,10 +10,14 @@ import {
 import { ChatIdProperty } from '@waha/structures/properties.dto';
 import { Transform, Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  ArrayUnique,
   IsArray,
   IsBoolean,
   IsDefined,
   IsEnum,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -173,6 +177,43 @@ export class ReadChatMessagesResponse {
     description: 'Messages IDs that have been read',
   })
   ids?: string[];
+}
+
+export class DeleteMessagesForMeRequest {
+  @ApiProperty({
+    type: String,
+    isArray: true,
+    minItems: 1,
+    maxItems: 100,
+    example: ['false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA'],
+    description:
+      'Messages to delete for this account only, from 1 to 100 per request',
+  })
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(100)
+  @ArrayUnique()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  messageIds: string[];
+
+  @ApiProperty({
+    required: false,
+    default: false,
+    description:
+      "Ask the account's devices to also delete the media files of these messages. " +
+      'Media files saved by WAHA are kept.',
+  })
+  @IsBoolean()
+  @IsOptional()
+  deleteMedia?: boolean = false;
+}
+
+export class DeleteMessagesForMeResponse {
+  @ApiProperty({
+    description: 'Messages IDs that have been deleted for this account',
+  })
+  ids: string[];
 }
 
 export class GetChatMessageQuery {
