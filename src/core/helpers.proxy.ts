@@ -49,40 +49,36 @@ export function getProxyConfig(
 }
 
 /**
- * Proxy server URL with the configured scheme (http by default).
+ * Build the proxy URL from the config: scheme (http by default) and credentials.
+ * A server that already carries a scheme is kept as is.
  */
-export function getProxyServerUrl(config: ProxyConfig): string {
-  const server = config.server.trim();
-  if (server.includes('://')) {
-    return server;
+export function getProxyUrl(config: ProxyConfig): URL {
+  let server = config.server.trim();
+  if (!server.includes('://')) {
+    const scheme = config.scheme || ProxyScheme.HTTP;
+    server = `${scheme}://${server}`;
   }
-  const scheme = config.scheme || ProxyScheme.HTTP;
-  return `${scheme}://${server}`;
+  const url = new URL(server);
+  if (config.username) {
+    url.username = config.username;
+  }
+  if (config.password) {
+    url.password = config.password;
+  }
+  return url;
 }
 
-/**
- * Proxy URL with the credentials, percent-encoded
- */
-export function getAuthenticatedUrl(proxyConfig: ProxyConfig): string {
-  const parsedUrl = new URL(getProxyServerUrl(proxyConfig));
-  parsedUrl.username = proxyConfig.username || '';
-  parsedUrl.password = proxyConfig.password || '';
-  return parsedUrl.toString();
-}
-
-function createProxyAgent(url: string): Agent {
-  if (url.startsWith(`${ProxyScheme.SOCKS5}://`)) {
+function createProxyAgent(url: URL): Agent {
+  if (url.protocol === `${ProxyScheme.SOCKS5}:`) {
     return new SocksProxyAgent(url);
   }
   return new HttpsProxyAgent(url);
 }
 
 /**
- * Return Agent proxy for the config
- * @param proxyConfig
+ * Return Agent proxy for the URL
  */
-export function createAgentProxy(proxyConfig: ProxyConfig): Agents | undefined {
-  const url = getAuthenticatedUrl(proxyConfig);
+export function createAgentProxy(url: URL): Agents {
   const socketAgent = createProxyAgent(url);
   // Baileys media upload uses Node.js https.request in Node runtime,
   // so fetchAgent must be a Node https.Agent (ProxyAgent from undici won't work).

@@ -328,11 +328,11 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
       },
     };
 
-    if (this.proxyConfig?.server) {
+    if (this.proxy) {
       options.proxy = {
-        url: this.proxyConfig.server,
-        username: this.proxyConfig.username,
-        password: this.proxyConfig.password,
+        url: `${this.proxy.protocol}//${this.proxy.host}`,
+        username: decodeURIComponent(this.proxy.username),
+        password: decodeURIComponent(this.proxy.password),
       };
     }
 

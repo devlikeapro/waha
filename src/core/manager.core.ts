@@ -18,7 +18,7 @@ import { WhatsappSessionGoWSCore } from '@waha/core/engines/gows/session.gows.co
 import { WhatsappSessionNoWebCore } from '@waha/core/engines/noweb/session.noweb.core';
 import { WhatsappSessionWPPCore } from '@waha/core/engines/wpp/session.wpp.core';
 import { WhatsappSessionWebJSCore } from '@waha/core/engines/webjs/session.webjs.core';
-import { getProxyConfig } from '@waha/core/helpers.proxy';
+import { getProxyConfig, getProxyUrl } from '@waha/core/helpers.proxy';
 import { MediaManager } from '@waha/core/media/MediaManager';
 import { MediaStorageFactory } from '@waha/core/media/MediaStorageFactory';
 import { LocalSessionAuthRepository } from '@waha/core/storage/LocalSessionAuthRepository';
@@ -61,7 +61,6 @@ import {
   WAHASessionStatus,
 } from '../structures/enums.dto';
 import {
-  ProxyConfig,
   SessionConfig,
   SessionDetailedInfo,
   SessionDTO,
@@ -349,14 +348,14 @@ export class SessionManagerCore
       storage,
       loggerBuilder.child({ name: 'MediaManager' }),
     );
-    const proxyConfig = this.getProxyConfig(name, config);
+    const proxy = this.getProxy(name, config);
     const sessionConfig: SessionParams = {
       name,
       mediaManager,
       loggerBuilder,
       printQR: this.engineConfigService.shouldPrintQR,
       sessionStore: this.store,
-      proxyConfig: proxyConfig,
+      proxy: proxy,
       sessionConfig: config,
       ignore: this.ignoreChatsConfig(config),
       media: this.config.mediaConfig,
@@ -477,14 +476,15 @@ export class SessionManagerCore
   /**
    * Get either session's or global proxy if defined
    */
-  protected getProxyConfig(
-    name: string,
-    config?: SessionConfig,
-  ): ProxyConfig | undefined {
-    if (config?.proxy) {
-      return config.proxy;
+  protected getProxy(name: string, config?: SessionConfig): URL | undefined {
+    let proxyConfig = config?.proxy;
+    if (!proxyConfig) {
+      proxyConfig = getProxyConfig(this.config, this.sessions, name);
     }
-    return getProxyConfig(this.config, this.sessions, name);
+    if (!proxyConfig?.server) {
+      return undefined;
+    }
+    return getProxyUrl(proxyConfig);
   }
 
   getSession(name: string): WhatsappSession {

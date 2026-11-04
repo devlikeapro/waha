@@ -45,7 +45,6 @@ import {
 } from '@waha/core/engines/noweb/session.noweb.core';
 import { extractMediaContent } from '@waha/core/engines/noweb/utils';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
-import { getAuthenticatedUrl } from '@waha/core/helpers.proxy';
 import {
   IMediaEngineProcessor,
   MediaContent,
@@ -158,7 +157,6 @@ import { CallData } from '@waha/structures/calls.dto';
 import {
   MeInfo,
   MessageCappingData,
-  ProxyConfig,
   ReachoutTimelockData,
   SessionConfig,
 } from '@waha/structures/sessions.dto';
@@ -355,7 +353,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
           level: level ?? messages.LogLevel.INFO,
         }),
         proxy: new messages.SessionProxyConfig({
-          url: this.getProxyUrl(this.proxyConfig),
+          url: this.proxy?.href ?? '',
         }),
         ignore: new messages.SessionIgnoreJidsConfig({
           status: this.jids.ignore.status,
@@ -377,13 +375,6 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       this.status = WAHASessionStatus.FAILED;
       throw err;
     });
-  }
-
-  protected getProxyUrl(config: ProxyConfig): string {
-    if (!config || !config.server) {
-      return '';
-    }
-    return getAuthenticatedUrl(config);
   }
 
   buildStreams() {

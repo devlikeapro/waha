@@ -125,7 +125,6 @@ import {
   MeInfo,
   MessageCappingData,
   MessageCappingStatus,
-  ProxyConfig,
   ReachoutTimelockData,
   SessionConfig,
   SessionInfo,
@@ -175,7 +174,7 @@ export interface SessionParams {
   mediaManager: IMediaManager;
   loggerBuilder: LoggerBuilder;
   sessionStore: DataStore;
-  proxyConfig?: ProxyConfig;
+  proxy?: URL;
   // Raw unchanged SessionConfig
   sessionConfig?: SessionConfig;
   engineConfig?: any;
@@ -206,7 +205,7 @@ export abstract class WhatsappSession {
   public loggerBuilder: LoggerBuilder;
   public logger: Logger;
   protected sessionStore: DataStore;
-  protected proxyConfig?: ProxyConfig;
+  protected proxy?: URL;
   public sessionConfig?: SessionConfig;
   protected media: MediaConfig;
   protected engineConfig?: any;
@@ -238,7 +237,7 @@ export abstract class WhatsappSession {
     printQR,
     loggerBuilder,
     sessionStore,
-    proxyConfig,
+    proxy,
     mediaManager,
     sessionConfig,
     engineConfig,
@@ -248,7 +247,7 @@ export abstract class WhatsappSession {
     this._status = WAHASessionStatus.STOPPED;
     this.status$ = new Subject<SessionStatusUpdate>();
     this.name = name;
-    this.proxyConfig = proxyConfig;
+    this.proxy = proxy;
     this.loggerBuilder = loggerBuilder;
     this.logger = loggerBuilder.child({ name: 'WhatsappSession' });
     this.hooks = new SessionHooks();

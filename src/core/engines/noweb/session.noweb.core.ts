@@ -478,10 +478,10 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   protected makeProxyAgents(): Agents | undefined {
-    if (!this.proxyConfig) {
+    if (!this.proxy) {
       return undefined;
     }
-    return createAgentProxy(this.proxyConfig);
+    return createAgentProxy(this.proxy);
   }
 
   private async ensureStore() {

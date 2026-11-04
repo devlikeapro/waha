@@ -37,7 +37,6 @@ import {
 import { WAMimeType } from '@waha/core/media/WAMimeType';
 import { detectMimetype } from '@waha/utils/files';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
-import { getProxyServerUrl } from '@waha/core/helpers.proxy';
 import {
   IMediaEngineProcessor,
   MediaContent,
@@ -386,18 +385,20 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   protected addProxyConfig(clientOptions: ClientOptions) {
-    if (this.proxyConfig?.server !== undefined) {
-      // push the proxy server to the args
-      const url = getProxyServerUrl(this.proxyConfig);
-      clientOptions.puppeteer.args.push(`--proxy-server=${url}`);
+    const proxy = this.proxy;
+    if (!proxy) {
+      return;
+    }
+    // push the proxy server to the args, no credentials there
+    const server = `${proxy.protocol}//${proxy.host}`;
+    clientOptions.puppeteer.args.push(`--proxy-server=${server}`);
 
-      // Authenticate
-      if (this.proxyConfig?.username && this.proxyConfig?.password) {
-        clientOptions.proxyAuthentication = {
-          username: this.proxyConfig?.username,
-          password: this.proxyConfig?.password,
-        };
-      }
+    // Authenticate
+    if (proxy.username && proxy.password) {
+      clientOptions.proxyAuthentication = {
+        username: decodeURIComponent(proxy.username),
+        password: decodeURIComponent(proxy.password),
+      };
     }
   }
 
