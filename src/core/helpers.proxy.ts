@@ -1,7 +1,10 @@
+import { Agent } from 'https';
 import { HttpsProxyAgent } from 'https-proxy-agent';
+import { SocksProxyAgent } from 'socks-proxy-agent';
 import { URL } from 'url';
 
 import { WhatsappConfigService } from '../config.service';
+import { ProxyScheme } from '../structures/enums.dto';
 import { ProxyConfig } from '../structures/sessions.dto';
 import { WhatsappSession } from './abc/session.abc';
 import { Agents } from '@waha/core/engines/noweb/types';
@@ -14,6 +17,7 @@ export function getProxyConfig(
   // Single proxy server configuration
   if (typeof config.proxyServer === 'string') {
     return {
+      scheme: config.proxyServerScheme as ProxyScheme,
       server: config.proxyServer,
       username: config.proxyServerUsername,
       password: config.proxyServerPassword,
@@ -33,6 +37,7 @@ export function getProxyConfig(
     idx = Object.keys(sessions).length % config.proxyServer.length;
     const index = indexToUse ? indexToUse % config.proxyServer.length : idx;
     return {
+      scheme: config.proxyServerScheme as ProxyScheme,
       server: config.proxyServer[index],
       username: config.proxyServerUsername,
       password: config.proxyServerPassword,
@@ -43,37 +48,44 @@ export function getProxyConfig(
   return undefined;
 }
 
-function getAuthenticatedUrl(
-  url: string,
-  username: string,
-  password: string,
-): string {
-  const hasSchema = url.startsWith('http://') || url.startsWith('https://');
-  if (!hasSchema) {
-    url = `http://${url}`;
+/**
+ * Proxy server URL with the configured scheme (http by default).
+ */
+export function getProxyServerUrl(config: ProxyConfig): string {
+  const server = config.server.trim();
+  if (server.includes('://')) {
+    return server;
   }
-  const parsedUrl = new URL(url);
-  parsedUrl.protocol = parsedUrl.protocol || 'http';
-  parsedUrl.username = username;
-  parsedUrl.password = password;
-  return parsedUrl.toString();
+  const scheme = config.scheme || ProxyScheme.HTTP;
+  return `${scheme}://${server}`;
 }
 
 /**
- * Return https Agent proxy for the config
+ * Proxy URL with the credentials, percent-encoded
+ */
+export function getAuthenticatedUrl(proxyConfig: ProxyConfig): string {
+  const parsedUrl = new URL(getProxyServerUrl(proxyConfig));
+  parsedUrl.username = proxyConfig.username || '';
+  parsedUrl.password = proxyConfig.password || '';
+  return parsedUrl.toString();
+}
+
+function createProxyAgent(url: string): Agent {
+  if (url.startsWith(`${ProxyScheme.SOCKS5}://`)) {
+    return new SocksProxyAgent(url);
+  }
+  return new HttpsProxyAgent(url);
+}
+
+/**
+ * Return Agent proxy for the config
  * @param proxyConfig
  */
 export function createAgentProxy(proxyConfig: ProxyConfig): Agents | undefined {
-  const url = getAuthenticatedUrl(
-    proxyConfig.server,
-    proxyConfig.username || '',
-    proxyConfig.password || '',
-  );
-
-  const socketAgent = new HttpsProxyAgent(url);
+  const url = getAuthenticatedUrl(proxyConfig);
+  const socketAgent = createProxyAgent(url);
   // Baileys media upload uses Node.js https.request in Node runtime,
   // so fetchAgent must be a Node https.Agent (ProxyAgent from undici won't work).
-  const fetchAgent = new HttpsProxyAgent(url);
-
+  const fetchAgent = createProxyAgent(url);
   return { socket: socketAgent, fetch: fetchAgent };
 }

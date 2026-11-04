@@ -143,6 +143,10 @@ export class WhatsappConfigService {
     );
   }
 
+  get proxyServerScheme(): string | undefined {
+    return this.configService.get('WHATSAPP_PROXY_SERVER_SCHEME', undefined);
+  }
+
   get proxyServerUsername(): string | undefined {
     return this.configService.get('WHATSAPP_PROXY_SERVER_USERNAME', undefined);
   }

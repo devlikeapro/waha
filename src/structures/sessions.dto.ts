@@ -13,7 +13,11 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { WAHAPresenceStatus, WAHASessionStatus } from './enums.dto';
+import {
+  ProxyScheme,
+  WAHAPresenceStatus,
+  WAHASessionStatus,
+} from './enums.dto';
 import { ChatIdProperty } from './properties.dto';
 import { WebhookConfig } from './webhooks.config.dto';
 
@@ -59,6 +63,16 @@ export class SessionInfoQuery extends SessionExpandQuery {}
  */
 export class ProxyConfig {
   @ApiProperty({
+    description: 'Proxy scheme',
+    example: ProxyScheme.HTTP,
+    enum: ProxyScheme,
+  })
+  @IsEnum(ProxyScheme)
+  @IsOptional()
+  scheme?: ProxyScheme;
+
+  @ApiProperty({
+    description: 'Proxy server address in host:port format',
     example: 'localhost:3128',
   })
   @IsString()

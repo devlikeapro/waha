@@ -60,6 +60,12 @@ export enum WAHAEngine {
   GOWS = 'GOWS',
 }
 
+export enum ProxyScheme {
+  HTTP = 'http',
+  HTTPS = 'https',
+  SOCKS5 = 'socks5',
+}
+
 export enum WAHAPresenceStatus {
   OFFLINE = 'offline',
   ONLINE = 'online',
