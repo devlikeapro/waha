@@ -66,10 +66,10 @@ export function getProxyUrl(config: ProxyConfig): URL {
     throw new ProxyError(server, err);
   }
   if (config.username) {
-    url.username = config.username;
+    url.username = encodeURIComponent(config.username);
   }
   if (config.password) {
-    url.password = config.password;
+    url.password = encodeURIComponent(config.password);
   }
   return url;
 }
