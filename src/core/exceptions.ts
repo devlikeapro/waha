@@ -18,6 +18,12 @@ export class NotImplementedByEngineError extends NotImplementedException {
   }
 }
 
+export class ProxyError extends UnprocessableEntityException {
+  constructor(server: string, cause: Error) {
+    super(`Invalid proxy server '${server}': ${cause.message}`);
+  }
+}
+
 export class AvailableInPlusVersion extends UnprocessableEntityException {
   constructor(feature: string = 'The feature') {
     super(

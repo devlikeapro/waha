@@ -7,6 +7,7 @@ import { WhatsappConfigService } from '../config.service';
 import { ProxyScheme } from '../structures/enums.dto';
 import { ProxyConfig } from '../structures/sessions.dto';
 import { WhatsappSession } from './abc/session.abc';
+import { ProxyError } from './exceptions';
 import { Agents } from '@waha/core/engines/noweb/types';
 
 export function getProxyConfig(
@@ -58,7 +59,12 @@ export function getProxyUrl(config: ProxyConfig): URL {
     const scheme = config.scheme || ProxyScheme.HTTP;
     server = `${scheme}://${server}`;
   }
-  const url = new URL(server);
+  let url: URL;
+  try {
+    url = new URL(server);
+  } catch (err) {
+    throw new ProxyError(server, err);
+  }
   if (config.username) {
     url.username = config.username;
   }
