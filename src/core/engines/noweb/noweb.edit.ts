@@ -6,12 +6,18 @@ const CAPTION_MEDIA_KEYS = [
   'documentMessage',
 ] as const;
 
+interface CaptionMedia {
+  caption?: string | null;
+  directPath?: string | null;
+  contextInfo?: proto.IContextInfo | null;
+}
+
 /**
  * Finds the media part of a message that can carry a caption.
  */
 export function findCaptionMedia(
   content: proto.IMessage | null | undefined,
-): { directPath?: string | null } | null {
+): CaptionMedia | null {
   for (const key of CAPTION_MEDIA_KEYS) {
     if (content?.[key]) {
       return content[key];
@@ -21,12 +27,40 @@ export function findCaptionMedia(
 }
 
 /**
- * Builds the "editedMessage" for a caption edit of a media message.
- *
- * In chats WhatsApp merges the new caption into the original message, so the
- * caption alone is enough. In channels (newsletters) the edit replaces the
- * whole post: it must carry the original media fields (directPath, mimetype,
- * sha256, ...) or followers get the new caption without the media.
+ * Picks the message a caption edit is based on, reading the channel post
+ * only when no usable copy is stored, and whether its media can be kept.
+ */
+export async function resolveEditContent(
+  stored: proto.IMessage | null | undefined,
+  isChannel: boolean,
+  readChannelPost: () => Promise<proto.IMessage | null>,
+): Promise<{ content: proto.IMessage | null | undefined; keepMedia: boolean }> {
+  let content = stored;
+  const media = findCaptionMedia(content);
+  if (isChannel && (!content || (media && !media.directPath))) {
+    const original = await readChannelPost();
+    if (original) {
+      content = original;
+    }
+  }
+  const keepMedia = isChannel && Boolean(findCaptionMedia(content)?.directPath);
+  return { content: content, keepMedia: keepMedia };
+}
+
+/**
+ * Finds a post by message id among fetched channel updates.
+ */
+export function findChannelPost(
+  updates: { message?: proto.IWebMessageInfo | null }[],
+  id: string,
+): proto.IMessage | null {
+  const update = updates.find((item) => item.message?.key?.id === id);
+  return update?.message?.message ?? null;
+}
+
+/**
+ * Builds the "editedMessage" for a caption edit. Channel edits replace the
+ * whole post, so with keepMedia they carry the original media fields.
  */
 export function buildCaptionEdit(
   content: proto.IMessage | null | undefined,
@@ -52,16 +86,16 @@ export function buildCaptionEdit(
   return undefined;
 }
 
-function withCaption<T extends { caption?: string | null; contextInfo?: any }>(
-  media: T,
+function withCaption(
+  media: CaptionMedia,
   text: string,
   keepMedia: boolean,
-): T {
+): CaptionMedia {
   if (!keepMedia) {
-    return { caption: text } as T;
+    return { caption: text };
   }
   const copy = { ...media, caption: text };
-  // Mentions and replies of the edit are set by sendMessage itself
+  // sendMessage sets the edit's own mentions and replies
   delete copy.contextInfo;
   return copy;
 }

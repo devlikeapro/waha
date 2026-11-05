@@ -66,7 +66,8 @@ import {
 import { sendButtonMessage } from '@waha/core/engines/noweb/noweb.buttons';
 import {
   buildCaptionEdit,
-  findCaptionMedia,
+  findChannelPost,
+  resolveEditContent,
 } from '@waha/core/engines/noweb/noweb.edit';
 import {
   NOWEBNewsletterMetadata,
@@ -1183,16 +1184,13 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     const stored = await this.store
       ?.loadMessage(key.remoteJid, key.id)
       .catch(() => null);
-    let content = extractMessageContent(stored?.message);
     const isChannel = isJidNewsletter(jid);
-    if (isChannel && !findCaptionMedia(content)?.directPath) {
-      // Without a stored copy, read the original post from the channel
-      const original = await this.fetchChannelMessageContent(jid, key.id);
-      if (original) {
-        content = original;
-      }
-    }
-    const editedMessage = buildCaptionEdit(content, request.text, isChannel);
+    const { content, keepMedia } = await resolveEditContent(
+      extractMessageContent(stored?.message),
+      isChannel,
+      () => this.fetchChannelMessageContent(jid, key.id),
+    );
+    const editedMessage = buildCaptionEdit(content, request.text, keepMedia);
     let mentions: string[] | undefined;
     if (request.mentions) {
       mentions = await Promise.all(
@@ -1212,7 +1210,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     const options = {
       messageId: this.generateMessageID(),
     };
-    if (isJidNewsletter(jid)) {
+    if (isChannel) {
       // Newsletter edits reuse the original message ID
       options.messageId = key.id;
     }
@@ -1220,7 +1218,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
   }
 
   /**
-   * Reads a recent channel post, so a caption edit can keep its media
+   * Reads a recent channel post, so a caption edit can keep its media.
    */
   private async fetchChannelMessageContent(
     jid: string,
@@ -1233,12 +1231,11 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         CHANNEL_EDIT_LOOKUP_LIMIT,
         null,
       );
-      const update = updates.find((item) => item.message?.key?.id === id);
-      return extractMessageContent(update?.message?.message) ?? null;
+      return extractMessageContent(findChannelPost(updates, id)) ?? null;
     } catch (err) {
       this.logger.warn(
-        { error: err, id: id },
-        'Can not read the original channel post, its media may be lost after the edit',
+        { error: err, jid: jid, id: id },
+        'Cannot read the original channel post, the edit goes without its media',
       );
       return null;
     }
