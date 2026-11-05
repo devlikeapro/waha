@@ -3796,6 +3796,15 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     if (request.reply_to) {
       const key = parseMessageIdSerialized(request.reply_to, true);
       quoted = await this.store.loadMessage(jid, key.id);
+      // WhatsApp Web silently drops a reply that quotes an image with these
+      // fields, which images sent from a phone have. Baileys copies them to the
+      // quote, and it only needs the thumbnail.
+      const image = normalizeMessageContent(quoted?.message)?.imageMessage;
+      if (image) {
+        delete image.scanLengths;
+        delete image.scansSidecar;
+        delete image.midQualityFileSha256;
+      }
     }
     const ephemeralExpiration = await this.getEphemeralExpiration(jid);
     const messageId = request.id ? request.id : this.generateMessageID();
