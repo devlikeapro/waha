@@ -65,6 +65,10 @@ import {
 } from '@waha/core/engines/noweb/groups.noweb';
 import { sendButtonMessage } from '@waha/core/engines/noweb/noweb.buttons';
 import {
+  buildCaptionEdit,
+  findCaptionMedia,
+} from '@waha/core/engines/noweb/noweb.edit';
+import {
   NOWEBNewsletterMetadata,
   toNewsletterMetadata,
 } from '@waha/core/engines/noweb/noweb.newsletter';
@@ -304,6 +308,9 @@ const ToEnginePresenceStatus = flipObject(PresenceStatuses);
 export interface NowebConfig {
   waVersion: WAVersion;
 }
+
+// How many recent channel posts to search when editing a caption
+const CHANNEL_EDIT_LOOKUP_LIMIT = 50;
 
 export class WhatsappSessionNoWebCore extends WhatsappSession {
   private START_ATTEMPT_DELAY_SECONDS = 2;
@@ -1176,37 +1183,16 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     const stored = await this.store
       ?.loadMessage(key.remoteJid, key.id)
       .catch(() => null);
-    const content = extractMessageContent(stored?.message);
-    let editedMessage = undefined;
-    if (content?.imageMessage) {
-      editedMessage = {
-        imageMessage: {
-          caption: request.text,
-        },
-      };
-    } else if (content?.videoMessage) {
-      editedMessage = {
-        videoMessage: {
-          caption: request.text,
-        },
-      };
-    } else if (content?.documentMessage) {
-      editedMessage = {
-        documentMessage: {
-          caption: request.text,
-        },
-      };
-    } else if (content?.documentWithCaptionMessage?.message?.documentMessage) {
-      editedMessage = {
-        documentWithCaptionMessage: {
-          message: {
-            documentMessage: {
-              caption: request.text,
-            },
-          },
-        },
-      };
+    let content = extractMessageContent(stored?.message);
+    const isChannel = isJidNewsletter(jid);
+    if (isChannel && !findCaptionMedia(content)?.directPath) {
+      // Without a stored copy, read the original post from the channel
+      const original = await this.fetchChannelMessageContent(jid, key.id);
+      if (original) {
+        content = original;
+      }
     }
+    const editedMessage = buildCaptionEdit(content, request.text, isChannel);
     let mentions: string[] | undefined;
     if (request.mentions) {
       mentions = await Promise.all(
@@ -1231,6 +1217,31 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       options.messageId = key.id;
     }
     return await this.sock.sendMessage(jid, message, options);
+  }
+
+  /**
+   * Reads a recent channel post, so a caption edit can keep its media
+   */
+  private async fetchChannelMessageContent(
+    jid: string,
+    id: string,
+  ): Promise<proto.IMessage | null> {
+    try {
+      const updates = await this.sock.newsletterFetchPreviewMessages(
+        'jid',
+        jid,
+        CHANNEL_EDIT_LOOKUP_LIMIT,
+        null,
+      );
+      const update = updates.find((item) => item.message?.key?.id === id);
+      return extractMessageContent(update?.message?.message) ?? null;
+    } catch (err) {
+      this.logger.warn(
+        { error: err, id: id },
+        'Can not read the original channel post, its media may be lost after the edit',
+      );
+      return null;
+    }
   }
 
   @Activity()
