@@ -3,12 +3,12 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 import { URL } from 'url';
 
-import { WhatsappConfigService } from '../config.service';
-import { ProxyScheme } from '../structures/enums.dto';
-import { ProxyConfig } from '../structures/sessions.dto';
-import { WhatsappSession } from './abc/session.abc';
-import { ProxyError } from './exceptions';
+import { WhatsappConfigService } from '@waha/config.service';
+import { WhatsappSession } from '@waha/core/abc/session.abc';
 import { Agents } from '@waha/core/engines/noweb/types';
+import { ProxyError, UnsupportedProxySchemeError } from '@waha/core/exceptions';
+import { ProxyScheme } from '@waha/structures/enums.dto';
+import { ProxyConfig } from '@waha/structures/sessions.dto';
 
 export function getProxyConfig(
   config: WhatsappConfigService,
@@ -65,6 +65,10 @@ export function getProxyUrl(config: ProxyConfig): URL {
   } catch (err) {
     throw new ProxyError(server, err);
   }
+  const scheme = url.protocol.replace(/:$/, '');
+  if (!Object.values(ProxyScheme).includes(scheme as ProxyScheme)) {
+    throw new UnsupportedProxySchemeError(scheme);
+  }
   if (config.username) {
     url.username = encodeURIComponent(config.username);
   }
@@ -72,6 +76,16 @@ export function getProxyUrl(config: ProxyConfig): URL {
     url.password = encodeURIComponent(config.password);
   }
   return url;
+}
+
+/**
+ * A copy of the URL without credentials.
+ */
+export function NoCredsURL(url: URL): URL {
+  const copy = new URL(url.href);
+  copy.username = '';
+  copy.password = '';
+  return copy;
 }
 
 function createProxyAgent(url: URL): Agent {

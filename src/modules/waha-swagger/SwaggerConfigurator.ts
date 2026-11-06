@@ -89,7 +89,11 @@ export class SwaggerConfigurator {
         'Labels - available only for WhatsApp Business accounts',
       )
       .addTag('🖼️ Media', 'Media methods')
-      .addTag('🧩 Apps', 'Applications (built-in integrations)');
+      .addTag('🧩 Apps', 'Applications (built-in integrations)')
+      .addTag(
+        '🌐 Proxy',
+        'Check a proxy configuration against what WhatsApp needs',
+      );
 
     for (const tag of GetAppsApiTags()) {
       builder.addTag(tag.name, tag.description);

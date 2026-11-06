@@ -73,7 +73,7 @@ import { NowebInMemoryStore } from '@waha/core/engines/noweb/store/NowebInMemory
 import { NoLastMessageInChatException } from '@waha/core/engines/noweb/noweb.exceptions';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
 import { toVcardV3 } from '@waha/core/vcard';
-import { createAgentProxy } from '@waha/core/helpers.proxy';
+import { createAgentProxy } from '@waha/core/proxy/proxy.helpers';
 import type { Agent } from 'https';
 import {
   IMediaEngineProcessor,

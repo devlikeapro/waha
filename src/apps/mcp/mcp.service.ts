@@ -20,6 +20,7 @@ import { PresenceTools } from '@waha/apps/mcp/tools/presence.tools';
 import { ProfileTools } from '@waha/apps/mcp/tools/profile.tools';
 import { StatusTools } from '@waha/apps/mcp/tools/status.tools';
 import { ServerTools } from '@waha/apps/mcp/tools/server.tools';
+import { ProxyTools } from '@waha/apps/mcp/tools/proxy.tools';
 import { KeysTools } from '@waha/apps/mcp/tools/keys.tools';
 
 @Injectable()
@@ -44,6 +45,7 @@ export class McpService {
       new ProfileTools(api),
       new StatusTools(api),
       new ServerTools(api),
+      new ProxyTools(api),
       new KeysTools(api),
       new AppsTools(api),
     ]);

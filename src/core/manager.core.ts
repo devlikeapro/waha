@@ -18,7 +18,7 @@ import { WhatsappSessionGoWSCore } from '@waha/core/engines/gows/session.gows.co
 import { WhatsappSessionNoWebCore } from '@waha/core/engines/noweb/session.noweb.core';
 import { WhatsappSessionWPPCore } from '@waha/core/engines/wpp/session.wpp.core';
 import { WhatsappSessionWebJSCore } from '@waha/core/engines/webjs/session.webjs.core';
-import { getProxyConfig, getProxyUrl } from '@waha/core/helpers.proxy';
+import { getProxyConfig, getProxyUrl } from '@waha/core/proxy/proxy.helpers';
 import { MediaManager } from '@waha/core/media/MediaManager';
 import { MediaStorageFactory } from '@waha/core/media/MediaStorageFactory';
 import { LocalSessionAuthRepository } from '@waha/core/storage/LocalSessionAuthRepository';
@@ -61,6 +61,7 @@ import {
   WAHASessionStatus,
 } from '../structures/enums.dto';
 import {
+  ProxyConfig,
   SessionConfig,
   SessionDetailedInfo,
   SessionDTO,
@@ -473,14 +474,22 @@ export class SessionManagerCore
     this.log.info({ session: name }, `Session has been logged out.`);
   }
 
+  resolveProxyConfig(
+    name: string,
+    config?: SessionConfig,
+  ): ProxyConfig | undefined {
+    const proxyConfig = config?.proxy;
+    if (proxyConfig) {
+      return proxyConfig;
+    }
+    return getProxyConfig(this.config, this.sessions, name);
+  }
+
   /**
    * Get either session's or global proxy if defined
    */
   protected getProxy(name: string, config?: SessionConfig): URL | undefined {
-    let proxyConfig = config?.proxy;
-    if (!proxyConfig) {
-      proxyConfig = getProxyConfig(this.config, this.sessions, name);
-    }
+    const proxyConfig = this.resolveProxyConfig(name, config);
     if (!proxyConfig?.server) {
       return undefined;
     }

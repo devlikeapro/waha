@@ -27,6 +27,7 @@ import { MediaLocalStorageModule } from '@waha/core/media/local/media.local.stor
 import { MediaLocalStorageConfig } from '@waha/core/media/local/MediaLocalStorageConfig';
 import { MediaPsqlStorageModule } from '@waha/core/media/psql/media.psql.storage.module';
 import { MediaS3StorageModule } from '@waha/core/media/s3/media.s3.storage.module';
+import { ProxyService } from '@waha/core/proxy/proxy.service';
 import { HttpPathsModule } from '@waha/plugins/http.paths.module';
 import { HttpPathsService } from '@waha/plugins/HttpPathsService';
 import { AppBootstrapModule } from '@waha/plugins/app.bootstrap.module';
@@ -77,6 +78,8 @@ import { PingController } from '../api/ping.controller';
 import { PresenceController } from '../api/presence.controller';
 import { ScreenshotController } from '../api/screenshot.controller';
 import { SessionsController } from '../api/sessions.controller';
+import { ProxyController } from '../api/proxy.controller';
+import { SessionsProxyController } from '../api/sessions.proxy.controller';
 import { StatusController } from '../api/status.controller';
 import { VersionController } from '../api/version.controller';
 import { WhatsappConfigService } from '../config.service';
@@ -192,6 +195,8 @@ export const CONTROLLERS = [
   AuthController,
   ApiKeysController,
   SessionsController,
+  SessionsProxyController,
+  ProxyController,
   ProfileController,
   ChattingController,
   ChatsController,
@@ -235,6 +240,7 @@ export const PROVIDERS_BASE: Provider[] = [
   CaslAbilityFactory,
   PoliciesGuard,
   SessionService,
+  ProxyService,
   {
     provide: IApiKeyAuth,
     useFactory: ApiKeyAuthFactory,

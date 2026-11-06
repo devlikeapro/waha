@@ -3,6 +3,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { getEngineName } from '@waha/config';
+import { ProxyScheme } from '@waha/structures/enums.dto';
 
 export const DOCS_URL = 'https://waha.devlike.pro/';
 
@@ -21,6 +22,13 @@ export class NotImplementedByEngineError extends NotImplementedException {
 export class ProxyError extends UnprocessableEntityException {
   constructor(server: string, cause: Error) {
     super(`Invalid proxy server '${server}': ${cause.message}`);
+  }
+}
+
+export class UnsupportedProxySchemeError extends UnprocessableEntityException {
+  constructor(scheme: string) {
+    const supported = Object.values(ProxyScheme).join(', ');
+    super(`Unsupported proxy scheme '${scheme}' - use one of ${supported}`);
   }
 }
 

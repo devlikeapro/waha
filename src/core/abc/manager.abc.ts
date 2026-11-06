@@ -28,6 +28,7 @@ import {
   WAHASessionStatus,
 } from '../../structures/enums.dto';
 import {
+  ProxyConfig,
   SessionConfig,
   SessionDetailedInfo,
   SessionDTO,
@@ -141,6 +142,11 @@ export abstract class SessionManager
   abstract unpair(name: string): Promise<void>;
 
   abstract getSession(name: string): WhatsappSession;
+
+  abstract resolveProxyConfig(
+    name: string,
+    config?: SessionConfig,
+  ): ProxyConfig | undefined;
 
   abstract getSessionInfo(name: string): Promise<SessionDetailedInfo | null>;
 
