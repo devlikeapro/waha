@@ -147,6 +147,7 @@ import {
   MessageVideoRequest,
   MessageVoiceRequest,
   SendSeenRequest,
+  SendSeenType,
   WANumberExistResult,
 } from '@waha/structures/chatting.dto';
 import { SendListRequest } from '@waha/structures/chatting.list.dto';
@@ -1632,13 +1633,18 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       return;
     }
 
-    // Send read
-    await this.sock.readMessages(keys);
+    let ack = WAMessageAck.READ;
+    if (request.type === SendSeenType.PLAYED) {
+      await this.sock.sendReceipts(keys, 'played');
+      ack = WAMessageAck.PLAYED;
+    } else {
+      await this.sock.readMessages(keys);
+    }
 
     // Emit events for our reads
     const updates = keys.map((key) => ({
       key: key,
-      update: { status: AckToStatus(WAMessageAck.READ) },
+      update: { status: AckToStatus(ack) },
     }));
     this.sock?.ev.emit('messages.update', updates);
   }

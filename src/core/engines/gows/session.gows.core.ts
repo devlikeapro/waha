@@ -109,6 +109,7 @@ import {
   MessageVideoRequest,
   MessageVoiceRequest,
   SendSeenRequest,
+  SendSeenType,
   WANumberExistResult,
 } from '@waha/structures/chatting.dto';
 import { SendListRequest } from '@waha/structures/chatting.list.dto';
@@ -1706,6 +1707,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     if (keys.length === 0) {
       return;
     }
+    let type = messages.ReceiptType.READ;
+    if (request.type === SendSeenType.PLAYED) {
+      type = messages.ReceiptType.PLAYED;
+    }
     const receipts = esm.b.aggregateMessageKeysNotFromMe(keys);
     for (const receipt of receipts) {
       if (receipt.messageIds.length === 0) {
@@ -1716,6 +1721,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         jid: receipt.jid,
         messageIds: receipt.messageIds,
         sender: receipt.participant,
+        type: type,
       });
       const response = await promisify(this.client.MarkRead)(req);
       response.toObject();

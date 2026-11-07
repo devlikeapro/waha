@@ -93,6 +93,7 @@ import {
   MessageTextRequest,
   MessageVideoRequest,
   SendSeenRequest,
+  SendSeenType,
   WANumberExistResult,
 } from '@waha/structures/chatting.dto';
 import { toVcardV3 } from '@waha/core/vcard';
@@ -1248,6 +1249,11 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
   @Activity()
   async sendSeen(request: SendSeenRequest) {
+    if (request.type === SendSeenType.PLAYED) {
+      throw new NotImplementedByEngineError(
+        "sendSeen with type 'played' is not supported by this engine",
+      );
+    }
     const chatId = await this.hooks.wid.chat.promise(
       request.chatId,
       'sendSeen',

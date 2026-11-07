@@ -9,6 +9,7 @@ import {
   ArrayUnique,
   IsArray,
   IsBoolean,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -79,6 +80,11 @@ export class GetMessageQuery extends GetChatMessagesQuery {
 
 export class GetPresenceQuery extends ChatQuery {}
 
+export enum SendSeenType {
+  READ = 'read',
+  PLAYED = 'played',
+}
+
 /**
  * Requests
  */
@@ -110,6 +116,17 @@ export class SendSeenRequest extends ChatRequest {
       'NOWEB engine only - the ID of the user that sent the message (undefined for individual chats)',
   })
   participant?: string;
+
+  @ApiProperty({
+    required: false,
+    default: SendSeenType.READ,
+    enum: SendSeenType,
+    description:
+      "'played' marks voice / audio messages as played (blue microphone on the sender's side), requires messageIds. GOWS and NOWEB engines only",
+  })
+  @IsEnum(SendSeenType)
+  @IsOptional()
+  type?: SendSeenType;
 }
 
 export class MessageRequest extends SessionBaseRequest {
