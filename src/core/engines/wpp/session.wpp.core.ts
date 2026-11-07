@@ -51,6 +51,7 @@ import {
   MessageVideoRequest,
   MessageVoiceRequest,
   SendSeenRequest,
+  SendSeenType,
   WANumberExistResult,
   VCardContact,
   Contact,
@@ -1027,6 +1028,11 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
 
   @Activity()
   async sendSeen(request: SendSeenRequest) {
+    if (request.type === SendSeenType.PLAYED) {
+      throw new NotImplementedByEngineError(
+        "sendSeen with type 'played' is not supported by this engine",
+      );
+    }
     const chatId = await this.hooks.wid.chat.promise(
       request.chatId,
       'sendSeen',
