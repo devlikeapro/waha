@@ -59,7 +59,7 @@ export function MessagesForRead(
   query: GetChatMessagesQuery;
   filter: GetChatMessagesFilter;
 } {
-  const limit = request.messages || isJidGroup(chatId) ? 100 : 30;
+  const limit = request.messages ?? (isJidGroup(chatId) ? 100 : 30);
   const query: GetChatMessagesQuery = {
     offset: 0,
     limit: limit,
