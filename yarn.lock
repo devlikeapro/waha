@@ -5725,6 +5725,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bare-buffer@npm:^3.0.0":
+  version: 3.7.1
+  resolution: "bare-buffer@npm:3.7.1"
+  checksum: 10/4cfda84f1eecf9b0936963ada6d7a4fecee4a0ee6151c1fde65b129dcb1dd46516e78d2b56057be353970193f830e0d52d370556ad0b374d6e2a7f45ef2b2598
+  languageName: node
+  linkType: hard
+
 "bare-events@npm:^2.5.4, bare-events@npm:^2.7.0":
   version: 2.9.2
   resolution: "bare-events@npm:2.9.2"
@@ -5785,11 +5792,12 @@ __metadata:
   linkType: hard
 
 "bare-url@npm:^2.2.2":
-  version: 2.5.5
-  resolution: "bare-url@npm:2.5.5"
+  version: 2.5.6
+  resolution: "bare-url@npm:2.5.6"
   dependencies:
+    bare-buffer: "npm:^3.0.0"
     bare-path: "npm:^3.0.0"
-  checksum: 10/2fd1218cd2d23179879cee1780aea6d07ac2cd8064986f812766fc2f43377d28a2872c45a333060538df5a5a1c0c5ded57037f325ab1fd1264cd99188d0897fa
+  checksum: 10/e747190e865fd422a301f85b33afea2d0250a7db91c8931f38cbc1ddf5109cd23c3d1bf503e0f418eda85419d21d8cdc1283ad6b27b2785eda9f1df17f51cb95
   languageName: node
   linkType: hard
 
@@ -14360,7 +14368,7 @@ __metadata:
 
 "whatsapp-web.js@github:devlikeapro/whatsapp-web.js#fork-main-2026-06-26":
   version: 1.34.7
-  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=e2c7fdea6a2efad1e786c422e59f534eb45ab44c"
+  resolution: "whatsapp-web.js@https://github.com/devlikeapro/whatsapp-web.js.git#commit=b8c4a93cb05c6608f8a0ee6c0107d44702bd3852"
   dependencies:
     archiver: "npm:7.0.1"
     fluent-ffmpeg: "npm:2.1.3"
@@ -14377,7 +14385,7 @@ __metadata:
       optional: true
     unzipper:
       optional: true
-  checksum: 10/efe696a7c5db011f97f33f635d9665927f922506d49e6048dc56dacbd3d591b4a1e13a874790520b7bed45c65c98bc6f94a933b95393d078555bee356c67e159
+  checksum: 10/54ce1602891a982d91d6984c547dc3b0328266f1e9fd59b28437194b99ec623ded9de1b93e00cbcc03475baba886a62dd9d249a5983187e9a0aed44f4be2c559
   languageName: node
   linkType: hard
 
