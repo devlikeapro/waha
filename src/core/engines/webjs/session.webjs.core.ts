@@ -93,6 +93,7 @@ import {
   MessageTextRequest,
   MessageVideoRequest,
   SendSeenRequest,
+  SendSeenType,
   WANumberExistResult,
 } from '@waha/structures/chatting.dto';
 import { toVcardV3 } from '@waha/core/vcard';
@@ -206,6 +207,7 @@ import {
   Message as MessageInstance,
   Call as CallInstance,
 } from 'whatsapp-web.js/src/structures';
+import { SendSeenMessageIds } from '@waha/core/utils/convertors';
 import { GetSerialized } from '@waha/core/utils/serialized';
 
 import {
@@ -1253,6 +1255,10 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       request.chatId,
       'sendSeen',
     );
+    if (request.type === SendSeenType.PLAYED) {
+      await this.whatsapp.markPlayed(SendSeenMessageIds(request));
+      return;
+    }
     const chat: Chat = await this.whatsapp.getChatById(chatId);
     await chat.sendSeen();
   }

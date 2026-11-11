@@ -9,6 +9,17 @@ import {
 import { SendSeenRequest } from '@waha/structures/chatting.dto';
 import { WAMessageAck } from '@waha/structures/enums.dto';
 
+/**
+ * All message ids from the request - messageIds and the deprecated messageId
+ */
+export function SendSeenMessageIds(request: SendSeenRequest): string[] {
+  const ids = [...(request.messageIds || [])];
+  if (request.messageId) {
+    ids.push(request.messageId);
+  }
+  return ids;
+}
+
 export function ExtractMessageKeysForRead(
   request: SendSeenRequest,
 ): WAMessageKey[] {

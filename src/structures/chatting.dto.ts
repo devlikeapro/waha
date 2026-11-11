@@ -9,6 +9,7 @@ import {
   ArrayUnique,
   IsArray,
   IsBoolean,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -88,6 +89,11 @@ export class ChatRequest extends SessionBaseRequest {
   chatId: string;
 }
 
+export enum SendSeenType {
+  READ = 'read',
+  PLAYED = 'played',
+}
+
 export class SendSeenRequest extends ChatRequest {
   @ApiProperty({
     example: null,
@@ -110,6 +116,18 @@ export class SendSeenRequest extends ChatRequest {
       'NOWEB engine only - the ID of the user that sent the message (undefined for individual chats)',
   })
   participant?: string;
+
+  @ApiProperty({
+    enum: SendSeenType,
+    example: SendSeenType.READ,
+    required: false,
+    default: SendSeenType.READ,
+    description:
+      "Receipt type. 'played' marks voice notes, video notes and view once media as played, requires messageIds",
+  })
+  @IsOptional()
+  @IsEnum(SendSeenType)
+  type?: SendSeenType;
 }
 
 export class MessageRequest extends SessionBaseRequest {

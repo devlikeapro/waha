@@ -51,6 +51,7 @@ import {
   MessageVideoRequest,
   MessageVoiceRequest,
   SendSeenRequest,
+  SendSeenType,
   WANumberExistResult,
   VCardContact,
   Contact,
@@ -145,6 +146,7 @@ import { getSessionNamespace } from '@waha/config';
 import { killProcessesByPatterns } from '@waha/core/utils/processes';
 import { DistinctAck } from '@waha/core/utils/reactive';
 import { isJidGroup, toCusFormat } from '@waha/core/utils/jids';
+import { SendSeenMessageIds } from '@waha/core/utils/convertors';
 import { GetSerialized } from '@waha/core/utils/serialized';
 import { WAMedia } from '@waha/structures/media.dto';
 import * as lodash from 'lodash';
@@ -1031,6 +1033,12 @@ export class WhatsappSessionWPPCore extends WhatsappSession {
       request.chatId,
       'sendSeen',
     );
+    if (request.type === SendSeenType.PLAYED) {
+      for (const messageId of SendSeenMessageIds(request)) {
+        await this.wpp!.markPlayed(messageId);
+      }
+      return;
+    }
     await this.wpp!.sendSeen(chatId);
   }
 

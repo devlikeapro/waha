@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -44,6 +45,7 @@ import {
   MessageVoiceRequest,
   NewMessageIDResponse,
   SendSeenRequest,
+  SendSeenType,
   WANumberExistResult,
 } from '../structures/chatting.dto';
 import { WAMessage } from '../structures/responses.dto';
@@ -244,6 +246,14 @@ export class ChattingController {
   @CheckPolicies(CanSession(Action.Send, FromBody('session')))
   async sendSeen(@Body() chat: SendSeenRequest) {
     const hasMessageId = chat.messageIds?.length > 0 || Boolean(chat.messageId);
+    chat.type = chat.type ?? SendSeenType.READ;
+    if (!Object.values(SendSeenType).includes(chat.type)) {
+      const types = Object.values(SendSeenType).join(', ');
+      throw new BadRequestException(`'type' must be one of: ${types}`);
+    }
+    if (chat.type === SendSeenType.PLAYED && !hasMessageId) {
+      throw new BadRequestException(`'messageIds' are required for 'played'`);
+    }
     if (!hasMessageId) {
       const whatsapp = await this.manager.getWorkingSession(chat.session);
       const query: ReadChatMessagesQuery = {
