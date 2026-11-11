@@ -3,7 +3,7 @@ import { ApiProperty, ApiPropertyOptions } from '@nestjs/swagger';
 function ChatIdProperty(options: ApiPropertyOptions | null = null) {
   options = options || {};
   if (!options.example) {
-    options.example = '11111111111@c.us';
+    options.example = '111111111111111@lid';
   }
   return ApiProperty(options);
 }
@@ -11,7 +11,7 @@ function ChatIdProperty(options: ApiPropertyOptions | null = null) {
 function MessageIdProperty() {
   return ApiProperty({
     description: 'Message ID',
-    example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
+    example: 'false_111111111111111@lid_AAAAAAAAAAAAAAAAAAAA',
   });
 }
 
@@ -25,7 +25,7 @@ function MessageIdOnlyProperty() {
 function ReplyToProperty() {
   return ApiProperty({
     description:
-      'The ID of the message to reply to - false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
+      'The ID of the message to reply to - false_111111111111111@lid_AAAAAAAAAAAAAAAAAAAA',
     example: null,
   });
 }

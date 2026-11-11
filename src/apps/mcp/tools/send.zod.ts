@@ -50,6 +50,6 @@ export const NewMessageIdInput = z.object({
 
 export const SendEventInput = DtoToZod(EventMessage).extend({
   session: z.string().describe('Session name'),
-  chatId: z.string().describe('Chat ID (e.g. 11111@c.us)'),
+  chatId: z.string().describe('Chat ID (e.g. 111111111111111@lid)'),
   reply_to: z.string().optional().describe('Message ID to reply to'),
 });

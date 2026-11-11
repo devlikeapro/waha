@@ -5,7 +5,7 @@ export const ChatIdApiParam = ApiParam({
   required: true,
   type: 'string',
   description: 'Chat ID',
-  example: '123456789@c.us',
+  example: '111111111111111@lid',
 });
 
 export const GroupIdApiParam = ApiParam({

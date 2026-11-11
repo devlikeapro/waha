@@ -86,7 +86,7 @@ export const GroupParticipantIdInput = GroupIdInput.extend({
   participantId: z
     .string()
     .describe(
-      'Participant ID as reported in messages and participants (e.g. 123456789@lid or 123456789@c.us)',
+      'Participant ID as reported in messages and participants (e.g. 123456789@lid)',
     ),
 });
 

@@ -129,7 +129,7 @@ export class SendListRequest extends ChatRequest {
 
   @ApiProperty({
     description:
-      'The ID of the message to reply to - false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
+      'The ID of the message to reply to - false_111111111111111@lid_AAAAAAAAAAAAAAAAAAAA',
     example: null,
     required: false,
   })

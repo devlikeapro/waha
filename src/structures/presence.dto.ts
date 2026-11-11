@@ -5,7 +5,7 @@ import { WAHAPresenceStatus } from './enums.dto';
 export class WAHAPresenceData {
   @ApiProperty({
     description: 'Chat ID - participant or contact id',
-    example: '11111111111@c.us',
+    example: '111111111111111@lid',
   })
   participant: string;
 
@@ -18,7 +18,7 @@ export class WAHAPresenceData {
 export class WAHAChatPresences {
   @ApiProperty({
     description: 'Chat ID - either group id or contact id',
-    example: '11111111111@c.us',
+    example: '111111111111111@lid',
   })
   id: string;
 
@@ -31,7 +31,7 @@ export class WAHASessionPresence {
   @ApiPropertyOptional({
     description:
       'Chat ID - either group id or contact id. Required for chat-related presence statuses; omit for ONLINE/OFFLINE.',
-    example: '11111111111@c.us',
+    example: '111111111111111@lid',
   })
   chatId?: string;
 }

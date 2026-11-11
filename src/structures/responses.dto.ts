@@ -86,7 +86,7 @@ export class WAMessage extends WAMessageBase {
       'Use `media.url` instead! The URL for the media in the message if any',
     deprecated: true,
     example:
-      'http://localhost:3000/api/files/false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA.oga',
+      'http://localhost:3000/api/files/false_111111111111111@lid_AAAAAAAAAAAAAAAAAAAA.oga',
   })
   mediaUrl: string;
 
@@ -136,7 +136,7 @@ export class WAReaction {
 
   @ApiProperty({
     description: 'Message ID for the message to react to',
-    example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
+    example: 'false_111111111111111@lid_AAAAAAAAAAAAAAAAAAAA',
   })
   messageId: string;
 }

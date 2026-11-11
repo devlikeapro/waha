@@ -161,7 +161,7 @@ export class ChattingController {
         summary: 'From URL',
         value: {
           session: 'default',
-          chatId: '11111111111@c.us',
+          chatId: '111111111111111@lid',
           reply_to: null,
           file: {
             url: 'https://www.gstatic.com/webp/gallery/1.webp',
@@ -172,7 +172,7 @@ export class ChattingController {
         summary: 'From base64 WebP',
         value: {
           session: 'default',
-          chatId: '11111111111@c.us',
+          chatId: '111111111111111@lid',
           reply_to: null,
           file: {
             mimetype: 'image/webp',

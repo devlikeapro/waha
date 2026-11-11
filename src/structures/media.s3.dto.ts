@@ -9,7 +9,7 @@ export class S3MediaData {
 
   @ApiProperty({
     description: 'The key of the object in the S3 bucket',
-    example: 'default/false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA.oga',
+    example: 'default/false_111111111111111@lid_AAAAAAAAAAAAAAAAAAAA.oga',
   })
   Key: string;
 }

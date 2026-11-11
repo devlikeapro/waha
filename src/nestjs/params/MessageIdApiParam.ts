@@ -6,5 +6,5 @@ export const MessageIdApiParam = ApiParam({
   type: 'string',
   description:
     'Message ID in format <code>{fromMe}_{chat}_{message_id}[_{participant}]</code>',
-  example: 'true_123456789@c.us_BAE6A33293978B16',
+  example: 'true_111111111111111@lid_BAE6A33293978B16',
 });

@@ -3,7 +3,7 @@ import { DtoToZod } from '@waha/apps/mcp/schemas/DtoToZod';
 import { WAHASessionPresence } from '@waha/structures/presence.dto';
 
 const SessionField = z.string().describe('Session name');
-const ChatIdField = z.string().describe('Chat ID (e.g. 11111@c.us)');
+const ChatIdField = z.string().describe('Chat ID (e.g. 111111111111111@lid)');
 
 export const PresenceSessionInput = z.object({ session: SessionField });
 

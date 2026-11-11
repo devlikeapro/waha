@@ -103,13 +103,13 @@ export class SendSeenRequest extends ChatRequest {
   messageId?: string;
 
   @ApiProperty({
-    example: ['false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA'],
+    example: ['false_111111111111111@lid_AAAAAAAAAAAAAAAAAAAA'],
     required: false,
   })
   messageIds?: string[];
 
   @ApiProperty({
-    example: '11111111111@c.us',
+    example: '111111111111111@lid',
     required: false,
     default: null,
     description:
@@ -132,7 +132,7 @@ export class SendSeenRequest extends ChatRequest {
 
 export class MessageRequest extends SessionBaseRequest {
   @ApiProperty({
-    example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
+    example: 'false_111111111111111@lid_AAAAAAAAAAAAAAAAAAAA',
   })
   messageId: string;
 }
@@ -385,7 +385,7 @@ export class MessageVideoRequest extends ChatRequest {
 
   @ApiProperty({
     description:
-      'The ID of the message to reply to - false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
+      'The ID of the message to reply to - false_111111111111111@lid_AAAAAAAAAAAAAAAAAAAA',
     example: null,
   })
   reply_to?: string;
@@ -418,7 +418,7 @@ export class MessageForwardRequest extends ChatRequest {
   id?: string;
 
   @ApiProperty({
-    example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
+    example: 'false_111111111111111@lid_AAAAAAAAAAAAAAAAAAAA',
   })
   messageId: string;
 }
@@ -496,7 +496,7 @@ export class MessagePollRequest extends ChatRequest {
 
   @ApiProperty({
     description:
-      'The ID of the message to reply to - false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
+      'The ID of the message to reply to - false_111111111111111@lid_AAAAAAAAAAAAAAAAAAAA',
     example: null,
   })
   @IsOptional()
@@ -507,7 +507,7 @@ export class MessagePollRequest extends ChatRequest {
 export class MessageDestination {
   @ApiProperty({
     description: 'Message ID',
-    example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
+    example: 'false_111111111111111@lid_AAAAAAAAAAAAAAAAAAAA',
   })
   id: string;
 
@@ -545,7 +545,7 @@ export class MessagePollVoteRequest extends ChatRequest {
   @ApiProperty({
     description:
       'The ID of the poll message. Format: {fromMe}_{chatID}_{messageId}[_{participant}] or just ID for GOWS',
-    example: 'false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA',
+    example: 'false_111111111111111@lid_AAAAAAAAAAAAAAAAAAAA',
     required: true,
   })
   @IsString()

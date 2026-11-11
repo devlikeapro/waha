@@ -73,7 +73,7 @@ export function NormalizeJoinRequestMethod(
 export class GroupJoinRequest {
   @ApiProperty({
     description: 'ID of the user requesting to join the group',
-    example: '123456789@c.us',
+    example: '123456789@lid',
   })
   requesterId: string;
 
@@ -87,7 +87,7 @@ export class GroupJoinRequest {
 
   @ApiProperty({
     description: 'ID of the user who created the request',
-    example: '123456789@c.us',
+    example: '123456789@lid',
     nullable: true,
   })
   addedById: string | null;
@@ -117,7 +117,7 @@ export class GroupJoinRequest {
 export class GroupJoinRequestResult {
   @ApiProperty({
     description: 'ID of the participant the action was applied to',
-    example: '123456789@c.us',
+    example: '123456789@lid',
     nullable: true,
   })
   requesterId: string | null;

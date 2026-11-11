@@ -288,7 +288,7 @@ export class OverviewFilter {
   @ApiProperty({
     description: 'Filter by chat ids',
     required: false,
-    example: ['111111111@c.us'],
+    example: ['111111111111111@lid'],
   })
   ids?: string[];
 }

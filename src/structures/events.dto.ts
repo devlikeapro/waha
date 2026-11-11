@@ -114,7 +114,7 @@ export class EventMessageRequest {
 export class EventCancelRequest {
   @ApiProperty({
     description: 'ID of the event message to cancel',
-    example: 'true_12345678901@c.us_ABCDEFGHIJKLMNOPQRST',
+    example: 'true_111111111111111@lid_ABCDEFGHIJKLMNOPQRST',
   })
   @IsString()
   @IsNotEmpty()

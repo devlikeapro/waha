@@ -5,7 +5,7 @@ export class WAMedia {
   @ApiProperty({
     description: 'The URL for the media in the message if any',
     example:
-      'http://localhost:3000/api/files/false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA.oga',
+      'http://localhost:3000/api/files/false_111111111111111@lid_AAAAAAAAAAAAAAAAAAAA.oga',
   })
   url?: string;
 
