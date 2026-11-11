@@ -28,12 +28,8 @@ export function ExtractMessageKeysForRead(
     remoteJid: jid,
     participant: request.participant,
   };
-  const ids = request.messageIds || [];
-  if (request.messageId) {
-    ids.push(request.messageId);
-  }
   const keys: WAMessageKey[] = [];
-  for (const messageId of ids) {
+  for (const messageId of SendSeenMessageIds(request)) {
     const parsed = parseMessageIdSerialized(messageId, false);
     if (parsed.fromMe) {
       continue;
