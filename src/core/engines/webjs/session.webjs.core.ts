@@ -521,8 +521,6 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     this.unpairing = true;
     this.shouldRestart = false;
     await this.whatsapp.unpair();
-    // Wait for unpairing to complete
-    await sleep(2_000);
   }
 
   private async end() {

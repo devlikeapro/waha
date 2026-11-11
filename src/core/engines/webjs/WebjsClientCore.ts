@@ -394,6 +394,8 @@ export class WebjsClientCore extends Client {
         await Socket.logout();
       }
     });
+    // Socket.logout is fire-and-forget - give it time to send the unpair request
+    await sleep(5_000);
   }
 
   async createLabel(name: string, color: number): Promise<number> {
