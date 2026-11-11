@@ -49,6 +49,27 @@ export function extractMediaContent(
   return null;
 }
 
+/**
+ * Status posted to a group - content comes wrapped in groupStatusMessage(V2)
+ */
+export function isGroupStatusMessage(
+  message: any | proto.IMessage | null | undefined,
+): boolean {
+  if (!message) {
+    return false;
+  }
+  if (message.groupStatusMessageV2?.message) {
+    return true;
+  }
+  if (message.groupStatusMessage?.message) {
+    return true;
+  }
+  if (message.ephemeralMessage?.message) {
+    return isGroupStatusMessage(message.ephemeralMessage.message);
+  }
+  return false;
+}
+
 interface Long {
   low: number;
   high: number;

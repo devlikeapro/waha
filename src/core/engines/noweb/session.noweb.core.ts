@@ -251,7 +251,12 @@ import { NowebClient } from './NowebClient';
 import { INowebStore } from './store/INowebStore';
 import { NowebPersistentStore } from './store/NowebPersistentStore';
 import { NowebStorageFactoryCore } from './store/NowebStorageFactoryCore';
-import { buildMessageId, ensureNumber, extractMediaContent } from './utils';
+import {
+  buildMessageId,
+  ensureNumber,
+  extractMediaContent,
+  isGroupStatusMessage,
+} from './utils';
 import { Agents } from '@waha/core/engines/noweb/types';
 import {
   IsEditedMessage,
@@ -3573,6 +3578,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       location: extractWALocation(waproto),
       vCards: extractVCards(waproto),
       replyTo: replyTo,
+      isGroupStatus: isGroupStatusMessage(message.message),
       _data: message,
     };
   }

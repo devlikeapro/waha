@@ -43,7 +43,10 @@ import {
   extractBody,
   getDestination,
 } from '@waha/core/engines/noweb/session.noweb.core';
-import { extractMediaContent } from '@waha/core/engines/noweb/utils';
+import {
+  extractMediaContent,
+  isGroupStatusMessage,
+} from '@waha/core/engines/noweb/utils';
 import { NotImplementedByEngineError } from '@waha/core/exceptions';
 import {
   IMediaEngineProcessor,
@@ -3184,6 +3187,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       vCards: extractVCards(waproto),
       ackName: WAMessageAck[ack] || ACK_UNKNOWN,
       replyTo: replyTo,
+      isGroupStatus: isGroupStatusMessage(message.Message),
       _data: message,
     };
   }

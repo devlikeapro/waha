@@ -2888,6 +2888,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
       location: this.extractLocation(message),
       vCards: message.vCards,
       replyTo: replyTo,
+      isGroupStatus: Boolean(message.rawData?.isGroupStatus),
       _data: message.rawData,
     };
   }

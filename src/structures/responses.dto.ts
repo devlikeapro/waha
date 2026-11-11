@@ -119,6 +119,13 @@ export class WAMessage extends WAMessageBase {
 
   replyTo?: ReplyToMessage;
 
+  @ApiProperty({
+    description:
+      'Status posted to a group (Group Status), not a regular group message',
+    example: false,
+  })
+  isGroupStatus?: boolean;
+
   /** Returns message in a raw format */
   @ApiProperty({
     description:
