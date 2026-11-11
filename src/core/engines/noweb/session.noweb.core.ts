@@ -2490,6 +2490,14 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     if (!batchSize || batchSize == 0) {
       batchSize = 5_000;
     }
+    if (!message.delete) {
+      // let contacts reshare the status
+      // revoke can't carry it
+      message.contextInfo = {
+        ...message.contextInfo,
+        featureEligibilities: { canBeReshared: true },
+      };
+    }
     const chunks = lodash.chunk(jids, batchSize);
     if (chunks.length == 0) {
       throw new UnprocessableEntityException('No participants to send status');
