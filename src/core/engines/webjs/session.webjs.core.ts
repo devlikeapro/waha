@@ -2355,8 +2355,13 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   public async deleteStatus(request: DeleteStatusRequest) {
     this.checkStatusRequest(request);
 
-    let messageId = request.id;
-    if (!request.id.startsWith('true_status@broadcast_')) {
+    let messageId: string;
+    const lid = this.getSessionMeInfo()?.lid;
+    if (request.id.startsWith('true_status@broadcast_')) {
+      messageId = request.id;
+    } else if (lid) {
+      messageId = `true_status@broadcast_${request.id}_${lid}`;
+    } else {
       messageId = `true_status@broadcast_${request.id}`;
     }
     return await this.whatsapp.revokeStatusMessage(messageId);
