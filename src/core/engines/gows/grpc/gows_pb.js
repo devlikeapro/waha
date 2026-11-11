@@ -10521,7 +10521,8 @@ proto.messages.MessageRequest.toObject = function(includeInstance, msg) {
     location: (f = msg.getLocation()) && proto.messages.Location.toObject(includeInstance, f),
     pollvote: (f = msg.getPollvote()) && proto.messages.PollVoteMessage.toObject(includeInstance, f),
     mentionsList: (f = jspb.Message.getRepeatedField(msg, 19)) == null ? undefined : f,
-    forward: (f = msg.getForward()) && proto.messages.ForwardOptions.toObject(includeInstance, f)
+    forward: (f = msg.getForward()) && proto.messages.ForwardOptions.toObject(includeInstance, f),
+    canbereshared: (f = msg.getCanbereshared()) && proto.messages.OptionalBool.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -10649,6 +10650,11 @@ proto.messages.MessageRequest.deserializeBinaryFromReader = function(msg, reader
       var value = new proto.messages.ForwardOptions;
       reader.readMessage(value,proto.messages.ForwardOptions.deserializeBinaryFromReader);
       msg.setForward(value);
+      break;
+    case 21:
+      var value = new proto.messages.OptionalBool;
+      reader.readMessage(value,proto.messages.OptionalBool.deserializeBinaryFromReader);
+      msg.setCanbereshared(value);
       break;
     default:
       reader.skipField();
@@ -10829,6 +10835,14 @@ proto.messages.MessageRequest.serializeBinaryToWriter = function(message, writer
       20,
       f,
       proto.messages.ForwardOptions.serializeBinaryToWriter
+    );
+  }
+  f = message.getCanbereshared();
+  if (f != null) {
+    writer.writeMessage(
+      21,
+      f,
+      proto.messages.OptionalBool.serializeBinaryToWriter
     );
   }
 };
@@ -11458,6 +11472,43 @@ proto.messages.MessageRequest.prototype.clearForward = function() {
  */
 proto.messages.MessageRequest.prototype.hasForward = function() {
   return jspb.Message.getField(this, 20) != null;
+};
+
+
+/**
+ * optional OptionalBool canBeReshared = 21;
+ * @return {?proto.messages.OptionalBool}
+ */
+proto.messages.MessageRequest.prototype.getCanbereshared = function() {
+  return /** @type{?proto.messages.OptionalBool} */ (
+    jspb.Message.getWrapperField(this, proto.messages.OptionalBool, 21));
+};
+
+
+/**
+ * @param {?proto.messages.OptionalBool|undefined} value
+ * @return {!proto.messages.MessageRequest} returns this
+*/
+proto.messages.MessageRequest.prototype.setCanbereshared = function(value) {
+  return jspb.Message.setWrapperField(this, 21, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.messages.MessageRequest} returns this
+ */
+proto.messages.MessageRequest.prototype.clearCanbereshared = function() {
+  return this.setCanbereshared(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.messages.MessageRequest.prototype.hasCanbereshared = function() {
+  return jspb.Message.getField(this, 21) != null;
 };
 
 

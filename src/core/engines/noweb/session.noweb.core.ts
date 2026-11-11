@@ -2490,14 +2490,6 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     if (!batchSize || batchSize == 0) {
       batchSize = 5_000;
     }
-    if (!message.delete) {
-      // let contacts reshare the status
-      // revoke can't carry it
-      message.contextInfo = {
-        ...message.contextInfo,
-        featureEligibilities: { canBeReshared: true },
-      };
-    }
     const chunks = lodash.chunk(jids, batchSize);
     if (chunks.length == 0) {
       throw new UnprocessableEntityException('No participants to send status');
@@ -2560,6 +2552,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       text: status.text,
       linkPreview: this.getLinkPreview(status),
     };
+    this.setStatusReshare(message, status.canBeReshared);
     const jids = await this.prepareJidsForStatus(status.contacts);
     if (!status.id) {
       this.upsertMeInJIDs(jids);
@@ -2587,6 +2580,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       status.caption,
     );
     message.mimetype = message.mimetype || WAMimeType.IMAGE;
+    this.setStatusReshare(message, status.canBeReshared);
     const jids = await this.prepareJidsForStatus(status.contacts);
     if (!status.id) {
       this.upsertMeInJIDs(jids);
@@ -2611,6 +2605,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       message['audio'] = await this.mediaConverter.voice(message['audio']);
       message.mimetype = WAMimeType.VOICE;
     }
+    this.setStatusReshare(message, status.canBeReshared);
     const jids = await this.prepareJidsForStatus(status.contacts);
     if (!status.id) {
       this.upsertMeInJIDs(jids);
@@ -2640,6 +2635,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       message['video'] = await this.mediaConverter.video(message['video']);
       message.mimetype = WAMimeType.VIDEO;
     }
+    this.setStatusReshare(message, status.canBeReshared);
     const jids = await this.prepareJidsForStatus(status.contacts);
     if (!status.id) {
       this.upsertMeInJIDs(jids);
@@ -2655,6 +2651,16 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
       jids,
       status.contacts?.length,
     );
+  }
+
+  /**
+   * Lets contacts reshare the status, on unless explicitly turned off
+   */
+  protected setStatusReshare(message: any, canBeReshared?: boolean) {
+    message.contextInfo = {
+      ...message.contextInfo,
+      featureEligibilities: { canBeReshared: canBeReshared ?? true },
+    };
   }
 
   protected prepareMessageIdForStatus(status: StatusRequest) {

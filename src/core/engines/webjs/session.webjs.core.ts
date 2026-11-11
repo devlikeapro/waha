@@ -2306,6 +2306,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     const media = await this.fileToMedia(status.file);
     const options = {
       caption: status.caption,
+      extra: { canBeReshared: status.canBeReshared ?? true },
     };
     return this.whatsapp.sendMessage(BROADCAST_ID, media, options);
   }
@@ -2320,6 +2321,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     media.mimetype = status.file.mimetype || WAMimeType.VOICE;
     const options = {
       sendAudioAsVoice: true,
+      extra: { canBeReshared: status.canBeReshared ?? true },
     };
     return this.whatsapp.sendMessage(BROADCAST_ID, media, options);
   }
@@ -2334,6 +2336,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     }
     const options = {
       caption: status.caption,
+      extra: { canBeReshared: status.canBeReshared ?? true },
     };
     return this.whatsapp.sendMessage(BROADCAST_ID, media, options);
   }
@@ -2341,7 +2344,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   @Activity()
   public sendTextStatus(status: TextStatus) {
     this.checkStatusRequest(status);
-    const extra: any = {};
+    const extra: any = { canBeReshared: status.canBeReshared ?? true };
     if (status.font != null) {
       extra.fontStyle = status.font;
     }

@@ -1336,6 +1336,9 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       }),
       linkPreview: status.linkPreview ?? true,
       linkPreviewHighQuality: status.linkPreviewHighQuality,
+      canBeReshared: new messages.OptionalBool({
+        value: status.canBeReshared ?? true,
+      }),
     });
     const response = await promisify(this.client.SendMessage)(message);
     const data = response.toObject();
@@ -1532,6 +1535,9 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       backgroundColor: backgroundColor,
       mentions: mentions,
       participants: participants,
+      canBeReshared: new messages.OptionalBool({
+        value: request.canBeReshared ?? true,
+      }),
     });
 
     if (media.type == messages.MediaType.AUDIO) {

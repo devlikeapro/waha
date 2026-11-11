@@ -18,6 +18,13 @@ const ContactsProperty = ApiProperty({
   required: false,
 });
 
+const CanBeResharedProperty = ApiProperty({
+  description: 'Allow contacts to reshare the status',
+  example: true,
+  default: true,
+  required: false,
+});
+
 export class StatusRequest {
   @ApiProperty({
     description: 'Pre-generated status message id',
@@ -38,6 +45,9 @@ export class TextStatus extends StatusRequest {
 
   linkPreview?: boolean = true;
   linkPreviewHighQuality?: boolean = false;
+
+  @CanBeResharedProperty
+  canBeReshared?: boolean = true;
 }
 
 @ApiExtraModels(RemoteFile, BinaryFile)
@@ -51,6 +61,9 @@ export class ImageStatus extends StatusRequest {
   file: RemoteFile | BinaryFile;
 
   caption?: string;
+
+  @CanBeResharedProperty
+  canBeReshared?: boolean = true;
 }
 
 @ApiExtraModels(VoiceRemoteFile, VoiceBinaryFile)
@@ -67,6 +80,9 @@ export class VoiceStatus extends StatusRequest {
 
   @ConvertApiProperty()
   convert: boolean;
+
+  @CanBeResharedProperty
+  canBeReshared?: boolean = true;
 }
 
 @ApiExtraModels(VideoRemoteFile, VideoBinaryFile)
@@ -83,6 +99,9 @@ export class VideoStatus extends StatusRequest {
 
   @ConvertApiProperty()
   convert: boolean;
+
+  @CanBeResharedProperty
+  canBeReshared?: boolean = true;
 }
 
 export class DeleteStatusRequest extends StatusRequest {

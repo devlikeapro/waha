@@ -4560,6 +4560,7 @@ export namespace messages {
             pollVote?: PollVoteMessage;
             mentions?: string[];
             forward?: ForwardOptions;
+            canBeReshared?: OptionalBool;
         }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [11, 13, 19], this.#one_of_decls);
@@ -4623,6 +4624,9 @@ export namespace messages {
                 }
                 if ("forward" in data && data.forward != undefined) {
                     this.forward = data.forward;
+                }
+                if ("canBeReshared" in data && data.canBeReshared != undefined) {
+                    this.canBeReshared = data.canBeReshared;
                 }
             }
         }
@@ -4779,6 +4783,15 @@ export namespace messages {
         get has_forward() {
             return pb_1.Message.getField(this, 20) != null;
         }
+        get canBeReshared() {
+            return pb_1.Message.getWrapperField(this, OptionalBool, 21) as OptionalBool;
+        }
+        set canBeReshared(value: OptionalBool) {
+            pb_1.Message.setWrapperField(this, 21, value);
+        }
+        get has_canBeReshared() {
+            return pb_1.Message.getField(this, 21) != null;
+        }
         static fromObject(data: {
             session?: ReturnType<typeof Session.prototype.toObject>;
             jid?: string;
@@ -4800,6 +4813,7 @@ export namespace messages {
             pollVote?: ReturnType<typeof PollVoteMessage.prototype.toObject>;
             mentions?: string[];
             forward?: ReturnType<typeof ForwardOptions.prototype.toObject>;
+            canBeReshared?: ReturnType<typeof OptionalBool.prototype.toObject>;
         }): MessageRequest {
             const message = new MessageRequest({});
             if (data.session != null) {
@@ -4862,6 +4876,9 @@ export namespace messages {
             if (data.forward != null) {
                 message.forward = ForwardOptions.fromObject(data.forward);
             }
+            if (data.canBeReshared != null) {
+                message.canBeReshared = OptionalBool.fromObject(data.canBeReshared);
+            }
             return message;
         }
         toObject() {
@@ -4886,6 +4903,7 @@ export namespace messages {
                 pollVote?: ReturnType<typeof PollVoteMessage.prototype.toObject>;
                 mentions?: string[];
                 forward?: ReturnType<typeof ForwardOptions.prototype.toObject>;
+                canBeReshared?: ReturnType<typeof OptionalBool.prototype.toObject>;
             } = {};
             if (this.session != null) {
                 data.session = this.session.toObject();
@@ -4947,6 +4965,9 @@ export namespace messages {
             if (this.forward != null) {
                 data.forward = this.forward.toObject();
             }
+            if (this.canBeReshared != null) {
+                data.canBeReshared = this.canBeReshared.toObject();
+            }
             return data;
         }
         serialize(): Uint8Array;
@@ -4993,6 +5014,8 @@ export namespace messages {
                 writer.writeRepeatedString(19, this.mentions);
             if (this.has_forward)
                 writer.writeMessage(20, this.forward, () => this.forward.serialize(writer));
+            if (this.has_canBeReshared)
+                writer.writeMessage(21, this.canBeReshared, () => this.canBeReshared.serialize(writer));
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -5061,6 +5084,9 @@ export namespace messages {
                         break;
                     case 20:
                         reader.readMessage(message.forward, () => message.forward = ForwardOptions.deserialize(reader));
+                        break;
+                    case 21:
+                        reader.readMessage(message.canBeReshared, () => message.canBeReshared = OptionalBool.deserialize(reader));
                         break;
                     default: reader.skipField();
                 }
