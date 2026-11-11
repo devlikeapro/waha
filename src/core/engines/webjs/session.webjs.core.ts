@@ -524,18 +524,20 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   }
 
   private async end() {
+    // A late end() (e.g. on logout) must not touch the client built by a restart meanwhile
+    const client = this.whatsapp;
     this.presence = null;
     this.engineStateCheckDelayedJob.cancel();
     this.whatsNewModalJob.stop();
-    this.whatsapp?.removeAllListeners();
-    this.whatsapp?.pupBrowser?.removeAllListeners();
-    this.whatsapp?.pupPage?.removeAllListeners();
+    client?.removeAllListeners();
+    client?.pupBrowser?.removeAllListeners();
+    client?.pupPage?.removeAllListeners();
 
     try {
       // It's possible that browser yet starting
       await waitUntil(
         async () => {
-          const result = !!this.whatsapp.pupBrowser;
+          const result = !!client?.pupBrowser;
           this.logger.debug(`Browser is ready to be closed: ${result}`);
           return result;
         },
@@ -553,11 +555,11 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     }
 
     try {
-      await promiseTimeout(this.DESTROY_TIMEOUT_MS, this.whatsapp?.destroy());
+      await promiseTimeout(this.DESTROY_TIMEOUT_MS, client?.destroy());
       this.logger.debug('Successfully destroyed whatsapp client');
     } catch (error) {
       this.logger.error(error, 'Failed to destroy whatsapp client');
-      const browser = this.whatsapp?.pupBrowser;
+      const browser = client?.pupBrowser;
       if (browser) {
         await this.kill(browser);
       }
@@ -565,7 +567,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 
     try {
       // @ts-ignore
-      const strategy: AuthStrategy = this.whatsapp?.authStrategy;
+      const strategy: AuthStrategy = client?.authStrategy;
       await strategy?.destroy();
       this.logger.debug('Successfully destroyed auth strategy');
     } catch (error) {
