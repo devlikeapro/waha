@@ -1709,7 +1709,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     const receipts = esm.b.aggregateMessageKeysNotFromMe(keys);
     for (const receipt of receipts) {
       if (receipt.messageIds.length === 0) {
-        return;
+        continue;
       }
       const req = new messages.MarkReadRequest({
         session: this.session,
