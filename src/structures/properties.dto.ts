@@ -56,6 +56,15 @@ export function ConvertApiProperty() {
   });
 }
 
+function ViewOnceProperty() {
+  return ApiProperty({
+    description:
+      'Send as "view once" - the recipient can open it only once (image, video and voice)',
+    example: false,
+    required: false,
+  });
+}
+
 export {
   ChatIdProperty,
   GeneratedMessageIdProperty,
@@ -63,4 +72,5 @@ export {
   MessageIdOnlyProperty,
   MessageIdProperty,
   ReplyToProperty,
+  ViewOnceProperty,
 };

@@ -1542,6 +1542,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       media: media,
       backgroundColor: backgroundColor,
       mentions: mentions,
+      viewOnce: request.viewOnce === true,
       participants: participants,
     });
 

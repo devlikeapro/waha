@@ -4560,6 +4560,7 @@ export namespace messages {
             pollVote?: PollVoteMessage;
             mentions?: string[];
             forward?: ForwardOptions;
+            viewOnce?: boolean;
         }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [11, 13, 19], this.#one_of_decls);
@@ -4623,6 +4624,9 @@ export namespace messages {
                 }
                 if ("forward" in data && data.forward != undefined) {
                     this.forward = data.forward;
+                }
+                if ("viewOnce" in data && data.viewOnce != undefined) {
+                    this.viewOnce = data.viewOnce;
                 }
             }
         }
@@ -4779,6 +4783,12 @@ export namespace messages {
         get has_forward() {
             return pb_1.Message.getField(this, 20) != null;
         }
+        get viewOnce() {
+            return pb_1.Message.getFieldWithDefault(this, 21, false) as boolean;
+        }
+        set viewOnce(value: boolean) {
+            pb_1.Message.setField(this, 21, value);
+        }
         static fromObject(data: {
             session?: ReturnType<typeof Session.prototype.toObject>;
             jid?: string;
@@ -4800,6 +4810,7 @@ export namespace messages {
             pollVote?: ReturnType<typeof PollVoteMessage.prototype.toObject>;
             mentions?: string[];
             forward?: ReturnType<typeof ForwardOptions.prototype.toObject>;
+            viewOnce?: boolean;
         }): MessageRequest {
             const message = new MessageRequest({});
             if (data.session != null) {
@@ -4862,6 +4873,9 @@ export namespace messages {
             if (data.forward != null) {
                 message.forward = ForwardOptions.fromObject(data.forward);
             }
+            if (data.viewOnce != null) {
+                message.viewOnce = data.viewOnce;
+            }
             return message;
         }
         toObject() {
@@ -4886,6 +4900,7 @@ export namespace messages {
                 pollVote?: ReturnType<typeof PollVoteMessage.prototype.toObject>;
                 mentions?: string[];
                 forward?: ReturnType<typeof ForwardOptions.prototype.toObject>;
+                viewOnce?: boolean;
             } = {};
             if (this.session != null) {
                 data.session = this.session.toObject();
@@ -4947,6 +4962,9 @@ export namespace messages {
             if (this.forward != null) {
                 data.forward = this.forward.toObject();
             }
+            if (this.viewOnce != null) {
+                data.viewOnce = this.viewOnce;
+            }
             return data;
         }
         serialize(): Uint8Array;
@@ -4993,6 +5011,8 @@ export namespace messages {
                 writer.writeRepeatedString(19, this.mentions);
             if (this.has_forward)
                 writer.writeMessage(20, this.forward, () => this.forward.serialize(writer));
+            if (this.viewOnce != false)
+                writer.writeBool(21, this.viewOnce);
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -5061,6 +5081,9 @@ export namespace messages {
                         break;
                     case 20:
                         reader.readMessage(message.forward, () => message.forward = ForwardOptions.deserialize(reader));
+                        break;
+                    case 21:
+                        message.viewOnce = reader.readBool();
                         break;
                     default: reader.skipField();
                 }

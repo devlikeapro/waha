@@ -40,6 +40,7 @@ import {
   GeneratedMessageIdProperty,
   MentionsProperty,
   ReplyToProperty,
+  ViewOnceProperty,
 } from './properties.dto';
 
 /**
@@ -321,6 +322,9 @@ export class MessageImageRequest extends FileRequest {
 
   @ReplyToProperty()
   reply_to?: string;
+
+  @ViewOnceProperty()
+  viewOnce?: boolean;
 }
 
 export class MessageFileRequest extends FileRequest {
@@ -348,6 +352,9 @@ export class MessageVoiceRequest extends ChatRequest {
 
   @ConvertApiProperty()
   convert: boolean;
+
+  @ViewOnceProperty()
+  viewOnce?: boolean;
 }
 
 @ApiExtraModels(VideoRemoteFile, VideoBinaryFile)
@@ -377,6 +384,9 @@ export class MessageVideoRequest extends ChatRequest {
     example: false,
   })
   asNote?: boolean;
+
+  @ViewOnceProperty()
+  viewOnce?: boolean;
 
   @ConvertApiProperty()
   convert: boolean;

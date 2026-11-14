@@ -10521,7 +10521,8 @@ proto.messages.MessageRequest.toObject = function(includeInstance, msg) {
     location: (f = msg.getLocation()) && proto.messages.Location.toObject(includeInstance, f),
     pollvote: (f = msg.getPollvote()) && proto.messages.PollVoteMessage.toObject(includeInstance, f),
     mentionsList: (f = jspb.Message.getRepeatedField(msg, 19)) == null ? undefined : f,
-    forward: (f = msg.getForward()) && proto.messages.ForwardOptions.toObject(includeInstance, f)
+    forward: (f = msg.getForward()) && proto.messages.ForwardOptions.toObject(includeInstance, f),
+    viewonce: jspb.Message.getBooleanFieldWithDefault(msg, 21, false)
   };
 
   if (includeInstance) {
@@ -10649,6 +10650,10 @@ proto.messages.MessageRequest.deserializeBinaryFromReader = function(msg, reader
       var value = new proto.messages.ForwardOptions;
       reader.readMessage(value,proto.messages.ForwardOptions.deserializeBinaryFromReader);
       msg.setForward(value);
+      break;
+    case 21:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setViewonce(value);
       break;
     default:
       reader.skipField();
@@ -10829,6 +10834,13 @@ proto.messages.MessageRequest.serializeBinaryToWriter = function(message, writer
       20,
       f,
       proto.messages.ForwardOptions.serializeBinaryToWriter
+    );
+  }
+  f = message.getViewonce();
+  if (f) {
+    writer.writeBool(
+      21,
+      f
     );
   }
 };
@@ -11458,6 +11470,24 @@ proto.messages.MessageRequest.prototype.clearForward = function() {
  */
 proto.messages.MessageRequest.prototype.hasForward = function() {
   return jspb.Message.getField(this, 20) != null;
+};
+
+
+/**
+ * optional bool viewOnce = 21;
+ * @return {boolean}
+ */
+proto.messages.MessageRequest.prototype.getViewonce = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 21, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.messages.MessageRequest} returns this
+ */
+proto.messages.MessageRequest.prototype.setViewonce = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 21, value);
 };
 
 
