@@ -8,11 +8,18 @@ import { IMessagesRepository } from '../IMessagesRepository';
 import { NOWEBSqlite3KVRepository } from './NOWEBSqlite3KVRepository';
 import { INowebLidPNRepository } from '../INowebLidPNRepository';
 import Knex from 'knex';
+import { KnexPaginator } from '@waha/utils/Paginator';
+
+class MessagesPaginator extends KnexPaginator {
+  indexes = ['messageTimestamp'];
+}
 
 export class Sqlite3MessagesRepository
   extends NOWEBSqlite3KVRepository<any>
   implements IMessagesRepository
 {
+  protected Paginator = MessagesPaginator;
+
   constructor(
     knex: Knex.Knex,
     private readonly lidRepository: INowebLidPNRepository,

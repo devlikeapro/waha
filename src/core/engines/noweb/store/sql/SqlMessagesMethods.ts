@@ -23,16 +23,85 @@ export class SqlMessagesMethods {
     pagination: PaginationParams,
     merge: boolean = true,
   ): Promise<any[]> {
-    let query = this.repository.select();
-    const tableName = this.repository.table;
-    if (jid !== ALL_JID) {
-      if (merge) {
-        const pnJid = await this.resolvePnJid(jid);
-        query = this.applyPnJidFilter(query, pnJid);
-      } else {
-        query = query.where(`${tableName}.jid`, jid);
-      }
+    if (jid === ALL_JID) {
+      const query = this.applyFilters(this.repository.select(), filter);
+      return this.repository.all(this.repository.pagination(query, pagination));
     }
+    let jids = [jid];
+    if (merge) {
+      jids = await this.resolveMergedJids(jid);
+    }
+    const query =
+      jids.length === 1
+        ? this.selectByJid(jids[0], filter)
+        : this.selectByJids(jids, filter, pagination);
+    return this.repository.all(this.repository.pagination(query, pagination));
+  }
+
+  /**
+   * Messages of a single jid, so the (jid, messageTimestamp) index serves
+   * both the filter and the ORDER BY ... LIMIT.
+   */
+  private selectByJid(
+    jid: string,
+    filter: GetChatMessagesFilter,
+  ): Knex.QueryBuilder {
+    const query = this.repository
+      .select()
+      .where(`${this.repository.table}.jid`, jid);
+    return this.applyFilters(query, filter);
+  }
+
+  /**
+   * Messages of several jids (PN and its LIDs) as UNION ALL of per-jid
+   * queries. A single "jid = ? OR jid IN (...)" query can't use the
+   * (jid, messageTimestamp) index for ordering, so Postgres walks the global
+   * timestamp index and filters every row. Each branch here is an index range
+   * read capped at offset + limit rows; the outer query (aliased back to the
+   * table name) sorts and paginates.
+   */
+  private selectByJids(
+    jids: string[],
+    filter: GetChatMessagesFilter,
+    pagination: PaginationParams,
+  ): Knex.QueryBuilder {
+    const knex = this.repository.getKnex();
+    const tableName = this.repository.table;
+    const branchPagination = this.branchPagination(pagination);
+    // Wrapped in "select * from (...)" because sqlite3 rejects ORDER BY / LIMIT
+    // directly inside UNION members.
+    const branches = jids.map((jid, index) => {
+      let branch = this.selectByJid(jid, filter);
+      if (branchPagination) {
+        branch = this.repository.pagination(branch, branchPagination);
+      }
+      return knex.select('*').from(branch.as(`branch_${index}`));
+    });
+    const union = branches[0].unionAll(branches.slice(1));
+    return knex.select(`${tableName}.*`).from(union.as(tableName));
+  }
+
+  /**
+   * Per-branch pagination: same sort, first (offset + limit) rows, no offset.
+   * Returns null when branches can't be capped (no sort or no limit).
+   */
+  private branchPagination(
+    pagination: PaginationParams,
+  ): PaginationParams | null {
+    if (!pagination?.sortBy || pagination.limit == null) {
+      return null;
+    }
+    return {
+      sortBy: pagination.sortBy,
+      sortOrder: pagination.sortOrder,
+      limit: (pagination.offset || 0) + pagination.limit,
+    };
+  }
+
+  private applyFilters(
+    query: Knex.QueryBuilder,
+    filter: GetChatMessagesFilter,
+  ): Knex.QueryBuilder {
     if (filter['filter.timestamp.lte'] != null) {
       query = query.where(
         'messageTimestamp',
@@ -66,8 +135,7 @@ export class SqlMessagesMethods {
       );
       query = query.whereRaw(sql, [value]);
     }
-    query = this.repository.pagination(query, pagination);
-    return this.repository.all(query);
+    return query;
   }
 
   async getByJidById(
@@ -82,8 +150,8 @@ export class SqlMessagesMethods {
     const baseQuery = this.repository.select().where(`${tableName}.id`, id);
     let query;
     if (merge) {
-      const pnJid = await this.resolvePnJid(jid);
-      query = this.applyPnJidFilter(baseQuery, pnJid);
+      const jids = await this.resolveMergedJids(jid);
+      query = baseQuery.whereIn(`${tableName}.jid`, jids);
     } else {
       query = baseQuery.andWhere(`${tableName}.jid`, jid);
     }
@@ -119,22 +187,19 @@ export class SqlMessagesMethods {
     return this.repository.deleteBy({ jid: jid });
   }
 
-  private applyPnJidFilter(
-    query: Knex.QueryBuilder,
-    pnJid: string,
-  ): Knex.QueryBuilder {
-    const tableName = this.repository.table;
-    const knex = this.repository.getKnex();
-    // Use OR conditions on the raw jid column so the (jid, messageTimestamp) index
-    // can be used for both branches instead of a per-row CASE expression.
-    return query.where((builder) => {
-      builder
-        .where(`${tableName}.jid`, pnJid)
-        .orWhereIn(
-          `${tableName}.jid`,
-          knex.select('id').from('lid_map').where('pn', pnJid),
-        );
-    });
+  /**
+   * The chat's PN jid and every LID mapped to it, resolved up front
+   * (lid_map_pn_index) so message queries can filter on plain jid values.
+   */
+  private async resolveMergedJids(jid: string): Promise<string[]> {
+    const pnJid = await this.resolvePnJid(jid);
+    const rows = await this.repository
+      .getKnex()
+      .select('id')
+      .from('lid_map')
+      .where('pn', pnJid);
+    const lids = rows.map((row) => row.id).filter((lid) => lid !== pnJid);
+    return [pnJid, ...lids];
   }
 
   private async resolvePnJid(jid: string): Promise<string> {
