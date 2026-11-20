@@ -8,11 +8,18 @@ import { PaginationParams } from '@waha/structures/pagination.dto';
 import { NOWEBPsqlKVRepository } from './NOWEBPsqlKVRepository';
 import { INowebLidPNRepository } from '@waha/core/engines/noweb/store/INowebLidPNRepository';
 import Knex from 'knex';
+import { KnexPaginator } from '@waha/utils/Paginator';
+
+class MessagesPaginator extends KnexPaginator {
+  indexes = ['messageTimestamp'];
+}
 
 export class PsqlMessagesRepository
   extends NOWEBPsqlKVRepository<any>
   implements IMessagesRepository
 {
+  protected Paginator = MessagesPaginator;
+
   constructor(
     knex: Knex.Knex,
     private readonly lidRepository: INowebLidPNRepository,
