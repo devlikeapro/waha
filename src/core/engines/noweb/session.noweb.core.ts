@@ -3796,6 +3796,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     if (request.reply_to) {
       const key = parseMessageIdSerialized(request.reply_to, true);
       quoted = await this.store.loadMessage(jid, key.id);
+      // In a 1:1 chat the contact's message is stored under the contact's LID chat, while we send to the phone-number chat.
+      // Baileys would then name the LID as the quote's author and add it as a foreign chat (contextInfo.remoteJid),
+      // and the contact's phone cannot open the quoted message. Both are the chat we send to.
+      if (quoted && !quoted.key.fromMe && !jid.endsWith('@g.us') && quoted.key.remoteJid !== jid) {
+        quoted = { ...quoted, key: { ...quoted.key, remoteJid: jid, participant: jid } };
+      }
     }
     const ephemeralExpiration = await this.getEphemeralExpiration(jid);
     const messageId = request.id ? request.id : this.generateMessageID();
