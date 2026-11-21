@@ -3288,6 +3288,9 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         messageId: messageId,
       },
     };
+    // The reaction event has no name for who reacted (a message has it in _data), so a group reaction shows the member's number only.
+    // Hand over the profile name WhatsApp sent with the reaction, in the field the other events have it in.
+    if (message.pushName) (reaction as any)._data = { pushName: message.pushName };
     return reaction;
   }
 
