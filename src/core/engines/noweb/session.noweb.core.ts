@@ -782,6 +782,66 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         }
       }
     });
+
+    // The mobile app sends an edit as a secretEncryptedMessage. Baileys does not turn it into a message update, and WAHA only decrypted the text
+    // for the message.edited webhook, so the store kept the old text and a quote of the edited message (a reply_to) carried it. Write the decrypted text into the
+    // stored message the same way a protocolMessage edit is written.
+    this.sock.ev.on('messages.upsert', ({ messages }) => {
+      for (const message of messages) {
+        if (!IsSecretEncryptedMessageEdit(message.message)) {
+          continue;
+        }
+        const sem = message.message.secretEncryptedMessage;
+        const editedId = sem.targetMessageKey?.id;
+        if (!editedId) {
+          continue;
+        }
+        void this.tryDecryptNOWEBSecretMessageEdit(message, sem)
+          .then(async (text) => {
+            if (!text) {
+              this.logger.info(
+                `Secret-encrypted edit of message '${editedId}' could not be decrypted; the store keeps the old text`,
+              );
+              return;
+            }
+            // Keep the stored message's messageContextInfo (it holds the messageSecret): a later edit of the same message is decrypted with it.
+            const editKey = message.key as WAMessageKey | undefined;
+            let contextInfo: proto.IMessageContextInfo | null | undefined;
+            for (const jid of [
+              sem.targetMessageKey?.remoteJid,
+              editKey?.remoteJid,
+              editKey?.remoteJidAlt,
+            ].filter(Boolean)) {
+              const stored = await this.store?.loadMessage(jid, editedId);
+              if (stored) {
+                contextInfo =
+                  normalizeMessageContent(stored.message)?.messageContextInfo ??
+                  stored.message?.messageContextInfo;
+                break;
+              }
+            }
+            this.sock?.ev.emit('messages.update', [
+              {
+                key: { ...message.key, id: editedId },
+                update: {
+                  message: {
+                    conversation: text,
+                    ...(contextInfo ? { messageContextInfo: contextInfo } : {}),
+                  },
+                },
+              },
+            ]);
+            this.logger.info(
+              `Secret-encrypted edit of message '${editedId}' written to the store`,
+            );
+          })
+          .catch((error) => {
+            this.logger.warn(
+              `Secret-encrypted edit of message '${editedId}' failed: ${error}`,
+            );
+          });
+      }
+    });
   }
 
   private issueMessageUpdateOnPoll() {
