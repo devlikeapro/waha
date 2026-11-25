@@ -18,6 +18,7 @@ import {
 } from '@waha/structures/chats.dto';
 import { SendButtonsRequest } from '@waha/structures/chatting.buttons.dto';
 import { SendListRequest } from '@waha/structures/chatting.list.dto';
+import { SendPixRequest } from '@waha/structures/chatting.pix.dto';
 
 import { SessionManager } from '../core/abc/manager.abc';
 import {
@@ -229,6 +230,19 @@ export class ChattingController {
   async sendList(@Body() request: SendListRequest) {
     const whatsapp = await this.manager.getWorkingSession(request.session);
     return whatsapp.sendList(request);
+  }
+
+  @Post('/sendPix')
+  @ApiOperation({
+    summary: 'Send a PIX message (interactive)',
+    description:
+      'Send a static PIX key with a native "copy key" button (Brazil payments)',
+  })
+  @CheckPolicies(CanSession(Action.Send, FromBody('session')))
+  @UsePipes(new WAHAValidationPipe())
+  async sendPix(@Body() request: SendPixRequest) {
+    const whatsapp = await this.manager.getWorkingSession(request.session);
+    return whatsapp.sendPix(request);
   }
 
   @Post('/forwardMessage')

@@ -4560,6 +4560,7 @@ export namespace messages {
             pollVote?: PollVoteMessage;
             mentions?: string[];
             forward?: ForwardOptions;
+            pix?: PixMessage;
         }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [11, 13, 19], this.#one_of_decls);
@@ -4623,6 +4624,9 @@ export namespace messages {
                 }
                 if ("forward" in data && data.forward != undefined) {
                     this.forward = data.forward;
+                }
+                if ("pix" in data && data.pix != undefined) {
+                    this.pix = data.pix;
                 }
             }
         }
@@ -4779,6 +4783,15 @@ export namespace messages {
         get has_forward() {
             return pb_1.Message.getField(this, 20) != null;
         }
+        get pix() {
+            return pb_1.Message.getWrapperField(this, PixMessage, 21) as PixMessage;
+        }
+        set pix(value: PixMessage) {
+            pb_1.Message.setWrapperField(this, 21, value);
+        }
+        get has_pix() {
+            return pb_1.Message.getField(this, 21) != null;
+        }
         static fromObject(data: {
             session?: ReturnType<typeof Session.prototype.toObject>;
             jid?: string;
@@ -4800,6 +4813,7 @@ export namespace messages {
             pollVote?: ReturnType<typeof PollVoteMessage.prototype.toObject>;
             mentions?: string[];
             forward?: ReturnType<typeof ForwardOptions.prototype.toObject>;
+            pix?: ReturnType<typeof PixMessage.prototype.toObject>;
         }): MessageRequest {
             const message = new MessageRequest({});
             if (data.session != null) {
@@ -4862,6 +4876,9 @@ export namespace messages {
             if (data.forward != null) {
                 message.forward = ForwardOptions.fromObject(data.forward);
             }
+            if (data.pix != null) {
+                message.pix = PixMessage.fromObject(data.pix);
+            }
             return message;
         }
         toObject() {
@@ -4886,6 +4903,7 @@ export namespace messages {
                 pollVote?: ReturnType<typeof PollVoteMessage.prototype.toObject>;
                 mentions?: string[];
                 forward?: ReturnType<typeof ForwardOptions.prototype.toObject>;
+                pix?: ReturnType<typeof PixMessage.prototype.toObject>;
             } = {};
             if (this.session != null) {
                 data.session = this.session.toObject();
@@ -4947,6 +4965,9 @@ export namespace messages {
             if (this.forward != null) {
                 data.forward = this.forward.toObject();
             }
+            if (this.pix != null) {
+                data.pix = this.pix.toObject();
+            }
             return data;
         }
         serialize(): Uint8Array;
@@ -4993,6 +5014,8 @@ export namespace messages {
                 writer.writeRepeatedString(19, this.mentions);
             if (this.has_forward)
                 writer.writeMessage(20, this.forward, () => this.forward.serialize(writer));
+            if (this.has_pix)
+                writer.writeMessage(21, this.pix, () => this.pix.serialize(writer));
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -5062,6 +5085,9 @@ export namespace messages {
                     case 20:
                         reader.readMessage(message.forward, () => message.forward = ForwardOptions.deserialize(reader));
                         break;
+                    case 21:
+                        reader.readMessage(message.pix, () => message.pix = PixMessage.deserialize(reader));
+                        break;
                     default: reader.skipField();
                 }
             }
@@ -5072,6 +5098,165 @@ export namespace messages {
         }
         static deserializeBinary(bytes: Uint8Array): MessageRequest {
             return MessageRequest.deserialize(bytes);
+        }
+    }
+    export class PixMessage extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            merchantName?: string;
+            key?: string;
+            keyType?: string;
+            currency?: string;
+            referenceId?: string;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("merchantName" in data && data.merchantName != undefined) {
+                    this.merchantName = data.merchantName;
+                }
+                if ("key" in data && data.key != undefined) {
+                    this.key = data.key;
+                }
+                if ("keyType" in data && data.keyType != undefined) {
+                    this.keyType = data.keyType;
+                }
+                if ("currency" in data && data.currency != undefined) {
+                    this.currency = data.currency;
+                }
+                if ("referenceId" in data && data.referenceId != undefined) {
+                    this.referenceId = data.referenceId;
+                }
+            }
+        }
+        get merchantName() {
+            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        }
+        set merchantName(value: string) {
+            pb_1.Message.setField(this, 1, value);
+        }
+        get key() {
+            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+        }
+        set key(value: string) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        get keyType() {
+            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+        }
+        set keyType(value: string) {
+            pb_1.Message.setField(this, 3, value);
+        }
+        get currency() {
+            return pb_1.Message.getFieldWithDefault(this, 4, "") as string;
+        }
+        set currency(value: string) {
+            pb_1.Message.setField(this, 4, value);
+        }
+        get referenceId() {
+            return pb_1.Message.getFieldWithDefault(this, 5, "") as string;
+        }
+        set referenceId(value: string) {
+            pb_1.Message.setField(this, 5, value);
+        }
+        static fromObject(data: {
+            merchantName?: string;
+            key?: string;
+            keyType?: string;
+            currency?: string;
+            referenceId?: string;
+        }): PixMessage {
+            const message = new PixMessage({});
+            if (data.merchantName != null) {
+                message.merchantName = data.merchantName;
+            }
+            if (data.key != null) {
+                message.key = data.key;
+            }
+            if (data.keyType != null) {
+                message.keyType = data.keyType;
+            }
+            if (data.currency != null) {
+                message.currency = data.currency;
+            }
+            if (data.referenceId != null) {
+                message.referenceId = data.referenceId;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                merchantName?: string;
+                key?: string;
+                keyType?: string;
+                currency?: string;
+                referenceId?: string;
+            } = {};
+            if (this.merchantName != null) {
+                data.merchantName = this.merchantName;
+            }
+            if (this.key != null) {
+                data.key = this.key;
+            }
+            if (this.keyType != null) {
+                data.keyType = this.keyType;
+            }
+            if (this.currency != null) {
+                data.currency = this.currency;
+            }
+            if (this.referenceId != null) {
+                data.referenceId = this.referenceId;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.merchantName.length)
+                writer.writeString(1, this.merchantName);
+            if (this.key.length)
+                writer.writeString(2, this.key);
+            if (this.keyType.length)
+                writer.writeString(3, this.keyType);
+            if (this.currency.length)
+                writer.writeString(4, this.currency);
+            if (this.referenceId.length)
+                writer.writeString(5, this.referenceId);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): PixMessage {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new PixMessage();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        message.merchantName = reader.readString();
+                        break;
+                    case 2:
+                        message.key = reader.readString();
+                        break;
+                    case 3:
+                        message.keyType = reader.readString();
+                        break;
+                    case 4:
+                        message.currency = reader.readString();
+                        break;
+                    case 5:
+                        message.referenceId = reader.readString();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): PixMessage {
+            return PixMessage.deserialize(bytes);
         }
     }
     export class Row extends pb_1.Message {

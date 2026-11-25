@@ -35,6 +35,7 @@ import {
 } from '@waha/structures/chats.dto';
 import { SendButtonsRequest } from '@waha/structures/chatting.buttons.dto';
 import { SendListRequest } from '@waha/structures/chatting.list.dto';
+import { SendPixRequest } from '@waha/structures/chatting.pix.dto';
 import { BinaryFile, RemoteFile } from '@waha/structures/files.dto';
 import { Label, LabelDTO, LabelID } from '@waha/structures/labels.dto';
 import { LidToPhoneNumber } from '@waha/structures/lids.dto';
@@ -698,6 +699,10 @@ export abstract class WhatsappSession {
   }
 
   sendList(request: SendListRequest): Promise<any> {
+    throw new NotImplementedByEngineError();
+  }
+
+  sendPix(request: SendPixRequest): Promise<any> {
     throw new NotImplementedByEngineError();
   }
 

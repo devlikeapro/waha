@@ -112,6 +112,7 @@ import {
   WANumberExistResult,
 } from '@waha/structures/chatting.dto';
 import { SendListRequest } from '@waha/structures/chatting.list.dto';
+import { SendPixRequest } from '@waha/structures/chatting.pix.dto';
 import { ContactQuery, ContactUpdateBody } from '@waha/structures/contacts.dto';
 import {
   ACK_UNKNOWN,
@@ -1298,6 +1299,32 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       session: this.session,
       replyTo: getMessageIdFromSerialized(request.reply_to),
       list: list,
+    });
+    const response = await promisify(this.client.SendMessage)(message);
+    const data = response.toObject();
+    return this.messageResponse(jid, data);
+  }
+
+  @Activity()
+  async sendPix(request: SendPixRequest): Promise<any> {
+    const jid = await this.hooks.wid.chat.promise(request.chatId, 'sendPix');
+    if (isJidBroadcast(jid) || isJidNewsletter(jid)) {
+      throw new UnprocessableEntityException(
+        `PIX message can not be sent to a broadcast or newsletter.`,
+      );
+    }
+    const pix = new messages.PixMessage({
+      merchantName: request.merchantName,
+      key: request.key,
+      keyType: request.keyType,
+      currency: request.currency ?? '',
+      referenceId: request.referenceId ?? '',
+    });
+    const message = new messages.MessageRequest({
+      jid: jid,
+      session: this.session,
+      replyTo: getMessageIdFromSerialized(request.reply_to),
+      pix: pix,
     });
     const response = await promisify(this.client.SendMessage)(message);
     const data = response.toObject();
