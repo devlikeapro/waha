@@ -55,11 +55,15 @@ import {
 import { LottieMediaProcessorWrapper } from '@waha/core/media/LottieMediaProcessorWrapper';
 import { QR } from '@waha/core/QR';
 import { ExtractMessageKeysForRead } from '@waha/core/utils/convertors';
-import { parseMessageIdSerialized } from '@waha/core/utils/ids';
+import {
+  normalizeStatusStanzaId,
+  parseMessageIdSerialized,
+} from '@waha/core/utils/ids';
 import {
   isJidBroadcast,
   isJidGroup,
   isJidNewsletter,
+  isJidStatusBroadcast,
   isPnUser,
   toCusFormat,
   toJID,
@@ -3330,10 +3334,15 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
     if (!quotedMessage) {
       return null;
     }
+    let id = contextInfo.stanzaID;
+    // a reply to a status quotes it from status@broadcast
+    if (id && isJidStatusBroadcast(contextInfo.remoteJID)) {
+      id = normalizeStatusStanzaId(id);
+    }
     const body = extractBody(quotedMessage);
     const mediaContent = extractMediaContent(quotedMessage);
     return {
-      id: contextInfo.stanzaID,
+      id: id,
       participant: toCusFormat(contextInfo.participant),
       body: body,
       hasMedia: Boolean(mediaContent),

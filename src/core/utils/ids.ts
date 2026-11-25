@@ -64,6 +64,17 @@ export function parseMessageIdSerialized(
   };
 }
 
+/**
+ * Batched status stanza id "<id>__part__<suffix>" => "<id>", the id the status is stored by
+ */
+export function normalizeStatusStanzaId(id: string): string {
+  const idx = id.indexOf('__part__');
+  if (idx <= 0) {
+    return id;
+  }
+  return id.slice(0, idx);
+}
+
 export function SerializeMessageKey(key: WAMessageKey) {
   const { fromMe, id, remoteJid, participant } = key;
   const participantStr = participant ? `_${participant}` : '';

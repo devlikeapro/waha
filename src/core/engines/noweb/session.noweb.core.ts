@@ -85,9 +85,13 @@ import { QR } from '@waha/core/QR';
 import { AckToStatus, ReceiptsToAck, StatusToAck } from '@waha/core/utils/acks';
 import { pairs } from '@waha/utils/pairs';
 import { ExtractMessageKeysForRead } from '@waha/core/utils/convertors';
-import { parseMessageIdSerialized } from '@waha/core/utils/ids';
+import {
+  normalizeStatusStanzaId,
+  parseMessageIdSerialized,
+} from '@waha/core/utils/ids';
 import {
   isJidNewsletter,
+  isJidStatusBroadcast,
   jidsFromKey,
   toCusFormat,
   toJID,
@@ -3600,10 +3604,15 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     if (!quotedMessage) {
       return null;
     }
+    let id = contextInfo.stanzaId;
+    // a reply to a status quotes it from status@broadcast
+    if (id && isJidStatusBroadcast(contextInfo.remoteJid)) {
+      id = normalizeStatusStanzaId(id);
+    }
     const body = extractBody(quotedMessage);
     const mediaContent = extractMediaContent(quotedMessage);
     return {
-      id: contextInfo.stanzaId,
+      id: id,
       participant: toCusFormat(contextInfo.participant),
       body: body,
       // Media

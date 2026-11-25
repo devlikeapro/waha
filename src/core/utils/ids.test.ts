@@ -1,4 +1,8 @@
-import { parseMessageIdSerialized, SerializeMessageKey } from './ids';
+import {
+  normalizeStatusStanzaId,
+  parseMessageIdSerialized,
+  SerializeMessageKey,
+} from './ids';
 
 describe('parseMessageIdSerialized', () => {
   it.each([
@@ -137,5 +141,17 @@ describe('parseMessageIdSerialized', () => {
     expect(SerializeMessageKey(parseMessageIdSerialized(messageId))).toBe(
       messageId,
     );
+  });
+});
+
+describe('normalizeStatusStanzaId', () => {
+  it.each([
+    ['AAAA__part__abcdefgh', 'AAAA'],
+    ['AAAA', 'AAAA'],
+    ['AAAA_BBBB', 'AAAA_BBBB'],
+    ['__part__abcdefgh', '__part__abcdefgh'],
+    ['', ''],
+  ])('%j => %j', (id, expected) => {
+    expect(normalizeStatusStanzaId(id)).toBe(expected);
   });
 });
