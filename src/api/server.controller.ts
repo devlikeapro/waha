@@ -112,7 +112,12 @@ export class ServerController {
       this.logger.log(`Gracefully stopping the server in ${timeout}ms`);
       setTimeout(async () => {
         this.logger.log('Gracefully closing the application...');
-        process.kill(process.pid, 'SIGTERM');
+        if (process.platform === 'win32') {
+          // Windows has no real SIGTERM (process.kill kills at once), so emit the event to run shutdown hooks.
+          process.emit('SIGTERM', 'SIGTERM');
+        } else {
+          process.kill(process.pid, 'SIGTERM');
+        }
         await sleep(10_000);
         process.exit(0);
       }, timeout);
