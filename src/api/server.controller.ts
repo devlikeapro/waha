@@ -112,9 +112,8 @@ export class ServerController {
       this.logger.log(`Gracefully stopping the server in ${timeout}ms`);
       setTimeout(async () => {
         this.logger.log('Gracefully closing the application...');
-        // On Windows process.kill(pid, 'SIGTERM') ends the process at once, so none of the shutdown hooks that stop the sessions run.
-        // Raise the signal inside the process instead: it runs the listeners that enableShutdownHooks() registered, and the process lives on until they are done.
         if (process.platform === 'win32') {
+          // Windows has no real SIGTERM (process.kill kills at once), so emit the event to run shutdown hooks.
           process.emit('SIGTERM', 'SIGTERM');
         } else {
           process.kill(process.pid, 'SIGTERM');
