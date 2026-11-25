@@ -5062,14 +5062,14 @@ __metadata:
   linkType: hard
 
 "@wppconnect-team/wppconnect@github:wppconnect-team/wppconnect#master":
-  version: 2.3.6
-  resolution: "@wppconnect-team/wppconnect@https://github.com/wppconnect-team/wppconnect.git#commit=bfe7d572ab661fb8b9785ae1ec3ebf9be7fdf3e3"
+  version: 2.4.6
+  resolution: "@wppconnect-team/wppconnect@https://github.com/wppconnect-team/wppconnect.git#commit=7a889be60427b9dc376259dc105fc40ebdde0dc5"
   dependencies:
     "@img/sharp-win32-x64": "npm:^0.35.5"
-    "@wppconnect/wa-js": "npm:^4.7.2"
+    "@wppconnect/wa-js": "npm:^4.8.2"
     "@wppconnect/wa-version": "npm:^1.5.4472"
     atob: "npm:^2.1.2"
-    axios: "npm:^1.21.0"
+    axios: "npm:^1.21.1"
     boxen: "npm:^5.1.2"
     catch-exit: "npm:^2.0.0"
     chalk: "npm:~4.1.2"
@@ -5080,7 +5080,7 @@ __metadata:
     logform: "npm:^2.7.0"
     lookpath: "npm:^1.2.3"
     mime-types: "npm:^3.0.2"
-    puppeteer: "npm:^24.43.1"
+    puppeteer: "npm:^25.16.0"
     puppeteer-extra: "npm:^3.3.6"
     puppeteer-extra-plugin-stealth: "npm:^2.11.2"
     puppeteer-extra-plugin-user-data-dir: "npm:^2.4.1"
@@ -5088,7 +5088,7 @@ __metadata:
     qrcode-terminal: "npm:^0.12.0"
     reflect-metadata: "npm:^0.2.1"
     rimraf: "npm:^3.0.2"
-    sanitize-filename: "npm:^1.6.4"
+    sanitize-filename: "npm:^1.6.5"
     sharp: "npm:0.35.5"
     tmp: "npm:^0.2.7"
     tree-kill: "npm:^1.2.2"
@@ -5099,21 +5099,21 @@ __metadata:
       optional: true
     fsevents:
       optional: true
-  checksum: 10/d0ebe3b896ac3bfc6c8af2b8fc1f4377e4bbd6725fe58165fddb6273ffac25fc7a38c81788f43ca006d71306e220203dffb1a0712e3fa238e36f72fe52c211f0
+  checksum: 10/f811e265cf8e795d732d3fe591af482228203970bba951dd40e99fb93ae953c58deb7e234b555a99bb5c7de4c06fd3f4739bc6dc646fbdb12b74b06b1432f5cf
   languageName: node
   linkType: hard
 
 "@wppconnect/wa-js@github:wppconnect-team/wa-js#main":
-  version: 4.7.2
-  resolution: "@wppconnect/wa-js@https://github.com/wppconnect-team/wa-js.git#commit=4595d9eaf51cc859a3f615fcb210262a81b9f867"
-  checksum: 10/c46c678553ca4cf8fdfb43fd39ef0b93cdbdb6602f87f1369093b8d3468c4ae27f9f7b8ad9dadecf984110b71934e811223fe6ce5a73311c94071043a0a492ca
+  version: 4.8.5-rc.0
+  resolution: "@wppconnect/wa-js@https://github.com/wppconnect-team/wa-js.git#commit=9004c34f54dfd29412b6412955bf0bfd3b97233f"
+  checksum: 10/562f0d10fa647f9eb65e9c416a9bc9e80fbabdae2530df6be7fb048074247731e33fa2f48a600f06b384c70ebfabeb043940d43d3ed9319a71ba3ff3f7d0cbb7
   languageName: node
   linkType: hard
 
-"@wppconnect/wa-js@npm:^4.7.2":
-  version: 4.7.2
-  resolution: "@wppconnect/wa-js@npm:4.7.2"
-  checksum: 10/8eceeb49d0d013d6770443064817d51c5dbedddcc42bd0e09e497a1aa469552e6f428c13b46010d0bd1d864be8b669a16d4e474f6bcff7426cb9a32518e7b09e
+"@wppconnect/wa-js@npm:^4.8.2":
+  version: 4.8.2
+  resolution: "@wppconnect/wa-js@npm:4.8.2"
+  checksum: 10/abf56bfd65984a7408be934da2c957f904a2e492ba3330cab050bd2ba8ad1e747429ee54dd8ce2015e436a641dacc03994bd7990911fae44072a52f926cd8fc6
   languageName: node
   linkType: hard
 
@@ -12548,12 +12548,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sanitize-filename@npm:^1.6.4":
-  version: 1.6.4
-  resolution: "sanitize-filename@npm:1.6.4"
+"sanitize-filename@npm:^1.6.5":
+  version: 1.6.5
+  resolution: "sanitize-filename@npm:1.6.5"
   dependencies:
     truncate-utf8-bytes: "npm:^1.0.0"
-  checksum: 10/9fb32f8ae51b1931eb4f780ac140f3fa9ccbfd8c746231d426cd5f0bc95608557e6e2540186bab81a702b98cd301b622f4a80d3263d82680bebca90a38158b38
+  checksum: 10/9e6724419dae707135ea37a957bb658228d6e8fa8f2e048abc9a6960880d1d6612ba938239c12d6a539c8fa072d1fdf82f6413cdb8c29786c22b2df09e799d06
   languageName: node
   linkType: hard
 
