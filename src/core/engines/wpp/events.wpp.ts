@@ -183,7 +183,6 @@ export function WppReactionToMessageReaction(
       text: data.reactionText ?? '',
       messageId: messageId,
     },
-    // @ts-ignore
     _data: data,
   };
 }

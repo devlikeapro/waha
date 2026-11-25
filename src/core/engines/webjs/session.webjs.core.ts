@@ -2780,6 +2780,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
         text: reaction.reaction,
         messageId: GetSerialized(reaction.msgId),
       },
+      _data: reaction.rawData,
     };
   }
 

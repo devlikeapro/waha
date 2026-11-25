@@ -154,4 +154,11 @@ export class WAMessageReaction extends WAMessageBase {
       'Reaction to the message. Either the reaction (emoji) or empty string to remove the reaction',
   })
   reaction: WAReaction;
+
+  /** Returns reaction message in a raw format */
+  @ApiProperty({
+    description:
+      'Reaction message in a raw format that we get from WhatsApp. May be changed anytime, use it with caution! It depends a lot on the underlying backend.',
+  })
+  _data?: any;
 }

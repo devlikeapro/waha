@@ -3312,6 +3312,7 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
         text: reactionMessage.text,
         messageId: messageId,
       },
+      _data: message,
     };
     return reaction;
   }

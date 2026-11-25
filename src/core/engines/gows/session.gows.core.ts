@@ -3446,6 +3446,7 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
         text: reactionMessage.text,
         messageId: messageId,
       },
+      _data: message,
     };
     return reaction;
   }
