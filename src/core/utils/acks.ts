@@ -24,3 +24,33 @@ export function StatusStringToStatus(status: number | string): number {
       return status as any;
   }
 }
+
+interface UserReceipt {
+  userJid?: string;
+  receiptTimestamp?: unknown;
+  readTimestamp?: unknown;
+  playedTimestamp?: unknown;
+}
+
+/**
+ * Highest ack reached by any member in group receipts (NOWEB userReceipt), same as GOWS.
+ */
+export function ReceiptsToAck(
+  receipts: UserReceipt[] | null,
+): WAMessageAck | null {
+  let ack: WAMessageAck | null = null;
+  for (const receipt of receipts ?? []) {
+    let level: WAMessageAck | null = null;
+    if (receipt.playedTimestamp) {
+      level = WAMessageAck.PLAYED;
+    } else if (receipt.readTimestamp) {
+      level = WAMessageAck.READ;
+    } else if (receipt.receiptTimestamp) {
+      level = WAMessageAck.DEVICE;
+    }
+    if (level !== null && (ack === null || level > ack)) {
+      ack = level;
+    }
+  }
+  return ack;
+}

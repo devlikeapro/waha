@@ -82,7 +82,7 @@ import {
 import { MediaDownloadOptions } from '@waha/core/media/IMediaManager';
 import { LottieMediaProcessorWrapper } from '@waha/core/media/LottieMediaProcessorWrapper';
 import { QR } from '@waha/core/QR';
-import { AckToStatus, StatusToAck } from '@waha/core/utils/acks';
+import { AckToStatus, ReceiptsToAck, StatusToAck } from '@waha/core/utils/acks';
 import { pairs } from '@waha/utils/pairs';
 import { ExtractMessageKeysForRead } from '@waha/core/utils/convertors';
 import { parseMessageIdSerialized } from '@waha/core/utils/ids';
@@ -3554,7 +3554,12 @@ export class WhatsappSessionNoWebCore extends WhatsappSession {
     const id = buildMessageId(message.key);
     const body = extractBody(message.message);
     const replyTo = this.extractReplyTo(message.message);
-    const ack = message.ack || StatusToAck(message.status);
+    let ack = message.ack || StatusToAck(message.status);
+    // Group receipts - use the highest participant ack as message ack
+    const receiptsAck = ReceiptsToAck(message.userReceipt);
+    if (receiptsAck !== null && receiptsAck > ack) {
+      ack = receiptsAck;
+    }
     const mediaContent = extractMediaContent(message.message);
     let source = await this.hooks.message.source.promise(message.key.id);
     source = source ?? MessageSource.APP;
