@@ -43,7 +43,13 @@ function extractUniqueMessageId(messageId: string): string {
  */
 export function DistinctMessages(flushEvery: number = 60_000) {
   return distinct((msg: WAMessage) => {
-    const uniqueId = extractUniqueMessageId(msg.id);
+    let uniqueId: string;
+    try {
+      // a throw here tears down the whole message stream
+      uniqueId = extractUniqueMessageId(msg.id);
+    } catch {
+      uniqueId = msg.id;
+    }
     // Include fromMe to distinguish sent vs received with same ID
     return `${msg.fromMe}_${uniqueId}`;
   }, interval(flushEvery));
