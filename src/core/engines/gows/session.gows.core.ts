@@ -12,6 +12,7 @@ import {
   WhatsappSession,
 } from '@waha/core/abc/session.abc';
 import { Jid } from '@waha/core/engines/const';
+import { markChatsAsReadOnOwnDevices } from '@waha/core/engines/gows/chatread';
 import { EventsFromObservable } from '@waha/core/engines/gows/EventsFromObservable';
 import { GowsEventStreamObservable } from '@waha/core/engines/gows/GowsEventStreamObservable';
 import {
@@ -1707,9 +1708,10 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       return;
     }
     const receipts = esm.b.aggregateMessageKeysNotFromMe(keys);
+    const readJids: string[] = [];
     for (const receipt of receipts) {
       if (receipt.messageIds.length === 0) {
-        return;
+        continue;
       }
       const req = new messages.MarkReadRequest({
         session: this.session,
@@ -1719,7 +1721,16 @@ export class WhatsappSessionGoWSCore extends WhatsappSession {
       });
       const response = await promisify(this.client.MarkRead)(req);
       response.toObject();
+      readJids.push(receipt.jid);
     }
+    // Read receipts do not clear the unread badge on our own phone,
+    // the app-state "mark chat as read" action does
+    await markChatsAsReadOnOwnDevices(
+      this.client,
+      this.session,
+      readJids,
+      this.logger,
+    );
     return;
   }
 
