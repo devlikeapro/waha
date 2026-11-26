@@ -333,7 +333,8 @@ export class SessionManagerCore
       return;
     }
 
-    const logger = this.log.logger.child({ session: name });
+    // Use root logger, not the request one - the session outlives the request that started it
+    const logger = PinoLogger.root.child({ session: name });
     const config = await this.sessionConfigRepository.getConfig(name);
     await this.sessionAuthRepository.init(name);
     logger.level = getPinoLogLevel(config?.debug);
