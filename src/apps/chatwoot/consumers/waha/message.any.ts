@@ -74,6 +74,10 @@ export class WAHAMessageAnyConsumer extends ChatWootWAHABaseConsumer {
 export class MessageAnyHandler extends MessageBaseHandler<WAMessage> {
   public shouldLogUnsupported: boolean = false;
 
+  protected get marksSeenByAgent() {
+    return true;
+  }
+
   protected async getMessage(
     payload: WAMessage,
   ): Promise<ChatWootMessagePartial> {

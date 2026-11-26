@@ -1,4 +1,5 @@
 import ChatwootClient, { contact_conversations } from '@figuro/chatwoot-sdk';
+import axios from 'axios';
 import { ILogger } from '@waha/apps/app_sdk/ILogger';
 import {
   ChatWootAPIConfig,
@@ -76,6 +77,30 @@ export class ConversationService {
       );
       throw error;
     }
+  }
+
+  /**
+   * Marks the conversation as seen by the agent (Account API update_last_seen).
+   * It moves agent_last_seen_at, which is what Chatwoot counts unread messages
+   * against. markAsRead only moves the contact's last seen (public API).
+   */
+  async markAsSeenByAgent(conversationId: number): Promise<void> {
+    // The SDK does not expose this endpoint, so call it directly
+    const path = `/api/v1/accounts/${this.config.accountId}/conversations/${conversationId}/update_last_seen`;
+    const url = new URL(path, this.config.url).toString();
+    await axios.post(
+      url,
+      {},
+      {
+        headers: {
+          api_access_token: this.config.accountToken,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    this.logger.info(
+      `Marked conversation.id: ${conversationId} as seen by the agent`,
+    );
   }
 
   async resolve(conversationId: number): Promise<any> {

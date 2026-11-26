@@ -232,4 +232,10 @@ export class ContactConversationService {
   ): Promise<void> {
     await this.conversationService.markAsRead(conversationId, sourceId);
   }
+
+  public async markConversationAsSeenByAgent(
+    conversationId: number,
+  ): Promise<void> {
+    await this.conversationService.markAsSeenByAgent(conversationId);
+  }
 }
