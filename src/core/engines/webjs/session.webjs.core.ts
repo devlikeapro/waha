@@ -522,6 +522,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
   async unpair() {
     this.unpairing = true;
     this.shouldRestart = false;
+    this.whatsNewModalJob.stop();
     await this.whatsapp.unpair();
   }
 

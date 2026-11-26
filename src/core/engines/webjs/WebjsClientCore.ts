@@ -151,13 +151,14 @@ export class WebjsClientCore extends Client {
       if (typeof window.require !== 'function') {
         return false;
       }
-      const WAWebWhatsNewNux = window.require('WAWebWhatsNewNux');
-      if (!WAWebWhatsNewNux) {
+      // user prefs are not writable before login, and the logged-out page lacks the modal modules
+      const WAWebUserPrefsMeUser = window.require('WAWebUserPrefsMeUser');
+      if (!WAWebUserPrefsMeUser?.getMaybeMePnUser()) {
         return false;
       }
-      // user prefs are not writable before login
-      const WAWebUserPrefsMeUser = window.require('WAWebUserPrefsMeUser');
-      if (!WAWebUserPrefsMeUser.getMaybeMePnUser()) {
+      // Its WAWebNuxCoolOff dependency loads in a later chunk - retry on the next tick
+      const WAWebWhatsNewNux = window.require('WAWebWhatsNewNux');
+      if (!WAWebWhatsNewNux) {
         return false;
       }
       // The app checks the cool-off with AB-prop driven days (15 or 30)
