@@ -1,3 +1,4 @@
+import { runDetached } from '@waha/utils/detached';
 import { Logger } from 'pino';
 
 type FunctionNoArgs = () => Promise<any>;
@@ -33,18 +34,10 @@ export class SingleDelayedJobRunner {
       return false;
     }
 
-    this.timeout = setTimeout(() => {
-      this.logger.debug(`Running job...`);
-      fn()
-        .catch((error) => {
-          this.logger.error(`Job failed: ${error}`);
-          this.logger.error(error.stack);
-        })
-        .finally(() => {
-          this.timeout = null;
-          this.logger.debug(`Job finished`);
-        });
-    }, this.timeoutMs);
+    // The job outlives the request that scheduled it - run it without the request log and trace context
+    this.timeout = runDetached(() =>
+      setTimeout(() => this.run(fn), this.timeoutMs),
+    );
     this.logger.info(`Job scheduled with timeout ${this.timeoutMs} ms`);
     return true;
   }
@@ -56,6 +49,19 @@ export class SingleDelayedJobRunner {
     clearTimeout(this.timeout);
     this.timeout = null;
     this.logger.info(`Job cancelled`);
+  }
+
+  private run(fn: FunctionNoArgs) {
+    this.logger.debug(`Running job...`);
+    fn()
+      .catch((error) => {
+        this.logger.error(`Job failed: ${error}`);
+        this.logger.error(error.stack);
+      })
+      .finally(() => {
+        this.timeout = null;
+        this.logger.debug(`Job finished`);
+      });
   }
 
   private log(warning: boolean, msg: string) {

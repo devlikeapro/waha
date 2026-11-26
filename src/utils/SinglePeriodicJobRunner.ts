@@ -1,3 +1,4 @@
+import { runDetached } from '@waha/utils/detached';
 import { Logger } from 'pino';
 
 type FunctionNoArgs = () => Promise<any>;
@@ -31,25 +32,10 @@ export class SinglePeriodicJobRunner {
       return false;
     }
 
-    this.interval = setInterval(() => {
-      if (this.isWorking) {
-        const msg = `Job is already running, skipping this run`;
-        this.log(this.warningOverlap, msg);
-        return;
-      }
-
-      this.isWorking = true;
-      this.logger.debug('Running job...');
-      fn()
-        .catch((error) => {
-          this.logger.error(`Job failed: ${error}`);
-          this.logger.error(error.stack);
-        })
-        .finally(() => {
-          this.isWorking = false;
-          this.logger.debug(`Job finished`);
-        });
-    }, this.intervalMs);
+    // The job outlives the request that scheduled it - run it without the request log and trace context
+    this.interval = runDetached(() =>
+      setInterval(() => this.run(fn), this.intervalMs),
+    );
     this.logger.info(`Job started with interval ${this.intervalMs} ms`);
     return true;
   }
@@ -61,6 +47,26 @@ export class SinglePeriodicJobRunner {
     clearInterval(this.interval);
     this.interval = null;
     this.logger.info(`Job stopped`);
+  }
+
+  private run(fn: FunctionNoArgs) {
+    if (this.isWorking) {
+      const msg = `Job is already running, skipping this run`;
+      this.log(this.warningOverlap, msg);
+      return;
+    }
+
+    this.isWorking = true;
+    this.logger.debug('Running job...');
+    fn()
+      .catch((error) => {
+        this.logger.error(`Job failed: ${error}`);
+        this.logger.error(error.stack);
+      })
+      .finally(() => {
+        this.isWorking = false;
+        this.logger.debug(`Job finished`);
+      });
   }
 
   private log(warning: boolean, msg) {

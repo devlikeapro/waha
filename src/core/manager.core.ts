@@ -44,6 +44,7 @@ import { WAHAWebhookSessionStatus } from '@waha/structures/webhooks.dto';
 import { DefaultMap } from '@waha/utils/DefaultMap';
 import { getPinoLogLevel, LoggerBuilder } from '@waha/utils/logging';
 import { promiseTimeout, sleep } from '@waha/utils/promiseTimeout';
+import { runDetached } from '@waha/utils/detached';
 import { complete } from '@waha/utils/reactive/complete';
 import { SwitchObservable } from '@waha/utils/reactive/SwitchObservable';
 import { getNamespace, getSessionNamespace } from '@waha/config';
@@ -381,23 +382,26 @@ export class SessionManagerCore
     for (const options of this.sessionPlugins.plugins(session)) {
       session.plugins.add(options);
     }
-    // Apps (may contribute their own plugins to the session)
-    try {
-      await this.appsService.beforeSessionStart(session, this.store);
-    } catch (e) {
-      logger.error(`Apps Error: ${e}`);
-      session.status = WAHASessionStatus.FAILED;
-    }
+    // The session outlives the request that started it - keep its log and trace context out
+    await runDetached(async () => {
+      // Apps (may contribute their own plugins to the session)
+      try {
+        await this.appsService.beforeSessionStart(session, this.store);
+      } catch (e) {
+        logger.error(`Apps Error: ${e}`);
+        session.status = WAHASessionStatus.FAILED;
+      }
 
-    session.plugins.attach();
+      session.plugins.attach();
 
-    // start session
-    if (session.status !== WAHASessionStatus.FAILED) {
-      await session.start();
-      logger.info('Session has been started.');
-      // Apps
-      await this.appsService.afterSessionStart(session, this.store);
-    }
+      // start session
+      if (session.status !== WAHASessionStatus.FAILED) {
+        await session.start();
+        logger.info('Session has been started.');
+        // Apps
+        await this.appsService.afterSessionStart(session, this.store);
+      }
+    });
 
     return {
       name: session.name,
